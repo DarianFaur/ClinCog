@@ -1,6 +1,7 @@
 ## Fișier de configurare pentru Worker (proxy).
 ## Wrangler (unealta Cloudflare) citește acest fișier automat.
 
-name = "proxy-conceptualizare"
+name = "# wrangler.toml
+name = "clincog"
 main = "worker.js"
 compatibility_date = "2026-08-01"
