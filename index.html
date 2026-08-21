@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<!--
+  Acesta e un fișier HTML. E "scheletul" paginii - orice browser
+  (Chrome, Firefox, Safari) știe să-l citească și să-l afișeze vizual.
+-->
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <title>Conceptualizare - Săptămâna 1</title>
+
+  <!--
+    Tot ce e între <style> și </style> controlează cum ARATĂ pagina
+    (culori, spațiere), nu ce FACE. Nu ai nevoie să înțelegi totul
+    acum - poți sări peste, sau modifica valorile ca să vezi efectul.
+  -->
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 680px;
+      margin: 40px auto;
+      padding: 0 20px;
+      color: #1a1a1a;
+    }
+    h1 { font-size: 1.3rem; }
+    #vinieta {
+      background: #f0f6f6;
+      border-radius: 10px;
+      padding: 16px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+    #chat {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      min-height: 260px;
+      padding: 16px;
+      margin-bottom: 12px;
+      overflow-y: auto;
+    }
+    .mesaj { margin-bottom: 12px; line-height: 1.4; }
+    .mesaj.student { font-weight: 600; }
+    .mesaj.model { color: #1a5c5c; }
+    #formular { display: flex; gap: 8px; }
+    #intrebare {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    button {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      background: #1a5c5c;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:disabled { background: #aaa; cursor: not-allowed; }
+    #stare { font-size: 0.85rem; color: #777; margin-top: 8px; }
+  </style>
+</head>
+
+<body>
+
+  <h1>Conceptualizare de caz — Săptămâna 1</h1>
+
+  <!-- Vinieta e text fix, scris de tine (profesorul). Modelul AI
+       va avea voie să răspundă DOAR pe baza acestui text. -->
+  <div id="vinieta">
+    <strong>Vinietă clinică:</strong> Andrei, 24 de ani, student, se prezintă la
+    cabinet acompaniat de mama sa. De aproximativ două luni, raportează
+    oboseală constantă, dificultăți de concentrare la cursuri și pierderea
+    interesului pentru activitățile pe care le făcea cu plăcere (fotbal,
+    ieșit cu prietenii). Doarme mult mai mult decât înainte, dar tot se simte
+    obosit. A slăbit 4 kg în ultima lună fără să încerce. Neagă idei de
+    autovătămare, dar spune că uneori se gândește "ce rost mai are".
+  </div>
+
+  <!-- Aici apar mesajele, pe măsură ce studentul discută cu "modelul" -->
+  <div id="chat"></div>
+
+  <!-- Caseta de introdus întrebări + butonul de trimitere -->
+  <form id="formular">
+    <input
+      id="intrebare"
+      type="text"
+      placeholder="Ex: De cât timp are aceste simptome?"
+      autocomplete="off"
+    />
+    <button type="submit" id="buton-trimite">Întreabă</button>
+  </form>
+  <div id="stare"></div>
+
+  <script>
+    // ====================================================================
+    // AICI ÎNCEPE PARTEA DE "COMPORTAMENT" (JavaScript)
+    // ====================================================================
+
+    // Înlocuiește cu adresa Worker-ului tău, după ce îl publici (pasul următor).
+    // Deocamdată, dacă rulezi wrangler dev local, e ceva de genul:
+    const URL_PROXY = "https://proxy-conceptualizare.psihopatologie-platforma.workers.dev";
+
+    // Ținem toată conversația într-o listă (array), ca s-o putem trimite
+    // mereu întreagă către model - modelul nu are memorie proprie între
+    // apeluri, trebuie să-i retrimitem tot istoricul de fiecare dată.
+    let istoric = [];
+
+    const chatDiv = document.getElementById("chat");
+    const formular = document.getElementById("formular");
+    const inputIntrebare = document.getElementById("intrebare");
+    const butonTrimite = document.getElementById("buton-trimite");
+    const stareDiv = document.getElementById("stare");
+
+    // Afișează un mesaj nou în caseta de chat
+    function afiseazaMesaj(text, cine) {
+      const p = document.createElement("div");
+      p.className = "mesaj " + cine; // "student" sau "model"
+      p.textContent = (cine === "student" ? "Tu: " : "Pacient (simulat): ") + text;
+      chatDiv.appendChild(p);
+      chatDiv.scrollTop = chatDiv.scrollHeight; // derulează automat jos
+    }
+
+    // Se execută când studentul apasă "Întreabă" sau tastează Enter
+    formular.addEventListener("submit", async function (eveniment) {
+      eveniment.preventDefault(); // oprește reîncărcarea paginii (comportamentul implicit al formularelor)
+
+      const intrebare = inputIntrebare.value.trim();
+      if (!intrebare) return;
+
+      // Limită simplă: nu lăsăm conversația să se lungească la infinit
+      if (istoric.length >= 20) {
+        stareDiv.textContent = "Ai atins limita de schimburi pentru acest interviu.";
+        return;
+      }
+
+      afiseazaMesaj(intrebare, "student");
+      inputIntrebare.value = "";
+      butonTrimite.disabled = true;
+      stareDiv.textContent = "Se așteaptă răspuns...";
+
+      // Construim mesajul de trimis, dar NU îl adăugăm încă în "istoric" -
+      // îl adăugăm definitiv (și îl numărăm în contor) doar dacă primim
+      // un răspuns cu succes. Așa, un apel eșuat (ex. fără credit API,
+      // rețea picată) nu consumă din cele 10 întrebări permise.
+      const mesajNou = { role: "user", content: intrebare };
+      const istoricDeTrimis = [...istoric, mesajNou];
+
+      try {
+        // Trimitem toată conversația către proxy (Worker-ul Cloudflare).
+        // Proxy-ul, nu pagina asta, are cheia API secretă.
+        const raspuns = await fetch(URL_PROXY, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ istoric: istoricDeTrimis }),
+        });
+
+        if (!raspuns.ok) throw new Error("Eroare server: " + raspuns.status);
+
+        const date = await raspuns.json();
+
+        // Abia acum, după succes, actualizăm istoricul "oficial".
+        istoric = [...istoricDeTrimis, { role: "assistant", content: date.text }];
+
+        afiseazaMesaj(date.text, "model");
+        stareDiv.textContent = `${istoric.length / 2} din 10 întrebări posibile folosite.`;
+      } catch (eroare) {
+        stareDiv.textContent = "A apărut o eroare — întrebarea nu a fost numărată. Încearcă din nou.";
+        console.error(eroare);
+      } finally {
+        butonTrimite.disabled = false;
+        inputIntrebare.focus();
+      }
+    });
+  </script>
+
+</body>
+</html>
