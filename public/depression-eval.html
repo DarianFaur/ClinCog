@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Three Ways to Evaluate Depression</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&family=Inter:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --bg: #fafaf8;
+  --ink: #111;
+  --ink2: #555;
+  --ink3: #999;
+  --line: #ddd;
+  --accent: #1a5c5c;
+  --accent-bg: #f0f6f6;
+  --warn: #8b3a00;
+  --warn-bg: #fff7f2;
+  --serif: 'Crimson Pro', Georgia, serif;
+  --sans: 'Inter', system-ui, sans-serif;
+  --mono: 'DM Mono', monospace;
+  --max: 720px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-size: 14px; line-height: 1.7; }
+
+#bar { position: fixed; top: 0; left: 0; right: 0; height: 2px; background: var(--line); z-index: 200; }
+#bar-fill { height: 100%; background: var(--accent); transition: width .4s; }
+
+nav {
+  position: sticky; top: 2px; z-index: 100;
+  background: #fff; border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px; height: 52px;
+}
+.nav-brand { font-family: var(--serif); font-size: 1rem; font-weight: 400; color: var(--ink2); }
+.nav-steps { display: flex; gap: 4px; }
+.nav-steps .s {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 500; color: var(--ink3);
+  font-family: var(--mono); transition: all .3s;
+}
+.nav-steps .s.active { border-color: var(--accent); color: var(--accent); }
+.nav-steps .s.done { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.page { display: none; }
+.page.on { display: block; animation: up .35s ease; }
+@keyframes up { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+.wrap { max-width: var(--max); margin: 0 auto; padding: 56px 24px 100px; }
+
+.eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink3); margin-bottom: 10px; }
+h1 { font-family: var(--serif); font-size: 2.6rem; font-weight: 300; line-height: 1.15; color: var(--ink); margin-bottom: 16px; }
+h1 em { font-style: italic; color: var(--accent); }
+h2 { font-family: var(--serif); font-size: 1.8rem; font-weight: 400; color: var(--ink); margin-bottom: 10px; }
+h3 { font-size: .75rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); margin-bottom: 12px; }
+p.lead { font-size: 1rem; color: var(--ink2); line-height: 1.75; }
+hr { border: none; border-top: 1px solid var(--line); margin: 36px 0; }
+
+.callout { border-left: 2px solid var(--accent); padding: 10px 16px; background: var(--accent-bg); font-size: .85rem; color: var(--ink2); margin: 16px 0; }
+.callout.warn { border-color: var(--warn); background: var(--warn-bg); color: var(--warn); }
+
+.layers { margin: 28px 0; }
+.layer-row { display: flex; align-items: center; gap: 16px; padding: 14px 0; border-top: 1px solid var(--line); }
+.layer-row:last-child { border-bottom: 1px solid var(--line); }
+.layer-num { font-family: var(--mono); font-size: 11px; color: var(--ink3); min-width: 20px; }
+.layer-text .lt { display: block; font-size: .9rem; font-weight: 500; color: var(--ink); }
+.layer-text .ls { font-size: .82rem; color: var(--ink3); }
+
+.vignette { font-family: var(--serif); font-size: 1.1rem; line-height: 1.9; color: var(--ink); }
+.vignette p { margin-bottom: 1.3em; }
+.vignette p:last-child { margin-bottom: 0; }
+.patient-line { display: flex; align-items: baseline; gap: 10px; margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+.patient-line h2 { margin: 0; }
+.patient-line span { color: var(--ink3); font-size: .85rem; }
+
+.scid-q { padding: 20px 0; border-bottom: 1px solid var(--line); }
+.scid-q:first-child { border-top: 1px solid var(--line); }
+.scid-q-top { display: flex; gap: 14px; margin-bottom: 12px; }
+.scid-code { font-family: var(--mono); font-size: 11px; color: var(--accent); min-width: 28px; padding-top: 2px; }
+.scid-q-text { font-size: .9rem; color: var(--ink); line-height: 1.6; }
+.scid-q-text .ev { font-size: .78rem; color: var(--ink3); margin-top: 4px; font-style: italic; }
+.radio-row { display: flex; gap: 8px; padding-left: 42px; flex-wrap: wrap; }
+.radio-row label {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border: 1px solid var(--line);
+  cursor: pointer; font-size: .82rem; font-weight: 500;
+  transition: all .15s; color: var(--ink2); user-select: none;
+}
+.radio-row label:hover { border-color: var(--ink3); color: var(--ink); }
+.radio-row input { display: none; }
+.radio-row label:has(input:checked).p { background: var(--accent); border-color: var(--accent); color: #fff; }
+.radio-row label:has(input:checked).n { background: #900; border-color: #900; color: #fff; }
+.radio-row label:has(input:checked).u { background: var(--ink); border-color: var(--ink); color: #fff; }
+.text-field { width: 100%; border: 1px solid var(--line); padding: 8px 12px; font-family: var(--sans); font-size: .88rem; color: var(--ink); background: #fff; margin-top: 8px; transition: border-color .2s; }
+.text-field:focus { outline: none; border-color: var(--accent); }
+
+.a10-strip { margin: 24px 0; padding: 20px 24px; border: 1px solid var(--line); display: flex; align-items: flex-start; gap: 32px; flex-wrap: wrap; }
+.a10-count .n { font-family: var(--serif); font-size: 3rem; font-weight: 300; line-height: 1; }
+.a10-count .l { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink3); }
+.a10-status { font-size: .82rem; color: var(--ink3); margin-top: 4px; }
+.a10-status.ok { color: var(--accent); }
+.a10-status.wc { color: #a05000; }
+.a10-dec label { font-size: .8rem; color: var(--ink3); display: block; margin-bottom: 8px; }
+
+.sec-label { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); padding: 18px 0 4px; }
+
+.dx-options { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+.dx-options label { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid var(--line); cursor: pointer; font-size: .88rem; transition: border-color .15s; }
+.dx-options label:hover { border-color: var(--ink3); }
+.dx-options input { accent-color: var(--accent); }
+.dx-options label:has(input:checked) { border-color: var(--accent); background: var(--accent-bg); }
+
+.score-bar {
+  position: sticky; top: 54px; z-index: 90;
+  background: #fff; border-bottom: 1px solid var(--line);
+  padding: 10px 40px; display: flex; align-items: center; gap: 20px;
+}
+.score-bar .sc { font-family: var(--mono); font-size: 1.3rem; color: var(--ink); }
+.score-bar .sl { color: var(--ink3); font-size: .75rem; }
+.score-bar .band { padding: 2px 8px; font-size: .75rem; font-weight: 500; }
+.b-min { background: #e8f4f4; color: var(--accent); }
+.b-mild { background: #fef9e7; color: #8a6800; }
+.b-mod { background: #fdebd0; color: #9a4000; }
+.b-sev { background: #fde0de; color: #800; }
+.score-bar .hint { margin-left: auto; color: var(--ink3); font-size: .72rem; }
+
+.bdi-q { padding: 18px 0; border-bottom: 1px solid var(--line); }
+.bdi-q:first-of-type { border-top: 1px solid var(--line); }
+.bdi-q-label { font-size: .82rem; font-weight: 500; color: var(--ink); margin-bottom: 10px; display: flex; gap: 10px; }
+.bdi-q-label span { font-family: var(--mono); font-size: 10px; color: var(--ink3); font-weight: 400; }
+.bdi-opts { display: flex; flex-direction: column; gap: 5px; }
+.bdi-opts label { display: flex; gap: 10px; align-items: flex-start; padding: 7px 10px; border: 1px solid var(--line); cursor: pointer; font-size: .84rem; line-height: 1.45; transition: all .15s; }
+.bdi-opts label:hover { border-color: var(--ink3); }
+.bdi-opts input { display: none; }
+.bdi-opts label:has(input:checked) { border-color: var(--accent); background: var(--accent-bg); }
+.opt-n { font-family: var(--mono); font-size: 11px; color: var(--ink3); min-width: 12px; margin-top: 1px; }
+
+.hitop-block { padding: 18px 0; border-bottom: 1px solid var(--line); }
+.hitop-block:first-of-type { border-top: 1px solid var(--line); }
+.hitop-scale-name { font-size: .8rem; font-weight: 500; color: var(--ink); margin-bottom: 12px; }
+.hitop-pair { display: flex; flex-direction: column; gap: 10px; }
+.hitop-item { display: flex; align-items: center; gap: 16px; }
+.hitop-item-text { flex: 1; font-size: .85rem; color: var(--ink2); }
+.likert { display: flex; gap: 4px; }
+.likert label { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
+.likert label .num { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: var(--ink3); transition: all .15s; }
+.likert label .lbl { font-size: 9px; color: var(--ink3); text-align: center; max-width: 34px; line-height: 1.2; }
+.likert input { display: none; }
+.likert label:has(input:checked) .num { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.ctab-wrap { overflow-x: auto; margin: 20px 0; }
+.ctab { width: 100%; border-collapse: collapse; font-size: .8rem; font-family: var(--sans); border: 1px solid #c4d4dc; }
+.ctab thead tr { background: #1a4a7a; }
+.ctab thead th { padding: 8px 10px; color: #fff; text-align: left; font-size: .72rem; font-weight: 500; border-right: 1px solid rgba(255,255,255,.15); }
+.ctab thead th:last-child { border-right: none; }
+.ctab .tr-head td { background: #dce8f2; font-weight: 700; font-size: .78rem; color: #1a4a7a; padding: 7px 10px; border-top: 1px solid #c4d4dc; border-left: 3px solid #1a4a7a; }
+.ctab tbody tr { border-bottom: 1px solid #e4eef4; }
+.ctab tbody tr:hover { background: #f8fbff; }
+.ctab td { padding: 7px 10px; color: #1a2a3a; vertical-align: middle; border-right: 1px solid #e4eef4; }
+.ctab td:last-child { border-right: none; }
+.ctab .mn { font-style: italic; color: #2a4a6a; padding-left: 14px !important; }
+.ctab .imp { color: #c00; font-weight: 600; }
+.ctab .brd { color: #a05000; font-weight: 600; }
+
+.ss-chart { width: 120px; height: 16px; position: relative; }
+.ss-bg { width: 100%; height: 8px; background: #e0eaf0; border-radius: 2px; position: relative; top: 4px; }
+.ss-norm { position: absolute; left: 25%; width: 50%; height: 100%; background: #c0dcc0; }
+.ss-fill { position: absolute; left: 0; height: 100%; border-radius: 2px; }
+.ss-fill.imp { background: #c00; }
+.ss-fill.brd { background: #c06000; }
+.ss-mid { position: absolute; left: 50%; top: -2px; width: 2px; height: 12px; background: #1a4a7a; }
+
+.pop-diag { display: flex; gap: 1px; align-items: flex-end; height: 14px; }
+.pop-diag .pb { background: #b0c8d0; border-radius: 1px 1px 0 0; }
+.pop-diag .pb.f { background: #5a9aa0; }
+
+textarea.interp { width: 100%; border: 1px solid var(--line); padding: 10px 14px; font-family: var(--sans); font-size: .88rem; color: var(--ink); background: #fff; resize: vertical; min-height: 88px; line-height: 1.6; transition: border-color .2s; }
+textarea.interp:focus { outline: none; border-color: var(--accent); }
+
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 20px; font-family: var(--sans); font-size: .85rem; font-weight: 500; cursor: pointer; border: none; transition: all .15s; }
+.btn-p { background: var(--ink); color: #fff; }
+.btn-p:hover { background: #333; }
+.btn-s { background: transparent; color: var(--ink2); border: 1px solid var(--line); }
+.btn-s:hover { border-color: var(--ink3); color: var(--ink); }
+.nav-row { display: flex; gap: 10px; margin-top: 40px; }
+
+.alert { display: none; padding: 10px 14px; border-left: 3px solid #c00; background: #fff5f5; font-size: .83rem; color: #900; margin-top: 14px; }
+.alert.on { display: block; }
+
+/* Report */
+.report-sec { border-top: 1px solid var(--line); padding: 28px 0; }
+.report-sec h3 { margin-bottom: 18px; }
+
+.dx-badge { display: inline-flex; align-items: center; gap: 12px; padding: 12px 20px; border: 1px solid var(--line); margin-bottom: 16px; }
+.dx-badge .dx-icon { font-size: 1.4rem; }
+.dx-badge .dx-name { font-size: 1rem; font-weight: 500; color: var(--ink); }
+.dx-badge .dx-sub { font-size: .78rem; color: var(--ink3); }
+.dx-badge.pos { border-color: var(--accent); background: var(--accent-bg); }
+.dx-badge.neg { border-color: #900; background: #fff5f5; }
+
+.count-row { display: flex; border: 1px solid var(--line); margin-bottom: 14px; }
+.count-cell { flex: 1; padding: 12px 16px; border-right: 1px solid var(--line); text-align: center; }
+.count-cell:last-child { border-right: none; }
+.count-cell .cn { font-family: var(--serif); font-size: 2rem; font-weight: 300; }
+.count-cell .cl { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink3); }
+
+.cpills { display: flex; gap: 6px; flex-wrap: wrap; }
+.cpill { font-size: .75rem; padding: 3px 10px; border: 1px solid var(--line); }
+.cpill.met { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
+.cpill.unm { border-color: #900; color: #900; background: #fff5f5; }
+.cpill.unk { color: var(--ink3); }
+
+.t-row { display: flex; align-items: baseline; gap: 24px; margin-bottom: 12px; flex-wrap: wrap; }
+.t-big { font-family: var(--serif); font-size: 3.2rem; font-weight: 300; color: var(--ink); line-height: 1; }
+.t-meta { display: flex; flex-direction: column; gap: 4px; }
+.t-meta-r { display: flex; gap: 8px; font-size: .82rem; }
+.t-meta-r .k { color: var(--ink3); min-width: 70px; }
+.t-meta-r .v { font-weight: 500; }
+.sev-pill { display: inline-block; padding: 2px 10px; font-size: .75rem; font-weight: 500; }
+.sp-min { background: #e8f4f4; color: var(--accent); }
+.sp-mild { background: #fef9e7; color: #8a6800; }
+.sp-mod { background: #fdebd0; color: #9a4000; }
+.sp-sev { background: #fde0de; color: #800; }
+
+.t-track { height: 6px; border-radius: 3px; background: linear-gradient(to right, #2d9e9e 0%, #b8c840 35%, #e0c030 55%, #e06820 75%, #c02820 100%); position: relative; margin: 10px 0 4px; }
+.t-marker { position: absolute; top: -5px; width: 3px; height: 16px; background: var(--ink); border-radius: 2px; transform: translateX(-50%); transition: left .8s; }
+.t-labels { display: flex; justify-content: space-between; }
+.t-labels span { font-family: var(--mono); font-size: 9px; color: var(--ink3); }
+
+.ht-table { width: 100%; border-collapse: collapse; font-size: .84rem; margin-top: 8px; }
+.ht-table th { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .07em; color: var(--ink3); font-weight: 400; padding: 0 12px 8px; text-align: left; border-bottom: 1px solid var(--line); }
+.ht-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); color: var(--ink2); }
+.ht-table tbody tr:last-child td { border-bottom: none; }
+.ht-table .ht-n { font-family: var(--mono); font-size: .8rem; }
+.ht-table .ht-t { font-weight: 500; }
+.ht-table .ht-t.hi { color: #900; }
+.mini-bar { height: 6px; background: var(--line); width: 120px; overflow: hidden; }
+.mini-fill { height: 100%; transition: width .7s; }
+
+.interp-block { padding: 14px 0; border-top: 1px solid var(--line); }
+.interp-block .q { font-size: .78rem; color: var(--ink3); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .06em; }
+.interp-block p { font-size: .88rem; color: var(--ink2); line-height: 1.6; }
+
+@media (max-width: 600px) {
+  nav { padding: 0 16px; }
+  .wrap { padding: 36px 16px 80px; }
+  .score-bar { padding: 10px 16px; }
+  h1 { font-size: 2rem; }
+}
+@media print {
+  nav, #bar, .score-bar, .nav-row { display: none !important; }
+  .page { display: block !important; }
+}
+</style>
+</head>
+<body>
+<a href="/" style="position:fixed;top:12px;left:12px;z-index:9999;font-family:DM Mono,ui-monospace,monospace;font-size:11px;letter-spacing:.04em;background:#fff;color:#333;border:1px solid #ddd;border-radius:20px;padding:6px 14px;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,.08)">&larr; ClinCog</a>
+
+<div id="bar"><div id="bar-fill" style="width:0%"></div></div>
+
+<nav>
+  <div class="nav-brand">Depression Seminar</div>
+  <div class="nav-steps">
+    <div class="s active" id="s0">1</div>
+    <div class="s" id="s1">2</div>
+    <div class="s" id="s2">3</div>
+    <div class="s" id="s3">4</div>
+    <div class="s" id="s4">5</div>
+    <div class="s" id="s5">6</div>
+  </div>
+</nav>
+
+<!-- PAGE 0 -->
+<div class="page on" id="pg0">
+  <div class="wrap">
+    <div class="eyebrow">Seminar Activity · Depression Module</div>
+    <h1>Three Ways to<br><em>Evaluate</em> Depression</h1>
+    <p class="lead" style="max-width:540px;">You will read a clinical vignette and evaluate the same patient through three different conceptual frameworks. The lens shapes what you see.</p>
+    <div class="layers">
+      <div class="layer-row"><span class="layer-num">01</span><div class="layer-text"><span class="lt">Categorical — DSM-5 via SCID-5</span><span class="ls">Structured diagnostic interview · criterion-based decision</span></div></div>
+      <div class="layer-row"><span class="layer-num">02</span><div class="layer-text"><span class="lt">Dimensional–Psychological — BDI-II &amp; HiTOP</span><span class="ls">Quantified severity · spectrum position</span></div></div>
+      <div class="layer-row"><span class="layer-num">03</span><div class="layer-text"><span class="lt">Dimensional–Cognitive — CANTAB</span><span class="ls">Neuropsychological profile · mechanistic interpretation</span></div></div>
+    </div>
+    <div class="nav-row" style="margin-top:12px;"><button class="btn btn-p" onclick="go(1)">Begin →</button></div>
+  </div>
+</div>
+
+<!-- PAGE 1: VIGNETTE -->
+<div class="page" id="pg1">
+  <div class="wrap">
+    <div class="eyebrow">Clinical Vignette</div>
+    <div class="patient-line"><h2>Darren, 34</h2><span>High school English teacher · First psychiatric contact</span></div>
+    <div class="vignette">
+      <p>Darren, a 34-year-old high school English teacher, has been struggling to get out of bed most mornings. Over the past few weeks, he stares at the ceiling after the alarm rings — numb — often lying there for hours before dragging himself to the couch. Once known for his energetic lectures and quick wit, he now dreads the thought of facing his students. "What's the point?" he mutters. "They're not learning anything from me anyway. Nothing I do matters."</p>
+      <p>His colleagues have grown concerned, though he rarely responds to their messages anymore. He tells them he's overwhelmed with grading, but even small interactions feel like too much. Some days, a colleague's offhand comment in the hallway is enough to make his chest tighten with irritation — a reaction that surprises even him, since he'd never been quick to anger before. Other times, he feels nothing at all. His moods shift without warning: some mornings there is a fleeting hour of restless agitation before the flatness returns.</p>
+      <p>He's stopped cooking, skipping meals entirely or eating whatever requires no decision. His clothes hang looser now, though he hasn't noticed. When he tries to plan even a simple task — what to eat, what to say to his department head — his mind goes blank, the thoughts sliding away before he can hold onto them. He described it recently as trying to think through fog.</p>
+      <p>When Darren does sleep, it's restless, full of strange half-waking dreams. On other nights he lies awake for hours, his mind circling through failures both real and imagined, unable to find a way out of the loop. He wakes unrefreshed every morning. Lately he's been thinking more and more about how everyone around him would simply be better off if he disappeared. The thoughts come and go, but they are starting to stay longer. Last week, for the first time, he found himself considering how he might act on them — a thought that frightened him enough to stop, but not enough to tell anyone. On one occasion, he pressed his nails hard into his forearm, not quite understanding why, only that the sharpness made the internal noise quieter for a moment.</p>
+      <p>At school, he has missed several grading deadlines and once walked out of class mid-lesson, overwhelmed and on the verge of tears. His department head tried to check in afterward, but Darren could only apologize quietly, his gaze fixed on the floor. Since then he has been calling in sick, unable to face another day.</p>
+    </div>
+    <div class="nav-row">
+      <button class="btn btn-s" onclick="go(0)">← Back</button>
+      <button class="btn btn-p" onclick="go(2)">Proceed to SCID-5 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 2: SCID-5 -->
+<div class="page" id="pg2">
+  <div class="wrap">
+    <div class="eyebrow">Layer 1 · Categorical · DSM-5</div>
+    <h2>SCID-5 — Current Major Depressive Episode</h2>
+    <p class="lead" style="margin-bottom:6px;">Use the interview questions below to evaluate Darren.</p>
+    <div class="callout"><strong>Rating guide:</strong>&ensp; <strong>+</strong> = Present &ensp;|&ensp; <strong>−</strong> = Absent &ensp;|&ensp; <strong>?</strong> = Inadequate information</div>
+
+    <div class="sec-label">Criterion A — Symptom Assessment (A1–A9)</div>
+
+    <div class="scid-q">
+      <div class="scid-q-top"><span class="scid-code">A1</span><div class="scid-q-text">"In the past month, has there been a period when you were feeling depressed or down most of the day, nearly every day?"<div class="ev">Depressed mood</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="A1" value="present" onchange="countA()"> + Present</label><label class="n"><input type="radio" name="A1" value="absent" onchange="countA()"> − Absent</label><label class="u"><input type="radio" name="A1" value="unknown" onchange="countA()"> ? Info lacking</label></div>
+    </div>
+    <div class="scid-q">
+      <div class="scid-q-top"><span class="scid-code">A2</span><div class="scid-q-text">"What about losing interest or pleasure in things you usually enjoyed — was that nearly every day?"<div class="ev">Anhedonia — loss of interest or pleasure</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="A2" value="present" onchange="countA()"> + Present</label><label class="n"><input type="radio" name="A2" value="absent" onchange="countA()"> − Absent</label><label class="u"><input type="radio" name="A2" value="unknown" onchange="countA()"> ? Info lacking</label></div>
+    </div>
+    <div class="scid-q">
+      <div class="scid-q-top"><span class="scid-code">A3</span><div class="scid-q-text">"Has there been a significant change in your appetite or weight — gaining or losing without trying?"<div class="ev">Appetite / weight change</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="A3" value="present" onchange="countA()"> + Present</label><label class="n"><input type="radio" name="A3" value="absent" onchange="countA()"> − Absent</label><label class="u"><input type="radio" name="A3" value="unknown" onchange="countA()"> ? Info lacking</label></div>
+    </div>
+    <div class="scid-q">
+      <div class="scid-q-top"><span class="scid-code">A4</span><div class="scid-q-text">"How have you been sleeping? Have you had trouble sleeping, or been sleeping much more than usual, nearly every night?"<div class="ev">Insomnia or hypersomnia</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="A4" value="present" onchange="countA()"> + Present</label><label class="n"><input type="radio" name="A4" value="absent" onchange="countA()"> − Absent</label><label class="u"><input type="radio" name="A4" value="unknown" onchange="countA()"> ? Info lacking</label></div>
+    </div>
+    <div class="scid-q">
+      <div class="scid-q-top"><span class="scid-code">A5</span><div class="scid-q-text">"Have other people noticed that you were moving or speaking more slowly than usual — or were you so restless you couldn't stay still?"<div class="ev">Psychomotor agitation or retardation (observable)</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="A5" value="present" onchange="countA()"> + Present</label><label class="n"><input type="radio" name="A5" value="absent" onchange="countA()"> − Absent</label><label class="u"><input type="radio" name="A5" value="unknown" onchange="countA()"> ? Info lacking</label></div>
+    </div>
+    <div class="scid-q">
+      <div class="scid-q-top"><span class="scid-code">A6</span><div class="scid-q-text">"Have you been feeling tired or without energy nearly every day?"<div class="ev">Fatigue or loss of energy</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="A6" value="present" onchange="countA()"> + Present</label><label class="n"><input type="radio" name="A6" value="absent" onchange="countA()"> − Absent</label><label class="u"><input type="radio" name="A6" value="unknown" onchange="countA()"> ? Info lacking</label></div>
+    </div>
+    <div class="scid-q">
+      <div class="scid-q-top"><span class="scid-code">A7</span><div class="scid-q-text">"Have you been feeling worthless, or excessively guilty — even about things you hadn't done wrong?"<div class="ev">Worthlessness or excessive guilt</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="A7" value="present" onchange="countA()"> + Present</label><label class="n"><input type="radio" name="A7" value="absent" onchange="countA()"> − Absent</label><label class="u"><input type="radio" name="A7" value="unknown" onchange="countA()"> ? Info lacking</label></div>
+    </div>
+    <div class="scid-q">
+      <div class="scid-q-top"><span class="scid-code">A8</span><div class="scid-q-text">"Have you had trouble thinking or concentrating? Has it been hard to make even small decisions?"<div class="ev">Diminished concentration or indecisiveness</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="A8" value="present" onchange="countA()"> + Present</label><label class="n"><input type="radio" name="A8" value="absent" onchange="countA()"> − Absent</label><label class="u"><input type="radio" name="A8" value="unknown" onchange="countA()"> ? Info lacking</label></div>
+    </div>
+    <div class="scid-q" style="border-left:2px solid var(--warn);padding-left:12px;margin-left:-14px;">
+      <div class="scid-q-top"><span class="scid-code">A9</span><div class="scid-q-text">"Have you been having thoughts that life is not worth living, or wishing you were dead? Have you been thinking about killing yourself?"<div class="ev">Recurrent thoughts of death / suicidal ideation ⚠</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="A9" value="present" onchange="countA()"> + Present</label><label class="n"><input type="radio" name="A9" value="absent" onchange="countA()"> − Absent</label><label class="u"><input type="radio" name="A9" value="unknown" onchange="countA()"> ? Info lacking</label></div>
+    </div>
+
+    <div class="a10-strip">
+      <div class="a10-count">
+        <div class="n" id="a-count">0</div>
+        <div class="l">Symptoms rated +</div>
+        <div class="a10-status" id="a-status">Rate items above</div>
+      </div>
+      <div class="a10-dec">
+        <label>A10 — Criterion A decision</label>
+        <div class="radio-row" style="padding-left:0;">
+          <label class="p"><input type="radio" name="A10" value="yes"> ✓ Met — ≥5 symptoms, includes A1 or A2</label>
+          <label class="n"><input type="radio" name="A10" value="no"> ✗ Not Met</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-label">Exclusion &amp; Impairment Criteria</div>
+
+    <div class="scid-q">
+      <div class="scid-q-top"><span class="scid-code">A11</span><div class="scid-q-text">"Could these symptoms be due to the effects of a substance, medication, or a general medical condition?"<div class="ev">Criterion B — Medical/substance exclusion. Rate + if <em>no</em> organic cause (criterion is met).</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="A11" value="met"> + Met (no organic cause)</label><label class="n"><input type="radio" name="A11" value="unmet"> − Not Met (organic cause present)</label><label class="u"><input type="radio" name="A11" value="unknown"> ? Info lacking</label></div>
+    </div>
+    <div class="scid-q">
+      <div class="scid-q-top"><span class="scid-code">A12</span><div class="scid-q-text">"Have these symptoms caused significant distress or problems at work, in relationships, or in other important areas of your life?"<div class="ev">Criterion C — Clinically significant distress or impairment</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="A12" value="met"> + Met (significant impairment)</label><label class="n"><input type="radio" name="A12" value="unmet"> − Not Met</label><label class="u"><input type="radio" name="A12" value="unknown"> ? Info lacking</label></div>
+    </div>
+
+    <div class="sec-label">Episode History</div>
+
+    <div class="scid-q">
+      <div class="scid-q-top"><span class="scid-code">A13</span><div class="scid-q-text">"When did this period of depression begin? How long ago would you say it started?"<div class="ev">Onset of current episode</div></div></div>
+      <input class="text-field" type="text" id="A13v" placeholder="e.g., Approximately 3–4 weeks ago…" />
+    </div>
+    <div class="scid-q">
+      <div class="scid-q-top"><span class="scid-code">A14</span><div class="scid-q-text">"How many separate times in your life have you been depressed nearly every day for at least two weeks?"<div class="ev">Number of lifetime depressive episodes</div></div></div>
+      <input class="text-field" type="text" id="A14v" placeholder="e.g., 1 (first episode) / Unknown from vignette…" />
+    </div>
+
+    <div class="sec-label">Diagnostic Conclusion</div>
+    <div class="dx-options">
+      <label><input type="radio" name="sdx" value="mdd"> Major Depressive Disorder</label>
+      <label><input type="radio" name="sdx" value="other"> Other depressive / related disorder</label>
+      <label><input type="radio" name="sdx" value="sub"> Subthreshold — criteria not fully met</label>
+    </div>
+
+    <div class="alert" id="sal">Please rate all A1–A12 items and select a diagnostic conclusion before continuing.</div>
+    <div class="nav-row">
+      <button class="btn btn-s" onclick="go(1)">← Vignette</button>
+      <button class="btn btn-p" onclick="valSCID()">Proceed to BDI-II &amp; HiTOP →</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 3: BDI-II + HiTOP -->
+<div class="page" id="pg3">
+  <div class="score-bar">
+    <div><div class="sc" id="bdi-raw">0</div><div class="sl">BDI-II raw</div></div>
+    <div><span class="band b-min" id="bdi-band">—</span></div>
+    <div class="hint">0–13 minimal · 14–19 mild · 20–28 moderate · 29–63 severe</div>
+  </div>
+  <div class="wrap">
+    <div class="eyebrow">Layer 2 · Dimensional–Psychological</div>
+    <h2>BDI-II &amp; HiTOP Evaluation</h2>
+    <p class="lead" style="margin-bottom:6px;">Select the statement that best describes Darren based on the vignette.</p>
+    <div class="callout" style="margin-bottom:28px;">For each BDI-II item, choose the one statement (0–3) that best matches the severity of Darren's experience.</div>
+
+    <h3>Beck Depression Inventory – II</h3>
+
+    <div class="bdi-q"><div class="bdi-q-label"><span>01</span>Sadness</div><div class="bdi-opts">
+      <label><input type="radio" name="b1" value="0" onchange="calcBDI()"><span class="opt-n">0</span>I do not feel sad.</label>
+      <label><input type="radio" name="b1" value="1" onchange="calcBDI()"><span class="opt-n">1</span>I feel sad much of the time.</label>
+      <label><input type="radio" name="b1" value="2" onchange="calcBDI()"><span class="opt-n">2</span>I am sad all the time.</label>
+      <label><input type="radio" name="b1" value="3" onchange="calcBDI()"><span class="opt-n">3</span>I am so sad or unhappy that I can't stand it.</label>
+    </div></div>
+    <div class="bdi-q"><div class="bdi-q-label"><span>02</span>Pessimism</div><div class="bdi-opts">
+      <label><input type="radio" name="b2" value="0" onchange="calcBDI()"><span class="opt-n">0</span>I am not discouraged about my future.</label>
+      <label><input type="radio" name="b2" value="1" onchange="calcBDI()"><span class="opt-n">1</span>I feel more discouraged about my future than I used to be.</label>
+      <label><input type="radio" name="b2" value="2" onchange="calcBDI()"><span class="opt-n">2</span>I do not expect things to work out for me.</label>
+      <label><input type="radio" name="b2" value="3" onchange="calcBDI()"><span class="opt-n">3</span>I feel my future is hopeless and will only get worse.</label>
+    </div></div>
+    <div class="bdi-q"><div class="bdi-q-label"><span>03</span>Past Failure</div><div class="bdi-opts">
+      <label><input type="radio" name="b3" value="0" onchange="calcBDI()"><span class="opt-n">0</span>I do not feel like a failure.</label>
+      <label><input type="radio" name="b3" value="1" onchange="calcBDI()"><span class="opt-n">1</span>I have failed more than I should have.</label>
+      <label><input type="radio" name="b3" value="2" onchange="calcBDI()"><span class="opt-n">2</span>As I look back, I see a lot of failures.</label>
+      <label><input type="radio" name="b3" value="3" onchange="calcBDI()"><span class="opt-n">3</span>I feel I am a total failure as a person.</label>
+    </div></div>
+    <div class="bdi-q"><div class="bdi-q-label"><span>04</span>Loss of Pleasure</div><div class="bdi-opts">
+      <label><input type="radio" name="b4" value="0" onchange="calcBDI()"><span class="opt-n">0</span>I get as much pleasure as I ever did from things I enjoy.</label>
+      <label><input type="radio" name="b4" value="1" onchange="calcBDI()"><span class="opt-n">1</span>I don't enjoy things as much as I used to.</label>
+      <label><input type="radio" name="b4" value="2" onchange="calcBDI()"><span class="opt-n">2</span>I get very little pleasure from things I used to enjoy.</label>
+      <label><input type="radio" name="b4" value="3" onchange="calcBDI()"><span class="opt-n">3</span>I can't get any pleasure from things I used to enjoy.</label>
+    </div></div>
+    <div class="bdi-q"><div class="bdi-q-label"><span>05</span>Guilty Feelings</div><div class="bdi-opts">
+      <label><input type="radio" name="b5" value="0" onchange="calcBDI()"><span class="opt-n">0</span>I don't feel particularly guilty.</label>
+      <label><input type="radio" name="b5" value="1" onchange="calcBDI()"><span class="opt-n">1</span>I feel guilty over many things I have done or should have done.</label>
+      <label><input type="radio" name="b5" value="2" onchange="calcBDI()"><span class="opt-n">2</span>I feel quite guilty most of the time.</label>
+      <label><input type="radio" name="b5" value="3" onchange="calcBDI()"><span class="opt-n">3</span>I feel guilty all of the time.</label>
+    </div></div>
+    <div class="bdi-q"><div class="bdi-q-label"><span>06</span>Punishment Feelings</div><div class="bdi-opts">
+      <label><input type="radio" name="b6" value="0" onchange="calcBDI()"><span class="opt-n">0</span>I don't feel I am being punished.</label>
+      <label><input type="radio" name="b6" value="1" onchange="calcBDI()"><span class="opt-n">1</span>I feel I may be punished.</label>
+      <label><input type="radio" name="b6" value="2" onchange="calcBDI()"><span class="opt-n">2</span>I expect to be punished.</label>
+      <label><input type="radio" name="b6" value="3" onchange="calcBDI()"><span class="opt-n">3</span>I feel I am being punished.</label>
+    </div></div>
+    <div class="bdi-q"><div class="bdi-q-label"><span>07</span>Self-Dislike</div><div class="bdi-opts">
+      <label><input type="radio" name="b7" value="0" onchange="calcBDI()"><span class="opt-n">0</span>I feel the same about myself as ever.</label>
+      <label><input type="radio" name="b7" value="1" onchange="calcBDI()"><span class="opt-n">1</span>I have lost confidence in myself.</label>
+      <label><input type="radio" name="b7" value="2" onchange="calcBDI()"><span class="opt-n">2</span>I am disappointed in myself.</label>
+      <label><input type="radio" name="b7" value="3" onchange="calcBDI()"><span class="opt-n">3</span>I dislike myself.</label>
+    </div></div>
+    <div class="bdi-q"><div class="bdi-q-label"><span>08</span>Self-Criticalness</div><div class="bdi-opts">
+      <label><input type="radio" name="b8" value="0" onchange="calcBDI()"><span class="opt-n">0</span>I don't blame or criticize myself more than usual.</label>
+      <label><input type="radio" name="b8" value="1" onchange="calcBDI()"><span class="opt-n">1</span>I am more critical of myself than I used to be.</label>
+      <label><input type="radio" name="b8" value="2" onchange="calcBDI()"><span class="opt-n">2</span>I criticize myself for all of my faults.</label>
+      <label><input type="radio" name="b8" value="3" onchange="calcBDI()"><span class="opt-n">3</span>I blame myself for everything bad that happens.</label>
+    </div></div>
+    <div class="bdi-q" style="border-left:2px solid var(--warn);padding-left:12px;margin-left:-14px;"><div class="bdi-q-label"><span>09 ⚠</span>Suicidal Thoughts or Wishes</div><div class="bdi-opts">
+      <label><input type="radio" name="b9" value="0" onchange="calcBDI()"><span class="opt-n">0</span>I don't have any thoughts of killing myself.</label>
+      <label><input type="radio" name="b9" value="1" onchange="calcBDI()"><span class="opt-n">1</span>I have thoughts of killing myself, but would not carry them out.</label>
+      <label><input type="radio" name="b9" value="2" onchange="calcBDI()"><span class="opt-n">2</span>I would like to kill myself.</label>
+      <label><input type="radio" name="b9" value="3" onchange="calcBDI()"><span class="opt-n">3</span>I would kill myself if I had the chance.</label>
+    </div></div>
+    <div class="bdi-q"><div class="bdi-q-label"><span>10</span>Crying</div><div class="bdi-opts">
+      <label><input type="radio" name="b10" value="0" onchange="calcBDI()"><span class="opt-n">0</span>I don't cry anymore than I used to.</label>
+      <label><input type="radio" name="b10" value="1" onchange="calcBDI()"><span class="opt-n">1</span>I cry more than I used to.</label>
+      <label><input type="radio" name="b10" value="2" onchange="calcBDI()"><span class="opt-n">2</span>I cry over every little thing.</label>
+      <label><input type="radio" name="b10" value="3" onchange="calcBDI()"><span class="opt-n">3</span>I feel like crying, but I can't.</label>
+    </div></div>
+    <div class="bdi-q"><div class="bdi-q-label"><span>11</span>Agitation</div><div class="bdi-opts">
+      <label><input type="radio" name="b11" value="0" onchange="calcBDI()"><span class="opt-n">0</span>I am no more restless or wound up than usual.</label>
+      <label><input type="radio" name="b11" value="1" onchange="calcBDI()"><span class="opt-n">1</span>I feel more restless or wound up than usual.</label>
+      <label><input type="radio" name="b11" value="2" onchange="calcBDI()"><span class="opt-n">2</span>I am so restless or agitated that it's hard to stay still.</label>
+      <label><input type="radio" name="b11" value="3" onchange="calcBDI()"><span class="opt-n">3</span>I am so restless or agitated that I have to keep moving or doing something.</label>
+    </div></div>
+    <div class="bdi-q"><div class="bdi-q-label"><span>12</span>Loss of Interest</div><div class="bdi-opts">
+      <label><input type="radio" name="b12" value="0" onchange="calcBDI()"><span class="opt-n">0</span>I have not lost interest in other people or activities.</label>
+      <label><input type="radio" name="b12" value="1" onchange="calcBDI()"><span class="opt-n">1</span>I am less interested in other people or things than before.</label>
+      <label><input type="radio" name="b12" value="2" onchange="calcBDI()"><span class="opt-n">2</span>I have lost most of my interest in other people or things.</label>
+      <label><input type="radio" name="b12" value="3" onchange="calcBDI()"><span class="opt-n">3</span>It's hard to get interested in anything.</label>
+    </div></div>
+    <div class="bdi-q"><div class="bdi-q-label"><span>13</span>Indecisiveness</div><div class="bdi-opts">
+      <label><input type="radio" name="b13" value="0" onchange="calcBDI()"><span class="opt-n">0</span>I make decisions about as well as ever.</label>
+      <label><input type="radio" name="b13" value="1" onchange="calcBDI()"><span class="opt-n">1</span>I find it more difficult to make decisions than usual.</label>
+      <label><input type="radio" name="b13" value="2" onchange="calcBDI()"><span class="opt-n">2</span>I have much greater difficulty in making decisions than I used to.</label>
+      <label><input type="radio" name="b13" value="3" onchange="calcBDI()"><span class="opt-n">3</span>I have trouble making any decisions at all.</label>
+    </div></div>
+    <div class="bdi-q"><div class="bdi-q-label"><span>14</span>Worthlessness</div><div class="bdi-opts">
+      <label><input type="radio" name="b14" value="0" onchange="calcBDI()"><span class="opt-n">0</span>I do not feel I am worthless.</label>
+      <label><input type="radio" name="b14" value="1" onchange="calcBDI()"><span class="opt-n">1</span>I don't consider myself as worthwhile and useful as I used to.</label>
+      <label><input type="radio" name="b14" value="2" onchange="calcBDI()"><span class="opt-n">2</span>I feel more worthless as compared to other people.</label>
+      <label><input type="radio" name="b14" value="3" onchange="calcBDI()"><span class="opt-n">3</span>I feel utterly worthless.</label>
+    </div></div>
+    <div class="bdi-q"><div class="bdi-q-label"><span>15</span>Loss of Energy</div><div class="bdi-opts">
+      <label><input type="radio" name="b15" value="0" onchange="calcBDI()"><span class="opt-n">0</span>I have as much energy as ever.</label>
+      <label><input type="radio" name="b15" value="1" onchange="calcBDI()"><span class="opt-n">1</span>I have less energy than I used to have.</label>
+      <label><input type="radio" name="b15" value="2" onchange="calcBDI()"><span class="opt-n">2</span>I don't have enough energy to do very much.</label>
+      <label><input type="radio" name="b15" value="3" onchange="calcBDI()"><span class="opt-n">3</span>I don't have enough energy to do anything.</label>
+    </div></div>
+    <div class="bdi-q"><div class="bdi-q-label"><span>16</span>Changes in Sleeping Pattern</div><div class="bdi-opts">
+      <label><input type="radio" name="b16" value="0" onchange="calcBDI()"><span class="opt-n">0</span>I haven't experienced any change in my sleeping pattern.</label>
+      <label><input type="radio" name="b16" value="1" onchange="calcBDI()"><span class="opt-n">1</span>I sleep somewhat more / less than usual.</label>
+      <label><input type="radio" name="b16" value="2" onchange="calcBDI()"><span class="opt-n">2</span>I sleep a lot more / less than usual.</label>
+      <label><input type="radio" name="b16" value="3" onchange="calcBDI()"><span class="opt-n">3</span>I sleep most of the day / I wake 1–2 hours early and cannot get back to sleep.</label>
+    </div></div>
+    <div class="bdi-q"><div class="bdi-q-label"><span>17</span>Irritability</div><div class="bdi-opts">
+      <label><input type="radio" name="b17" value="0" onchange="calcBDI()"><span class="opt-n">0</span>I am no more irritable than usual.</label>
+      <label><input type="radio" name="b17" value="1" onchange="calcBDI()"><span class="opt-n">1</span>I am more irritable than usual.</label>
+      <label><input type="radio" name="b17" value="2" onchange="calcBDI()"><span class="opt-n">2</span>I am much more irritable than usual.</label>
+      <label><input type="radio" name="b17" value="3" onchange="calcBDI()"><span class="opt-n">3</span>I am irritable all the time.</label>
+    </div></div>
+    <div class="bdi-q"><div class="bdi-q-label"><span>18</span>Changes in Appetite</div><div class="bdi-opts">
+      <label><input type="radio" name="b18" value="0" onchange="calcBDI()"><span class="opt-n">0</span>I haven't experienced any change in my appetite.</label>
+      <label><input type="radio" name="b18" value="1" onchange="calcBDI()"><span class="opt-n">1</span>My appetite is somewhat less / more than usual.</label>
+      <label><input type="radio" name="b18" value="2" onchange="calcBDI()"><span class="opt-n">2</span>My appetite is much less / more than usual.</label>
+      <label><input type="radio" name="b18" value="3" onchange="calcBDI()"><span class="opt-n">3</span>I have no appetite at all / I crave food all the time.</label>
+    </div></div>
+    <div class="bdi-q"><div class="bdi-q-label"><span>19</span>Concentration Difficulty</div><div class="bdi-opts">
+      <label><input type="radio" name="b19" value="0" onchange="calcBDI()"><span class="opt-n">0</span>I can concentrate as well as ever.</label>
+      <label><input type="radio" name="b19" value="1" onchange="calcBDI()"><span class="opt-n">1</span>I can't concentrate as well as usual.</label>
+      <label><input type="radio" name="b19" value="2" onchange="calcBDI()"><span class="opt-n">2</span>It's hard to keep my mind on anything for very long.</label>
+      <label><input type="radio" name="b19" value="3" onchange="calcBDI()"><span class="opt-n">3</span>I find I can't concentrate on anything.</label>
+    </div></div>
+    <div class="bdi-q"><div class="bdi-q-label"><span>20</span>Tiredness or Fatigue</div><div class="bdi-opts">
+      <label><input type="radio" name="b20" value="0" onchange="calcBDI()"><span class="opt-n">0</span>I am no more tired or fatigued than usual.</label>
+      <label><input type="radio" name="b20" value="1" onchange="calcBDI()"><span class="opt-n">1</span>I get more tired or fatigued more easily than usual.</label>
+      <label><input type="radio" name="b20" value="2" onchange="calcBDI()"><span class="opt-n">2</span>I am too tired or fatigued to do a lot of the things I used to do.</label>
+      <label><input type="radio" name="b20" value="3" onchange="calcBDI()"><span class="opt-n">3</span>I am too tired or fatigued to do most things I used to do.</label>
+    </div></div>
+    <div class="bdi-q"><div class="bdi-q-label"><span>21</span>Loss of Interest in Sex</div><div class="bdi-opts">
+      <label><input type="radio" name="b21" value="0" onchange="calcBDI()"><span class="opt-n">0</span>I have not noticed any recent change in my interest in sex.</label>
+      <label><input type="radio" name="b21" value="1" onchange="calcBDI()"><span class="opt-n">1</span>I am less interested in sex than I used to be.</label>
+      <label><input type="radio" name="b21" value="2" onchange="calcBDI()"><span class="opt-n">2</span>I have much less interest in sex now.</label>
+      <label><input type="radio" name="b21" value="3" onchange="calcBDI()"><span class="opt-n">3</span>I have lost interest in sex completely.</label>
+    </div></div>
+
+    <hr />
+
+    <h3>HiTOP — Distress Subfactor</h3>
+    <div class="callout" style="margin-bottom:20px;">Rate each statement based on Darren's experience as described in the vignette.<br><strong>1 = Not at all &nbsp; 2 = A little &nbsp; 3 = Moderately &nbsp; 4 = A lot</strong></div>
+    <div class="callout warn" style="margin-bottom:24px;">⚠ The NSSI and Suicidality items below contain sensitive content. Rate based on vignette evidence only.</div>
+
+    <div class="hitop-block">
+      <div class="hitop-scale-name">Cognitive Problems</div>
+      <div class="hitop-pair">
+        <div class="hitop-item"><span class="hitop-item-text">I struggled to think clearly.</span><div class="likert"><label><input type="radio" name="hcp1" value="1"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hcp1" value="2"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hcp1" value="3"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hcp1" value="4"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">My mind felt mixed up.</span><div class="likert"><label><input type="radio" name="hcp2" value="1"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hcp2" value="2"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hcp2" value="3"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hcp2" value="4"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+      </div>
+    </div>
+    <div class="hitop-block">
+      <div class="hitop-scale-name">Distress–Dysphoria</div>
+      <div class="hitop-pair">
+        <div class="hitop-item"><span class="hitop-item-text">Nothing seemed interesting to me.</span><div class="likert"><label><input type="radio" name="hdd1" value="1"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hdd1" value="2"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hdd1" value="3"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hdd1" value="4"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I felt hopeless about the future.</span><div class="likert"><label><input type="radio" name="hdd2" value="1"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hdd2" value="2"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hdd2" value="3"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hdd2" value="4"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+      </div>
+    </div>
+    <div class="hitop-block">
+      <div class="hitop-scale-name">Emotionality</div>
+      <div class="hitop-pair">
+        <div class="hitop-item"><span class="hitop-item-text">My moods were intense and unpredictable.</span><div class="likert"><label><input type="radio" name="hem1" value="1"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hem1" value="2"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hem1" value="3"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hem1" value="4"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I was easily annoyed.</span><div class="likert"><label><input type="radio" name="hem2" value="1"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hem2" value="2"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hem2" value="3"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hem2" value="4"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+      </div>
+    </div>
+    <div class="hitop-block">
+      <div class="hitop-scale-name">Insomnia</div>
+      <div class="hitop-pair">
+        <div class="hitop-item"><span class="hitop-item-text">I slept very poorly.</span><div class="likert"><label><input type="radio" name="hin1" value="1"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hin1" value="2"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hin1" value="3"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hin1" value="4"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I had trouble staying asleep.</span><div class="likert"><label><input type="radio" name="hin2" value="1"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hin2" value="2"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hin2" value="3"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hin2" value="4"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+      </div>
+    </div>
+    <div class="hitop-block" style="border-left:2px solid var(--warn);padding-left:12px;margin-left:-14px;">
+      <div class="hitop-scale-name">Non-Suicidal Self-Injury (NSSI) ⚠</div>
+      <div class="hitop-pair">
+        <div class="hitop-item"><span class="hitop-item-text">I cut myself on purpose.</span><div class="likert"><label><input type="radio" name="hns1" value="1"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hns1" value="2"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hns1" value="3"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hns1" value="4"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I hurt myself on purpose.</span><div class="likert"><label><input type="radio" name="hns2" value="1"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hns2" value="2"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hns2" value="3"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hns2" value="4"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+      </div>
+    </div>
+    <div class="hitop-block" style="border-left:2px solid var(--warn);padding-left:12px;margin-left:-14px;">
+      <div class="hitop-scale-name">Suicidality ⚠</div>
+      <div class="hitop-pair">
+        <div class="hitop-item"><span class="hitop-item-text">I thought a lot about death.</span><div class="likert"><label><input type="radio" name="hsu1" value="1"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hsu1" value="2"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hsu1" value="3"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hsu1" value="4"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I worked on a plan to kill myself.</span><div class="likert"><label><input type="radio" name="hsu2" value="1"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hsu2" value="2"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hsu2" value="3"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hsu2" value="4"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+      </div>
+    </div>
+
+    <div class="alert" id="bal">Please complete all 21 BDI-II items and all 6 HiTOP subscales before continuing.</div>
+    <div class="nav-row">
+      <button class="btn btn-s" onclick="go(2)">← SCID-5</button>
+      <button class="btn btn-p" onclick="valBDI()">Proceed to CANTAB →</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 4: CANTAB -->
+<div class="page" id="pg4">
+  <div class="wrap">
+    <div class="eyebrow">Layer 3 · Dimensional–Cognitive</div>
+    <h2>CANTAB Report</h2>
+    <p class="lead" style="margin-bottom:20px;">Read Darren's automated CANTAB results, then answer the interpretation questions.</p>
+
+    <div style="border:1px solid #c4d4dc;overflow:hidden;margin-bottom:4px;">
+      <table style="width:100%;border-collapse:collapse;font-size:.8rem;background:#dce8f2;">
+        <tr>
+          <td style="padding:5px 10px;font-weight:700;color:#1a4a7a;border-right:1px solid #c4d4dc;">Subject ID</td><td style="padding:5px 10px;border-right:1px solid #c4d4dc;">DM</td>
+          <td style="padding:5px 10px;font-weight:700;color:#1a4a7a;border-right:1px solid #c4d4dc;">Sex</td><td style="padding:5px 10px;border-right:1px solid #c4d4dc;">M</td>
+          <td style="padding:5px 10px;font-weight:700;color:#1a4a7a;border-right:1px solid #c4d4dc;">Session start time</td><td style="padding:5px 10px;">March 14, 2025 · 10:22 AM</td>
+        </tr>
+        <tr style="border-top:1px solid #c4d4dc;">
+          <td style="padding:5px 10px;font-weight:700;color:#1a4a7a;border-right:1px solid #c4d4dc;">Subjects</td><td colspan="3" style="padding:5px 10px;border-right:1px solid #c4d4dc;">Subject: Depression</td>
+          <td style="padding:5px 10px;font-weight:700;color:#1a4a7a;border-right:1px solid #c4d4dc;">Age</td><td style="padding:5px 10px;">34</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="ctab-wrap">
+      <table class="ctab">
+        <thead>
+          <tr>
+            <th style="width:28%">Test / Measure</th><th style="width:9%">Raw score</th><th style="width:10%">Standard score</th><th style="width:20%">Standard score chart</th><th style="width:10%">Better than</th><th style="width:12%">Good as or better than</th><th style="width:11%">Population diagram</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="tr-head"><td colspan="7">SWM — Spatial Working Memory</td></tr>
+          <tr><td class="mn">Between errors</td><td>36</td><td class="imp">−1.78</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill imp" style="width:21%"></div><div class="ss-mid"></div></div></div></td><td>4%</td><td>4%</td><td><div class="pop-diag" id="p1"></div></td></tr>
+          <tr><td class="mn">Strategy score</td><td>38</td><td class="brd">−1.42</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill brd" style="width:28%"></div><div class="ss-mid"></div></div></div></td><td>8%</td><td>8%</td><td><div class="pop-diag" id="p2"></div></td></tr>
+          <tr><td class="mn">Total errors (adjusted)</td><td>61</td><td class="imp">−2.01</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill imp" style="width:17%"></div><div class="ss-mid"></div></div></div></td><td>2%</td><td>2%</td><td><div class="pop-diag" id="p3"></div></td></tr>
+          <tr class="tr-head"><td colspan="7">OTS — One Touch Stockings of Cambridge</td></tr>
+          <tr><td class="mn">Problems solved on first choice (%)</td><td>35.0</td><td class="imp">−2.24</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill imp" style="width:13%"></div><div class="ss-mid"></div></div></div></td><td>1%</td><td>1%</td><td><div class="pop-diag" id="p4"></div></td></tr>
+          <tr><td class="mn">Mean initial thinking time — correct (ms)</td><td>9840</td><td class="imp">−1.62</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill imp" style="width:24%"></div><div class="ss-mid"></div></div></div></td><td>5%</td><td>5%</td><td><div class="pop-diag" id="p5"></div></td></tr>
+          <tr><td class="mn">Mean subsequent thinking time (ms)</td><td>4120</td><td class="brd">−0.71</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill brd" style="width:39%"></div><div class="ss-mid"></div></div></div></td><td>24%</td><td>24%</td><td><div class="pop-diag" id="p6"></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout" style="margin-bottom:28px;font-size:.8rem;">
+      The shaded green band = normal range (±1 SD). Bars left of centre line = below average. Red = significantly impaired; amber = borderline.<br><br>
+      <strong>SWM</strong> — ability to retain and manipulate spatial information; sensitive to prefrontal executive control.<br>
+      <strong>OTS</strong> — spatial planning and problem-solving (computerised Tower of London); assesses frontal executive function.
+    </div>
+
+    <h3 style="margin-bottom:16px;">Interpretation Questions</h3>
+    <div style="display:flex;flex-direction:column;gap:18px;">
+      <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">1. Describe the pattern of impairment. Which measures fall furthest below the norm, and what cognitive domains do they reflect?</label><textarea class="interp" id="cog1" placeholder="Discuss SWM and OTS findings…"></textarea></div>
+      <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">2. How do these deficits connect to the vignette? Which of Darren's behaviours can now be explained neuropsychologically?</label><textarea class="interp" id="cog2" placeholder="Link test data to Darren's difficulties at work, indecisiveness, inability to plan…"></textarea></div>
+      <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">3. What does the cognitive layer add that DSM-5 categories or the BDI-II alone could not reveal?</label><textarea class="interp" id="cog3" placeholder="Mechanisms, treatment implications, prognosis…"></textarea></div>
+    </div>
+
+    <div class="alert" id="cal">Please answer at least the first two questions before generating the report.</div>
+    <div class="nav-row">
+      <button class="btn btn-s" onclick="go(3)">← BDI-II &amp; HiTOP</button>
+      <button class="btn btn-p" onclick="valCANTAB()">Generate Report →</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 5: REPORT -->
+<div class="page" id="pg5">
+  <div class="wrap">
+    <div class="eyebrow">Comparative Evaluation Report</div>
+    <h2 style="margin-bottom:4px;">Darren, 34</h2>
+    <p style="color:var(--ink3);font-size:.85rem;margin-bottom:8px;">High school English teacher · Generated from your responses</p>
+    <hr />
+
+    <div class="report-sec">
+      <h3>Layer 1 — Categorical (DSM-5 / SCID-5)</h3>
+      <div id="r-dx"></div>
+      <div class="count-row" id="r-counts" style="margin-top:12px;"></div>
+      <div class="cpills" id="r-pills" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="report-sec">
+      <h3>Layer 2a — Dimensional (BDI-II)</h3>
+      <div class="t-row">
+        <div class="t-big" id="r-bdi-t">—</div>
+        <div class="t-meta">
+          <div class="t-meta-r"><span class="k">Percentile</span><span class="v" id="r-bdi-pct">—</span></div>
+          <div class="t-meta-r"><span class="k">Raw score</span><span class="v" id="r-bdi-raw">—</span></div>
+          <div class="t-meta-r"><span class="k">Severity</span><span class="v" id="r-bdi-sev"></span></div>
+        </div>
+      </div>
+      <div class="t-track"><div class="t-marker" id="r-bdi-mk" style="left:0%"></div></div>
+      <div class="t-labels"><span>T=30</span><span>40</span><span>50</span><span>60</span><span>70</span><span>80+</span></div>
+      <p style="font-size:.74rem;color:var(--ink3);margin-top:6px;">Community norms (M=10, SD=7) · T≥63 = clinically elevated</p>
+      <canvas id="plot-bdi" style="width:100%;height:180px;margin-top:20px;display:block;"></canvas>
+    </div>
+
+    <div class="report-sec">
+      <h3>Layer 2b — Dimensional (HiTOP Distress Subfactor)</h3>
+      <table class="ht-table">
+        <thead><tr><th>Subscale</th><th>Raw (2–8)</th><th>T Score</th><th>Percentile</th><th>Profile</th></tr></thead>
+        <tbody id="r-ht-body"></tbody>
+      </table>
+      <p style="font-size:.74rem;color:var(--ink3);margin-top:6px;">Community norms (M=3.0, SD=1.5 per 2-item subscale, 1–4 scale) · T≥65 = clinically elevated</p>
+      <canvas id="plot-ht" style="width:100%;height:180px;margin-top:20px;display:block;"></canvas>
+      <p style="font-size:.74rem;color:var(--ink3);margin-top:4px;">Distress total = sum of 6 subscale scores (range 12–48) · M<sub>total</sub>=18, SD<sub>total</sub>≈3.67 (pooled)</p>
+    </div>
+
+    <div class="report-sec">
+      <h3>Layer 3 — Dimensional–Cognitive (CANTAB)</h3>
+      <div class="ctab-wrap">
+        <table class="ctab" style="font-size:.78rem;">
+          <thead><tr><th>Test / Measure</th><th>Std Score</th><th>Standard Score Chart</th><th>Better than</th><th>G/B than</th></tr></thead>
+          <tbody>
+            <tr class="tr-head"><td colspan="5">SWM — Spatial Working Memory</td></tr>
+            <tr><td class="mn">Between errors</td><td class="imp">−1.78</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill imp" style="width:21%"></div><div class="ss-mid"></div></div></div></td><td>4%</td><td>4%</td></tr>
+            <tr><td class="mn">Strategy score</td><td class="brd">−1.42</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill brd" style="width:28%"></div><div class="ss-mid"></div></div></div></td><td>8%</td><td>8%</td></tr>
+            <tr><td class="mn">Total errors (adj.)</td><td class="imp">−2.01</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill imp" style="width:17%"></div><div class="ss-mid"></div></div></div></td><td>2%</td><td>2%</td></tr>
+            <tr class="tr-head"><td colspan="5">OTS — One Touch Stockings of Cambridge</td></tr>
+            <tr><td class="mn">Problems solved on first choice (%)</td><td class="imp">−2.24</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill imp" style="width:13%"></div><div class="ss-mid"></div></div></div></td><td>1%</td><td>1%</td></tr>
+            <tr><td class="mn">Mean initial thinking time (ms)</td><td class="imp">−1.62</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill imp" style="width:24%"></div><div class="ss-mid"></div></div></div></td><td>5%</td><td>5%</td></tr>
+            <tr><td class="mn">Mean subsequent thinking time (ms)</td><td class="brd">−0.71</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill brd" style="width:39%"></div><div class="ss-mid"></div></div></div></td><td>24%</td><td>24%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="interp-block"><div class="q">Pattern of impairment</div><p id="r-cog1" style="white-space:pre-wrap;"></p></div>
+      <div class="interp-block"><div class="q">Connection to vignette</div><p id="r-cog2" style="white-space:pre-wrap;"></p></div>
+    </div>
+
+    <hr />
+    <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;padding-top:8px;">
+      <button class="btn btn-s" onclick="window.print()">Print</button>
+      <button class="btn btn-s" onclick="go(1)">← Vignette</button>
+      <button class="btn btn-p" onclick="go(0)">↺ Start over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let cur=0;
+function go(n){document.getElementById('pg'+cur).classList.remove('on');cur=n;document.getElementById('pg'+cur).classList.add('on');window.scrollTo({top:0,behavior:'smooth'});tick();}
+function tick(){document.getElementById('bar-fill').style.width=(cur/5*100)+'%';for(let i=0;i<=5;i++){const d=document.getElementById('s'+i);d.className='s';if(i<cur)d.classList.add('done');else if(i===cur)d.classList.add('active');}}
+
+function countA(){
+  let n=0,core=false;
+  for(let i=1;i<=9;i++){const v=document.querySelector(`input[name="A${i}"]:checked`);if(v&&v.value==='present'){n++;if(i<=2)core=true;}}
+  document.getElementById('a-count').textContent=n;
+  const s=document.getElementById('a-status');
+  if(n>=5&&core){s.textContent='✓ Threshold met (≥5, includes A1 or A2)';s.className='a10-status ok';}
+  else if(n>=5){s.textContent='⚠ 5+ symptoms but no core symptom';s.className='a10-status wc';}
+  else{s.textContent=n+' symptoms — need ≥5 including A1 or A2';s.className='a10-status';}
+}
+function valSCID(){
+  let ok=true;
+  for(let i=1;i<=9;i++)if(!document.querySelector(`input[name="A${i}"]:checked`)){ok=false;break;}
+  if(ok&&!document.querySelector('input[name="A10"]:checked'))ok=false;
+  if(ok&&!document.querySelector('input[name="A11"]:checked'))ok=false;
+  if(ok&&!document.querySelector('input[name="A12"]:checked'))ok=false;
+  if(ok&&!document.querySelector('input[name="sdx"]:checked'))ok=false;
+  const al=document.getElementById('sal');
+  if(!ok){al.classList.add('on');setTimeout(()=>al.classList.remove('on'),3500);return;}
+  al.classList.remove('on');go(3);
+}
+
+function calcBDI(){
+  let t=0;for(let i=1;i<=21;i++){const v=document.querySelector(`input[name="b${i}"]:checked`);if(v)t+=+v.value;}
+  document.getElementById('bdi-raw').textContent=t;
+  const b=document.getElementById('bdi-band');
+  if(t<=13){b.textContent='Minimal';b.className='band b-min';}
+  else if(t<=19){b.textContent='Mild';b.className='band b-mild';}
+  else if(t<=28){b.textContent='Moderate';b.className='band b-mod';}
+  else{b.textContent='Severe';b.className='band b-sev';}
+}
+function valBDI(){
+  let ok=true;
+  for(let i=1;i<=21;i++)if(!document.querySelector(`input[name="b${i}"]:checked`)){ok=false;break;}
+  const subs=[['hcp1','hcp2'],['hdd1','hdd2'],['hem1','hem2'],['hin1','hin2'],['hns1','hns2'],['hsu1','hsu2']];
+  if(ok)for(const p of subs)if(!document.querySelector(`input[name="${p[0]}"]:checked`)||!document.querySelector(`input[name="${p[1]}"]:checked`)){ok=false;break;}
+  const al=document.getElementById('bal');
+  if(!ok){al.classList.add('on');setTimeout(()=>al.classList.remove('on'),4000);return;}
+  al.classList.remove('on');go(4);
+}
+function valCANTAB(){
+  const c1=document.getElementById('cog1').value.trim(),c2=document.getElementById('cog2').value.trim();
+  const al=document.getElementById('cal');
+  if(!c1||!c2){al.classList.add('on');setTimeout(()=>al.classList.remove('on'),3500);return;}
+  al.classList.remove('on');buildReport();go(5);
+}
+
+function erf(x){const a=[0.254829592,-0.284496736,1.421413741,-1.453152027,1.061405429],p=0.3275911,s=x<0?-1:1;x=Math.abs(x);const t=1/(1+p*x);return s*(1-(((((a[4]*t+a[3])*t)+a[2])*t+a[1])*t+a[0])*t*Math.exp(-x*x));}
+function tPct(t){return Math.max(1,Math.min(99,Math.round(0.5*(1+erf(((t-50)/10)/Math.sqrt(2)))*100)));}
+function rawToT_bdi(r){return Math.round(50+((r-10)/7)*10);}
+function rawToT_ht(r){return Math.round(50+((r-3.0)/1.5)*10);}
+function rawToT_htTotal(r){return Math.round(50+((r-18)/3.67)*10);}
+function sevPill(t){
+  if(t<50)return '<span class="sev-pill sp-min">Below average (T &lt; 50)</span>';
+  if(t<57)return '<span class="sev-pill sp-mild">Mild (T 50–56)</span>';
+  if(t<64)return '<span class="sev-pill sp-mod">Moderate (T 57–63)</span>';
+  return '<span class="sev-pill sp-sev">Clinically elevated (T ≥ 64)</span>';
+}
+
+function drawNormPlot(canvasId, tScore, label) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  // Resolve actual pixel size
+  const W = canvas.offsetWidth || 600;
+  const H = 180;
+  canvas.width = W * window.devicePixelRatio;
+  canvas.height = H * window.devicePixelRatio;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+  const pad = { top: 28, right: 24, bottom: 40, left: 24 };
+  const pw = W - pad.left - pad.right;
+  const ph = H - pad.top - pad.bottom;
+
+  const Tmin = 20, Tmax = 85;
+  const norm = z => Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI);
+
+  // Map T score to x pixel
+  const tx = t => pad.left + ((t - Tmin) / (Tmax - Tmin)) * pw;
+  // Map density to y pixel (higher density = lower y)
+  const maxDens = norm(0); // peak at z=0
+  const ty = d => pad.top + ph - (d / maxDens) * ph * 0.88;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // ── Shaded area left of score ──
+  const clamp = t => Math.max(Tmin, Math.min(Tmax, t));
+  const shadeTo = clamp(tScore);
+  ctx.beginPath();
+  ctx.moveTo(tx(Tmin), ty(0));
+  for (let t = Tmin; t <= shadeTo; t += 0.5) {
+    const z = (t - 50) / 10;
+    ctx.lineTo(tx(t), ty(norm(z)));
+  }
+  const zShade = (shadeTo - 50) / 10;
+  ctx.lineTo(tx(shadeTo), ty(norm(zShade)));
+  ctx.lineTo(tx(shadeTo), ty(0));
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(26,92,92,0.15)';
+  ctx.fill();
+
+  // ── Normal curve ──
+  ctx.beginPath();
+  for (let t = Tmin; t <= Tmax; t += 0.4) {
+    const z = (t - 50) / 10;
+    const x = tx(t), y = ty(norm(z));
+    t === Tmin ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.strokeStyle = '#1a5c5c';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // ── Baseline ──
+  ctx.beginPath();
+  ctx.moveTo(pad.left, pad.top + ph);
+  ctx.lineTo(pad.left + pw, pad.top + ph);
+  ctx.strokeStyle = '#ddd';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // ── Mean line (T=50) ──
+  ctx.beginPath();
+  ctx.setLineDash([4, 4]);
+  ctx.moveTo(tx(50), pad.top + ph);
+  ctx.lineTo(tx(50), pad.top + 4);
+  ctx.strokeStyle = '#bbb';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // ── Person's score line ──
+  const personX = tx(clamp(tScore));
+  ctx.beginPath();
+  ctx.moveTo(personX, pad.top + ph);
+  ctx.lineTo(personX, pad.top);
+  ctx.strokeStyle = '#111';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // ── X axis labels ──
+  ctx.fillStyle = '#999';
+  ctx.font = '10px DM Mono, monospace';
+  ctx.textAlign = 'center';
+  [30, 40, 50, 60, 70, 80].forEach(t => {
+    if (t >= Tmin && t <= Tmax) {
+      ctx.fillText('T=' + t, tx(t), pad.top + ph + 14);
+    }
+  });
+
+  // ── Mean label ──
+  ctx.fillStyle = '#bbb';
+  ctx.font = '9px DM Mono, monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('mean', tx(50), pad.top + ph + 26);
+
+  // ── Score annotation box ──
+  const pct = tPct(tScore);
+  const annText = `T = ${tScore}  ·  ${pct}th percentile`;
+  ctx.font = '500 11px Inter, sans-serif';
+  const textW = ctx.measureText(annText).width;
+  const boxX = Math.min(Math.max(personX - textW / 2 - 8, pad.left), W - pad.right - textW - 16);
+  const boxY = pad.top - 2;
+  ctx.fillStyle = '#111';
+  ctx.fillRect(boxX, boxY, textW + 16, 18);
+  ctx.fillStyle = '#fff';
+  ctx.textAlign = 'left';
+  ctx.fillText(annText, boxX + 8, boxY + 13);
+
+  // ── Measure label (bottom left) ──
+  ctx.fillStyle = '#999';
+  ctx.font = '10px Inter, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText(label, pad.left, pad.top + ph + 26);
+}
+
+function buildReport(){
+  let n=0,core=[];
+  for(let i=1;i<=9;i++){const v=document.querySelector(`input[name="A${i}"]:checked`);if(v&&v.value==='present'){n++;if(i===1)core.push('Depressed Mood');if(i===2)core.push('Anhedonia');}}
+  const dx=document.querySelector('input[name="sdx"]:checked')?.value;
+  const dxMap={mdd:['Major Depressive Disorder','pos','✓'],other:['Other Depressive Disorder','neg','~'],sub:['Subthreshold — Criteria Not Met','neg','–']};
+  const[name,cls,icon]=dxMap[dx]||['—','neg','?'];
+  document.getElementById('r-dx').innerHTML=`<div class="dx-badge ${cls}"><span class="dx-icon">${icon}</span><div><div class="dx-name">${name}</div><div class="dx-sub">Student diagnosis</div></div></div>`;
+  const a10=document.querySelector('input[name="A10"]:checked')?.value||'';
+  const a11=document.querySelector('input[name="A11"]:checked')?.value||'';
+  const a12=document.querySelector('input[name="A12"]:checked')?.value||'';
+  document.getElementById('r-counts').innerHTML=`<div class="count-cell"><div class="cn">${n}</div><div class="cl">Criterion A symptoms</div></div><div class="count-cell"><div class="cn">${core.length?'✓':'✗'}</div><div class="cl">Core symptom<br><span style="font-size:.7rem;color:var(--ink3)">${core.join(', ')||'None'}</span></div></div><div class="count-cell"><div class="cn">${n>=5&&core.length?'✓':'✗'}</div><div class="cl">Criterion A<br>${n>=5&&core.length?'Met':'Not Met'}</div></div>`;
+  document.getElementById('r-pills').innerHTML=`<span class="cpill ${a10==='yes'?'met':'unm'}">A10 Criterion A — ${a10==='yes'?'Met':'Not Met'}</span><span class="cpill ${a11==='met'?'met':a11==='unmet'?'unm':'unk'}">A11 Criterion B — ${a11==='met'?'Met':a11==='unmet'?'Not Met':'?'}</span><span class="cpill ${a12==='met'?'met':a12==='unmet'?'unm':'unk'}">A12 Criterion C — ${a12==='met'?'Met':a12==='unmet'?'Not Met':'?'}</span>`;
+
+  let raw=0;for(let i=1;i<=21;i++){const v=document.querySelector(`input[name="b${i}"]:checked`);if(v)raw+=+v.value;}
+  const bT=rawToT_bdi(raw),bP=tPct(bT);
+  document.getElementById('r-bdi-t').textContent=bT;
+  document.getElementById('r-bdi-pct').textContent=bP+'th';
+  document.getElementById('r-bdi-raw').textContent=raw+' / 63';
+  document.getElementById('r-bdi-sev').innerHTML=sevPill(bT);
+  document.getElementById('r-bdi-mk').style.left=Math.max(0,Math.min(100,((bT-30)/50)*100))+'%';
+
+  const scales=[{n:'Cognitive Problems',k:['hcp1','hcp2']},{n:'Distress–Dysphoria',k:['hdd1','hdd2']},{n:'Emotionality',k:['hem1','hem2']},{n:'Insomnia',k:['hin1','hin2']},{n:'NSSI',k:['hns1','hns2']},{n:'Suicidality',k:['hsu1','hsu2']}];
+  let html='', htTotalRaw=0;
+  for(const s of scales){
+    let tot=0;for(const k of s.k){const v=document.querySelector(`input[name="${k}"]:checked`);if(v)tot+=+v.value;}
+    htTotalRaw+=tot;
+    const tsc=rawToT_ht(tot),pct=tPct(tsc);
+    const w=Math.max(2,Math.min(100,((tsc-30)/50)*100));
+    const col=tsc>=65?'#c00':tsc>=57?'#c06000':tsc>=50?'#7a5800':'#2d9e9e';
+    const tc=tsc>=65?'color:#c00;':tsc>=57?'color:#c06000;':'';
+    html+=`<tr><td>${s.n}</td><td class="ht-n">${tot}</td><td class="ht-t" style="${tc}">${tsc}</td><td class="ht-n">${pct}th</td><td><div class="mini-bar"><div class="mini-fill" style="width:${w}%;background:${col};"></div></div></td></tr>`;
+  }
+  document.getElementById('r-ht-body').innerHTML=html;
+
+  document.getElementById('r-cog1').textContent=document.getElementById('cog1').value.trim()||'Not answered.';
+  document.getElementById('r-cog2').textContent=document.getElementById('cog2').value.trim()||'Not answered.';
+
+  // Draw plots after a brief delay to ensure layout is settled
+  setTimeout(() => {
+    drawNormPlot('plot-bdi', bT, 'BDI-II');
+    drawNormPlot('plot-ht', rawToT_htTotal(htTotalRaw), 'HiTOP Distress Total');
+  }, 80);
+}
+
+function popDiag(id,pct){
+  const el=document.getElementById(id);if(!el)return;
+  const tot=20,filled=Math.round((pct/100)*tot);
+  let h='';
+  for(let i=0;i<tot;i++){const ht=3+Math.round(Math.sin((i/tot)*Math.PI)*9);h+=`<div class="pb${i<filled?' f':''}" style="flex:1;height:${ht}px;"></div>`;}
+  el.innerHTML=h;
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  popDiag('p1',4);popDiag('p2',8);popDiag('p3',2);
+  popDiag('p4',1);popDiag('p5',5);popDiag('p6',24);
+  tick();
+});
+</script>
+</body>
+</html>

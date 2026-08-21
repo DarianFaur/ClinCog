@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Conceptualize — Darren</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <a class="brand" href="/"><b>ClinCog</b> · Clinical Cognitive Science</a>
+  <a class="back" href="/">← All cases</a>
+</nav>
+
+<main class="chat-page">
+  <span class="eyebrow">Week 1 · Mood · Conceptualization</span>
+  <h1>Darren, 34</h1>
+
+  <div class="vignette-box">
+    <b>Case summary:</b> Darren, a 34-year-old high school English teacher, has
+    been struggling to get out of bed most mornings for several weeks. Once
+    known for energetic lectures, he now feels numb, has withdrawn from
+    colleagues, stopped cooking regularly, lost weight without trying, sleeps
+    poorly, and struggles to concentrate. He has missed grading deadlines and
+    walked out of class mid-lesson. In the past few weeks he has increasingly
+    thought that others would be better off without him; last week, for the
+    first time, he briefly considered how he might act on that thought, which
+    frightened him enough to stop but not enough to tell anyone. On one
+    occasion he pressed his nails hard into his forearm. This is his first
+    psychiatric contact.
+  </div>
+
+  <p style="font-size:14px;color:var(--ink-muted);margin-bottom:16px">
+    Talk to Darren directly, as if conducting a clinical interview. Ask about
+    onset, duration, severity, and anything relevant to a diagnostic
+    conceptualization. He can only tell you what's documented in his case —
+    up to 10 exchanges.
+  </p>
+
+  <div id="chat" class="chat-window"></div>
+
+  <form id="chat-form" class="chat-form">
+    <input id="chat-input" type="text" placeholder="e.g. How long have you been feeling this way?" autocomplete="off" />
+    <button type="submit" id="chat-send" class="btn btn-primary">Ask</button>
+  </form>
+  <div id="chat-status" class="chat-status"></div>
+
+  <div class="eval-link">
+    <p>Done exploring the case?</p>
+    <a class="btn btn-secondary" href="/depression-eval.html">Proceed to evaluation →</a>
+  </div>
+</main>
+
+<script src="/chat.js" data-module="depression"></script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Conceptualize — Jordan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <a class="brand" href="/"><b>ClinCog</b> · Clinical Cognitive Science</a>
+  <a class="back" href="/">← All cases</a>
+</nav>
+
+<main class="chat-page">
+  <span class="eyebrow">Week 3 · Substance use · Conceptualization</span>
+  <h1>Jordan, 25</h1>
+
+  <div class="vignette-box">
+    <b>Case summary:</b> Jordan is a 25-year-old software engineer, self-referred
+    after a formal performance review noting missed deadlines, late arrivals,
+    and declining code quality. He minimizes concern, rating motivation to
+    change 5/10. Drinking escalated over the past 14 months to a daily
+    pattern — 4–5 drinks on weeknights, 10–14 on weekend days. Three failed
+    attempts to stop in the past year, none lasting beyond five days. Reports
+    morning tremor, sweating, and insomnia relieved by drinking; tolerance
+    has roughly doubled. Missed four sprint deadlines, withdrawn from his
+    climbing gym, partner has issued an ultimatum. No prior psychiatric
+    treatment; father was a heavy drinker.
+  </div>
+
+  <p style="font-size:14px;color:var(--ink-muted);margin-bottom:16px">
+    Talk to Jordan directly, as if conducting a clinical interview. Ask about
+    pattern of use, withdrawal, functional impact, and anything relevant to
+    a diagnostic conceptualization. Jordan can only tell you what's
+    documented in his case — up to 10 exchanges.
+  </p>
+
+  <div id="chat" class="chat-window"></div>
+
+  <form id="chat-form" class="chat-form">
+    <input id="chat-input" type="text" placeholder="e.g. What happens on the mornings you haven't had a drink yet?" autocomplete="off" />
+    <button type="submit" id="chat-send" class="btn btn-primary">Ask</button>
+  </form>
+  <div id="chat-status" class="chat-status"></div>
+
+  <div class="eval-link">
+    <p>Done exploring the case?</p>
+    <a class="btn btn-secondary" href="/addiction-eval.html">Proceed to evaluation →</a>
+  </div>
+</main>
+
+<script src="/chat.js" data-module="addiction"></script>
+</body>
+</html>

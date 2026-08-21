@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Conceptualize — Alex</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <a class="brand" href="/"><b>ClinCog</b> · Clinical Cognitive Science</a>
+  <a class="back" href="/">← All cases</a>
+</nav>
+
+<main class="chat-page">
+  <span class="eyebrow">Week 2 · Anxiety · Conceptualization</span>
+  <h1>Alex, 24</h1>
+
+  <div class="vignette-box">
+    <b>Case summary:</b> Alex is a 24-year-old undergraduate student referred
+    by their GP after persistent difficulties with academic performance and
+    social engagement. Alex describes intense fear, dating back to early
+    adolescence, of being observed or judged by others — avoiding seminar
+    participation, declining job offers requiring customer contact, and
+    cancelling social plans. Physical symptoms (rapid heartbeat, flushed
+    cheeks, throat tightening) occur in feared situations, followed by hours
+    of rumination. No panic attacks outside social contexts, no substance
+    use, no psychotic symptoms. Symptoms present for at least three years,
+    worsened since starting university.
+  </div>
+
+  <p style="font-size:14px;color:var(--ink-muted);margin-bottom:16px">
+    Talk to Alex directly, as if conducting a clinical interview. Ask about
+    onset, triggers, avoidance patterns, and anything relevant to a
+    diagnostic conceptualization. Alex can only tell you what's documented
+    in their case — up to 10 exchanges.
+  </p>
+
+  <div id="chat" class="chat-window"></div>
+
+  <form id="chat-form" class="chat-form">
+    <input id="chat-input" type="text" placeholder="e.g. What happens physically when you're called on in class?" autocomplete="off" />
+    <button type="submit" id="chat-send" class="btn btn-primary">Ask</button>
+  </form>
+  <div id="chat-status" class="chat-status"></div>
+
+  <div class="eval-link">
+    <p>Done exploring the case?</p>
+    <a class="btn btn-secondary" href="/anxiety-eval.html">Proceed to evaluation →</a>
+  </div>
+</main>
+
+<script src="/chat.js" data-module="anxiety"></script>
+</body>
+</html>

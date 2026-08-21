@@ -1,0 +1,2112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Addiction Assessment Seminar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+<style>
+:root,[data-theme="light"]{
+  --color-bg:#f7f6f2;--color-surface:#f9f8f5;--color-surface-2:#fbfbf9;
+  --color-surface-offset:#f3f0ec;--color-divider:#dcd9d5;--color-border:#d4d1ca;
+  --color-text:#28251d;--color-text-muted:#7a7974;--color-text-faint:#bab9b4;
+  --color-primary:#01696f;--color-primary-hover:#0c4e54;--color-primary-active:#0f3638;
+  --color-primary-highlight:#cedcd8;
+  --color-success:#437a22;--color-success-hover:#2e5c10;--color-success-highlight:#d4dfcc;
+  --color-error:#a12c7b;--color-error-hover:#7d1e5e;--color-error-highlight:#e0ced7;
+  --color-warning:#964219;--color-warning-highlight:#ddcfc6;
+  --color-gold:#d19900;--color-gold-highlight:#e9e0c6;
+  --color-blue:#006494;--color-blue-highlight:#c6d8e4;
+  --shadow-sm:0 1px 2px oklch(0.2 0.01 80/0.06);
+  --shadow-md:0 4px 12px oklch(0.2 0.01 80/0.08);
+  --shadow-lg:0 12px 32px oklch(0.2 0.01 80/0.12);
+  --radius-sm:0.375rem;--radius-md:0.5rem;--radius-lg:0.75rem;--radius-xl:1rem;--radius-full:9999px;
+  --transition-interactive:180ms cubic-bezier(0.16,1,0.3,1);
+  --font-body:'Inter','Helvetica Neue',sans-serif;
+  --font-display:'Instrument Serif',Georgia,serif;
+  --text-xs:clamp(0.75rem,0.7rem + 0.25vw,0.875rem);
+  --text-sm:clamp(0.875rem,0.8rem + 0.35vw,1rem);
+  --text-base:clamp(1rem,0.95rem + 0.25vw,1.125rem);
+  --text-lg:clamp(1.125rem,1rem + 0.75vw,1.5rem);
+  --text-xl:clamp(1.5rem,1.2rem + 1.25vw,2.25rem);
+  --space-1:0.25rem;--space-2:0.5rem;--space-3:0.75rem;--space-4:1rem;
+  --space-5:1.25rem;--space-6:1.5rem;--space-8:2rem;--space-10:2.5rem;
+  --space-12:3rem;--space-16:4rem;
+}
+[data-theme="dark"]{
+  --color-bg:#171614;--color-surface:#1c1b19;--color-surface-2:#201f1d;
+  --color-surface-offset:#1d1c1a;--color-divider:#262523;--color-border:#393836;
+  --color-text:#cdccca;--color-text-muted:#797876;--color-text-faint:#5a5957;
+  --color-primary:#4f98a3;--color-primary-hover:#227f8b;--color-primary-active:#1a626b;
+  --color-primary-highlight:#313b3b;
+  --color-success:#6daa45;--color-success-hover:#4d8f25;--color-success-highlight:#3a4435;
+  --color-error:#d163a7;--color-error-hover:#b9478f;--color-error-highlight:#4c3d46;
+  --color-warning:#bb653b;--color-warning-highlight:#564942;
+  --color-gold:#e8af34;--color-gold-highlight:#4d4332;
+  --color-blue:#5591c7;--color-blue-highlight:#3a4550;
+  --shadow-sm:0 1px 2px oklch(0 0 0/0.2);
+  --shadow-md:0 4px 12px oklch(0 0 0/0.3);
+  --shadow-lg:0 12px 32px oklch(0 0 0/0.4);
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme]){
+  --color-bg:#171614;--color-surface:#1c1b19;--color-surface-2:#201f1d;
+  --color-surface-offset:#1d1c1a;--color-divider:#262523;--color-border:#393836;
+  --color-text:#cdccca;--color-text-muted:#797876;--color-text-faint:#5a5957;
+  --color-primary:#4f98a3;--color-primary-hover:#227f8b;--color-primary-active:#1a626b;
+  --color-primary-highlight:#313b3b;
+  --color-success:#6daa45;--color-success-hover:#4d8f25;--color-success-highlight:#3a4435;
+  --color-error:#d163a7;--color-error-hover:#b9478f;--color-error-highlight:#4c3d46;
+  --color-warning:#bb653b;--color-warning-highlight:#564942;
+  --color-gold:#e8af34;--color-gold-highlight:#4d4332;
+  --color-blue:#5591c7;--color-blue-highlight:#3a4550;
+}}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth;}
+body{min-height:100dvh;font-family:var(--font-body);font-size:var(--text-base);color:var(--color-text);background:var(--color-bg);line-height:1.6;}
+button{cursor:pointer;background:none;border:none;font:inherit;color:inherit;}
+input,textarea,select{font:inherit;color:inherit;}
+img{display:block;max-width:100%;height:auto;}
+p,li{text-wrap:pretty;}
+h1,h2,h3,h4{text-wrap:balance;line-height:1.2;}
+a,button,[role="button"],input,textarea,select{transition:color var(--transition-interactive),background var(--transition-interactive),border-color var(--transition-interactive),box-shadow var(--transition-interactive);}
+
+/* LAYOUT */
+.app-header{position:sticky;top:0;z-index:100;background:var(--color-surface);border-bottom:1px solid var(--color-border);padding:var(--space-3) var(--space-6);display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);}
+.header-logo{display:flex;align-items:center;gap:var(--space-3);}
+.header-logo svg{width:32px;height:32px;color:var(--color-primary);}
+.header-title{font-family:var(--font-display);font-size:var(--text-lg);color:var(--color-text);}
+.header-subtitle{font-size:var(--text-xs);color:var(--color-text-muted);margin-top:2px;}
+.header-actions{display:flex;align-items:center;gap:var(--space-3);}
+.btn-icon{width:36px;height:36px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;color:var(--color-text-muted);}
+.btn-icon:hover{background:var(--color-surface-offset);color:var(--color-text);}
+.app-body{display:grid;grid-template-columns:260px 1fr;min-height:calc(100dvh - 57px);}
+@media(max-width:768px){.app-body{grid-template-columns:1fr;}}
+@media(max-width:768px){.sidebar{display:none;}}
+
+/* MOBILE LAYOUT MODE */
+body.mobile-mode .app-body{grid-template-columns:1fr;}
+body.mobile-mode .sidebar{display:none;}
+body.mobile-mode .main-content{padding:var(--space-4) var(--space-3);max-width:100%;}
+body.mobile-mode .instrument-card{padding:var(--space-4);}
+body.mobile-mode .vignette-card{padding:var(--space-4);}
+body.mobile-mode .radio-group{flex-direction:column;}
+body.mobile-mode .radio-option{justify-content:center;padding:var(--space-3);}
+body.mobile-mode .likert-row{flex-wrap:wrap;}
+body.mobile-mode .likert-btn{width:54px;height:54px;font-size:var(--text-base);}
+body.mobile-mode .btn-primary,body.mobile-mode .btn-secondary{width:100%;text-align:center;padding:var(--space-4);}
+/* mobile nav bar (bottom) */
+.mobile-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:var(--color-surface);border-top:1px solid var(--color-border);
+  padding:var(--space-2) var(--space-1) calc(var(--space-2) + env(safe-area-inset-bottom));
+  display:none;grid-template-columns:repeat(5,1fr);}
+body.mobile-mode .mobile-nav{display:grid;}
+body.mobile-mode .main-content{padding-bottom:90px;}
+.mobile-nav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:var(--space-2) var(--space-1);border-radius:var(--radius-md);font-size:10px;color:var(--color-text-muted);cursor:pointer;border:none;background:none;font-family:var(--font-body);}
+.mobile-nav-btn svg{width:22px;height:22px;}
+.mobile-nav-btn.active{color:var(--color-primary);}
+/* SST tap button for mobile */
+.sst-tap-btn{display:none;width:100%;margin-top:var(--space-3);padding:var(--space-5);
+  font-size:var(--text-xl);font-weight:700;letter-spacing:0.04em;
+  background:var(--color-primary);color:#fff;border-radius:var(--radius-xl);
+  border:none;cursor:pointer;
+  transition:transform 100ms cubic-bezier(0.16,1,0.3,1),
+             background 80ms ease,
+             box-shadow 100ms ease;
+  box-shadow:0 4px 18px oklch(from var(--color-primary) l c h/0.35);
+  -webkit-tap-highlight-color:transparent;user-select:none;touch-action:manipulation;}
+.sst-tap-btn:active,.sst-tap-btn.pressed{
+  transform:scale(0.94);
+  background:#08a8b0;
+  box-shadow:0 1px 6px oklch(from var(--color-primary) l c h/0.2);}
+body.mobile-mode .sst-tap-btn{display:block;}
+.sst-kbd-hint{font-size:var(--text-xs);color:var(--color-text-muted);text-align:center;margin-top:var(--space-2);}
+body.mobile-mode .sst-kbd-hint{display:none;}
+
+/* SIDEBAR */
+.sidebar{background:var(--color-surface);border-right:1px solid var(--color-border);padding:var(--space-4) 0;overflow-y:auto;position:sticky;top:57px;height:calc(100dvh - 57px);}
+@media(max-width:768px){.sidebar{display:none;}}
+.sidebar-section{padding:var(--space-3) var(--space-4);margin-bottom:var(--space-2);}
+.sidebar-section-label{font-size:var(--text-xs);font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--color-text-faint);padding:0 var(--space-2);margin-bottom:var(--space-2);}
+.sidebar-item{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);font-size:var(--text-sm);color:var(--color-text-muted);cursor:pointer;width:100%;text-align:left;}
+.sidebar-item:hover{background:var(--color-surface-offset);color:var(--color-text);}
+.sidebar-item.active{background:var(--color-primary-highlight);color:var(--color-primary);font-weight:500;}
+.sidebar-item svg{width:16px;height:16px;flex-shrink:0;}
+.sidebar-badge{margin-left:auto;font-size:var(--text-xs);background:var(--color-surface-offset);padding:1px 7px;border-radius:var(--radius-full);color:var(--color-text-muted);}
+.sidebar-item.active .sidebar-badge{background:var(--color-primary);color:white;}
+
+/* MAIN */
+.main-content{padding:var(--space-8);max-width:880px;}
+@media(max-width:900px){.main-content{padding:var(--space-6) var(--space-4);}}
+.view{display:none;}
+.view.active{display:block;}
+.page-header{margin-bottom:var(--space-6);}
+.page-header h1{font-family:var(--font-display);font-size:var(--text-xl);margin-bottom:var(--space-2);}
+.page-header p{font-size:var(--text-sm);color:var(--color-text-muted);max-width:65ch;}
+
+/* VIGNETTE */
+.vignette-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);padding:var(--space-6);margin-bottom:var(--space-6);box-shadow:var(--shadow-sm);}
+.vignette-header{display:flex;align-items:flex-start;gap:var(--space-4);margin-bottom:var(--space-5);}
+.vignette-avatar{width:52px;height:52px;border-radius:var(--radius-full);background:var(--color-primary-highlight);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--font-display);font-size:var(--text-lg);color:var(--color-primary);}
+.vignette-meta{flex:1;}
+.vignette-name{font-weight:600;font-size:var(--text-base);margin-bottom:var(--space-2);}
+.vignette-tags{display:flex;gap:var(--space-2);flex-wrap:wrap;}
+.tag{font-size:var(--text-xs);padding:2px 10px;border-radius:var(--radius-full);background:var(--color-surface-offset);color:var(--color-text-muted);}
+.tag.clinical{background:var(--color-error-highlight);color:var(--color-error);}
+.tag.occupational{background:var(--color-gold-highlight);color:var(--color-gold);}
+.tag.social{background:var(--color-blue-highlight);color:var(--color-blue);}
+.vignette-section{margin-bottom:var(--space-4);}
+.vignette-section-title{font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--color-text-faint);margin-bottom:var(--space-2);}
+.vignette-text{font-size:var(--text-sm);line-height:1.75;color:var(--color-text);}
+.vignette-highlight{background:var(--color-primary-highlight);border-left:3px solid var(--color-primary);padding:var(--space-3) var(--space-4);border-radius:0 var(--radius-md) var(--radius-md) 0;margin:var(--space-3) 0;font-size:var(--text-sm);}
+
+/* TOOL SECTIONS */
+.tool-section{margin-bottom:var(--space-8);}
+.tool-section-header{display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-4);padding-bottom:var(--space-3);border-bottom:1px solid var(--color-divider);}
+.tool-section-icon{width:36px;height:36px;border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.tool-section-icon.teal{background:var(--color-primary-highlight);}
+.tool-section-icon.teal svg{color:var(--color-primary);}
+.tool-section-icon.blue{background:var(--color-blue-highlight);}
+.tool-section-icon.blue svg{color:var(--color-blue);}
+.tool-section-icon.gold{background:var(--color-gold-highlight);}
+.tool-section-icon.gold svg{color:var(--color-gold);}
+.tool-section-icon.green{background:var(--color-success-highlight);}
+.tool-section-icon.green svg{color:var(--color-success);}
+.tool-section-icon.purple{background:var(--color-error-highlight);}
+.tool-section-icon.purple svg{color:var(--color-error);}
+.tool-section-title{font-size:var(--text-lg);font-weight:600;}
+.tool-section-sub{font-size:var(--text-xs);color:var(--color-text-muted);margin-top:2px;}
+
+/* INSTRUMENT CARDS */
+.instrument-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);padding:var(--space-5);margin-bottom:var(--space-4);box-shadow:var(--shadow-sm);}
+.instrument-card-header{display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-4);cursor:pointer;}
+.instrument-name{font-weight:600;font-size:var(--text-base);}
+.instrument-desc{font-size:var(--text-sm);color:var(--color-text-muted);}
+.instrument-badge{margin-left:auto;font-size:var(--text-xs);padding:3px 10px;border-radius:var(--radius-full);font-weight:500;white-space:nowrap;}
+.badge-completed{background:var(--color-success-highlight);color:var(--color-success);}
+.badge-pending{background:var(--color-surface-offset);color:var(--color-text-muted);}
+.badge-active{background:var(--color-primary-highlight);color:var(--color-primary);}
+
+/* QUESTIONS */
+.questions-container{display:none;}
+.questions-container.open{display:block;}
+.question-item{padding:var(--space-5) 0;border-top:1px solid var(--color-divider);}
+.question-label{font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--color-text-faint);margin-bottom:var(--space-2);}
+.question-probe{font-size:var(--text-base);font-style:italic;margin-bottom:var(--space-1);color:var(--color-text);line-height:1.6;}
+.question-followup{font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-3);font-style:italic;}
+.radio-group{display:flex;gap:var(--space-3);flex-wrap:wrap;}
+.radio-option{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-5);border-radius:var(--radius-md);border:1px solid var(--color-border);background:var(--color-surface-2);cursor:pointer;font-size:var(--text-sm);font-weight:500;transition:all var(--transition-interactive);}
+.radio-option:hover{border-color:var(--color-primary);background:var(--color-primary-highlight);}
+.radio-option.selected{border-color:var(--color-primary);background:var(--color-primary-highlight);color:var(--color-primary);font-weight:600;}
+.radio-option.selected-yes{border-color:var(--color-error);background:var(--color-error-highlight);color:var(--color-error);}
+.radio-option input[type="radio"]{display:none;}
+
+/* LIKERT 1-4 */
+.likert-header{display:flex;gap:var(--space-2);margin-bottom:var(--space-4);background:var(--color-surface-offset);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);}
+.likert-legend-item{flex:1;text-align:center;}
+.likert-legend-num{font-size:var(--text-lg);font-weight:700;color:var(--color-primary);}
+.likert-legend-label{font-size:10px;color:var(--color-text-muted);line-height:1.3;margin-top:2px;}
+.likert-row{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) 0;border-top:1px solid var(--color-divider);}
+.likert-item-text{flex:1;font-size:var(--text-sm);color:var(--color-text);line-height:1.5;}
+.likert-buttons{display:flex;gap:var(--space-2);}
+.likert-btn{width:44px;height:44px;border-radius:var(--radius-md);border:1.5px solid var(--color-border);background:var(--color-surface-2);cursor:pointer;font-size:var(--text-sm);font-weight:600;text-align:center;transition:all var(--transition-interactive);display:flex;align-items:center;justify-content:center;}
+.likert-btn:hover{border-color:var(--color-primary);background:var(--color-primary-highlight);}
+.likert-btn.selected{background:var(--color-primary);color:white;border-color:var(--color-primary);}
+.likert-group-label{font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--color-text-faint);margin:var(--space-6) 0 var(--space-3);}
+
+/* SCORE PREVIEW */
+.score-preview{margin-top:var(--space-4);padding:var(--space-4);border-radius:var(--radius-lg);background:var(--color-surface-offset);border:1px solid var(--color-divider);display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);flex-wrap:wrap;}
+.score-label{font-size:var(--text-sm);color:var(--color-text-muted);}
+.score-value{font-size:var(--text-lg);font-weight:700;color:var(--color-primary);}
+.score-interpretation{font-size:var(--text-xs);color:var(--color-text-muted);margin-top:2px;}
+
+/* BUTTONS */
+.btn-primary{padding:var(--space-3) var(--space-6);border-radius:var(--radius-md);background:var(--color-primary);color:white;font-weight:600;font-size:var(--text-sm);}
+.btn-primary:hover{background:var(--color-primary-hover);}
+.btn-primary:disabled{opacity:0.4;cursor:not-allowed;}
+.btn-secondary{padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);font-size:var(--text-sm);background:var(--color-surface-offset);color:var(--color-text);font-weight:500;}
+.btn-secondary:hover{background:var(--color-divider);}
+
+/* TOGGLE */
+.toggle-arrow{width:20px;height:20px;margin-left:auto;transition:transform var(--transition-interactive);color:var(--color-text-faint);flex-shrink:0;}
+.toggle-arrow.open{transform:rotate(180deg);}
+
+/* PROGRESS */
+.progress-bar-track{height:6px;background:var(--color-divider);border-radius:var(--radius-full);overflow:hidden;}
+.progress-bar-fill{height:100%;background:var(--color-primary);border-radius:var(--radius-full);transition:width 0.4s cubic-bezier(0.16,1,0.3,1);}
+
+/* REPORT */
+.report-section{margin-bottom:var(--space-8);}
+.report-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:var(--space-4);margin-bottom:var(--space-6);}
+.report-kpi{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);padding:var(--space-5);box-shadow:var(--shadow-sm);}
+.kpi-label{font-size:var(--text-xs);color:var(--color-text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:var(--space-2);}
+.kpi-value{font-size:var(--text-xl);font-weight:700;font-variant-numeric:tabular-nums;color:var(--color-primary);}
+.kpi-note{font-size:var(--text-xs);color:var(--color-text-muted);margin-top:var(--space-1);}
+.report-tool-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);padding:var(--space-5);margin-bottom:var(--space-4);box-shadow:var(--shadow-sm);}
+.report-tool-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-4);flex-wrap:wrap;gap:var(--space-3);}
+.report-tool-name{font-weight:600;font-size:var(--text-base);}
+.score-pill{padding:var(--space-1) var(--space-4);border-radius:var(--radius-full);font-size:var(--text-sm);font-weight:600;}
+.score-low{background:var(--color-success-highlight);color:var(--color-success);}
+.score-moderate{background:var(--color-gold-highlight);color:var(--color-gold);}
+.score-high{background:var(--color-error-highlight);color:var(--color-error);}
+.score-neutral{background:var(--color-primary-highlight);color:var(--color-primary);}
+.report-items-table{width:100%;border-collapse:collapse;font-size:var(--text-sm);}
+.report-items-table th{text-align:left;font-size:var(--text-xs);color:var(--color-text-muted);text-transform:uppercase;letter-spacing:0.05em;padding:var(--space-2) var(--space-3);border-bottom:1px solid var(--color-divider);}
+.report-items-table td{padding:var(--space-2) var(--space-3);border-bottom:1px solid oklch(from var(--color-border) l c h/0.5);font-variant-numeric:tabular-nums;}
+.report-items-table tr:last-child td{border-bottom:none;}
+.yes-cell{color:var(--color-error);font-weight:600;}
+.no-cell{color:var(--color-text-muted);}
+.narrative-box{background:var(--color-surface-2);border:1px solid var(--color-divider);border-radius:var(--radius-lg);padding:var(--space-5);font-size:var(--text-sm);line-height:1.75;}
+.narrative-box h4{font-size:var(--text-sm);font-weight:600;margin-bottom:var(--space-3);}
+
+/* DIMENSION BARS */
+.dimension-bar-row{display:flex;align-items:center;gap:var(--space-4);margin-bottom:var(--space-3);}
+.dimension-label{font-size:var(--text-sm);min-width:170px;color:var(--color-text-muted);}
+.dimension-track{flex:1;height:8px;background:var(--color-divider);border-radius:var(--radius-full);overflow:hidden;}
+.dimension-fill{height:100%;border-radius:var(--radius-full);}
+.dimension-fill.low{background:var(--color-success);}
+.dimension-fill.moderate{background:var(--color-gold);}
+.dimension-fill.high{background:var(--color-error);}
+.dimension-score{font-size:var(--text-xs);font-variant-numeric:tabular-nums;min-width:40px;text-align:right;color:var(--color-text-muted);}
+
+/* PURCHASE TASK */
+.purchase-instructions{background:var(--color-surface-2);border:1px solid var(--color-divider);border-radius:var(--radius-lg);padding:var(--space-5);margin-bottom:var(--space-5);font-size:var(--text-sm);line-height:1.7;}
+.price-row{display:flex;align-items:center;gap:var(--space-4);padding:var(--space-3) 0;border-top:1px solid var(--color-divider);}
+.price-label{font-weight:600;min-width:80px;color:var(--color-primary);}
+.price-input{width:90px;padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);border:1.5px solid var(--color-border);background:var(--color-surface-2);text-align:center;font-size:var(--text-sm);font-variant-numeric:tabular-nums;color:var(--color-text);}
+.price-input:focus{outline:2px solid var(--color-primary);outline-offset:2px;border-color:transparent;}
+.price-note{font-size:var(--text-xs);color:var(--color-text-muted);}
+
+/* STOP-SIGNAL EMBED */
+.stop-signal-wrapper{background:#000;border-radius:var(--radius-xl);overflow:hidden;border:1px solid var(--color-border);}
+.stop-signal-frame{width:100%;height:620px;border:none;display:block;}
+.stop-results-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);padding:var(--space-5);margin-top:var(--space-4);box-shadow:var(--shadow-sm);}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:var(--space-3);margin-top:var(--space-3);}
+.metric-card{background:var(--color-surface-offset);border-radius:var(--radius-lg);padding:var(--space-3);}
+.metric-value{font-size:var(--text-lg);font-weight:700;color:var(--color-primary);font-variant-numeric:tabular-nums;}
+.metric-label{font-size:var(--text-xs);color:var(--color-text-muted);margin-top:2px;}
+
+/* CHART CONTAINERS */
+.chart-container{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);padding:var(--space-5);margin-bottom:var(--space-4);box-shadow:var(--shadow-sm);}
+.chart-title{font-weight:600;font-size:var(--text-base);margin-bottom:var(--space-1);}
+.chart-sub{font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-4);}
+</style>
+</head>
+<body>
+<a href="/" style="position:fixed;top:12px;left:12px;z-index:9999;font-family:DM Mono,ui-monospace,monospace;font-size:11px;letter-spacing:.04em;background:#fff;color:#333;border:1px solid #ddd;border-radius:20px;padding:6px 14px;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,.08)">&larr; ClinCog</a>
+
+<header class="app-header">
+  <div class="header-logo">
+    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="32" rx="8" fill="currentColor" opacity="0.1"/>
+      <circle cx="16" cy="10" r="4" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 28c0-4.418 3.582-8 8-8s8 3.582 8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M20 14.5c1.5.8 2.5 2.3 2.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <circle cx="22.5" cy="22" r="3.5" fill="currentColor" opacity="0.2" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M21.5 22h2M22.5 21v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <div class="header-title">AddictAssess</div>
+      <div class="header-subtitle">Addiction Assessment Seminar</div>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button class="btn-icon" id="mobile-toggle" onclick="toggleMobileMode()" aria-label="Toggle mobile layout" title="Switch to mobile layout">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="mobile-toggle-icon">
+        <rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/>
+      </svg>
+    </button>
+    <button class="btn-icon" data-theme-toggle aria-label="Toggle dark mode">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<nav class="mobile-nav" id="mobile-nav" aria-label="Mobile navigation">
+  <button class="mobile-nav-btn active" id="mob-nav-vignette" onclick="showView('vignette')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 17.5h7M17.5 14v7"/></svg>
+    Vignette
+  </button>
+  <button class="mobile-nav-btn" id="mob-nav-crafft" onclick="showView('crafft')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+    CRAFFT
+  </button>
+  <button class="mobile-nav-btn" id="mob-nav-scid" onclick="showView('scid')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    SCID-5
+  </button>
+  <button class="mobile-nav-btn" id="mob-nav-hitop" onclick="showView('hitop')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+    HiTOP
+  </button>
+  <button class="mobile-nav-btn" id="mob-nav-ana" onclick="showView('ana')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.44l-1.44-7.2A2.5 2.5 0 0 1 8 9h4.5"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.44l1.44-7.2A2.5 2.5 0 0 0 16 9H11.5"/></svg>
+    Tasks
+  </button>
+</nav>
+
+<div class="app-body">
+<nav class="sidebar" aria-label="Navigation">
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Seminar</div>
+    <button class="sidebar-item active" onclick="showView('vignette')" id="nav-vignette">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 17.5h7M17.5 14v7"/></svg>
+      Clinical Vignette
+    </button>
+    <button class="sidebar-item" onclick="showView('report')" id="nav-report">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Report
+    </button>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Assessment Tools</div>
+    <button class="sidebar-item" onclick="showView('crafft')" id="nav-crafft">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      CRAFFT
+      <span class="sidebar-badge" id="badge-crafft">0/6</span>
+    </button>
+    <button class="sidebar-item" onclick="showView('scid')" id="nav-scid">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      SCID-5 AUD
+      <span class="sidebar-badge" id="badge-scid">0/11</span>
+    </button>
+    <button class="sidebar-item" onclick="showView('hitop')" id="nav-hitop">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+      HiTOP-SR
+      <span class="sidebar-badge" id="badge-hitop">0/28</span>
+    </button>
+    <button class="sidebar-item" onclick="showView('ana')" id="nav-ana">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.44l-1.44-7.2A2.5 2.5 0 0 1 8 9h4.5"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.44l1.44-7.2A2.5 2.5 0 0 0 16 9H11.5"/></svg>
+      ANA Tasks
+      <span class="sidebar-badge" id="badge-ana">Pending</span>
+    </button>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Progress</div>
+    <div style="padding:0 var(--space-2)">
+      <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-2)" id="progress-text">0 of 4 tools completed</div>
+      <div class="progress-bar-track"><div class="progress-bar-fill" id="sidebar-progress" style="width:0%"></div></div>
+    </div>
+  </div>
+</nav>
+
+<main class="main-content" role="main">
+
+<!-- ===================== VIGNETTE VIEW ===================== -->
+<div class="view active" id="view-vignette">
+  <div class="page-header">
+    <h1>Clinical Vignette</h1>
+    <p>Read the case carefully before administering the assessment tools.</p>
+  </div>
+  <div class="vignette-card">
+    <div style="margin-bottom:var(--space-5)">
+      <div style="font-weight:600;font-size:var(--text-base);margin-bottom:var(--space-1)">Jordan M., 25-year-old male, Software Engineer</div>
+      <div style="font-size:var(--text-sm);color:var(--color-text-muted)">Self-referred after a performance review warning</div>
+    </div>
+
+    <div class="vignette-section">
+      <div class="vignette-section-title">Presentation</div>
+      <div class="vignette-text">Jordan is a 25-year-old software engineer at a mid-size tech firm. He was referred following a formal performance review in which his manager noted missed sprint deadlines, late arrivals, and a visible decline in code quality over the past six months. Jordan presents as intelligent and self-aware but minimises clinical concern: <em>"I work in a high-stress environment , everyone on my team drinks at hackathons and after deploys. I just need to dial it back a little."</em> He rates his motivation to change at 5/10.</div>
+    </div>
+
+    <div class="vignette-section">
+      <div class="vignette-section-title">Alcohol Use History</div>
+      <div class="vignette-text">Jordan began drinking at university (age 18). Use escalated during his first engineering job (age 20–22) when he drank to manage social anxiety at networking events. Over the <strong>past 14 months</strong> use has become daily. He currently drinks <strong>4–5 cans of beer or equivalent on weeknights</strong> and <strong>10–14 standard drinks on weekend days</strong>, starting within an hour of finishing work from home. He has attempted to stop <strong>three times</strong> in the past year , triggered by a partner confrontation, a health scare (abnormal liver panel), and a bet with a colleague, none lasting beyond five days. On each occasion he returned to his previous intake within a week, often exceeding it.</div>
+      <div class="vignette-highlight">On most occasions Jordan intends to stop after two or three drinks. He consistently reports drinking until he falls asleep at his desk or the supply runs out. He keeps a small cooler under his standing desk "so he doesn't have to keep getting up."</div>
+    </div>
+
+    <div class="vignette-section">
+      <div class="vignette-section-title">Withdrawal &amp; Physical Symptoms</div>
+      <div class="vignette-text">On abstinent days Jordan reports <strong>fine hand tremor, sweating, and severe insomnia</strong>, all resolving within 20–30 minutes of his first drink. He opens a beer before his first standup call on approximately <strong>3–4 mornings per week</strong>. He has noticed that it now takes roughly <strong>twice as many drinks</strong> to achieve the relaxation effect he experienced 18 months ago. He denies prior seizures but acknowledges his hands shake visibly on camera during morning video calls on days he has not yet drunk.</div>
+    </div>
+
+    <div class="vignette-section">
+      <div class="vignette-section-title">Occupational &amp; Social Functioning</div>
+      <div class="vignette-text">Jordan has missed <strong>four sprint deadlines</strong> in the past quarter and received one formal written warning. He estimates spending 1–2 hours per workday anticipating his first post-work drink and managing the physical effects of the previous night's drinking. He has withdrawn from his climbing gym (previously 3×/week) and declined three team social events over the past four months. His partner of three years has issued an ultimatum and is currently sleeping in the spare room. Jordan has driven to the supermarket to restock alcohol on <strong>several occasions while over the legal limit</strong>, rationalising that "it was only five minutes down the road."</div>
+    </div>
+
+    <div class="vignette-section">
+      <div class="vignette-section-title">Psychiatric &amp; Risk History</div>
+      <div class="vignette-text">Jordan endorses <strong>frequent, intrusive urges to drink</strong> throughout the workday, particularly during debugging sessions and before code reviews. He reports irritability, middle-of-night waking, and difficulty concentrating , all worse on low-intake days. He denies a primary mood disorder when not drinking. No prior psychiatric treatment. His father was a heavy drinker (never formally assessed). Jordan is aware of his liver results and their likely cause but has not disclosed this to his GP since the initial panel.</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:var(--space-3);">
+    <button class="btn-primary" onclick="showView('crafft')">Begin Assessment →</button>
+  </div>
+</div>
+
+<!-- ===================== CRAFFT VIEW ===================== -->
+<div class="view" id="view-crafft">
+  <div class="page-header">
+    <h1>CRAFFT Screening Tool</h1>
+    <p>Car, Relax, Alone, Forget, Friends, Trouble — 6-item substance use screener. Cut-off ≥ 2 indicates a positive screen.</p>
+  </div>
+  <div class="tool-section">
+    <div class="tool-section-header">
+      <div class="tool-section-icon teal">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      </div>
+      <div>
+        <div class="tool-section-title">CRAFFT · 6 dichotomous items</div>
+        <div class="tool-section-sub">Cut-off ≥ 2 = positive screen for alcohol/substance use disorder risk</div>
+      </div>
+    </div>
+    <div class="instrument-card">
+      <div id="crafft-questions"></div>
+      <div class="score-preview">
+        <div><div class="score-label">CRAFFT Score</div><div class="score-value" id="crafft-score-val">0 / 6</div><div class="score-interpretation" id="crafft-interp">Complete all items</div></div>
+        <span class="instrument-badge badge-pending" id="crafft-badge">Not started</span>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:var(--space-3);margin-top:var(--space-4);">
+    <button class="btn-primary" onclick="showView('scid')">Next: SCID-5 AUD →</button>
+    <button class="btn-secondary" onclick="showView('vignette')">← Vignette</button>
+  </div>
+</div>
+
+<!-- ===================== SCID-5 VIEW ===================== -->
+<div class="view" id="view-scid">
+  <div class="page-header">
+    <h1>SCID-5 — Alcohol Use Disorder</h1>
+    <p>Structured Clinical Interview for DSM-5. Administer the probe questions exactly as written. Rate each criterion based on the past 12 months.</p>
+  </div>
+  <div class="tool-section">
+    <div class="tool-section-header">
+      <div class="tool-section-icon blue">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      </div>
+      <div>
+        <div class="tool-section-title">DSM-5 AUD Criteria · 11 items</div>
+        <div class="tool-section-sub">Mild 2–3 · Moderate 4–5 · Severe ≥ 6 endorsed criteria</div>
+      </div>
+    </div>
+    <div class="instrument-card">
+      <div style="background:var(--color-gold-highlight);border:1px solid var(--color-gold);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);font-size:var(--text-xs);color:var(--color-warning);margin-bottom:var(--space-4);">
+        <strong>Interviewer note:</strong> All criteria are assessed in reference to the past 12 months. Read each probe question aloud exactly as written. If the patient is uncertain, read the follow-up probe. Rate only what is endorsed as clinically significant (i.e., causes distress or impairment — not just occurrence).
+      </div>
+      <div id="scid-questions"></div>
+      <div class="score-preview" style="margin-top:var(--space-5);">
+        <div>
+          <div class="score-label">Criteria Endorsed</div>
+          <div class="score-value" id="scid-score-val">0 / 11</div>
+          <div class="score-interpretation" id="scid-interp">Complete all items</div>
+        </div>
+        <span class="instrument-badge badge-pending" id="scid-badge">Not started</span>
+      </div>
+      <!-- Severity specifier -->
+      <div id="scid-specifier-box" style="display:none;margin-top:var(--space-5);padding:var(--space-4);background:var(--color-surface-offset);border-radius:var(--radius-lg);border:1px solid var(--color-divider);">
+        <div style="font-size:var(--text-sm);font-weight:600;margin-bottom:var(--space-3)">State the Diagnosis Specifier</div>
+        <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-3)">Based on the criteria endorsed, select the severity specifier that applies:</div>
+        <div class="radio-group" style="flex-wrap:wrap">
+          <label class="radio-option" onclick="setSpecifier('no_aud',this)"><input type="radio" name="specifier"> No AUD</label>
+          <label class="radio-option" onclick="setSpecifier('mild',this)"><input type="radio" name="specifier"> Mild (2–3)</label>
+          <label class="radio-option" onclick="setSpecifier('moderate',this)"><input type="radio" name="specifier"> Moderate (4–5)</label>
+          <label class="radio-option" onclick="setSpecifier('severe',this)"><input type="radio" name="specifier"> Severe (≥ 6)</label>
+        </div>
+        <div id="specifier-feedback" style="margin-top:var(--space-3);font-size:var(--text-sm);display:none;padding:var(--space-3);border-radius:var(--radius-md);"></div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:var(--space-3);margin-top:var(--space-4);">
+    <button class="btn-primary" onclick="showView('hitop')">Next: HiTOP-SR →</button>
+    <button class="btn-secondary" onclick="showView('crafft')">← CRAFFT</button>
+  </div>
+</div>
+
+<!-- ===================== HiTOP VIEW ===================== -->
+<div class="view" id="view-hitop">
+  <div class="page-header">
+    <h1>HiTOP-SR — Dimensional Profile</h1>
+    <p>Rate each item on the 1–4 scale for the past 12 months. Two spectra are assessed: Disinhibited Externalizing (8 subscales) and Harmful Substance Use (6 subscales).</p>
+  </div>
+  <div class="tool-section">
+    <div class="tool-section-header">
+      <div class="tool-section-icon gold">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+      </div>
+      <div>
+        <div class="tool-section-title">HiTOP-SR · 28 items across 14 subscales</div>
+        <div class="tool-section-sub">Instructions: "During the past year, how true were the following statements for you?"</div>
+      </div>
+    </div>
+    <div class="instrument-card">
+      <div class="likert-header">
+        <div class="likert-legend-item"><div class="likert-legend-num">1</div><div class="likert-legend-label">False<br>(never/<br>almost never)</div></div>
+        <div class="likert-legend-item"><div class="likert-legend-num">2</div><div class="likert-legend-label">Sometimes<br>True</div></div>
+        <div class="likert-legend-item"><div class="likert-legend-num">3</div><div class="likert-legend-label">Often<br>True</div></div>
+        <div class="likert-legend-item"><div class="likert-legend-num">4</div><div class="likert-legend-label">True<br>(almost<br>always)</div></div>
+      </div>
+      <div id="hitop-questions"></div>
+      <div class="score-preview" style="margin-top:var(--space-5);">
+        <div>
+          <div class="score-label">Items Rated</div>
+          <div class="score-value" id="hitop-score-val">0 / 28</div>
+          <div class="score-interpretation" id="hitop-interp">Rate all items</div>
+        </div>
+        <span class="instrument-badge badge-pending" id="hitop-badge">Not started</span>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:var(--space-3);margin-top:var(--space-4);">
+    <button class="btn-primary" onclick="showView('ana')">Next: ANA Tasks →</button>
+    <button class="btn-secondary" onclick="showView('scid')">← SCID-5</button>
+  </div>
+</div>
+
+<!-- ===================== ANA TASKS VIEW ===================== -->
+<div class="view" id="view-ana">
+  <div class="page-header">
+    <h1>ANA Neuroscience Tasks</h1>
+    <p>Two neurocognitive/behavioural economics tasks: Stop-Signal (inhibitory control) and Hypothetical Purchase Task (alcohol demand curve).</p>
+  </div>
+
+  <!-- Stop Signal -->
+  <div class="tool-section">
+    <div class="tool-section-header">
+      <div class="tool-section-icon purple">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+      </div>
+      <div>
+        <div class="tool-section-title">Stop-Signal Task</div>
+        <div class="tool-section-sub">Inhibitory control · 30 trials · SSRT via horse-race integration</div>
+      </div>
+    </div>
+    <div class="instrument-card" style="padding:0;overflow:hidden;">
+
+      <!-- INTRO -->
+      <div id="sst-intro" style="padding:var(--space-8) var(--space-5);text-align:center;">
+        <div style="font-size:var(--text-xl);font-family:var(--font-display);margin-bottom:var(--space-2)">Stop-Signal Task</div>
+        <div style="font-size:var(--text-xs);color:var(--color-text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:var(--space-6)">30 trials · Inhibitory control</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4);max-width:420px;margin:0 auto var(--space-6);text-align:left;">
+          <div style="background:var(--color-surface-offset);border-radius:var(--radius-lg);padding:var(--space-4);">
+            <div style="width:36px;height:36px;border-radius:50%;background:rgba(220,220,240,0.15);border:2px solid rgba(220,220,240,0.4);margin:0 auto var(--space-2);"></div>
+            <div style="font-size:var(--text-xs);font-weight:600;text-align:center;margin-bottom:4px">Go signal</div>
+            <div style="font-size:var(--text-xs);color:var(--color-text-muted);text-align:center;line-height:1.5">White circle → press <strong>SPACE</strong> / tap as fast as possible</div>
+          </div>
+          <div style="background:var(--color-surface-offset);border-radius:var(--radius-lg);padding:var(--space-4);">
+            <div style="width:36px;height:36px;border-radius:50%;background:rgba(248,113,113,0.15);border:2px solid rgba(248,113,113,0.5);margin:0 auto var(--space-2);"></div>
+            <div style="font-size:var(--text-xs);font-weight:600;text-align:center;margin-bottom:4px">Stop signal</div>
+            <div style="font-size:var(--text-xs);color:var(--color-text-muted);text-align:center;line-height:1.5">Circle turns <span style="color:#f87171">red</span> → <strong>do not press</strong></div>
+          </div>
+        </div>
+        <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-6)">You will receive feedback after every trial.</div>
+        <button class="btn-primary" onclick="sstStart()" style="min-width:180px">Start →</button>
+      </div>
+
+      <!-- CANVAS AREA -->
+      <div id="sst-task" style="display:none;">
+        <canvas id="sst-canvas" width="760" height="420" style="display:block;width:100%;background:#0d0d12;cursor:none;"></canvas>
+        <div style="height:4px;background:var(--color-divider);"><div id="sst-pbar" style="height:100%;background:var(--color-primary);width:0%;transition:width .3s;"></div></div>
+        <button class="sst-tap-btn" id="sst-tap-btn" ontouchstart="sstTap(event)" onclick="sstTap(event)">TAP</button>
+        <div class="sst-kbd-hint">Press <kbd style="background:var(--color-surface-offset);border:1px solid var(--color-border);border-radius:4px;padding:1px 8px;font-family:monospace;font-size:11px">SPACE</kbd> to respond</div>
+      </div>
+
+      <!-- RESULTS PANEL (inline, after task) -->
+      <div id="sst-done" style="display:none;padding:var(--space-6);">
+
+        <div style="font-size:var(--text-base);font-weight:600;margin-bottom:var(--space-1)">Task Complete</div>
+        <div style="font-size:var(--text-sm);color:var(--color-text-muted);margin-bottom:var(--space-5)">Your results are shown below. Copy them to include in the final report.</div>
+
+        <!-- Reliability warning (shown conditionally) -->
+        <div id="sst-reliability-banner" style="display:none;background:var(--color-error-highlight);border:1.5px solid var(--color-error);border-radius:var(--radius-lg);padding:var(--space-4);margin-bottom:var(--space-5);font-size:var(--text-sm);color:var(--color-error);line-height:1.6;"></div>
+
+        <!-- Key metrics row -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:var(--space-3);margin-bottom:var(--space-5);" id="sst-kpi-grid"></div>
+
+        <!-- What is SSRT? -->
+        <div style="background:var(--color-primary-highlight);border:1px solid var(--color-primary);border-radius:var(--radius-lg);padding:var(--space-5);margin-bottom:var(--space-5);" id="sst-ssrt-explainer"></div>
+
+        <!-- SSRT calculation walkthrough -->
+        <div style="background:var(--color-surface-offset);border:1px solid var(--color-divider);border-radius:var(--radius-lg);padding:var(--space-5);margin-bottom:var(--space-5);">
+          <div style="font-size:var(--text-sm);font-weight:600;margin-bottom:var(--space-3);">How SSRT is Calculated</div>
+          <div id="sst-calc-steps" style="font-size:var(--text-sm);line-height:1.9;color:var(--color-text);"></div>
+        </div>
+
+        <!-- Copy/paste buttons -->
+        <div style="display:flex;gap:var(--space-3);flex-wrap:wrap;margin-bottom:var(--space-4);">
+          <button class="btn-primary" onclick="sstCopyResults()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:6px"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy Results
+          </button>
+          <button class="btn-secondary" onclick="sstShowPaste()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:6px"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+            Paste Results into Report
+          </button>
+          <span id="sst-copy-confirm" style="font-size:var(--text-xs);color:var(--color-success);align-self:center;display:none;">✓ Copied!</span>
+        </div>
+
+        <!-- Paste textarea (hidden by default) -->
+        <div id="sst-paste-area" style="display:none;">
+          <textarea id="sst-paste-input" rows="4" placeholder="Paste your copied results here…"
+            style="width:100%;padding:var(--space-3);border:1.5px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-surface-2);font-family:monospace;font-size:var(--text-xs);resize:vertical;color:var(--color-text)"></textarea>
+          <div style="display:flex;gap:var(--space-3);margin-top:var(--space-2);">
+            <button class="btn-primary" onclick="sstLoadPasted()">Load into Report</button>
+            <button class="btn-secondary" onclick="document.getElementById('sst-paste-area').style.display='none'">Cancel</button>
+          </div>
+          <div id="sst-paste-error" style="color:var(--color-error);font-size:var(--text-xs);margin-top:var(--space-2);display:none;"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<!-- Hypothetical Purchase Task -->
+  <div class="tool-section">
+    <div class="tool-section-header">
+      <div class="tool-section-icon green">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      </div>
+      <div>
+        <div class="tool-section-title">Hypothetical Purchase Task — Alcohol</div>
+        <div class="tool-section-sub">Behavioural economics demand curve · Q0, Omax, Pmax, Breakpoint</div>
+      </div>
+    </div>
+    <div class="instrument-card">
+      <div class="purchase-instructions">
+        <strong>Instructions:</strong> Imagine it is a typical weekend evening and your only way to obtain alcohol is to purchase standard drinks at the price listed. A <em>standard drink</em> = 12 oz regular beer, 5 oz wine, or 1.5 oz spirits (~14 g pure alcohol). For each price below, enter the number of standard drinks you would purchase and consume that evening.
+      </div>
+      <div id="purchase-items"></div>
+      <div class="score-preview" style="margin-top:var(--space-4);">
+        <div><div class="score-label">Items entered</div><div class="score-value" id="purchase-val">0 / 10</div><div class="score-interpretation" id="purchase-interp">Enter all prices</div></div>
+        <span class="instrument-badge badge-pending" id="purchase-badge">Not started</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:var(--space-3);margin-top:var(--space-4);">
+    <button class="btn-primary" id="generate-report-btn" onclick="showView('report')" disabled>Generate Report →</button>
+    <button class="btn-secondary" onclick="showView('hitop')">← HiTOP-SR</button>
+  </div>
+</div>
+
+<!-- ===================== REPORT VIEW ===================== -->
+<div class="view" id="view-report">
+  <div class="page-header">
+    <h1>Assessment Report</h1>
+    <p>Integrated multi-method profile — for educational use only. All data are session-only and not stored.</p>
+  </div>
+  <div id="report-area"></div>
+</div>
+
+</main>
+</div>
+<script>
+// ===================== DATA DEFINITIONS =====================
+const CRAFFT_ITEMS = [
+  { letter:'C', label:'Car', probe:'"In the past 12 months, have you ever ridden in a CAR driven by someone (including yourself) who was high or who had been using alcohol or drugs?"' },
+  { letter:'R', label:'Relax', probe:'"Do you ever use alcohol or drugs to RELAX, feel better about yourself, or fit in?"' },
+  { letter:'A', label:'Alone', probe:'"Do you ever use alcohol or drugs while you are by yourself, or ALONE?"' },
+  { letter:'F', label:'Forget', probe:'"Do you ever FORGET things you did while using alcohol or drugs?"' },
+  { letter:'F2', label:'Family/Friends', probe:'"Do your family or FRIENDS ever tell you that you should cut down on your drinking or drug use?"' },
+  { letter:'T', label:'Trouble', probe:'"Have you ever gotten into TROUBLE while you were using alcohol or drugs?"' }
+];
+
+const SCID_ITEMS = [
+  { id:'A1', criterion:'Larger amounts / longer than intended',
+    probe:'"In the past year, did you often find that when you started drinking, you ended up drinking much more than you intended to, or that you kept drinking for much longer than you planned?"',
+    followup:'If unclear: "For example, did you sometimes plan to have just one or two drinks, but ended up drinking much more?"' },
+  { id:'A2', criterion:'Persistent desire or repeated unsuccessful efforts to cut down',
+    probe:'"Did you want to cut down or stop drinking? [If yes] Did you try to cut down or stop more than once but found you couldn\'t, or that you went back to drinking the same amount?"',
+    followup:'Rate Yes if the patient tried and failed OR wanted to but could not bring themselves to attempt.' },
+  { id:'A3', criterion:'Great deal of time spent',
+    probe:'"Did you spend a great deal of time doing things related to drinking — like obtaining alcohol, drinking, or recovering from the aftereffects of drinking?"',
+    followup:'"For example, did drinking or feeling sick from drinking ever take up most of your day on a regular basis?"' },
+  { id:'A4', criterion:'Craving or strong urge to drink',
+    probe:'"In the past year, did you often have a strong desire, urge, or craving to drink — a feeling that was difficult to ignore?"',
+    followup:'"For example, did thoughts about drinking intrude into your daily activities or concentration at work?"' },
+  { id:'A5', criterion:'Failure to fulfil major role obligations',
+    probe:'"Did drinking often interfere with your work, your responsibilities at home, or your performance at school — for example, missing work or school, or performing poorly because of drinking or a hangover?"',
+    followup:'Include near-misses and informal warnings from supervisors or colleagues.' },
+  { id:'A6', criterion:'Continued use despite social or interpersonal problems',
+    probe:'"Did you keep on drinking even though it was causing arguments, conflicts, or serious problems with family members or friends — or making those problems worse?"',
+    followup:'Rate Yes if the patient continued to drink despite awareness of the interpersonal consequence.' },
+  { id:'A7', criterion:'Important activities given up or reduced',
+    probe:'"Were there important activities — hobbies, social events, recreational activities, or time with friends or family — that you gave up or spent much less time doing because of your drinking?"',
+    followup:'"This could also include activities you stopped doing because you preferred to drink, or because drinking left you feeling too unwell."' },
+  { id:'A8', criterion:'Recurrent use in physically hazardous situations',
+    probe:'"More than once in the past year, were you in a situation where drinking, or being under the influence of alcohol, significantly increased your chances of getting hurt — such as driving, operating machinery, swimming, or having unprotected sex?"',
+    followup:'Rate Yes even if no actual harm occurred; the criterion requires only repeated occurrence of the high-risk situation.' },
+  { id:'A9', criterion:'Continued use despite knowledge of recurrent physical or psychological problems',
+    probe:'"Did you continue to drink even though you thought drinking was causing, or worsening, a physical health problem or a psychological problem such as anxiety, depression, or memory difficulties?"',
+    followup:'The patient must have had awareness of the link between drinking and the problem.' },
+  { id:'A10', criterion:'Tolerance',
+    probe:'"Did you notice that over time, drinking the same amount of alcohol had much less effect on you? OR: Did you need to drink a lot more than you used to in order to get the effect you wanted — to get drunk or feel relaxed?"',
+    followup:'Rate Yes for either form: needing more to achieve the effect, or achieving less effect with the same amount.' },
+  { id:'A11', criterion:'Withdrawal',
+    probe:'"When you stopped or cut down on drinking after a period of heavy use, did you experience withdrawal symptoms — such as hand tremor, sweating, racing heartbeat, trouble sleeping, nausea, or feeling anxious? OR: Did you drink (or take another substance) specifically to prevent or relieve withdrawal symptoms?"',
+    followup:'Rate Yes for either the presence of withdrawal symptoms OR drinking to avoid/relieve them.' }
+];
+
+const HITOP_DIS = [
+  { scale:'Disorganization', items:['I was never on time for things that I was supposed to do.','I had trouble planning ahead and sticking to my schedules.'] },
+  { scale:'Risk Taking', items:['I was a thrill-seeker.','People would describe me as someone who takes risks.'] },
+  { scale:'Non-planfulness', items:['I made decisions quickly without thinking them through.','I said or did things without thinking about the consequences.'] },
+  { scale:'Non-persistence', items:['I gave up on tasks before I was finished.','I had trouble returning to work after I was distracted.'] },
+  { scale:'Restlessness', items:['I felt restless if I had to sit still for more than a few minutes.','I had a hard time staying seated when I was supposed to remain seated.'] },
+  { scale:'Gambling', items:['I was unable to resist the urge to gamble.','It was hard to stop once I started gambling.'] },
+  { scale:'Gaming', items:['I kept gaming even though it interfered with work, school, or relationships.','I turned down social invitations so I could spend more time gaming.'] },
+  { scale:'Problematic Shopping', items:['I found it hard to resist the urge to buy things.','I bought far more than I needed or could afford.'] }
+];
+
+const HITOP_HSU = [
+  { scale:'Craving', items:['Reminders of alcohol gave me a strong urge to drink.','I had a strong urge or craving to use alcohol.'] },
+  { scale:'Hazardous Use', items:['When I was under the influence of alcohol, I was in situations where I could have been hurt.','I used alcohol in dangerous situations.'] },
+  { scale:'Impaired Control', items:['I was not able to cut back on my alcohol use even when I wanted to.','I used more alcohol than I intended to.'] },
+  { scale:'Role Interference', items:['I continued to use alcohol even though it caused problems at work or school.','My alcohol use got in the way of my responsibilities.'] },
+  { scale:'Tolerance', items:['Over time, I needed to use more alcohol to get the same effect.','I needed more alcohol than before to feel the same effect.'] },
+  { scale:'Withdrawal', items:['When I stopped or cut down on alcohol, I felt shaky, sweaty, or had a racing heart.','As a result of stopping or reducing my drinking, I felt anxious or had trouble sleeping.'] }
+];
+
+const PURCHASE_PRICES = [0, 0.50, 1, 2, 3, 5, 7, 10, 15, 20];
+
+// T-score norms: [mean, sd] on 1-4 scale (illustrative community norms)
+const HITOP_NORMS = {
+  'Disorganization':      [1.85, 0.72],
+  'Risk Taking':          [2.05, 0.82],
+  'Non-planfulness':      [1.92, 0.78],
+  'Non-persistence':      [1.78, 0.74],
+  'Restlessness':         [1.68, 0.70],
+  'Gambling':             [1.32, 0.58],
+  'Gaming':               [1.38, 0.63],
+  'Problematic Shopping': [1.52, 0.64],
+  'Craving':              [1.28, 0.52],
+  'Hazardous Use':        [1.38, 0.58],
+  'Impaired Control':     [1.42, 0.60],
+  'Role Interference':    [1.30, 0.54],
+  'Tolerance':            [1.48, 0.62],
+  'Withdrawal':           [1.28, 0.52]
+};
+
+// ===================== STATE =====================
+const state = {
+  crafft: Array(6).fill(null),
+  scid:   Array(11).fill(null),
+  hitop:  {},  // key: "scaleName_itemIdx" -> 1..4
+  purchase: Array(10).fill(null),
+  stopResult: null // parsed stop-signal output
+};
+
+// ===================== NAVIGATION =====================
+function syncMobileNav(viewId){
+  document.querySelectorAll('.mobile-nav-btn').forEach(b=>{
+    b.classList.toggle('active', b.id==='mob-nav-'+viewId);
+  });
+}
+
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+  const nb = document.getElementById('nav-' + id);
+  if (nb) nb.classList.add('active');
+  syncMobileNav(id);
+  if (id === 'report') buildReport();
+  window.scrollTo(0, 0);
+}
+
+// ===================== BUILD CRAFFT =====================
+function buildCrafft() {
+  const container = document.getElementById('crafft-questions');
+  container.innerHTML = CRAFFT_ITEMS.map((item, i) => `
+    <div class="question-item">
+      <div class="question-label">${item.letter} — ${item.label}</div>
+      <div class="question-probe">${item.probe}</div>
+      <div class="radio-group">
+        <label class="radio-option" id="crafft-${i}-yes" onclick="setAnswer('crafft',${i},1,this)">
+          <input type="radio" name="crafft-${i}"> Yes
+        </label>
+        <label class="radio-option" id="crafft-${i}-no" onclick="setAnswer('crafft',${i},0,this)">
+          <input type="radio" name="crafft-${i}"> No
+        </label>
+      </div>
+    </div>`).join('');
+}
+
+// ===================== BUILD SCID =====================
+function buildScid() {
+  const container = document.getElementById('scid-questions');
+  container.innerHTML = SCID_ITEMS.map((item, i) => `
+    <div class="question-item">
+      <div class="question-label">${item.id} — ${item.criterion}</div>
+      <div class="question-probe">${item.probe}</div>
+      <div class="question-followup">↳ ${item.followup}</div>
+      <div class="radio-group">
+        <label class="radio-option" id="scid-${i}-yes" onclick="setAnswer('scid',${i},1,this)">
+          <input type="radio" name="scid-${i}"> Yes
+        </label>
+        <label class="radio-option" id="scid-${i}-no" onclick="setAnswer('scid',${i},0,this)">
+          <input type="radio" name="scid-${i}"> No
+        </label>
+        <label class="radio-option" id="scid-${i}-unk" onclick="setAnswer('scid',${i},2,this)">
+          <input type="radio" name="scid-${i}"> ?
+        </label>
+      </div>
+    </div>`).join('');
+}
+
+// ===================== BUILD HiTOP =====================
+function buildHitop() {
+  const container = document.getElementById('hitop-questions');
+  let html = '<div class="likert-group-label">Disinhibited Externalizing Spectrum</div>';
+  HITOP_DIS.forEach(({scale, items}) => {
+    html += `<div style="margin-bottom:var(--space-3)"><div style="font-size:var(--text-xs);font-weight:700;color:var(--color-primary);text-transform:uppercase;letter-spacing:0.06em;padding:var(--space-2) 0;border-bottom:1px solid var(--color-primary-highlight)">${scale}</div>`;
+    items.forEach((text, j) => {
+      html += `<div class="likert-row">
+        <div class="likert-item-text">${text}</div>
+        <div class="likert-buttons">
+          ${[1,2,3,4].map(v => `<button class="likert-btn" id="h-${scale}-${j}-${v}" onclick="setHitop('${scale}',${j},${v},this)">${v}</button>`).join('')}
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  html += '<div class="likert-group-label" style="margin-top:var(--space-6)">Harmful Substance Use Spectrum</div>';
+  HITOP_HSU.forEach(({scale, items}) => {
+    html += `<div style="margin-bottom:var(--space-3)"><div style="font-size:var(--text-xs);font-weight:700;color:var(--color-blue);text-transform:uppercase;letter-spacing:0.06em;padding:var(--space-2) 0;border-bottom:1px solid var(--color-blue-highlight)">${scale}</div>`;
+    items.forEach((text, j) => {
+      html += `<div class="likert-row">
+        <div class="likert-item-text">${text}</div>
+        <div class="likert-buttons">
+          ${[1,2,3,4].map(v => `<button class="likert-btn" id="h-${scale}-${j}-${v}" onclick="setHitop('${scale}',${j},${v},this)">${v}</button>`).join('')}
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+
+// ===================== BUILD PURCHASE TASK =====================
+function buildPurchase() {
+  const container = document.getElementById('purchase-items');
+  container.innerHTML = PURCHASE_PRICES.map((price, i) => `
+    <div class="price-row">
+      <div class="price-label">${price === 0 ? 'FREE' : '$' + price.toFixed(2)}</div>
+      <input type="number" class="price-input" min="0" max="99" placeholder="drinks"
+        id="purchase-${i}" oninput="setPurchase(${i}, this.value)"
+        aria-label="Quantity at $${price}">
+      <div class="price-note">standard drinks</div>
+    </div>`).join('');
+}
+
+// ===================== ANSWER HANDLERS =====================
+function setAnswer(tool, idx, val, el) {
+  state[tool][idx] = val;
+  // deselect siblings
+  const group = el.closest('.radio-group');
+  group.querySelectorAll('.radio-option').forEach(o => {
+    o.classList.remove('selected', 'selected-yes');
+  });
+  el.classList.add(val === 1 ? 'selected-yes' : 'selected');
+  updateAll();
+}
+
+function setHitop(scale, itemIdx, val, el) {
+  const key = `${scale}_${itemIdx}`;
+  state.hitop[key] = val;
+  // deselect siblings in same row
+  const row = el.closest('.likert-buttons');
+  row.querySelectorAll('.likert-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  updateAll();
+}
+
+function setPurchase(idx, val) {
+  state.purchase[idx] = val === '' ? null : Math.max(0, +val);
+  updateAll();
+}
+
+// ===================== SCORE COMPUTATIONS =====================
+function crafftScore() { return state.crafft.reduce((a,b) => a + (b ?? 0), 0); }
+function crafftDone()  { return state.crafft.every(v => v !== null); }
+
+function scidScore() { return state.scid.reduce((a,b) => a + (b === 1 ? 1 : 0), 0); }
+function scidDone()  { return state.scid.every(v => v !== null); }
+
+function scidDiagnosis(n) {
+  if (n < 2) return 'No AUD (< 2 criteria)';
+  if (n <= 3) return 'Mild AUD (2–3 criteria)';
+  if (n <= 5) return 'Moderate AUD (4–5 criteria)';
+  return 'Severe AUD (≥ 6 criteria)';
+}
+
+function hitopAnswered() {
+  const allScales = [...HITOP_DIS, ...HITOP_HSU];
+  let answered = 0;
+  allScales.forEach(({scale, items}) => {
+    items.forEach((_, j) => { if (state.hitop[`${scale}_${j}`] !== undefined) answered++; });
+  });
+  return answered;
+}
+
+function hitopDone() { return hitopAnswered() === 28; }
+
+function hitopScaleMean(scale, nItems) {
+  let sum = 0;
+  for (let j = 0; j < nItems; j++) {
+    sum += (state.hitop[`${scale}_${j}`] || 0);
+  }
+  return sum / nItems;
+}
+
+function toTScore(raw, mean, sd) {
+  if (sd === 0) return 50;
+  return Math.round(50 + 10 * (raw - mean) / sd);
+}
+
+function hitopTScores() {
+  const all = [...HITOP_DIS, ...HITOP_HSU];
+  return all.map(({scale, items}) => {
+    const mean = hitopScaleMean(scale, items.length);
+    const [normMean, normSD] = HITOP_NORMS[scale];
+    const t = toTScore(mean, normMean, normSD);
+    return { scale, mean: mean.toFixed(2), t };
+  });
+}
+
+function purchaseDone() { return state.purchase.every(v => v !== null); }
+function purchaseAnswered() { return state.purchase.filter(v => v !== null).length; }
+
+// ===================== DEMAND CURVE INDICES =====================
+function demandIndices(prices, qty) {
+  const validPairs = prices.map((p,i) => [p, qty[i] ?? 0]);
+  const Q0 = validPairs[0][1]; // intensity: consumption at $0
+  let Omax = 0, Pmax = 0, breakpoint = null;
+  validPairs.forEach(([p, q]) => {
+    const exp = p * q;
+    if (exp > Omax) { Omax = exp; Pmax = p; }
+    if (q === 0 && breakpoint === null && p > 0) breakpoint = p;
+  });
+  return { Q0, Omax: Omax.toFixed(2), Pmax, Breakpoint: breakpoint ?? '>' + prices[prices.length-1] };
+}
+
+// ===================== SPECIFIER FEEDBACK =====================
+function setSpecifier(chosen, el) {
+  const ss = scidScore();
+  let correct;
+  if (ss < 2)       correct = 'no_aud';
+  else if (ss <= 3) correct = 'mild';
+  else if (ss <= 5) correct = 'moderate';
+  else              correct = 'severe';
+
+  const labels = { no_aud:'No AUD', mild:'Mild (2–3)', moderate:'Moderate (4–5)', severe:'Severe (≥ 6)' };
+  const fb = document.getElementById('specifier-feedback');
+  fb.style.display = 'block';
+
+  document.querySelectorAll('[name="specifier"]').forEach(r => {
+    r.closest('.radio-option').classList.remove('selected', 'selected-yes');
+  });
+  el.classList.add(chosen === correct ? 'selected-yes' : 'selected');
+
+  if (chosen === correct) {
+    fb.style.background = 'var(--color-success-highlight)';
+    fb.style.color = 'var(--color-success)';
+    fb.innerHTML = '<strong>✓ Correct.</strong> With ' + ss + ' criteria endorsed, the diagnosis specifier is <strong>' + labels[correct] + '</strong>. (Mild = 2–3 · Moderate = 4–5 · Severe = ≥ 6)';
+  } else {
+    fb.style.background = 'var(--color-error-highlight)';
+    fb.style.color = 'var(--color-error)';
+    fb.innerHTML = '<strong>✗ Reconsider.</strong> You selected <strong>' + labels[chosen] + '</strong>. Review the endorsed criteria count (' + ss + ') and the threshold ranges.';
+  }
+}
+
+// ===================== UPDATE BADGES & PROGRESS =====================
+function updateAll() {
+  // CRAFFT
+  const cs = crafftScore();
+  document.getElementById('crafft-score-val').textContent = cs + ' / 6';
+  document.getElementById('badge-crafft').textContent = state.crafft.filter(v=>v!==null).length + '/6';
+  if (crafftDone()) {
+    document.getElementById('crafft-interp').textContent = cs >= 2 ? 'Positive screen (≥ 2)' : 'Negative screen (< 2)';
+    document.getElementById('crafft-badge').className = 'instrument-badge badge-completed';
+    document.getElementById('crafft-badge').textContent = 'Completed';
+  }
+
+  // SCID
+  const ss = scidScore();
+  document.getElementById('scid-score-val').textContent = ss + ' / 11';
+  document.getElementById('badge-scid').textContent = state.scid.filter(v=>v!==null).length + '/11';
+  if (scidDone()) {
+    const unknowns = state.scid.filter(v => v === 2).length;
+    document.getElementById('scid-interp').textContent = scidDiagnosis(ss) + (unknowns ? ' · ' + unknowns + ' uncertain' : '');
+    document.getElementById('scid-badge').className = 'instrument-badge badge-completed';
+    document.getElementById('scid-badge').textContent = 'Completed';
+    document.getElementById('scid-specifier-box').style.display = 'block';
+  }
+
+  // HiTOP
+  const ha = hitopAnswered();
+  document.getElementById('hitop-score-val').textContent = ha + ' / 28';
+  document.getElementById('badge-hitop').textContent = ha + '/28';
+  if (hitopDone()) {
+    document.getElementById('hitop-interp').textContent = 'All items rated';
+    document.getElementById('hitop-badge').className = 'instrument-badge badge-completed';
+    document.getElementById('hitop-badge').textContent = 'Completed';
+  }
+
+  // Purchase
+  const pa = purchaseAnswered();
+  document.getElementById('purchase-val').textContent = pa + ' / 10';
+  document.getElementById('badge-ana').textContent = pa + '/10 prices';
+  if (purchaseDone()) {
+    document.getElementById('purchase-interp').textContent = 'All prices entered';
+    document.getElementById('purchase-badge').className = 'instrument-badge badge-completed';
+    document.getElementById('purchase-badge').textContent = 'Completed';
+  }
+
+  // Progress
+  const done = [crafftDone(), scidDone(), hitopDone(), purchaseDone()].filter(Boolean).length;
+  document.getElementById('progress-text').textContent = done + ' of 4 tools completed';
+  document.getElementById('sidebar-progress').style.width = (done/4*100) + '%';
+
+  // Report button
+  document.getElementById('generate-report-btn').disabled = !(crafftDone() && scidDone() && hitopDone());
+}
+
+// ===================== STOP SIGNAL EMBED =====================
+// ===================== INLINE STOP-SIGNAL TASK =====================
+const SST = {
+  N_TRIALS: 30,
+  P_STOP: 1/3,
+  ITI_MIN: 700, ITI_MAX: 1200,
+  STIM_DUR: 2000,
+  FIXED_SSDS: [100, 150, 450],
+  INIT_SSD: 150, SSD_STEP: 50,
+  MIN_SSD: 50, MAX_SSD: 700,
+
+  trials:[], trialIdx:0, ssd:200,
+  goRTs:[], stopSSDs:[], stopCommissionRTs:[],
+  goOmissions:0, goTotal:0, stopTotal:0,
+  waitingForResponse:false, trialStartTime:0, phase:'iti', responded:false,
+  itiDur:800, _keyHandler:null, _touchHandler:null, _results:null,
+  _goResolve: null,   // used to short-circuit go wait on press
+
+  init() {
+    this.trialIdx=0; this.ssd=this.INIT_SSD;
+    this.goRTs=[]; this.stopSSDs=[]; this.stopCommissionRTs=[];
+    this.goOmissions=0; this.goTotal=0; this.stopTotal=0;
+    this.responded=false; this._goResolve=null;
+    const nStop=Math.round(this.N_TRIALS*this.P_STOP);
+    const arr=Array(this.N_TRIALS-nStop).fill('go').concat(Array(nStop).fill('stop'));
+    for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
+    this.trials=arr;
+    this._keyHandler=this._onKey.bind(this);
+    document.addEventListener('keydown',this._keyHandler);
+    // Canvas touch/click handled via sst-tap-btn and direct canvas touch
+    const cv=document.getElementById('sst-canvas');
+    if(cv){ cv.addEventListener('touchstart',e=>{e.preventDefault();this._respond();},{passive:false}); }
+  },
+
+  _cleanup(){
+    document.removeEventListener('keydown',this._keyHandler);
+  },
+
+  _onKey(e){ if(e.code==='Space'||e.key===' '){e.preventDefault();this._respond();} },
+
+  _respond(){
+    if(!this.waitingForResponse||this.responded) return;
+    this.responded=true;
+    const rt=Math.round(performance.now()-this.trialStartTime);
+    if(this.phase==='go-wait'){
+      this.goRTs.push(rt);
+      // Resolve go wait immediately on press
+      if(this._goResolve){ this._goResolve(); this._goResolve=null; }
+    } else if(this.phase==='stop-wait'){
+      this.stopCommissionRTs.push(rt);
+    }
+  },
+
+  _cv(){ return document.getElementById('sst-canvas'); },
+  _ctx(){ return this._cv().getContext('2d'); },
+  W(){ return this._cv().width; },
+  H(){ return this._cv().height; },
+
+  // ── Drawing ──────────────────────────────────────────────────────────────
+  _bg(){
+    const c=this._ctx(),W=this.W(),H=this.H();
+    c.fillStyle='#0a0a10'; c.fillRect(0,0,W,H);
+  },
+
+  _drawFixation(){
+    this._bg();
+    const c=this._ctx(),W=this.W(),H=this.H(),cx=W/2,cy=H/2;
+    c.save(); c.globalAlpha=0.35; c.strokeStyle='#8888aa'; c.lineWidth=1.5; c.lineCap='round';
+    c.beginPath(); c.moveTo(cx-10,cy); c.lineTo(cx+10,cy); c.stroke();
+    c.beginPath(); c.moveTo(cx,cy-10); c.lineTo(cx,cy+10); c.stroke();
+    c.restore();
+    this._drawCounter();
+  },
+
+  _drawCounter(){
+    const c=this._ctx(),W=this.W();
+    c.save(); c.fillStyle='rgba(255,255,255,0.12)'; c.font='500 12px Inter,sans-serif';
+    c.textAlign='right'; c.textBaseline='top'; c.fillText(this.trialIdx+'/'+this.N_TRIALS,W-14,12); c.restore();
+  },
+
+  /* Modern minimalist Go stimulus: clean thin ring + tiny centre dot */
+  _drawGo(){
+    this._bg();
+    const c=this._ctx(),W=this.W(),H=this.H(),cx=W/2,cy=H/2;
+    // outer glow
+    const glow=c.createRadialGradient(cx,cy,28,cx,cy,82);
+    glow.addColorStop(0,'rgba(180,180,255,0.10)'); glow.addColorStop(1,'rgba(0,0,0,0)');
+    c.fillStyle=glow; c.fillRect(0,0,W,H);
+    // ring
+    c.beginPath(); c.arc(cx,cy,44,0,Math.PI*2);
+    c.strokeStyle='rgba(210,210,240,0.85)'; c.lineWidth=2.5; c.stroke();
+    // inner dot
+    c.beginPath(); c.arc(cx,cy,6,0,Math.PI*2);
+    c.fillStyle='rgba(220,220,255,0.9)'; c.fill();
+    this._drawCounter();
+  },
+
+  /* Stop signal: ring fills red, outer pulse ring */
+  _drawStop(){
+    this._bg();
+    const c=this._ctx(),W=this.W(),H=this.H(),cx=W/2,cy=H/2;
+    // red glow
+    const glow=c.createRadialGradient(cx,cy,24,cx,cy,90);
+    glow.addColorStop(0,'rgba(248,80,80,0.22)'); glow.addColorStop(1,'rgba(0,0,0,0)');
+    c.fillStyle=glow; c.fillRect(0,0,W,H);
+    // filled ring
+    c.beginPath(); c.arc(cx,cy,44,0,Math.PI*2);
+    c.strokeStyle='rgba(248,100,100,0.9)'; c.lineWidth=2.5; c.stroke();
+    // centre cross (stop icon)
+    c.save(); c.strokeStyle='rgba(248,100,100,0.9)'; c.lineWidth=2; c.lineCap='round';
+    c.beginPath(); c.moveTo(cx-9,cy-9); c.lineTo(cx+9,cy+9); c.stroke();
+    c.beginPath(); c.moveTo(cx+9,cy-9); c.lineTo(cx-9,cy+9); c.stroke();
+    c.restore();
+    this._drawCounter();
+  },
+
+  _drawFeedback(type){
+    const c=this._ctx(),W=this.W(),H=this.H(),cx=W/2,cy=H/2;
+    const cfg={
+      'hit':          {accent:'#4ade80',icon:'check',   h1:'Correct',    h2:'Good response'},
+      'miss':         {accent:'#fb923c',icon:'clock',   h1:'Too slow',   h2:'Respond faster'},
+      'correct-stop': {accent:'#4ade80',icon:'stop',    h1:'Good stop',  h2:'Inhibition successful'},
+      'false-alarm':  {accent:'#f87171',icon:'x',       h1:'Incorrect',  h2:'Should have stopped'}
+    }[type];
+    // dark bg tint
+    c.fillStyle='#0a0a10'; c.fillRect(0,0,W,H);
+    const tint=cfg.accent+'18'; c.fillStyle=tint; c.fillRect(0,0,W,H);
+    // card
+    const cw=220,ch=110,cx2=cx-cw/2,cy2=cy-ch/2;
+    c.fillStyle='rgba(255,255,255,0.045)';
+    this._rr(c,cx2,cy2,cw,ch,14); c.fill();
+    c.strokeStyle=cfg.accent+'44'; c.lineWidth=1;
+    this._rr(c,cx2,cy2,cw,ch,14); c.stroke();
+    // icon
+    c.save(); c.strokeStyle=cfg.accent; c.lineWidth=2.2; c.lineCap='round'; c.lineJoin='round';
+    const ix=cx, iy=cy-18, r=14;
+    if(cfg.icon==='check'){
+      c.beginPath(); c.moveTo(ix-r*0.55,iy); c.lineTo(ix-r*0.1,iy+r*0.55); c.lineTo(ix+r*0.65,iy-r*0.65); c.stroke();
+    } else if(cfg.icon==='x'){
+      c.beginPath(); c.moveTo(ix-r*0.6,iy-r*0.6); c.lineTo(ix+r*0.6,iy+r*0.6); c.stroke();
+      c.beginPath(); c.moveTo(ix+r*0.6,iy-r*0.6); c.lineTo(ix-r*0.6,iy+r*0.6); c.stroke();
+    } else if(cfg.icon==='clock'){
+      c.beginPath(); c.arc(ix,iy,r,0,Math.PI*2); c.stroke();
+      c.beginPath(); c.moveTo(ix,iy-r*0.6); c.lineTo(ix,iy); c.lineTo(ix+r*0.45,iy+r*0.45); c.stroke();
+    } else {
+      c.beginPath(); c.moveTo(ix-r*0.6,iy-r*0.6); c.lineTo(ix+r*0.6,iy-r*0.6);
+      c.lineTo(ix+r*0.6,iy+r*0.6); c.lineTo(ix-r*0.6,iy+r*0.6); c.closePath(); c.stroke();
+      c.beginPath(); c.moveTo(ix,iy-r*0.6); c.lineTo(ix,iy+r*0.6); c.stroke();
+    }
+    c.restore();
+    c.fillStyle=cfg.accent; c.font='600 15px Inter,sans-serif'; c.textAlign='center'; c.textBaseline='middle';
+    c.fillText(cfg.h1,cx,cy+12);
+    c.fillStyle=cfg.accent+'88'; c.font='12px Inter,sans-serif';
+    c.fillText(cfg.h2,cx,cy+32);
+  },
+
+  _rr(c,x,y,w,h,r){
+    c.beginPath(); c.moveTo(x+r,y);
+    c.lineTo(x+w-r,y); c.quadraticCurveTo(x+w,y,x+w,y+r);
+    c.lineTo(x+w,y+h-r); c.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+    c.lineTo(x+r,y+h); c.quadraticCurveTo(x,y+h,x,y+h-r);
+    c.lineTo(x,y+r); c.quadraticCurveTo(x,y,x+r,y); c.closePath();
+  },
+
+  _wait(ms){ return new Promise(res=>setTimeout(res,ms)); },
+
+  // Short-circuit wait: resolves when either timer expires OR _goResolve is called
+  _waitGo(ms){
+    return new Promise(res=>{
+      const t=setTimeout(()=>{ this._goResolve=null; res(); }, ms);
+      this._goResolve=()=>{ clearTimeout(t); res(); };
+    });
+  },
+
+  _updateProgress(){
+    const el=document.getElementById('sst-pbar');
+    if(el) el.style.width=(this.trialIdx/this.N_TRIALS*100)+'%';
+  },
+
+  async _runTrial(){
+    if(this.trialIdx>=this.N_TRIALS){ this._finish(); return; }
+    const type=this.trials[this.trialIdx];
+    this.trialIdx++;
+    this.responded=false;
+    this.waitingForResponse=false;
+    this._updateProgress();
+
+    // ITI
+    this.phase='iti';
+    this._drawFixation();
+    await this._wait(this.itiDur);
+    this.itiDur=this.ITI_MIN+Math.floor(Math.random()*(this.ITI_MAX-this.ITI_MIN));
+
+    // Stimulus
+    this._drawGo();
+    this.trialStartTime=performance.now();
+
+    let feedbackType;
+    if(type==='go'){
+      this.goTotal++;
+      this.phase='go-wait';
+      this.waitingForResponse=true;
+      await this._waitGo(this.STIM_DUR);   // resolves early if responded
+      this.waitingForResponse=false;
+      feedbackType=this.responded?'hit':'miss';
+      if(!this.responded) this.goOmissions++;
+    } else {
+      this.stopTotal++;
+      const trialSSD=this.FIXED_SSDS[Math.floor(Math.random()*this.FIXED_SSDS.length)];
+      this.phase='ssd-wait';
+      await this._wait(trialSSD);
+      if(this.responded){
+        // Pressed before stop signal appeared → commission error on stop trial
+        this.stopCommissionRTs.push(Math.round(performance.now()-this.trialStartTime));
+        this.stopSSDs.push(trialSSD);
+        feedbackType='false-alarm';
+      } else {
+        this._drawStop();
+        this.phase='stop-wait';
+        this.waitingForResponse=true;
+        this.stopSSDs.push(trialSSD);
+        await this._wait(this.STIM_DUR-trialSSD);
+        this.waitingForResponse=false;
+        feedbackType=this.responded?'false-alarm':'correct-stop';
+      }
+    }
+
+    // Feedback 480ms
+    this._drawFeedback(feedbackType);
+    await this._wait(480);
+    this._bg();
+    await this._wait(50);
+    setTimeout(()=>this._runTrial(),0);
+  },
+
+  _computeResults(){
+    const pRespond=this.stopTotal>0?this.stopCommissionRTs.length/this.stopTotal:0;
+    const sortedGo=[...this.goRTs].sort((a,b)=>a-b);
+    const nthIdx=Math.min(Math.round(pRespond*sortedGo.length),sortedGo.length-1);
+    const nthGoRT=sortedGo[nthIdx]||0;
+    const meanSSD=this.stopSSDs.length?Math.round(this.stopSSDs.reduce((a,b)=>a+b,0)/this.stopSSDs.length):0;
+    const ssrt=nthGoRT-meanSSD;
+    const meanGoRT=this.goRTs.length?Math.round(this.goRTs.reduce((a,b)=>a+b,0)/this.goRTs.length):0;
+    return{
+      goTotal:this.goTotal,stopTotal:this.stopTotal,
+      goAccPct:this.goTotal>0?((this.goTotal-this.goOmissions)/this.goTotal*100).toFixed(1):'--',
+      omissions:this.goOmissions,
+      commissionRate:this.stopTotal>0?(this.stopCommissionRTs.length/this.stopTotal*100).toFixed(1):'--',
+      pRespond:(pRespond*100).toFixed(1),
+      meanGoRT,meanSSD,nthGoRT,nthIdx,
+      ssrt:ssrt>0?ssrt:0,
+      sortedGoRTs:sortedGo,stopSSDs:[...this.stopSSDs],
+      reliable: pRespond>=0.25 && pRespond<=0.75
+    };
+  },
+
+  _finish(){
+    this._cleanup();
+    this._bg();
+    const c=this._ctx(),W=this.W(),H=this.H(),cx=W/2,cy=H/2;
+    c.fillStyle='rgba(74,222,128,0.8)'; c.font='600 20px Inter,sans-serif';
+    c.textAlign='center'; c.textBaseline='middle'; c.fillText('All done!',cx,cy-10);
+    c.fillStyle='rgba(255,255,255,0.3)'; c.font='13px Inter,sans-serif';
+    c.fillText('Calculating results…',cx,cy+18);
+    const r=this._computeResults();
+    this._results=r; state.stopResult=r; updateAll();
+    setTimeout(()=>{
+      document.getElementById('sst-task').style.display='none';
+      document.getElementById('sst-done').style.display='block';
+      document.getElementById('badge-ana').textContent='SST \u2713 \xb7 '+purchaseAnswered()+'/10';
+      sstRenderResults(r);
+    },900);
+  }
+};
+
+function sstStart(){
+  document.getElementById('sst-intro').style.display='none';
+  document.getElementById('sst-task').style.display='block';
+  SST.init();
+  SST._runTrial();
+}
+
+function sstTap(e){
+  if(e) e.preventDefault();
+  SST._respond();
+  // Visual press flash
+  const btn = document.getElementById('sst-tap-btn');
+  if(btn){ btn.classList.add('pressed'); setTimeout(()=>btn.classList.remove('pressed'),120); }
+}
+
+// ===================== MOBILE LAYOUT TOGGLE =====================
+let _mobileMode = false;
+
+function toggleMobileMode(){
+  _mobileMode = !_mobileMode;
+  document.body.classList.toggle('mobile-mode', _mobileMode);
+  const icon = document.getElementById('mobile-toggle-icon');
+  const btn  = document.getElementById('mobile-toggle');
+  if(_mobileMode){
+    // Switch to laptop icon when in mobile mode
+    icon.innerHTML = '<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>';
+    btn.title = 'Switch to desktop layout';
+    btn.style.color = 'var(--color-primary)';
+  } else {
+    icon.innerHTML = '<rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/>';
+    btn.title = 'Switch to mobile layout';
+    btn.style.color = '';
+  }
+  syncMobileNav(document.querySelector('.view.active')?.id?.replace('view-','') || 'vignette');
+}
+
+
+
+function sstRenderResults(r){
+  const commPct = parseFloat(r.commissionRate);
+  const reliable = r.reliable !== undefined ? r.reliable : (commPct>=25 && commPct<=75);
+
+  // ── KPI grid ─────────────────────────────────────────────────────────────
+  const kpis=[
+    {label:'Go Trials',       value:r.goTotal,                         note:'total'},
+    {label:'Stop Trials',     value:r.stopTotal,                       note:'total'},
+    {label:'Go Accuracy',     value:r.goAccPct+'%',                    note:'omissions: '+r.omissions},
+    {label:'Commission Rate', value:r.commissionRate+'%',              note:'failed stops',
+     flag: !reliable ? (commPct<25?'low':'high') : null },
+    {label:'Mean Go RT',      value:r.meanGoRT+' ms',                  note:'reaction time'},
+    {label:'Mean SSD',        value:r.meanSSD+' ms',                   note:'stop-signal delay'},
+    {label:'SSRT',            value:(r.ssrt||'--')+' ms',              note:'inhibitory latency',
+     flag: !reliable ? 'unreliable' : null },
+  ];
+
+  document.getElementById('sst-kpi-grid').innerHTML=kpis.map(k=>{
+    const flagColor = k.flag==='unreliable'||k.flag==='high'||k.flag==='low'
+      ? 'var(--color-error)' : 'var(--color-primary)';
+    return `<div class="metric-card" style="${k.flag?'border:1.5px solid var(--color-error);':''}" >
+      <div class="metric-value" style="color:${k.flag?'var(--color-error)':'var(--color-primary)'}">${k.value}</div>
+      <div class="metric-label">${k.label}${k.note?'<br><span style="font-size:10px;opacity:0.6">'+k.note+'</span>':''}</div>
+      ${k.flag?`<div style="font-size:9px;color:var(--color-error);font-weight:600;margin-top:3px;text-transform:uppercase;letter-spacing:0.05em">
+        ${k.flag==='unreliable'?'unreliable':k.flag+' commission'}</div>`:''}
+    </div>`;
+  }).join('');
+
+  // ── Reliability banner ───────────────────────────────────────────────────
+  const bannerEl = document.getElementById('sst-reliability-banner');
+  if(bannerEl){
+    if(!reliable){
+      const dir = commPct<25?'below 25%':'above 75%';
+      const reason = commPct<25
+        ? 'Too few commission errors suggest the participant may have slowed their Go responses strategically to avoid stop errors — violating the independence assumption.'
+        : 'Too many commission errors suggest the participant rarely inhibited — the stop process may not have engaged reliably.';
+      bannerEl.innerHTML=`<div style="display:flex;gap:var(--space-3);align-items:flex-start;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:2px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div>
+          <strong>SSRT reliability warning:</strong> Commission rate (${r.commissionRate}%) is ${dir}.
+          ${reason}
+          The SSRT estimate should be interpreted with caution or considered invalid.
+        </div>
+      </div>`;
+      bannerEl.style.display='block';
+    } else {
+      bannerEl.style.display='none';
+    }
+  }
+
+  // ── What is SSRT? explainer ──────────────────────────────────────────────
+  const ssrtEl = document.getElementById('sst-ssrt-explainer');
+  if(ssrtEl) ssrtEl.innerHTML=`
+    <div style="font-size:var(--text-sm);font-weight:600;margin-bottom:var(--space-2)">What is SSRT?</div>
+    <p style="font-size:var(--text-sm);color:var(--color-text);line-height:1.75;margin-bottom:var(--space-3)">
+      The <strong>Stop-Signal Reaction Time (SSRT)</strong> is an estimate of how long it takes
+      your brain to cancel a movement that has already started. On Go trials you initiate a keypress;
+      on Stop trials a red signal asks you to abort that movement. Because the stop and go processes
+      race against each other in parallel, we cannot directly observe the stop process — but we can
+      estimate its duration mathematically.
+    </p>
+    <p style="font-size:var(--text-sm);color:var(--color-text-muted);line-height:1.75">
+      A <strong>shorter SSRT</strong> means faster inhibitory control — the brain cancels actions
+      quickly. A <strong>longer SSRT</strong> (typically &gt; 250 ms) suggests slower inhibition,
+      which is associated with impulsivity and difficulty stopping habitual behaviours such as
+      substance use.
+    </p>`;
+
+  // ── Calculation walkthrough ──────────────────────────────────────────────
+  const pN = (r.pRespond/100);
+  const nthLabel = Math.round(pN*100)+'th';
+  const commCount = r.stopCommissionRTs ? r.stopCommissionRTs.length
+    : Math.round(parseFloat(r.commissionRate)/100*r.stopTotal);
+  document.getElementById('sst-calc-steps').innerHTML=`
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:var(--space-2) var(--space-5);align-items:baseline;">
+      <div style="font-weight:700;color:var(--color-primary);font-size:var(--text-sm);">Step 1</div>
+      <div><strong>P(respond|stop-signal)</strong> = commission errors ÷ stop trials
+        = ${commCount} ÷ ${r.stopTotal} = <strong>${r.pRespond}%</strong></div>
+      <div style="font-weight:700;color:var(--color-primary);font-size:var(--text-sm);">Step 2</div>
+      <div>Find the <strong>${nthLabel} percentile Go RT</strong> from the sorted Go RT
+        distribution (n=${r.goTotal - r.omissions} valid trials) → <strong>${r.nthGoRT} ms</strong></div>
+      <div style="font-weight:700;color:var(--color-primary);font-size:var(--text-sm);">Step 3</div>
+      <div><strong>Mean SSD</strong> across ${r.stopTotal} stop trials = <strong>${r.meanSSD} ms</strong></div>
+      <div style="font-weight:700;color:var(--color-primary);font-size:var(--text-sm);">Step 4</div>
+      <div><strong>SSRT</strong> = ${nthLabel} percentile Go RT − Mean SSD
+        = ${r.nthGoRT} − ${r.meanSSD}
+        = <strong style="color:var(--color-primary);font-size:1.08em;">${r.ssrt} ms</strong>
+        ${!reliable?'<span style="color:var(--color-error);font-size:var(--text-xs);font-weight:600;margin-left:6px">⚠ unreliable estimate</span>':''}
+      </div>
+    </div>
+    <div style="margin-top:var(--space-3);font-size:var(--text-xs);color:var(--color-text-muted);">
+      SSRT is valid when commission rate is between 25% and 75% (observed: ${r.commissionRate}%)
+      ${reliable?'✓':'— this estimate may be biased'}.
+    </div>`;
+}
+
+
+function sstCopyResults(){
+  if(!SST._results) return;
+  const r=SST._results;
+  const txt=JSON.stringify({ssrt:r.ssrt,meanGoRT:r.meanGoRT,meanSSD:r.meanSSD,goAccPct:r.goAccPct,commissionRate:r.commissionRate,omissions:r.omissions,goTotal:r.goTotal,stopTotal:r.stopTotal,pRespond:r.pRespond,nthGoRT:r.nthGoRT});
+  navigator.clipboard.writeText(txt).then(()=>{
+    const el=document.getElementById('sst-copy-confirm');
+    el.style.display='inline'; setTimeout(()=>el.style.display='none',2500);
+  }).catch(()=>{ prompt('Copy this:', txt); });
+}
+
+function sstShowPaste(){
+  document.getElementById('sst-paste-area').style.display='block';
+}
+
+function sstLoadPasted(){
+  const raw=document.getElementById('sst-paste-input').value.trim();
+  const errEl=document.getElementById('sst-paste-error');
+  try{
+    const r=JSON.parse(raw);
+    if(typeof r.ssrt==='undefined') throw new Error('Missing fields');
+    r.stopCommissionRTs=Array(Math.round(parseFloat(r.commissionRate)/100*(r.stopTotal||1))).fill(200);
+    state.stopResult=r;
+    SST._results=r;
+    sstRenderResults(r);
+    document.getElementById('sst-paste-area').style.display='none';
+    errEl.style.display='none';
+    document.getElementById('badge-ana').textContent='SST ✓ (pasted) · '+purchaseAnswered()+'/10';
+    updateAll();
+  }catch(e){
+    errEl.textContent='Could not parse results. Make sure you pasted the copied text exactly.';
+    errEl.style.display='block';
+  }
+}
+
+
+function loadStopSignal() { /* inline SST — nothing to load */ }
+
+function displayStopResults(r, metricsId, pillId) {
+  metricsId = metricsId || 'stop-metrics'; pillId = pillId || 'stop-result-pill';
+  const pill = document.getElementById(pillId);
+  const ssrtNum = typeof r.ssrt === 'number' ? r.ssrt : null;
+  pill.textContent = ssrtNum ? `SSRT ${ssrtNum} ms` : 'Completed';
+  pill.className = 'score-pill ' + (ssrtNum && ssrtNum > 250 ? 'score-high' : 'score-neutral');
+
+  const metrics = [
+    { label: 'Go Trials', value: r.goTotal },
+    { label: 'Stop Trials', value: r.stopTotal },
+    { label: 'Go Accuracy', value: r.goAccPct + '%' },
+    { label: 'Omissions', value: r.omissions },
+    { label: 'Commission Rate', value: r.commissionRate + '%', note: '(stop errors)' },
+    { label: 'Mean Go RT', value: r.meanGoRT + ' ms' },
+    { label: 'Mean SSD', value: r.meanSSD + ' ms' },
+    { label: 'SSRT', value: (r.ssrt === '--' ? '--' : r.ssrt + ' ms'), note: '(horse-race)' }
+  ];
+  document.getElementById(metricsId).innerHTML = metrics.map(m => `
+    <div class="metric-card">
+      <div class="metric-value">${m.value}</div>
+      <div class="metric-label">${m.label}${m.note ? '<br><span style="font-size:10px;opacity:0.7">' + m.note + '</span>' : ''}</div>
+    </div>`).join('');
+}
+
+// ===================== REPORT BUILDER =====================
+function buildReport() {
+  const area = document.getElementById('report-area');
+  const cs = crafftScore();
+  const ss = scidScore();
+  const tScores = hitopTScores();
+  const disTScores = tScores.slice(0, 8);
+  const hsuTScores = tScores.slice(8);
+  const disAvgT = Math.round(disTScores.reduce((a,b)=>a+b.t,0)/disTScores.length);
+  const hsuAvgT  = Math.round(hsuTScores.reduce((a,b)=>a+b.t,0)/hsuTScores.length);
+
+  const tClass = t => t >= 70 ? 'score-high' : t >= 60 ? 'score-moderate' : 'score-low';
+  const tLabel = t => t >= 70 ? 'Clinically elevated (T ≥ 70)' : t >= 60 ? 'Elevated (T 60–69)' : 'Within normal limits';
+
+  // Purchase demand
+  const qty = state.purchase.map(v => v ?? 0);
+  const di = demandIndices(PURCHASE_PRICES, qty);
+
+  let html = `
+  <!-- KPI STRIP -->
+  <div class="report-section">
+    <div class="report-grid">
+      <div class="report-kpi">
+        <div class="kpi-label">CRAFFT</div>
+        <div class="kpi-value">${cs}/6</div>
+        <div class="kpi-note">${cs >= 2 ? '⚠ Positive screen' : '✓ Negative screen'}</div>
+      </div>
+      <div class="report-kpi">
+        <div class="kpi-label">SCID-5 AUD</div>
+        <div class="kpi-value">${ss}/11</div>
+        <div class="kpi-note">${scidDiagnosis(ss)}</div>
+      </div>
+      <div class="report-kpi">
+        <div class="kpi-label">Disinhibition T</div>
+        <div class="kpi-value">${disAvgT}</div>
+        <div class="kpi-note">${tLabel(disAvgT)}</div>
+      </div>
+      <div class="report-kpi">
+        <div class="kpi-label">HSU Spectrum T</div>
+        <div class="kpi-value">${hsuAvgT}</div>
+        <div class="kpi-note">${tLabel(hsuAvgT)}</div>
+      </div>
+      ${state.stopResult ? `
+      <div class="report-kpi">
+        <div class="kpi-label">SSRT</div>
+        <div class="kpi-value">${state.stopResult.ssrt}${typeof state.stopResult.ssrt === 'number' ? ' ms' : ''}</div>
+        <div class="kpi-note">Inhibitory control estimate</div>
+      </div>
+      <div class="report-kpi">
+        <div class="kpi-label">Commission Rate</div>
+        <div class="kpi-value">${state.stopResult.commissionRate}%</div>
+        <div class="kpi-note">Stop-signal errors</div>
+      </div>` : ''}
+      <div class="report-kpi">
+        <div class="kpi-label">Q0 (Free Consumption)</div>
+        <div class="kpi-value">${di.Q0}</div>
+        <div class="kpi-note">Std drinks at $0</div>
+      </div>
+      <div class="report-kpi">
+        <div class="kpi-label">Omax</div>
+        <div class="kpi-value">$${di.Omax}</div>
+        <div class="kpi-note">Max alcohol expenditure</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATEGORICAL TOOLS -->
+  <div class="report-section">
+    <h2 style="font-size:var(--text-lg);font-weight:600;margin-bottom:var(--space-4)">Categorical Assessment</h2>
+    <div class="report-tool-card">
+      <div class="report-tool-header">
+        <div class="report-tool-name">CRAFFT — SUD Screener</div>
+        <span class="score-pill ${cs >= 2 ? 'score-high' : 'score-low'}">${cs}/6 · ${cs >= 2 ? 'Positive' : 'Negative'}</span>
+      </div>
+      <table class="report-items-table">
+        <tr><th>Item</th><th>Acronym</th><th>Response</th></tr>
+        ${CRAFFT_ITEMS.map((it,i) => `<tr>
+          <td>${it.letter}</td>
+          <td style="color:var(--color-text-muted)">${it.label}</td>
+          <td class="${state.crafft[i]===1?'yes-cell':'no-cell'}">${state.crafft[i]===1?'YES':'NO'}</td>
+        </tr>`).join('')}
+      </table>
+      <div style="margin-top:var(--space-3);font-size:var(--text-xs);color:var(--color-text-muted)">Cut-off ≥ 2 = positive screen.</div>
+    </div>
+
+    <div class="report-tool-card">
+      <div class="report-tool-header">
+        <div class="report-tool-name">SCID-5-CV — Alcohol Use Disorder</div>
+        <span class="score-pill ${ss>=6?'score-high':ss>=4?'score-moderate':ss>=2?'score-moderate':'score-low'}">${ss}/11 · ${scidDiagnosis(ss)}</span>
+      </div>
+      <table class="report-items-table">
+        <tr><th>Criterion</th><th>DSM-5 Domain</th><th>Rating</th></tr>
+        ${SCID_ITEMS.map((it,i) => `<tr>
+          <td style="font-weight:600;white-space:nowrap">${it.id}</td>
+          <td style="color:var(--color-text-muted);font-size:var(--text-xs)">${it.criterion}</td>
+          <td class="${state.scid[i]===1?'yes-cell':'no-cell'}">${state.scid[i]===1?'Present':'Absent'}</td>
+        </tr>`).join('')}
+      </table>
+      <div style="margin-top:var(--space-3);font-size:var(--text-xs);color:var(--color-text-muted)">Mild 2–3 · Moderate 4–5 · Severe ≥ 6</div>
+    </div>
+  </div>
+
+  <!-- HITOP CHARTS -->
+  <div class="report-section">
+    <h2 style="font-size:var(--text-lg);font-weight:600;margin-bottom:var(--space-4)">Dimensional Assessment — HiTOP-SR</h2>
+
+    <div class="chart-container">
+      <div class="chart-title">T-Score Profile — All 14 Subscales</div>
+      <div class="chart-sub">Standardized T-scores (M=50, SD=10). Dashed lines mark T=60 (elevated) and T=70 (clinically elevated).</div>
+      <div id="chart-hitop-bar" style="height:420px"></div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-title">Disinhibited Externalizing & Harmful Substance Use — T-Score Distribution</div>
+      <div class="chart-sub">Each panel shows a reference normal distribution (M=50, SD=10) with the client's spectrum-level T-score marked. Shading indicates clinical elevation thresholds.</div>
+      <div id="chart-hitop-hist" style="height:380px"></div>
+    </div>
+  </div>
+
+  <!-- STOP SIGNAL -->
+  ${state.stopResult ? `
+  <div class="report-section">
+    <h2 style="font-size:var(--text-lg);font-weight:600;margin-bottom:var(--space-4)">Inhibitory Control — Stop-Signal Task</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:var(--space-3);margin-bottom:var(--space-5);">
+      ${[
+        ['SSRT', (state.stopResult.ssrt||'--')+' ms'],
+        ['Go Accuracy', state.stopResult.goAccPct+'%'],
+        ['Mean Go RT', state.stopResult.meanGoRT+' ms'],
+        ['Mean SSD', state.stopResult.meanSSD+' ms'],
+        ['Commission Rate', state.stopResult.commissionRate+'%']
+      ].map(([l,v])=>`<div class="metric-card"><div class="metric-value">${v}</div><div class="metric-label">${l}</div></div>`).join('')}
+    </div>
+    <div class="chart-container">
+      <div class="chart-title">SSRT — Normative Comparison</div>
+      <div class="chart-sub">Participant SSRT on a reference distribution (M=200 ms, SD=30 ms). Shaded bands: typical range (170–230 ms) and slow inhibition (>250 ms).</div>
+      ${!state.stopResult.reliable ? `<div style="background:var(--color-error-highlight);border:1px solid var(--color-error);border-radius:var(--radius-md);padding:var(--space-3) var(--space-4);margin-bottom:var(--space-3);font-size:var(--text-xs);color:var(--color-error);">⚠ Commission rate (${state.stopResult.commissionRate}%) is outside the 25–75% validity window — SSRT estimate may be unreliable.</div>` : ''}
+      <div id="chart-ssrt-dist" style="height:320px"></div>
+    </div>
+  </div>` : ''}
+
+  <!-- DEMAND CURVE -->
+  <div class="report-section">
+    <h2 style="font-size:var(--text-lg);font-weight:600;margin-bottom:var(--space-4)">Alcohol Demand — Hypothetical Purchase Task</h2>
+    <div class="chart-container">
+      <div class="chart-title">Alcohol Demand Curve</div>
+      <div class="chart-sub">Log–linear plot of quantity consumed as a function of price per standard drink. Key demand indices: Q0 = free consumption; Omax = maximum expenditure; Pmax = price at Omax; Breakpoint = first price at Q=0.</div>
+      <div id="chart-demand" style="height:380px"></div>
+    </div>
+    <div class="report-tool-card">
+      <div class="report-tool-header"><div class="report-tool-name">Demand Indices</div></div>
+      <table class="report-items-table">
+        <tr><th>Index</th><th>Value</th><th>Interpretation</th></tr>
+        <tr><td><strong>Q0</strong></td><td>${di.Q0} drinks</td><td style="color:var(--color-text-muted);font-size:var(--text-xs)">Intensity — consumption at zero cost; reflects baseline motivation</td></tr>
+        <tr><td><strong>Omax</strong></td><td>$${di.Omax}</td><td style="color:var(--color-text-muted);font-size:var(--text-xs)">Maximum expenditure — highest amount spent at any price point</td></tr>
+        <tr><td><strong>Pmax</strong></td><td>$${di.Pmax}</td><td style="color:var(--color-text-muted);font-size:var(--text-xs)">Price at Omax — transition from inelastic to elastic demand</td></tr>
+        <tr><td><strong>Breakpoint</strong></td><td>$${di.Breakpoint}</td><td style="color:var(--color-text-muted);font-size:var(--text-xs)">First price at which consumption reaches zero — reinforcing efficacy</td></tr>
+      </table>
+      <div style="margin-top:var(--space-3);font-size:var(--text-xs);color:var(--color-text-muted)">Higher Q0, Omax, and later breakpoint indicate stronger reinforcing value of alcohol.</div>
+    </div>
+  </div>
+
+  <!-- INTEGRATIVE FORMULATION -->
+  <div class="report-section">
+    <h2 style="font-size:var(--text-lg);font-weight:600;margin-bottom:var(--space-2)">Integrative Clinical Formulation</h2>
+    <p style="font-size:var(--text-sm);color:var(--color-text-muted);margin-bottom:var(--space-5)">
+      Based on the assessment data above, write your clinical interpretation for each domain.
+      Consider severity, pattern, and cross-method consistency.
+    </p>
+    <div id="formulation-boxes"></div>
+    <div style="margin-top:var(--space-3);padding:var(--space-3) var(--space-4);background:var(--color-surface-offset);border-radius:var(--radius-md);font-size:var(--text-xs);color:var(--color-text-muted)">
+      Responses are not saved or transmitted. Practice formulation exercise for educational purposes only.
+    </div>
+  </div>
+
+  <div style="display:flex;gap:var(--space-3);margin-top:var(--space-6)">
+    <button class="btn-primary" onclick="window.print()">Print Report</button>
+    <button class="btn-secondary" onclick="showView('ana')">← Back to Tasks</button>
+  </div>`;
+
+  area.innerHTML = html;
+
+  // Build formulation textboxes
+  buildFormulationBoxes(cs, ss, disAvgT, hsuAvgT, di);
+
+  // Render charts after DOM is ready
+  requestAnimationFrame(() => {
+    renderHitopBar(tScores);
+    renderHitopHist(disAvgT, hsuAvgT);
+    renderDemandCurve();
+    if (state.stopResult) renderSsrtDist(state.stopResult.ssrt);
+  });
+}
+
+// ===================== FORMULATION TEXTBOXES =====================
+function buildFormulationBoxes(cs, ss, disAvgT, hsuAvgT, di) {
+  const container = document.getElementById('formulation-boxes');
+  if (!container) return;
+
+  const r = state.stopResult;
+  const ssrtStr = r ? r.ssrt + ' ms' : null;
+
+  const boxes = [
+    {
+      id: 'fb-crafft',
+      label: 'CRAFFT — Screening Result',
+      meta: 'Score ' + cs + '/6 · ' + (cs >= 2 ? 'Positive screen' : 'Negative screen'),
+      hint: 'What does a score of ' + cs + '/6 indicate clinically? What is the significance of a positive screen at this threshold? What follow-up is warranted?'
+    },
+    {
+      id: 'fb-scid',
+      label: 'SCID-5 — AUD Diagnosis & Specifier',
+      meta: ss + ' of 11 criteria endorsed · ' + scidDiagnosis(ss),
+      hint: 'Describe the pattern of endorsed criteria. Which clusters are most prominent (impaired control, social/role impairment, pharmacological)? How does the specifier reflect overall severity?'
+    },
+    {
+      id: 'fb-dis',
+      label: 'HiTOP — Disinhibited Externalizing Spectrum',
+      meta: 'Spectrum average T = ' + disAvgT + (disAvgT >= 70 ? ' · Clinically elevated' : disAvgT >= 60 ? ' · Elevated' : ' · Within normal limits'),
+      hint: 'What does the T-score indicate relative to the normative reference? Which subscales were most elevated? What are the clinical implications for impulse regulation and risk behaviour?'
+    },
+    {
+      id: 'fb-hsu',
+      label: 'HiTOP — Harmful Substance Use Spectrum',
+      meta: 'Spectrum average T = ' + hsuAvgT + (hsuAvgT >= 70 ? ' · Clinically elevated' : hsuAvgT >= 60 ? ' · Elevated' : ' · Within normal limits'),
+      hint: 'Summarise the HSU T-score. Which subscales (Craving, Hazardous Use, Impaired Control, Role Interference, Tolerance, Withdrawal) are most clinically relevant? How do they map onto DSM-5 AUD criteria?'
+    }
+  ];
+
+  if (r) boxes.push({
+    id: 'fb-sst',
+    label: 'Stop-Signal Task — Inhibitory Control',
+    meta: 'SSRT = ' + ssrtStr + ' · Go Accuracy = ' + r.goAccPct + '% · Commission Rate = ' + r.commissionRate + '%',
+    hint: 'Interpret SSRT relative to the normative range (< 200 ms = fast · 200–250 ms = typical · > 250 ms = slow inhibition). How does this performance relate to the loss-of-control pattern in the vignette?'
+  });
+
+  boxes.push({
+    id: 'fb-hpt',
+    label: 'Hypothetical Purchase Task — Demand Curve',
+    meta: 'Q\u2080 = ' + di.Q0 + ' drinks · Omax = $' + di.Omax + ' · Pmax = $' + di.Pmax + ' · Breakpoint = $' + di.Breakpoint,
+    hint: 'What do the demand indices suggest about the reinforcing value of alcohol? What are the implications for treatment? Does a late breakpoint suggest high or low elasticity?'
+  });
+
+  container.innerHTML = boxes.map(function(fb) {
+    return '<div style="margin-bottom:var(--space-5)">' +
+      '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:var(--space-4);flex-wrap:wrap;margin-bottom:var(--space-1)">' +
+        '<div style="font-size:var(--text-sm);font-weight:600;">' + fb.label + '</div>' +
+        '<div style="font-size:var(--text-xs);color:var(--color-primary);font-weight:500;white-space:nowrap;">' + fb.meta + '</div>' +
+      '</div>' +
+      '<div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-2);font-style:italic;line-height:1.65;padding:var(--space-2) var(--space-3);background:var(--color-surface-offset);border-radius:var(--radius-md);">' +
+        '\uD83D\uDCA1 ' + fb.hint +
+      '</div>' +
+      '<textarea id="' + fb.id + '" rows="4"' +
+        ' style="width:100%;padding:var(--space-3) var(--space-4);border:1.5px solid var(--color-border);border-radius:var(--radius-lg);background:var(--color-surface-2);font-family:var(--font-body);font-size:var(--text-sm);color:var(--color-text);resize:vertical;line-height:1.6;transition:border-color 180ms;"' +
+        ' placeholder="Write your interpretation here\u2026"' +
+        ' onfocus="this.style.borderColor=\'var(--color-primary)\'"' +
+        ' onblur="this.style.borderColor=\'var(--color-border)\'"></textarea>' +
+    '</div>';
+  }).join('');
+}
+
+// ===================== PLOTLY CHARTS =====================
+function getTheme() {
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark'
+    || (!document.documentElement.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme:dark)').matches);
+  return {
+    bg: 'rgba(0,0,0,0)',
+    paper: 'rgba(0,0,0,0)',
+    text: dark ? '#cdccca' : '#28251d',
+    muted: dark ? '#797876' : '#7a7974',
+    grid: dark ? '#262523' : '#dcd9d5',
+    primary: dark ? '#4f98a3' : '#01696f',
+    blue: dark ? '#5591c7' : '#006494',
+    error: dark ? '#d163a7' : '#a12c7b',
+    gold: dark ? '#e8af34' : '#d19900',
+    success: dark ? '#6daa45' : '#437a22'
+  };
+}
+
+function renderHitopBar(tScores) {
+  const t = getTheme();
+  const names = tScores.map(s => s.scale);
+  const values = tScores.map(s => s.t);
+  const colors = values.map(v => v >= 70 ? t.error : v >= 60 ? t.gold : t.primary);
+  const isDis = (i) => i < 8;
+
+  Plotly.newPlot('chart-hitop-bar', [{
+    type: 'bar',
+    orientation: 'h',
+    x: values,
+    y: names,
+    marker: { color: colors },
+    text: values.map(v => 'T=' + v),
+    textposition: 'outside',
+    hovertemplate: '<b>%{y}</b><br>T-score: %{x}<extra></extra>'
+  }], {
+    paper_bgcolor: t.paper, plot_bgcolor: t.bg,
+    margin: { t: 10, l: 160, r: 60, b: 50 },
+    xaxis: {
+      range: [30, Math.max(80, ...values) + 5],
+      title: { text: 'T-Score (M=50, SD=10)', font: { color: t.muted } },
+      tickfont: { color: t.muted }, gridcolor: t.grid, linecolor: t.grid,
+      zerolinecolor: t.grid,
+      tickvals: [40,50,60,70,80]
+    },
+    yaxis: { tickfont: { color: t.text }, gridcolor: t.grid, linecolor: t.grid, autorange: 'reversed' },
+    shapes: [
+      { type:'line', x0:60, x1:60, y0:-0.5, y1:names.length-0.5, line:{ color:t.gold, width:1.5, dash:'dot' } },
+      { type:'line', x0:70, x1:70, y0:-0.5, y1:names.length-0.5, line:{ color:t.error, width:1.5, dash:'dot' } },
+      { type:'line', x0:50, x1:50, y0:-0.5, y1:names.length-0.5, line:{ color:t.muted, width:1, dash:'dot' } },
+      { type:'rect', x0:0, x1:8.5, y0:-0.5, y1:7.5, fillcolor: t.primary, opacity:0.04, line:{width:0} },
+      { type:'rect', x0:0, x1:8.5, y0:7.5, y1:13.5, fillcolor: t.blue, opacity:0.04, line:{width:0} }
+    ],
+    annotations: [
+      { x: 32, y: 3.5, text:'Disinhibited<br>Externalizing', showarrow:false, font:{color:t.primary, size:10}, textangle:-90 },
+      { x: 32, y: 11, text:'Harmful<br>Substance Use', showarrow:false, font:{color:t.blue, size:10}, textangle:-90 }
+    ]
+  }, { responsive: true, displayModeBar: false });
+}
+
+function normalPDF(x, mu, sigma) {
+  return (1 / (sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow((x - mu) / sigma, 2));
+}
+
+function renderHitopHist(disT, hsuT) {
+  const t = getTheme();
+  const xs = [], ys_norm = [];
+  for (let x = 20; x <= 80; x += 0.5) {
+    xs.push(x);
+    ys_norm.push(normalPDF(x, 50, 10));
+  }
+  const peakY = normalPDF(50, 50, 10);
+
+  const makeSubplot = (label, patientT, color, xref, yref, axisN) => {
+    return [
+      {
+        type: 'scatter', mode: 'lines', x: xs, y: ys_norm,
+        fill: 'tozeroy', fillcolor: color + '22',
+        line: { color: color, width: 2 },
+        name: label + ' reference', showlegend: false,
+        xaxis: axisN === 1 ? 'x' : 'x2', yaxis: axisN === 1 ? 'y' : 'y2',
+        hoverinfo: 'skip'
+      },
+      {
+        type: 'scatter', mode: 'markers+text',
+        x: [patientT], y: [normalPDF(patientT, 50, 10) + peakY * 0.1],
+        marker: { color: patientT >= 70 ? t.error : patientT >= 60 ? t.gold : t.success, size: 14, symbol: 'triangle-down' },
+        text: ['T=' + patientT], textposition: 'top center',
+        textfont: { color: t.text, size: 11, weight: 700 },
+        name: label, showlegend: true,
+        xaxis: axisN === 1 ? 'x' : 'x2', yaxis: axisN === 1 ? 'y' : 'y2',
+        hovertemplate: label + '<br>T-score: ' + patientT + '<extra></extra>'
+      }
+    ];
+  };
+
+  const data = [
+    ...makeSubplot('Disinhibited Externalizing', disT, t.primary, 'x domain', 'y domain', 1),
+    ...makeSubplot('Harmful Substance Use', hsuT, t.blue, 'x2 domain', 'y2 domain', 2)
+  ];
+
+  const shapeForAxis = (xref, yref, color) => [
+    { type:'rect', xref, yref, x0:60, x1:70, y0:0, y1:peakY*1.4, fillcolor:t.gold, opacity:0.08, line:{width:0} },
+    { type:'rect', xref, yref, x0:70, x1:80, y0:0, y1:peakY*1.4, fillcolor:t.error, opacity:0.1, line:{width:0} },
+    { type:'line', xref, yref:'paper', x0:50, x1:50, y0:0, y1:1, line:{ color: t.muted, width:1, dash:'dot' } },
+    { type:'line', xref, yref:'paper', x0:60, x1:60, y0:0, y1:1, line:{ color: t.gold, width:1, dash:'dot' } },
+    { type:'line', xref, yref:'paper', x0:70, x1:70, y0:0, y1:1, line:{ color: t.error, width:1, dash:'dot' } }
+  ];
+
+  Plotly.newPlot('chart-hitop-hist', data, {
+    paper_bgcolor: t.paper, plot_bgcolor: t.bg,
+    grid: { rows:1, columns:2, pattern:'independent', xgap:0.1 },
+    margin: { t: 40, l: 10, r: 10, b: 60 },
+    showlegend: true,
+    legend: { orientation:'h', y:-0.2, font:{color:t.text}, bgcolor:'rgba(0,0,0,0)' },
+    xaxis:  { range:[25,80], title:{text:'Disinhibited Externalizing T-Score',font:{color:t.muted}}, tickfont:{color:t.muted}, gridcolor:t.grid, linecolor:t.grid, zerolinewidth:0 },
+    xaxis2: { range:[25,80], title:{text:'Harmful Substance Use T-Score',font:{color:t.muted}}, tickfont:{color:t.muted}, gridcolor:t.grid, linecolor:t.grid, zerolinewidth:0 },
+    yaxis:  { visible:false, range:[0, peakY*1.5] },
+    yaxis2: { visible:false, range:[0, peakY*1.5] },
+    shapes: [
+      ...shapeForAxis('x','y',t.primary),
+      ...shapeForAxis('x2','y2',t.blue)
+    ],
+    annotations: [
+      { xref:'x', yref:'paper', x:50, y:1.06, text:'Mean', showarrow:false, font:{color:t.muted, size:9} },
+      { xref:'x', yref:'paper', x:60, y:1.06, text:'T=60', showarrow:false, font:{color:t.gold, size:9} },
+      { xref:'x', yref:'paper', x:70, y:1.06, text:'T=70', showarrow:false, font:{color:t.error, size:9} },
+      { xref:'x2', yref:'paper', x:50, y:1.06, text:'Mean', showarrow:false, font:{color:t.muted, size:9} },
+      { xref:'x2', yref:'paper', x:60, y:1.06, text:'T=60', showarrow:false, font:{color:t.gold, size:9} },
+      { xref:'x2', yref:'paper', x:70, y:1.06, text:'T=70', showarrow:false, font:{color:t.error, size:9} }
+    ]
+  }, { responsive: true, displayModeBar: false });
+}
+
+function renderSsrtDist(ssrtVal) {
+  const t = getTheme();
+  const MU = 200, SD = 30;
+  // Build smooth reference curve
+  const xs = [], ys = [];
+  for (let x = 80; x <= 400; x += 1) { xs.push(x); ys.push(normalPDF(x, MU, SD)); }
+  const peak = normalPDF(MU, MU, SD);
+  const ssrtNum = (typeof ssrtVal === 'number') ? ssrtVal : parseInt(ssrtVal);
+  const ptY = normalPDF(ssrtNum, MU, SD);
+  const ptColor = ssrtNum > 250 ? t.error : ssrtNum > 220 ? t.gold : t.success;
+
+  // Three fill zones: fast (<170), typical (170-250), slow (>250)
+  const xFast = xs.filter(x=>x<=170), yFast = xFast.map(x=>normalPDF(x,MU,SD));
+  const xTyp  = xs.filter(x=>x>=170&&x<=250), yTyp = xTyp.map(x=>normalPDF(x,MU,SD));
+  const xSlow = xs.filter(x=>x>=250), ySlow = xSlow.map(x=>normalPDF(x,MU,SD));
+
+  const traces = [
+    // Fast zone fill
+    { type:'scatter', mode:'lines', x:xFast, y:yFast,
+      fill:'tozeroy', fillcolor: t.blue+'28',
+      line:{color:t.blue, width:0}, showlegend:false, hoverinfo:'skip' },
+    // Typical zone fill
+    { type:'scatter', mode:'lines', x:xTyp, y:yTyp,
+      fill:'tozeroy', fillcolor: t.success+'28',
+      line:{color:t.success, width:0}, showlegend:false, hoverinfo:'skip' },
+    // Slow zone fill
+    { type:'scatter', mode:'lines', x:xSlow, y:ySlow,
+      fill:'tozeroy', fillcolor: t.error+'28',
+      line:{color:t.error, width:0}, showlegend:false, hoverinfo:'skip' },
+    // Outline curve
+    { type:'scatter', mode:'lines', x:xs, y:ys,
+      line:{color:t.muted, width:1.8},
+      showlegend:false, hoverinfo:'skip' },
+    // Participant vertical line as area
+    { type:'scatter', mode:'lines',
+      x:[ssrtNum, ssrtNum], y:[0, peak*1.35],
+      line:{color:ptColor, width:3, dash:'solid'},
+      name:'Your SSRT: '+ssrtNum+' ms', showlegend:true,
+      hovertemplate:'SSRT: '+ssrtNum+' ms<extra></extra>' },
+    // Participant dot at curve
+    { type:'scatter', mode:'markers',
+      x:[ssrtNum], y:[ptY],
+      marker:{color:ptColor, size:13, symbol:'circle',
+              line:{color:'white', width:2}},
+      showlegend:false,
+      hovertemplate:'SSRT: '+ssrtNum+' ms<extra></extra>' }
+  ];
+
+  const shapes = [
+    // Mean reference line
+    { type:'line', x0:MU, x1:MU, y0:0, y1:peak*1.18,
+      line:{color:t.text, width:1, dash:'dot'} }
+  ];
+
+  const annotations = [
+    { x:130, y:peak*0.72, text:'Fast', showarrow:false,
+      font:{color:t.blue, size:11, weight:700} },
+    { x:210, y:peak*1.08, text:'Typical range', showarrow:false,
+      font:{color:t.success, size:11, weight:700} },
+    { x:320, y:peak*0.55, text:'Slow inhibition', showarrow:false,
+      font:{color:t.error, size:11, weight:700} },
+    { x:MU, y:peak*1.24, text:'Mean<br>200 ms', showarrow:false,
+      font:{color:t.text, size:10} },
+    { x:ssrtNum, y:peak*1.42,
+      text:'<b>Your SSRT<br>'+ssrtNum+' ms</b>', showarrow:true,
+      arrowhead:2, arrowcolor:ptColor, arrowsize:1, arrowwidth:1.5,
+      ax:ssrtNum>280?-50:50, ay:-36,
+      font:{color:ptColor, size:11},
+      bgcolor: ptColor+'22', bordercolor: ptColor+'66', borderwidth:1,
+      borderpad:4 }
+  ];
+
+  Plotly.newPlot('chart-ssrt-dist', traces, {
+    paper_bgcolor: t.paper, plot_bgcolor: t.bg,
+    margin: { t:50, l:20, r:20, b:60 },
+    showlegend: true,
+    legend: { orientation:'h', y:-0.22, font:{color:t.text, size:12}, bgcolor:'rgba(0,0,0,0)' },
+    xaxis: {
+      title:{text:'SSRT (ms)', font:{color:t.muted, size:13}},
+      tickfont:{color:t.muted}, gridcolor:t.grid, linecolor:t.grid,
+      range:[80,400],
+      tickvals:[100,150,170,200,250,300,350,400],
+      ticktext:['100','150','170','200','250','300','350','400 ms']
+    },
+    yaxis: { visible:false, range:[0, peak*1.6] },
+    shapes, annotations
+  }, { responsive:true, displayModeBar:false });
+}
+
+function renderDemandCurve() {
+  const t = getTheme();
+  const qty = state.purchase.map(v => v ?? 0);
+  const prices = PURCHASE_PRICES;
+  const exp = prices.map((p, i) => +(p * qty[i]).toFixed(2));
+  const logPrices = prices.map(p => p === 0 ? 0.01 : p);
+
+  const di = demandIndices(prices, qty);
+
+  Plotly.newPlot('chart-demand', [
+    {
+      type: 'scatter', mode: 'lines+markers', name: 'Quantity consumed',
+      x: logPrices, y: qty,
+      line: { color: t.primary, width: 2.5, shape: 'spline', smoothing: 1 },
+      marker: { color: t.primary, size: 10 },
+      hovertemplate: 'Price: $%{x}<br>Quantity: %{y} drinks<extra></extra>'
+    },
+    {
+      type: 'scatter', mode: 'lines', name: 'Expenditure ($)',
+      x: logPrices, y: exp,
+      line: { color: t.gold, width: 2, dash: 'dash' },
+      yaxis: 'y2',
+      hovertemplate: 'Price: $%{x}<br>Expenditure: $%{y}<extra></extra>'
+    }
+  ], {
+    paper_bgcolor: t.paper, plot_bgcolor: t.bg,
+    margin: { t: 20, l: 60, r: 70, b: 60 },
+    xaxis: {
+      type: 'log', title: { text: 'Price per Standard Drink (log scale)', font:{color:t.muted} },
+      tickfont:{color:t.muted}, gridcolor:t.grid, linecolor:t.grid,
+      tickvals: [0.01,0.5,1,2,3,5,10,20],
+      ticktext: ['$0','$0.50','$1','$2','$3','$5','$10','$20']
+    },
+    yaxis: {
+      title:{ text:'Quantity (standard drinks)', font:{color:t.muted} },
+      tickfont:{color:t.muted}, gridcolor:t.grid, linecolor:t.grid, rangemode:'tozero'
+    },
+    yaxis2: {
+      title:{ text:'Expenditure ($)', font:{color:t.gold} },
+      tickfont:{color:t.gold}, overlaying:'y', side:'right', rangemode:'tozero', showgrid:false
+    },
+    legend: { orientation:'h', y:-0.2, font:{color:t.text}, bgcolor:'rgba(0,0,0,0)' },
+    shapes: di.Pmax > 0 ? [{
+      type:'line', x0:di.Pmax===0?0.01:di.Pmax, x1:di.Pmax===0?0.01:di.Pmax,
+      y0:0, y1: Math.max(...qty)*1.1,
+      line:{ color:t.gold, width:1.5, dash:'dot' }
+    }] : [],
+    annotations: di.Pmax > 0 ? [{
+      x: Math.log10(di.Pmax===0?0.01:di.Pmax), y: Math.max(...qty)*0.5,
+      text:'Pmax', showarrow:false, font:{color:t.gold, size:10}, textangle:-90
+    }] : []
+  }, { responsive: true, displayModeBar: false });
+}
+
+// ===================== DARK MODE =====================
+(function(){
+  const t = document.querySelector('[data-theme-toggle]');
+  const r = document.documentElement;
+  let d = matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light';
+  r.setAttribute('data-theme', d);
+  if (t) t.addEventListener('click', () => {
+    d = d === 'dark' ? 'light' : 'dark';
+    r.setAttribute('data-theme', d);
+    t.innerHTML = d === 'dark'
+      ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
+      : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+  });
+})();
+
+// ===================== INIT =====================
+buildCrafft();
+buildScid();
+buildHitop();
+buildPurchase();
+loadStopSignal();
+updateAll();
+
+// Auto-detect mobile device and apply layout
+(function detectDevice(){
+  const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+    || (navigator.maxTouchPoints > 1 && window.innerWidth < 900);
+  if(isMobile && !_mobileMode) toggleMobileMode();
+})();
+
+// Stop-signal base64 constant
+// STOP_SIGNAL_B64 removed — using inline SST
+
+</script>
+</body>
+</html>
