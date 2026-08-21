@@ -99,9 +99,9 @@
     // AICI ÎNCEPE PARTEA DE "COMPORTAMENT" (JavaScript)
     // ====================================================================
 
-    // Înlocuiește cu adresa Worker-ului tău, după ce îl publici (pasul următor).
-    // Deocamdată, dacă rulezi wrangler dev local, e ceva de genul:
-    const URL_PROXY = "https://clincog.psihopatologie-platforma.workers.dev";
+    // Cale relativă - pagina și proxy-ul sunt acum servite de ACELAȘI Worker,
+    // deci nu mai avem nevoie de o adresă completă, nici de CORS.
+    const URL_PROXY = "/api/chat";
 
     // Ținem toată conversația într-o listă (array), ca s-o putem trimite
     // mereu întreagă către model - modelul nu are memorie proprie între

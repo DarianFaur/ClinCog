@@ -29,60 +29,53 @@ ${VINIETA}
 `;
 var worker_default = {
   async fetch(request, env) {
-    if (request.method === "OPTIONS") {
-      return new Response(null, { headers: corsHeaders() });
+    const url = new URL(request.url);
+    if (url.pathname === "/api/chat" && request.method === "POST") {
+      return raspundeLaChat(request, env);
     }
-    if (request.method !== "POST") {
-      return new Response("Doar cereri POST sunt acceptate.", { status: 405 });
-    }
-    try {
-      const { istoric } = await request.json();
-      const raspunsAnthropic = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": env.ANTHROPIC_API_KEY,
-          // secretul, injectat de Cloudflare
-          "anthropic-version": "2023-06-01"
-        },
-        body: JSON.stringify({
-          model: "claude-haiku-4-5-20251001",
-          max_tokens: 300,
-          system: SYSTEM_PROMPT,
-          messages: istoric
-          // istoricul conversației, trimis de index.html
-        })
-      });
-      if (!raspunsAnthropic.ok) {
-        const textEroare = await raspunsAnthropic.text();
-        console.error("Eroare Anthropic:", textEroare);
-        return new Response(JSON.stringify({ text: "Eroare la generarea r\u0103spunsului." }), {
-          status: 502,
-          headers: corsHeaders()
-        });
-      }
-      const date = await raspunsAnthropic.json();
-      const text = date.content?.[0]?.text ?? "(f\u0103r\u0103 r\u0103spuns)";
-      return new Response(JSON.stringify({ text }), {
-        headers: corsHeaders()
-      });
-    } catch (eroare) {
-      return new Response(JSON.stringify({ text: "Cerere invalid\u0103." }), {
-        status: 400,
-        headers: corsHeaders()
-      });
-    }
+    return env.ASSETS.fetch(request);
   }
 };
-function corsHeaders() {
-  return {
-    "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type"
-  };
+async function raspundeLaChat(request, env) {
+  try {
+    const { istoric } = await request.json();
+    const raspunsAnthropic = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": env.ANTHROPIC_API_KEY,
+        // secretul, injectat de Cloudflare
+        "anthropic-version": "2023-06-01"
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 300,
+        system: SYSTEM_PROMPT,
+        messages: istoric
+        // istoricul conversației, trimis de index.html
+      })
+    });
+    if (!raspunsAnthropic.ok) {
+      const textEroare = await raspunsAnthropic.text();
+      console.error("Eroare Anthropic:", textEroare);
+      return new Response(JSON.stringify({ text: "Eroare la generarea r\u0103spunsului." }), {
+        status: 502,
+        headers: { "Content-Type": "application/json" }
+      });
+    }
+    const date = await raspunsAnthropic.json();
+    const text = date.content?.[0]?.text ?? "(f\u0103r\u0103 r\u0103spuns)";
+    return new Response(JSON.stringify({ text }), {
+      headers: { "Content-Type": "application/json" }
+    });
+  } catch (eroare) {
+    return new Response(JSON.stringify({ text: "Cerere invalid\u0103." }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" }
+    });
+  }
 }
-__name(corsHeaders, "corsHeaders");
+__name(raspundeLaChat, "raspundeLaChat");
 
 // C:/Users/40742/AppData/Roaming/npm/node_modules/wrangler/templates/middleware/middleware-ensure-req-body-drained.ts
 var drainBody = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx) => {
@@ -131,7 +124,7 @@ var jsonError = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx)
 }, "jsonError");
 var middleware_miniflare3_json_error_default = jsonError;
 
-// .wrangler/tmp/bundle-4VMWuV/middleware-insertion-facade.js
+// .wrangler/tmp/bundle-xMAIF8/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
   middleware_ensure_req_body_drained_default,
   middleware_miniflare3_json_error_default
@@ -163,7 +156,7 @@ function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
 }
 __name(__facade_invoke__, "__facade_invoke__");
 
-// .wrangler/tmp/bundle-4VMWuV/middleware-loader.entry.ts
+// .wrangler/tmp/bundle-xMAIF8/middleware-loader.entry.ts
 var __Facade_ScheduledController__ = class ___Facade_ScheduledController__ {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;

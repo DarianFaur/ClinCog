@@ -44,69 +44,60 @@ ${VINIETA}
 
 export default {
   async fetch(request, env) {
+    const url = new URL(request.url);
 
-    // Browserele fac mai întâi o cerere "OPTIONS" de verificare (CORS)
-    // înainte de cererea reală POST. Trebuie să răspundem la ea explicit.
-    if (request.method === "OPTIONS") {
-      return new Response(null, { headers: corsHeaders() });
+    // Rută specială: DOAR cererile către /api/chat vorbesc cu modelul LLM.
+    if (url.pathname === "/api/chat" && request.method === "POST") {
+      return raspundeLaChat(request, env);
     }
 
-    if (request.method !== "POST") {
-      return new Response("Doar cereri POST sunt acceptate.", { status: 405 });
-    }
-
-    try {
-      const { istoric } = await request.json();
-
-      // Apelul real către API-ul Anthropic.
-      const raspunsAnthropic = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": env.ANTHROPIC_API_KEY, // secretul, injectat de Cloudflare
-          "anthropic-version": "2023-06-01",
-        },
-        body: JSON.stringify({
-          model: "claude-haiku-4-5-20251001",
-          max_tokens: 300,
-          system: SYSTEM_PROMPT,
-          messages: istoric, // istoricul conversației, trimis de index.html
-        }),
-      });
-
-      if (!raspunsAnthropic.ok) {
-        const textEroare = await raspunsAnthropic.text();
-        console.error("Eroare Anthropic:", textEroare);
-        return new Response(JSON.stringify({ text: "Eroare la generarea răspunsului." }), {
-          status: 502,
-          headers: corsHeaders(),
-        });
-      }
-
-      const date = await raspunsAnthropic.json();
-      const text = date.content?.[0]?.text ?? "(fără răspuns)";
-
-      return new Response(JSON.stringify({ text }), {
-        headers: corsHeaders(),
-      });
-
-    } catch (eroare) {
-      return new Response(JSON.stringify({ text: "Cerere invalidă." }), {
-        status: 400,
-        headers: corsHeaders(),
-      });
-    }
+    // Orice altă cerere (pagina index.html, imagini, CSS etc.) e servită
+    // ca fișier static din folderul /public - acolo unde stă index.html.
+    // "env.ASSETS" e o legătură specială, configurată în wrangler.toml.
+    return env.ASSETS.fetch(request);
   },
 };
 
-// Anteturile CORS - permit paginii tale HTML să "vorbească" cu acest Worker.
-// Pentru pilotare, "*" (oricine) e suficient. Când ai domeniul final,
-// poți restrânge la "https://domeniul-tau.pages.dev".
-function corsHeaders() {
-  return {
-    "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
-  };
+async function raspundeLaChat(request, env) {
+  try {
+    const { istoric } = await request.json();
+
+    // Apelul real către API-ul Anthropic.
+    const raspunsAnthropic = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": env.ANTHROPIC_API_KEY, // secretul, injectat de Cloudflare
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 300,
+        system: SYSTEM_PROMPT,
+        messages: istoric, // istoricul conversației, trimis de index.html
+      }),
+    });
+
+    if (!raspunsAnthropic.ok) {
+      const textEroare = await raspunsAnthropic.text();
+      console.error("Eroare Anthropic:", textEroare);
+      return new Response(JSON.stringify({ text: "Eroare la generarea răspunsului." }), {
+        status: 502,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const date = await raspunsAnthropic.json();
+    const text = date.content?.[0]?.text ?? "(fără răspuns)";
+
+    return new Response(JSON.stringify({ text }), {
+      headers: { "Content-Type": "application/json" },
+    });
+
+  } catch (eroare) {
+    return new Response(JSON.stringify({ text: "Cerere invalidă." }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 }
