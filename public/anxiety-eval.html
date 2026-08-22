@@ -8,15 +8,15 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/favicon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --teal:#0d9488;--teal-pale:#f0fdf9;--teal-mid:#0f766e;
+  --teal:#5f7396;--teal-pale:#eef1f6;--teal-mid:#46577a;
   --text:#1a1a1a;--muted:#5a5a5a;--border:#e2e2e0;
   --bg:#ffffff;--soft:#fafaf8;
   --nav-h:56px;--bar-h:46px;
-  --serif:'Crimson Pro',serif;--sans:'Inter',sans-serif;--mono:'DM Mono',monospace;
+  --serif:'Poppins','Inter',sans-serif;--sans:'Inter',sans-serif;--mono:'DM Mono',monospace;
 }
 body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:15px;line-height:1.75}
 h1,h2,h3,h4,h5{font-family:var(--serif)}
@@ -201,10 +201,10 @@ canvas{width:100%;height:auto;display:block}
 </style>
 </head>
 <body>
-<a href="/" style="position:fixed;top:12px;left:12px;z-index:9999;font-family:DM Mono,ui-monospace,monospace;font-size:11px;letter-spacing:.04em;background:#fff;color:#333;border:1px solid #ddd;border-radius:20px;padding:6px 14px;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,.08)">&larr; ClinCog</a>
 
 <!-- ── STICKY NAV ── -->
 <nav id="nav">
+  <a href="/" style="font-family:var(--mono);font-size:11px;color:var(--muted);text-decoration:none;letter-spacing:.04em;margin-right:20px;flex-shrink:0;">&larr; ClinCog</a>
   <div class="steps">
     <div class="step current" id="step-1">
       <div class="step-dot">1</div>
