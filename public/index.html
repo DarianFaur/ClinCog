@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>ClinCog — Introduction to Clinical Cognitive Science</title>
+<title>ClinCog · Clinical Cognition — Conceptualization and Assessment</title>
+<link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
@@ -11,21 +12,27 @@
 <body>
 
 <nav class="site-nav">
-  <a class="brand" href="/"><b>ClinCog</b> · Clinical Cognitive Science</a>
+  <a class="brand" href="/"><img src="/favicon.png" alt=""><b>ClinCog</b> · Clinical Cognitive Science</a>
   <span class="eyebrow">Practicum</span>
 </nav>
 
-<header class="hero">
-  <span class="eyebrow">Introduction to Clinical Cognitive Science · Seminar Practicum</span>
-  <h1>One case. Three lenses.</h1>
-  <p class="lede">
-    Every week presents a single clinical case. You'll work through it twice —
-    first by talking to the patient directly to build your own understanding,
-    then by evaluating that same case through three formal instruments:
-    a categorical diagnosis, a dimensional profile, and a cognitive task
-    you complete on yourself.
-  </p>
-</header>
+<section class="hero-section">
+  <div class="hero-copy">
+    <span class="eyebrow">Introduction to Clinical Cognitive Science · Seminar Practicum</span>
+    <h1>Meet the patient. Not just the case.</h1>
+    <p class="lede">
+      Every week presents a single clinical case. You'll work through it
+      twice — first by talking to the patient directly to build your own
+      understanding, then by evaluating that same case through three formal
+      instruments: a categorical diagnosis, a dimensional profile, and a
+      cognitive task you complete on yourself.
+    </p>
+    <a href="#cases" class="btn btn-primary" id="hero-cta">Begin</a>
+  </div>
+  <div class="hero-graphic">
+    <img src="/brain-mark-white.png" alt="" />
+  </div>
+</section>
 
 <section class="lens-strip">
   <div class="lens">
@@ -42,7 +49,20 @@
   </div>
 </section>
 
-<section class="modules">
+<p class="greeting-bar" id="greeting-bar"></p>
+
+<!-- Shown once, the first time a student visits on this device. -->
+<section class="name-gate" id="name-gate">
+  <h2>Before you start</h2>
+  <p>What should we call you? This stays on this device only, and just lets the platform greet you and remember where you left off.</p>
+  <form id="name-form">
+    <input id="name-input" type="text" placeholder="Your first name" autocomplete="off" />
+    <button type="submit" class="btn btn-primary">Continue</button>
+  </form>
+  <p class="privacy-note">Nothing is sent anywhere or stored on a server — it's saved only in this browser.</p>
+</section>
+
+<section class="modules" id="cases">
   <h2>This term's cases</h2>
   <p>Open a case to talk with the patient, then move to its evaluation.</p>
 
@@ -87,6 +107,50 @@
 <footer class="site-footer">
   Nothing you write here is stored on a server — your progress lives only in this browser, on this device.
 </footer>
+
+<script src="/storage.js"></script>
+<script>
+  const gateEl = document.getElementById("name-gate");
+  const casesEl = document.getElementById("cases");
+  const greetingEl = document.getElementById("greeting-bar");
+  const nameForm = document.getElementById("name-form");
+  const nameInput = document.getElementById("name-input");
+
+  function renderGreeting() {
+    const name = ClinCog.getName();
+    if (name) {
+      gateEl.classList.add("hidden");
+      casesEl.classList.remove("hidden");
+      greetingEl.innerHTML = `Welcome back, ${name}. <button class="link" id="change-name">Not you?</button>`;
+      document.getElementById("change-name").addEventListener("click", () => {
+        ClinCog.clearName();
+        renderGreeting();
+      });
+    } else {
+      gateEl.classList.remove("hidden");
+      casesEl.classList.add("hidden");
+      greetingEl.textContent = "";
+      nameInput.focus();
+    }
+  }
+
+  nameForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const name = nameInput.value.trim();
+    if (!name) return;
+    ClinCog.setName(name);
+    renderGreeting();
+  });
+
+  document.getElementById("hero-cta").addEventListener("click", function (e) {
+    if (!ClinCog.getName()) {
+      e.preventDefault();
+      document.getElementById("name-gate").scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  });
+
+  renderGreeting();
+</script>
 
 </body>
 </html>

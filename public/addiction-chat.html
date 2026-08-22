@@ -3,15 +3,16 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Conceptualize — Jordan</title>
+<title>ClinCog · Conceptualize — Jordan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
+<link rel="icon" type="image/png" href="/favicon.png">
 </head>
 <body>
 
 <nav class="site-nav">
-  <a class="brand" href="/"><b>ClinCog</b> · Clinical Cognitive Science</a>
+  <a class="brand" href="/"><img src="/favicon.png" alt=""><b>ClinCog</b> · Clinical Cognitive Science</a>
   <a class="back" href="/">← All cases</a>
 </nav>
 
@@ -46,6 +47,7 @@
     <button type="submit" id="chat-send" class="btn btn-primary">Ask</button>
   </form>
   <div id="chat-status" class="chat-status"></div>
+  <button id="chat-restart" class="chat-restart" type="button">Restart this interview</button>
 
   <div class="eval-link">
     <p>Done exploring the case?</p>
@@ -53,6 +55,7 @@
   </div>
 </main>
 
+<script src="/storage.js"></script>
 <script src="/chat.js" data-module="addiction"></script>
 </body>
 </html>
