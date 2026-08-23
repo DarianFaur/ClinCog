@@ -56,8 +56,8 @@ nav {
 .wrap { max-width: var(--max); margin: 0 auto; padding: 56px 24px 100px; }
 
 .eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink3); margin-bottom: 10px; }
-h1 { font-family: var(--serif); font-size: 2.6rem; font-weight: 300; line-height: 1.15; color: var(--ink); margin-bottom: 16px; }
-h1 em { font-style: italic; color: var(--accent); }
+h1 { font-family: var(--serif); font-size: 2.35rem; font-weight: 700; line-height: 1.15; letter-spacing: -0.01em; color: var(--ink); margin-bottom: 16px; }
+h1 em { font-style: normal; color: var(--accent); }
 h2 { font-family: var(--serif); font-size: 1.8rem; font-weight: 400; color: var(--ink); margin-bottom: 10px; }
 h3 { font-size: .75rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); margin-bottom: 12px; }
 p.lead { font-size: 1rem; color: var(--ink2); line-height: 1.75; }
@@ -66,12 +66,11 @@ hr { border: none; border-top: 1px solid var(--line); margin: 36px 0; }
 .callout { border-left: 2px solid var(--accent); padding: 10px 16px; background: var(--accent-bg); font-size: .85rem; color: var(--ink2); margin: 16px 0; }
 .callout.warn { border-color: var(--warn); background: var(--warn-bg); color: var(--warn); }
 
-.layers { margin: 28px 0; }
-.layer-row { display: flex; align-items: center; gap: 16px; padding: 14px 0; border-top: 1px solid var(--line); }
-.layer-row:last-child { border-bottom: 1px solid var(--line); }
-.layer-num { font-family: var(--mono); font-size: 11px; color: var(--ink3); min-width: 20px; }
-.layer-text .lt { display: block; font-size: .9rem; font-weight: 500; color: var(--ink); }
-.layer-text .ls { font-size: .82rem; color: var(--ink3); }
+.layers { margin: 28px 0 48px; border-top: 1px solid var(--line); }
+.layer-row { display: flex; align-items: baseline; gap: 20px; padding: 20px 0; border-top: none; border-bottom: 1px solid var(--line); }
+.layer-num { font-family: var(--mono); font-size: 11px; color: var(--accent); padding: 2px 6px; border: 1px solid var(--accent); border-radius: 4px; flex-shrink: 0; letter-spacing: .03em; }
+.layer-text .lt { display: block; font-size: 16px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+.layer-text .ls { font-size: 14px; color: var(--ink3); }
 
 .vignette { font-family: var(--serif); font-size: 1.1rem; line-height: 1.9; color: var(--ink); }
 .vignette p { margin-bottom: 1.3em; }
@@ -184,9 +183,9 @@ hr { border: none; border-top: 1px solid var(--line); margin: 36px 0; }
 textarea.interp { width: 100%; border: 1px solid var(--line); padding: 10px 14px; font-family: var(--sans); font-size: .88rem; color: var(--ink); background: #fff; resize: vertical; min-height: 88px; line-height: 1.6; transition: border-color .2s; }
 textarea.interp:focus { outline: none; border-color: var(--accent); }
 
-.btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 20px; font-family: var(--sans); font-size: .85rem; font-weight: 500; cursor: pointer; border: none; transition: all .15s; }
-.btn-p { background: var(--ink); color: #fff; }
-.btn-p:hover { background: #333; }
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 12px 24px; border-radius: 999px; font-family: var(--sans); font-size: .85rem; font-weight: 600; cursor: pointer; border: 1px solid transparent; transition: all .15s; }
+.btn-p { background: linear-gradient(180deg, var(--accent) 0%, #333f57 100%); color: #fff; }
+.btn-p:hover { filter: brightness(1.08); }
 .btn-s { background: transparent; color: var(--ink2); border: 1px solid var(--line); }
 .btn-s:hover { border-color: var(--ink3); color: var(--ink); }
 .nav-row { display: flex; gap: 10px; margin-top: 40px; }
@@ -258,14 +257,18 @@ textarea.interp:focus { outline: none; border-color: var(--accent); }
   nav, #bar, .score-bar, .nav-row { display: none !important; }
   .page { display: block !important; }
 }
+
 </style>
 </head>
 <body>
+<div id="ccg-nav-root"></div>
+<script src="/nav.js" data-subtitle="Depression Seminar"></script>
+
 
 <div id="bar"><div id="bar-fill" style="width:0%"></div></div>
 
 <nav>
-  <a class="nav-brand" href="/" style="text-decoration:none;">&larr; ClinCog &middot; Depression Seminar</a>
+  <div class="nav-brand">Depression Module</div>
   <div class="nav-steps">
     <div class="s active" id="s0">1</div>
     <div class="s" id="s1">2</div>

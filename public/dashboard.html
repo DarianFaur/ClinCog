@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClinCog · Dashboard</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<script>
+  // This page requires a name on file - if someone lands here directly
+  // without ever visiting the gate, send them there first.
+  if (!localStorage.getItem("clincog_name")) {
+    location.replace("/");
+  }
+</script>
+</head>
+<body>
+
+<div id="ccg-nav-root"></div>
+<script src="/nav.js"></script>
+
+<header class="greeting-hero">
+  <h1 id="greeting-h1">Hello.</h1>
+  <p class="sub" id="greeting-sub"></p>
+</header>
+
+<section class="hero-section">
+  <div class="hero-copy">
+    <span class="eyebrow">Introduction to Clinical Cognitive Science · Seminar Practicum</span>
+    <h1>Meet the patient. Not just the case.</h1>
+    <p class="lede">
+      Every week presents a single clinical case. You'll work through it
+      twice — first by talking to the patient directly to build your own
+      understanding, then by evaluating that same case through three formal
+      instruments: a categorical diagnosis, a dimensional profile, and a
+      cognitive task you complete on yourself.
+    </p>
+    <a href="#cases" class="btn btn-primary">Jump to this term's cases</a>
+  </div>
+  <div class="hero-graphic">
+    <svg viewBox="0 0 210 160" xmlns="http://www.w3.org/2000/svg">
+      <g stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" fill="none">
+        <line x1="58" y1="18" x2="88" y2="8"/><line x1="88" y1="8" x2="118" y2="10"/><line x1="118" y1="10" x2="146" y2="22"/>
+        <line x1="58" y1="18" x2="42" y2="58"/><line x1="58" y1="18" x2="66" y2="40"/>
+        <line x1="42" y1="58" x2="14" y2="42"/><line x1="42" y1="58" x2="10" y2="72"/><line x1="42" y1="58" x2="36" y2="96"/><line x1="42" y1="58" x2="64" y2="82"/><line x1="42" y1="58" x2="66" y2="40"/>
+        <line x1="14" y1="42" x2="10" y2="72"/><line x1="36" y1="96" x2="64" y2="82"/><line x1="64" y1="82" x2="66" y2="40"/><line x1="66" y1="40" x2="42" y2="58"/>
+        <line x1="146" y1="22" x2="182" y2="38"/><line x1="146" y1="22" x2="158" y2="52"/>
+        <line x1="158" y1="52" x2="182" y2="38"/><line x1="158" y1="52" x2="196" y2="66"/><line x1="158" y1="52" x2="180" y2="92"/><line x1="158" y1="52" x2="150" y2="88"/><line x1="158" y1="52" x2="128" y2="66"/>
+        <line x1="182" y1="38" x2="196" y2="66"/><line x1="196" y1="66" x2="180" y2="92"/><line x1="180" y1="92" x2="150" y2="88"/><line x1="150" y1="88" x2="128" y2="66"/><line x1="128" y1="66" x2="64" y2="82"/><line x1="128" y1="66" x2="118" y2="10"/>
+        <line x1="150" y1="88" x2="118" y2="112"/><line x1="118" y1="112" x2="134" y2="130"/><line x1="134" y1="130" x2="148" y2="148"/>
+      </g>
+      <g fill="#ffffff">
+        <circle cx="58" cy="18" r="8.5"/><circle cx="88" cy="8" r="8.5"/><circle cx="118" cy="10" r="8.5"/><circle cx="146" cy="22" r="8.5"/>
+        <circle cx="42" cy="58" r="9.8"/><circle cx="14" cy="42" r="8.5"/><circle cx="10" cy="72" r="8.5"/><circle cx="36" cy="96" r="8.5"/><circle cx="64" cy="82" r="8.5"/><circle cx="66" cy="40" r="8.5"/>
+        <circle cx="158" cy="52" r="9.8"/><circle cx="182" cy="38" r="8.5"/><circle cx="196" cy="66" r="8.5"/><circle cx="180" cy="92" r="8.5"/><circle cx="150" cy="88" r="8.5"/><circle cx="128" cy="66" r="8.5"/>
+        <circle cx="118" cy="112" r="8.5"/><circle cx="134" cy="130" r="8.5"/><circle cx="148" cy="148" r="8.5"/>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<section class="feature-row">
+  <div class="feature">
+    <div class="icon-chip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>
+    </div>
+    <span class="step-eyebrow">01 · Categorical</span>
+    <h3>Structured diagnosis</h3>
+    <p>A clinical interview (SCID-5) asks whether the case meets criteria for a named diagnosis — yes or no, by symptom count.</p>
+  </div>
+  <div class="feature">
+    <div class="icon-chip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    </div>
+    <span class="step-eyebrow">02 · Dimensional</span>
+    <h3>Severity profile</h3>
+    <p>Standardized questionnaires place the case on continuous severity scales, independent of any single diagnostic label.</p>
+  </div>
+  <div class="feature">
+    <div class="icon-chip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    </div>
+    <span class="step-eyebrow">03 · Cognitive</span>
+    <h3>Self-administered task</h3>
+    <p>You complete a short cognitive task yourself, and connect what that experience felt like to the case's presentation.</p>
+  </div>
+</section>
+
+<section class="modules" id="cases">
+  <h2>This term's cases</h2>
+  <p>Open a case to talk with the patient, then move to its evaluation.</p>
+
+  <div class="module-grid">
+
+    <article class="module-card">
+      <span class="week">Week 1 · Mood</span>
+      <h3>Darren</h3>
+      <span class="patient-meta">34 · High school English teacher</span>
+      <p class="teaser">First psychiatric contact, referred after missing repeated grading deadlines and walking out of class mid-lesson.</p>
+      <div class="actions">
+        <a class="btn btn-secondary" href="/depression-chat.html">Conceptualize</a>
+        <a class="btn btn-primary" href="/depression-eval.html">Evaluate</a>
+      </div>
+    </article>
+
+    <article class="module-card">
+      <span class="week">Week 2 · Anxiety</span>
+      <h3>Alex</h3>
+      <span class="patient-meta">24 · Undergraduate student</span>
+      <p class="teaser">Referred by their GP after years of avoiding seminars, job offers, and social plans out of fear of being judged.</p>
+      <div class="actions">
+        <a class="btn btn-secondary" href="/anxiety-chat.html">Conceptualize</a>
+        <a class="btn btn-primary" href="/anxiety-eval.html">Evaluate</a>
+      </div>
+    </article>
+
+    <article class="module-card">
+      <span class="week">Week 3 · Substance use</span>
+      <h3>Jordan</h3>
+      <span class="patient-meta">25 · Software engineer</span>
+      <p class="teaser">Self-referred after a formal performance warning, following months of escalating daily drinking.</p>
+      <div class="actions">
+        <a class="btn btn-secondary" href="/addiction-chat.html">Conceptualize</a>
+        <a class="btn btn-primary" href="/addiction-eval.html">Evaluate</a>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<footer class="site-footer">
+  Nothing you write here is stored on a server — your progress lives only in this browser, on this device. ·
+  <a href="/about.html" style="color:inherit">About ClinCog</a>
+</footer>
+
+<script src="/storage.js"></script>
+<script>
+  const name = ClinCog.getName();
+  document.getElementById("greeting-h1").textContent = name ? `Hello, ${name}.` : "Hello.";
+  document.getElementById("greeting-sub").innerHTML =
+    `Ready to continue with this term's cases. <button class="link" id="change-name">Not you?</button>`;
+  document.getElementById("change-name").addEventListener("click", () => {
+    ClinCog.clearName();
+    location.href = "/";
+  });
+</script>
+
+</body>
+</html>
