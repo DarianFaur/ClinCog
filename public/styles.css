@@ -82,6 +82,18 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Safety net: wherever a student types, text color follows the theme.
+   Browsers don't inherit `color` into form fields by default, so this
+   has to be explicit - otherwise dark mode can silently leave black
+   text on a dark background. */
+input, textarea, select {
+  color: var(--ink);
+  caret-color: var(--brand);
+}
+input::placeholder, textarea::placeholder {
+  color: var(--ink-faint);
+}
+
 /* Soft, low-opacity gradient mesh — applied to body on every page via
    class="bg-mesh". Fixed positioning so it never looks cropped on short
    or long pages, and never interferes with clicks. */
@@ -288,6 +300,8 @@ a { color: inherit; }
   border-radius: var(--radius-pill);
   font-size: 15px;
   font-family: var(--sans);
+  background: var(--surface);
+  color: var(--ink);
 }
 .name-gate input:focus { outline: none; border-color: var(--brand); }
 .name-gate .privacy-note {
@@ -526,6 +540,7 @@ a { color: inherit; }
   font-size: 15px;
   font-family: var(--sans);
   background: var(--surface);
+  color: var(--ink);
 }
 .chat-form input:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 4px var(--brand-pale); }
 
@@ -668,6 +683,8 @@ a { color: inherit; }
   border-radius: 999px;
   font-size: 15px;
   font-family: var(--sans);
+  background: var(--surface);
+  color: var(--ink);
   text-align: left;
   transition: border-color .15s ease, box-shadow .15s ease;
 }
