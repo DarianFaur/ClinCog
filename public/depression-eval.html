@@ -12,14 +12,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet" />
 <style>
 :root {
-  --bg: #f5f4fb;
+  --bg: #fffcf2;
   --surface: #ffffff;
-  --ink: #16152a;
-  --ink2: #5b5875;
-  --ink3: #9793ad;
-  --line: #e3e0f0;
-  --accent: #5b4fe8;
-  --accent-bg: #eeecfc;
+  --ink: #252422;
+  --ink2: #403d39;
+  --ink3: #8a8579;
+  --line: #ccc5b9;
+  --accent: #eb5e28;
+  --accent-bg: #fbe7db;
   --warn: #8b3a00;
   --warn-bg: #fff7f2;
   --serif: 'Poppins', 'Inter', sans-serif;
@@ -29,14 +29,14 @@
 }
 
 html[data-theme="dark"] {
-  --bg: #131225;
-  --surface: #1b1a33;
-  --ink: #eeedfa;
-  --ink2: #b0adc7;
-  --ink3: #716c8c;
-  --line: #2e2c4d;
-  --accent: #8b7ff5;
-  --accent-bg: #262247;
+  --bg: #181715;
+  --surface: #252422;
+  --ink: #fffcf2;
+  --ink2: #ccc5b9;
+  --ink3: #8a8579;
+  --line: #403d39;
+  --accent: #eb5e28;
+  --accent-bg: #3a281f;
   --warn-bg: #2a1c10;
 }
 html, body { transition: background-color .25s ease, color .25s ease; }
@@ -51,8 +51,8 @@ body::before {
 }
 html[data-theme="dark"] body::before {
   background:
-    radial-gradient(640px 420px at 6% -8%, rgba(139,127,245,.14), transparent 60%),
-    radial-gradient(600px 460px at 100% 105%, rgba(139,127,245,.1), transparent 62%);
+    radial-gradient(640px 420px at 6% -8%, rgba(235,94,40,.13), transparent 60%),
+    radial-gradient(600px 460px at 100% 105%, rgba(235,94,40,.09), transparent 62%);
 }
 
 #bar { position: fixed; top: 0; left: 0; right: 0; height: 2px; background: var(--line); z-index: 200; }

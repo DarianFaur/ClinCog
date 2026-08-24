@@ -14,11 +14,11 @@
 <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
 <style>
 :root,[data-theme="light"]{
-  --color-bg:#f7f6f2;--color-surface:#f9f8f5;--color-surface-2:#fbfbf9;
-  --color-surface-offset:#f3f0ec;--color-divider:#dcd9d5;--color-border:#d4d1ca;
-  --color-text:#28251d;--color-text-muted:#7a7974;--color-text-faint:#bab9b4;
-  --color-primary:#5b4fe8;--color-primary-hover:#4a3fd1;--color-primary-active:#2a2560;
-  --color-primary-highlight:#eeecfc;
+  --color-bg:#fffcf2;--color-surface:#ffffff;--color-surface-2:#f4efe1;
+  --color-surface-offset:#f4efe1;--color-divider:#ccc5b9;--color-border:#ccc5b9;
+  --color-text:#252422;--color-text-muted:#403d39;--color-text-faint:#8a8579;
+  --color-primary:#eb5e28;--color-primary-hover:#d14f1e;--color-primary-active:#252422;
+  --color-primary-highlight:#fbe7db;
   --color-success:#437a22;--color-success-hover:#2e5c10;--color-success-highlight:#d4dfcc;
   --color-error:#a12c7b;--color-error-hover:#7d1e5e;--color-error-highlight:#e0ced7;
   --color-warning:#964219;--color-warning-highlight:#ddcfc6;
@@ -41,11 +41,11 @@
   --space-12:3rem;--space-16:4rem;
 }
 [data-theme="dark"]{
-  --color-bg:#171614;--color-surface:#1c1b19;--color-surface-2:#201f1d;
-  --color-surface-offset:#1d1c1a;--color-divider:#262523;--color-border:#393836;
-  --color-text:#cdccca;--color-text-muted:#797876;--color-text-faint:#5a5957;
-  --color-primary:#8b7ff5;--color-primary-hover:#a79bff;--color-primary-active:#6c5fd6;
-  --color-primary-highlight:#2e2a52;
+  --color-bg:#181715;--color-surface:#252422;--color-surface-2:#1f1e1b;
+  --color-surface-offset:#1f1e1b;--color-divider:#403d39;--color-border:#403d39;
+  --color-text:#fffcf2;--color-text-muted:#ccc5b9;--color-text-faint:#8a8579;
+  --color-primary:#eb5e28;--color-primary-hover:#ff7a47;--color-primary-active:#d14f1e;
+  --color-primary-highlight:#3a281f;
   --color-success:#6daa45;--color-success-hover:#4d8f25;--color-success-highlight:#3a4435;
   --color-error:#d163a7;--color-error-hover:#b9478f;--color-error-highlight:#4c3d46;
   --color-warning:#bb653b;--color-warning-highlight:#564942;
@@ -56,11 +56,11 @@
   --shadow-lg:0 12px 32px oklch(0 0 0/0.4);
 }
 @media(prefers-color-scheme:dark){:root:not([data-theme]){
-  --color-bg:#171614;--color-surface:#1c1b19;--color-surface-2:#201f1d;
-  --color-surface-offset:#1d1c1a;--color-divider:#262523;--color-border:#393836;
-  --color-text:#cdccca;--color-text-muted:#797876;--color-text-faint:#5a5957;
-  --color-primary:#8b7ff5;--color-primary-hover:#a79bff;--color-primary-active:#6c5fd6;
-  --color-primary-highlight:#2e2a52;
+  --color-bg:#181715;--color-surface:#252422;--color-surface-2:#1f1e1b;
+  --color-surface-offset:#1f1e1b;--color-divider:#403d39;--color-border:#403d39;
+  --color-text:#fffcf2;--color-text-muted:#ccc5b9;--color-text-faint:#8a8579;
+  --color-primary:#eb5e28;--color-primary-hover:#ff7a47;--color-primary-active:#d14f1e;
+  --color-primary-highlight:#3a281f;
   --color-success:#6daa45;--color-success-hover:#4d8f25;--color-success-highlight:#3a4435;
   --color-error:#d163a7;--color-error-hover:#b9478f;--color-error-highlight:#4c3d46;
   --color-warning:#bb653b;--color-warning-highlight:#564942;
@@ -70,7 +70,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth;}
 body{min-height:100dvh;font-family:var(--font-body);font-size:var(--text-base);color:var(--color-text);background:var(--color-bg);line-height:1.6;position:relative;}
-body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(640px 420px at 6% -8%,rgba(95,115,150,.10),transparent 60%),radial-gradient(600px 460px at 100% 105%,rgba(95,115,150,.07),transparent 62%)}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(640px 420px at 6% -8%,rgba(235,94,40,.09),transparent 60%),radial-gradient(600px 460px at 100% 105%,rgba(235,94,40,.06),transparent 62%)}
 [data-theme="dark"] body::before{background:radial-gradient(640px 420px at 6% -8%,rgba(135,152,184,.12),transparent 60%),radial-gradient(600px 460px at 100% 105%,rgba(135,152,184,.09),transparent 62%)}
 button{cursor:pointer;background:none;border:none;font:inherit;color:inherit;}
 input,textarea,select{font:inherit;color:inherit;}
@@ -1933,7 +1933,7 @@ function getTheme() {
     text: dark ? '#cdccca' : '#28251d',
     muted: dark ? '#797876' : '#7a7974',
     grid: dark ? '#262523' : '#dcd9d5',
-    primary: dark ? '#8b7ff5' : '#5b4fe8',
+    primary: dark ? '#eb5e28' : '#eb5e28',
     blue: dark ? '#5591c7' : '#006494',
     error: dark ? '#d163a7' : '#a12c7b',
     gold: dark ? '#e8af34' : '#d19900',

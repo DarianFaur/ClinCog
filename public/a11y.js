@@ -14,7 +14,7 @@
 
   const css = `
   #ccg-fab-toggle{position:fixed;bottom:20px;right:20px;z-index:900;width:52px;height:52px;border-radius:50%;
-    background:#211d3f;color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    background:#252422;color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
     box-shadow:0 8px 24px rgba(20,25,40,.28);transition:transform .2s ease, box-shadow .2s ease;}
   #ccg-fab-toggle:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 12px 28px rgba(20,25,40,.34);}
   #ccg-fab-toggle svg{width:22px;height:22px;}
@@ -32,12 +32,12 @@
     border:none;background:none;border-radius:8px;cursor:pointer;color:var(--ink-muted,#5a5f6b);
     font-family:'Inter',sans-serif;font-size:11px;font-weight:600;transition:background .15s ease,color .15s ease;}
   .ccg-seg button svg{width:14px;height:14px;}
-  .ccg-seg button.active{background:var(--surface,#fff);color:var(--brand,#5b4fe8);box-shadow:0 1px 3px rgba(20,25,40,.12);}
+  .ccg-seg button.active{background:var(--surface,#fff);color:var(--brand,#eb5e28);box-shadow:0 1px 3px rgba(20,25,40,.12);}
   .ccg-zoom-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
   .ccg-zoom-btn{width:34px;height:34px;border-radius:9px;border:1px solid var(--line,#e2e4ea);background:var(--surface,#fff);
     color:var(--ink,#1c2029);cursor:pointer;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;
     transition:border-color .15s ease,color .15s ease;}
-  .ccg-zoom-btn:hover{border-color:var(--brand,#5b4fe8);color:var(--brand,#5b4fe8);}
+  .ccg-zoom-btn:hover{border-color:var(--brand,#eb5e28);color:var(--brand,#eb5e28);}
   .ccg-zoom-btn:disabled{opacity:.35;cursor:not-allowed;}
   .ccg-zoom-val{font-family:'DM Mono',monospace;font-size:12px;color:var(--ink-muted,#5a5f6b);min-width:38px;text-align:center;}
   #ccg-fab-backdrop{position:fixed;inset:0;z-index:899;display:none;}
