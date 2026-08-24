@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
+<script src="/theme-init.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>ClinCog · Three Ways to Evaluate Depression</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -12,6 +13,7 @@
 <style>
 :root {
   --bg: #fafaf8;
+  --surface: #ffffff;
   --ink: #111;
   --ink2: #555;
   --ink3: #999;
@@ -25,15 +27,40 @@
   --mono: 'DM Mono', monospace;
   --max: 720px;
 }
+
+html[data-theme="dark"] {
+  --bg: #14161d;
+  --surface: #1b1e28;
+  --ink: #eef0f5;
+  --ink2: #a7acba;
+  --ink3: #6d7284;
+  --line: #2b2f3d;
+  --accent: #8798b8;
+  --accent-bg: #232838;
+  --warn-bg: #2a1c10;
+}
+html, body { transition: background-color .25s ease, color .25s ease; }
+* { transition: background-color .2s ease, border-color .2s ease, color .2s ease; }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-size: 14px; line-height: 1.7; }
+body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-size: 14px; line-height: 1.7; position: relative; }
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(640px 420px at 6% -8%, rgba(95,115,150,.10), transparent 60%),
+    radial-gradient(600px 460px at 100% 105%, rgba(95,115,150,.07), transparent 62%);
+}
+html[data-theme="dark"] body::before {
+  background:
+    radial-gradient(640px 420px at 6% -8%, rgba(135,152,184,.12), transparent 60%),
+    radial-gradient(600px 460px at 100% 105%, rgba(135,152,184,.09), transparent 62%);
+}
 
 #bar { position: fixed; top: 0; left: 0; right: 0; height: 2px; background: var(--line); z-index: 200; }
 #bar-fill { height: 100%; background: var(--accent); transition: width .4s; }
 
 nav {
   position: sticky; top: 2px; z-index: 100;
-  background: #fff; border-bottom: 1px solid var(--line);
+  background: var(--surface); border-bottom: 1px solid var(--line);
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 40px; height: 52px;
 }
@@ -97,7 +124,7 @@ hr { border: none; border-top: 1px solid var(--line); margin: 36px 0; }
 .radio-row label:has(input:checked).p { background: var(--accent); border-color: var(--accent); color: #fff; }
 .radio-row label:has(input:checked).n { background: #900; border-color: #900; color: #fff; }
 .radio-row label:has(input:checked).u { background: var(--ink); border-color: var(--ink); color: #fff; }
-.text-field { width: 100%; border: 1px solid var(--line); padding: 8px 12px; font-family: var(--sans); font-size: .88rem; color: var(--ink); background: #fff; margin-top: 8px; transition: border-color .2s; }
+.text-field { width: 100%; border: 1px solid var(--line); padding: 8px 12px; font-family: var(--sans); font-size: .88rem; color: var(--ink); background: var(--surface); margin-top: 8px; transition: border-color .2s; }
 .text-field:focus { outline: none; border-color: var(--accent); }
 
 .a10-strip { margin: 24px 0; padding: 20px 24px; border: 1px solid var(--line); display: flex; align-items: flex-start; gap: 32px; flex-wrap: wrap; }
@@ -118,7 +145,7 @@ hr { border: none; border-top: 1px solid var(--line); margin: 36px 0; }
 
 .score-bar {
   position: sticky; top: 54px; z-index: 90;
-  background: #fff; border-bottom: 1px solid var(--line);
+  background: var(--surface); border-bottom: 1px solid var(--line);
   padding: 10px 40px; display: flex; align-items: center; gap: 20px;
 }
 .score-bar .sc { font-family: var(--mono); font-size: 1.3rem; color: var(--ink); }
@@ -180,7 +207,7 @@ hr { border: none; border-top: 1px solid var(--line); margin: 36px 0; }
 .pop-diag .pb { background: #b0c8d0; border-radius: 1px 1px 0 0; }
 .pop-diag .pb.f { background: #5a9aa0; }
 
-textarea.interp { width: 100%; border: 1px solid var(--line); padding: 10px 14px; font-family: var(--sans); font-size: .88rem; color: var(--ink); background: #fff; resize: vertical; min-height: 88px; line-height: 1.6; transition: border-color .2s; }
+textarea.interp { width: 100%; border: 1px solid var(--line); padding: 10px 14px; font-family: var(--sans); font-size: .88rem; color: var(--ink); background: var(--surface); resize: vertical; min-height: 88px; line-height: 1.6; transition: border-color .2s; }
 textarea.interp:focus { outline: none; border-color: var(--accent); }
 
 .btn { display: inline-flex; align-items: center; gap: 6px; padding: 12px 24px; border-radius: 999px; font-family: var(--sans); font-size: .85rem; font-weight: 600; cursor: pointer; border: 1px solid transparent; transition: all .15s; }

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
+<script src="/theme-init.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ClinCog · Dashboard</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -18,7 +19,7 @@
   }
 </script>
 </head>
-<body>
+<body class="bg-mesh">
 
 <div id="ccg-nav-root"></div>
 <script src="/nav.js"></script>
@@ -64,7 +65,7 @@
 </section>
 
 <section class="feature-row">
-  <div class="feature">
+  <div class="feature reveal">
     <div class="icon-chip">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>
     </div>
@@ -72,7 +73,7 @@
     <h3>Structured diagnosis</h3>
     <p>A clinical interview (SCID-5) asks whether the case meets criteria for a named diagnosis — yes or no, by symptom count.</p>
   </div>
-  <div class="feature">
+  <div class="feature reveal">
     <div class="icon-chip">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
     </div>
@@ -80,7 +81,7 @@
     <h3>Severity profile</h3>
     <p>Standardized questionnaires place the case on continuous severity scales, independent of any single diagnostic label.</p>
   </div>
-  <div class="feature">
+  <div class="feature reveal">
     <div class="icon-chip">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
     </div>
@@ -96,7 +97,7 @@
 
   <div class="module-grid">
 
-    <article class="module-card">
+    <article class="module-card reveal">
       <span class="week">Week 1 · Mood</span>
       <h3>Darren</h3>
       <span class="patient-meta">34 · High school English teacher</span>
@@ -107,7 +108,7 @@
       </div>
     </article>
 
-    <article class="module-card">
+    <article class="module-card reveal">
       <span class="week">Week 2 · Anxiety</span>
       <h3>Alex</h3>
       <span class="patient-meta">24 · Undergraduate student</span>
@@ -118,7 +119,7 @@
       </div>
     </article>
 
-    <article class="module-card">
+    <article class="module-card reveal">
       <span class="week">Week 3 · Substance use</span>
       <h3>Jordan</h3>
       <span class="patient-meta">25 · Software engineer</span>
@@ -132,12 +133,37 @@
   </div>
 </section>
 
-<footer class="site-footer">
-  Nothing you write here is stored on a server — your progress lives only in this browser, on this device. ·
-  <a href="/about.html" style="color:inherit">About ClinCog</a>
-</footer>
+<div class="site-footer-band">
+  <div class="site-footer">
+    <div>
+      <a class="f-brand" href="/dashboard.html"><img src="/favicon.svg" alt="" />ClinCog</a>
+      <p class="f-note">A teaching platform for Introduction to Clinical Cognitive Science. Nothing you write here is stored on a server — your progress lives only in this browser, on this device.</p>
+    </div>
+    <div>
+      <h4>Platform</h4>
+      <ul>
+        <li><a href="/dashboard.html">Dashboard</a></li>
+        <li><a href="/help.html">How to use</a></li>
+        <li><a href="/about.html">About</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>This term</h4>
+      <ul>
+        <li><a href="/depression-chat.html">Week 1 · Darren</a></li>
+        <li><a href="/anxiety-chat.html">Week 2 · Alex</a></li>
+        <li><a href="/addiction-chat.html">Week 3 · Jordan</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="site-footer-bottom">
+    <span>© 2026 ClinCog · Built for classroom use</span>
+    <span>v1.0.0</span>
+  </div>
+</div>
 
 <script src="/storage.js"></script>
+<script src="/reveal.js"></script>
 <script>
   const name = ClinCog.getName();
   document.getElementById("greeting-h1").textContent = name ? `Hello, ${name}.` : "Hello.";
