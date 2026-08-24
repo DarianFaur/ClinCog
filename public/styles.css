@@ -1,27 +1,32 @@
 /* ============================================================
-   ClinCog — shared design tokens (v2)
-   Typography and layout modeled on the reference site the user
-   supplied: bold geometric sans (Poppins) headings, dark solid
-   header bar, rounded pill buttons, icon-led feature rows.
-   Colors stay ClinCog's own, sampled from the logo.
+   ClinCog — shared design tokens (v3)
+   Rebrand: modern indigo identity, replacing the original
+   logo-sampled blue/gray. Chosen for a more premium, distinct
+   feel while keeping the same Poppins/Inter/DM Mono type system,
+   elevation scale, and motion already in place.
    ============================================================ */
 
 :root {
-  --bg: #f6f7f9;
+  --bg: #f5f4fb;
   --surface: #ffffff;
-  --surface-sunken: #eef0f4;
-  --ink: #1c2029;
-  --ink-muted: #5a5f6b;
-  --ink-faint: #949aa6;
-  --line: #e2e4ea;
+  --surface-sunken: #edebf7;
+  --ink: #16152a;
+  --ink-muted: #5b5875;
+  --ink-faint: #9793ad;
+  --line: #e3e0f0;
 
-  /* Brand colors, sampled directly from the ClinCog logo */
-  --brand: #5f7396;
-  --brand-hover: #46577a;
-  --brand-deep: #2c3549;
-  --brand-pale: #eef1f6;
-  --slate: #9a9ba3;
-  --slate-pale: #f1f1f3;
+  /* Brand colors: modern indigo identity */
+  --brand: #5b4fe8;
+  --brand-hover: #4a3fd1;
+  --brand-deep: #2a2560;
+  --brand-pale: #eeecfc;
+  --slate: #8b87a3;
+  --slate-pale: #edebf7;
+
+  /* Per-case domain accents, used sparingly (card tags, journey dots) */
+  --domain-mood: #8b7fe8;
+  --domain-anxiety: #3fb6a8;
+  --domain-substance: #e0a458;
 
   --warn: #8b3a00;
   --warn-bg: #fff6ef;
@@ -36,33 +41,37 @@
   --max: 1240px;
   --radius-pill: 999px;
 
-  --shadow-sm: 0 1px 2px rgba(20,25,40,.05), 0 1px 1px rgba(20,25,40,.03);
-  --shadow-md: 0 6px 16px rgba(20,25,40,.07), 0 2px 5px rgba(20,25,40,.04);
-  --shadow-lg: 0 16px 36px rgba(20,25,40,.12), 0 4px 10px rgba(20,25,40,.05);
-  --shadow-brand: 0 10px 24px rgba(70,87,122,.28);
+  --shadow-sm: 0 1px 2px rgba(22,21,42,.05), 0 1px 1px rgba(22,21,42,.03);
+  --shadow-md: 0 6px 16px rgba(22,21,42,.08), 0 2px 5px rgba(22,21,42,.04);
+  --shadow-lg: 0 16px 36px rgba(22,21,42,.14), 0 4px 10px rgba(22,21,42,.05);
+  --shadow-brand: 0 10px 24px rgba(91,79,232,.28);
 }
 
 html[data-theme="dark"] {
-  --bg: #14161d;
-  --surface: #1b1e28;
-  --surface-sunken: #12141a;
-  --ink: #eef0f5;
-  --ink-muted: #a7acba;
-  --ink-faint: #6d7284;
-  --line: #2b2f3d;
+  --bg: #131225;
+  --surface: #1b1a33;
+  --surface-sunken: #100f1f;
+  --ink: #eeedfa;
+  --ink-muted: #b0adc7;
+  --ink-faint: #716c8c;
+  --line: #2e2c4d;
 
-  --brand: #8798b8;
-  --brand-hover: #a6b4cf;
-  --brand-pale: #232838;
-  --slate: #9098ab;
-  --slate-pale: #232838;
+  --brand: #8b7ff5;
+  --brand-hover: #a79bff;
+  --brand-pale: #262247;
+  --slate: #9c97b8;
+  --slate-pale: #262247;
+
+  --domain-mood: #a89bff;
+  --domain-anxiety: #57cfc0;
+  --domain-substance: #f0b976;
 
   --warn-bg: #2a1c10;
 
   --shadow-sm: 0 1px 2px rgba(0,0,0,.35);
   --shadow-md: 0 6px 18px rgba(0,0,0,.4);
   --shadow-lg: 0 18px 40px rgba(0,0,0,.5);
-  --shadow-brand: 0 10px 26px rgba(135,152,184,.25);
+  --shadow-brand: 0 10px 26px rgba(139,127,245,.3);
 }
 
 html, body { transition: background-color .25s ease, color .25s ease; }
@@ -806,3 +815,156 @@ html[data-force-layout="desktop"] #ccg-viewport {
   .splash-card { padding: 36px 26px; }
   .greeting-hero h1 { font-size: 26px; }
 }
+
+/* ============================================================
+   Dashboard app shell — sidebar (desktop) / drawer (mobile).
+   Scoped to dashboard.html only; every other page keeps the
+   simple top toolbar from nav.js.
+   ============================================================ */
+.app-shell { display: flex; min-height: 100dvh; }
+
+.app-sidebar {
+  width: 240px; flex-shrink: 0;
+  background: var(--brand-deep); color: #fff;
+  display: flex; flex-direction: column;
+  position: sticky; top: 0; height: 100dvh;
+  z-index: 600;
+}
+.app-sidebar-brand {
+  display: flex; align-items: center; gap: 9px;
+  padding: 20px 22px; font-family: var(--head); font-weight: 700; font-size: 15px;
+  color: #fff; text-decoration: none; flex-shrink: 0;
+}
+.app-sidebar-brand img { height: 24px; width: auto; }
+.app-sidebar-nav { display: flex; flex-direction: column; gap: 2px; padding: 8px 12px; flex: 1; }
+.app-sidebar-nav a {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px; border-radius: 10px;
+  font-family: var(--sans); font-size: 14px; font-weight: 500;
+  color: rgba(255,255,255,.68); text-decoration: none;
+  position: relative; transition: background .15s ease, color .15s ease;
+}
+.app-sidebar-nav a svg { width: 18px; height: 18px; flex-shrink: 0; opacity: .85; }
+.app-sidebar-nav a:hover { background: rgba(255,255,255,.06); color: #fff; }
+.app-sidebar-nav a.active { background: rgba(255,255,255,.1); color: #fff; }
+.app-sidebar-nav a.active::before {
+  content: ""; position: absolute; left: -12px; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 18px; border-radius: 2px; background: #fff;
+}
+.app-sidebar-footer {
+  padding: 14px 20px 20px; border-top: 1px solid rgba(255,255,255,.1);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.app-sidebar-footer a { font-family: var(--sans); font-size: 13px; color: rgba(255,255,255,.6); text-decoration: none; }
+.app-sidebar-footer a:hover { color: #fff; }
+.app-sidebar-footer .app-sidebar-version { font-family: var(--mono); font-size: 11px; color: rgba(255,255,255,.35); margin-top: 2px; }
+
+.app-menu-btn {
+  display: none; position: fixed; top: 14px; left: 14px; z-index: 700;
+  width: 40px; height: 40px; border-radius: 10px; border: none; cursor: pointer;
+  background: var(--brand-deep); color: #fff; align-items: center; justify-content: center;
+}
+.app-menu-btn svg { width: 20px; height: 20px; }
+.app-sidebar-backdrop { display: none; }
+
+.app-main { flex: 1; min-width: 0; }
+.app-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 56px; padding: 0 32px; border-bottom: 1px solid var(--line);
+  background: var(--surface);
+}
+.app-topbar-term { font-family: var(--mono); font-size: 12px; color: var(--ink-faint); letter-spacing: .02em; }
+.app-topbar-week { font-family: var(--sans); font-size: 13px; font-weight: 600; color: var(--brand); }
+
+.app-content { max-width: 980px; margin: 0 auto; padding: 36px 32px 90px; }
+
+@media (max-width: 860px) {
+  .app-sidebar { position: fixed; left: 0; top: 0; transform: translateX(-100%); transition: transform .25s ease; }
+  .app-sidebar.open { transform: translateX(0); }
+  .app-menu-btn { display: flex; }
+  .app-sidebar-backdrop.open {
+    display: block; position: fixed; inset: 0; background: rgba(10,8,30,.45); z-index: 590;
+  }
+  .app-topbar { padding-left: 64px; }
+  .app-content { padding: 28px 20px 80px; }
+}
+
+/* ---------- greeting, inside the app content now ---------- */
+.dash-greeting { margin-bottom: 32px; }
+.dash-greeting h1 { font-size: clamp(24px, 3vw, 32px); margin-bottom: 4px; }
+.dash-greeting .sub { font-size: 14px; color: var(--ink-muted); }
+.dash-greeting .sub button.link { background: none; border: none; font-family: var(--sans); font-size: 13px; color: var(--slate); text-decoration: underline; cursor: pointer; padding: 0; margin-left: 6px; }
+.dash-greeting .sub button.link:hover { color: var(--brand); }
+
+/* ---------- continue-your-case hero ---------- */
+.continue-card {
+  background: linear-gradient(155deg, var(--brand) 0%, var(--brand-deep) 100%);
+  border-radius: 22px; padding: 34px 36px; color: #fff;
+  box-shadow: var(--shadow-lg); margin-bottom: 36px; position: relative; overflow: hidden;
+}
+.continue-card .eyebrow { color: rgba(255,255,255,.75); }
+.continue-card .continue-week { font-family: var(--mono); font-size: 12px; color: rgba(255,255,255,.6); margin-top: 10px; }
+.continue-card h2 { font-size: clamp(24px, 3vw, 30px); margin: 4px 0 4px; }
+.continue-card .continue-meta { font-family: var(--sans); font-size: 14px; color: rgba(255,255,255,.75); margin-bottom: 16px; }
+.continue-card .continue-quote { font-family: var(--head); font-style: normal; font-size: 17px; line-height: 1.5; max-width: 52ch; margin-bottom: 22px; color: rgba(255,255,255,.95); }
+.continue-card .continue-progress-row { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; max-width: 340px; }
+.continue-card .continue-progress-track { flex: 1; height: 6px; border-radius: 4px; background: rgba(255,255,255,.22); overflow: hidden; }
+.continue-card .continue-progress-fill { height: 100%; background: #fff; border-radius: 4px; transition: width .4s ease; }
+.continue-card .continue-progress-label { font-family: var(--mono); font-size: 11px; color: rgba(255,255,255,.75); white-space: nowrap; }
+.continue-card .btn-continue {
+  display: inline-flex; align-items: center; gap: 6px; background: #fff; color: var(--brand-deep);
+  font-family: var(--sans); font-weight: 700; font-size: 14px; padding: 12px 24px;
+  border-radius: 999px; text-decoration: none; box-shadow: 0 10px 24px rgba(0,0,0,.18);
+  transition: transform .15s ease;
+}
+.continue-card .btn-continue:hover { transform: translateY(-2px); }
+.continue-card.all-done { background: linear-gradient(155deg, var(--brand) 0%, var(--brand-deep) 100%); text-align: center; padding: 46px 36px; }
+.continue-card.all-done h2 { font-size: 26px; }
+
+/* ---------- term progress ---------- */
+.term-progress { margin-bottom: 40px; }
+.term-progress h2 { font-size: 18px; margin-bottom: 4px; }
+.term-progress .term-sub { font-size: 13px; color: var(--ink-muted); margin-bottom: 14px; }
+.term-progress-track { height: 8px; border-radius: 4px; background: var(--surface-sunken); overflow: hidden; margin-bottom: 20px; }
+.term-progress-fill { height: 100%; background: var(--brand); border-radius: 4px; transition: width .4s ease; }
+.term-week-list { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--surface); }
+.term-week-row { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+.term-week-row:last-child { border-bottom: none; }
+.term-week-row .week-status-icon { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 12px; font-weight: 700; }
+.term-week-row .week-status-icon.complete { background: var(--brand); color: #fff; }
+.term-week-row .week-status-icon.in-progress { background: var(--brand-pale); color: var(--brand); border: 2px solid var(--brand); }
+.term-week-row .week-status-icon.not-started { border: 2px solid var(--line); color: var(--ink-faint); }
+.term-week-row .week-info { flex: 1; }
+.term-week-row .week-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-faint); }
+.term-week-row .week-name { font-family: var(--head); font-weight: 600; font-size: 15px; }
+.term-week-row .week-state-text { font-family: var(--sans); font-size: 12px; font-weight: 600; color: var(--ink-muted); }
+.term-week-row .week-state-text.complete { color: var(--brand); }
+
+/* ---------- clinical methodology journey (reuses .feature-row/.feature) ---------- */
+.journey-intro { margin-bottom: 8px; }
+.journey-intro h2 { font-size: 18px; margin-bottom: 4px; }
+.journey-intro p { font-size: 13px; color: var(--ink-muted); max-width: 62ch; }
+
+/* ---------- case grid, domain accents + status badges ---------- */
+.status-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .06em;
+  padding: 4px 9px; border-radius: 999px; width: fit-content;
+}
+.status-badge.not-started { background: var(--surface-sunken); color: var(--ink-faint); }
+.status-badge.in-progress { background: var(--brand-pale); color: var(--brand); }
+.status-badge.complete { background: var(--brand); color: #fff; }
+.module-card { border-top: 3px solid var(--domain-color, var(--brand)); }
+.module-card::before { display: none; }
+.module-card[data-domain="mood"] { --domain-color: var(--domain-mood); }
+.module-card[data-domain="anxiety"] { --domain-color: var(--domain-anxiety); }
+.module-card[data-domain="substance"] { --domain-color: var(--domain-substance); }
+
+/* ---------- clinical thinking metrics ---------- */
+.metrics-section { margin: 44px 0; }
+.metrics-section h2 { font-size: 18px; margin-bottom: 4px; }
+.metrics-section .metrics-sub { font-size: 13px; color: var(--ink-muted); margin-bottom: 18px; }
+.metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; }
+.metric-card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; box-shadow: var(--shadow-sm); }
+.metric-card .metric-value { font-family: var(--head); font-weight: 700; font-size: 30px; color: var(--brand); }
+.metric-card .metric-label { font-family: var(--sans); font-size: 12px; color: var(--ink-muted); margin-top: 2px; }

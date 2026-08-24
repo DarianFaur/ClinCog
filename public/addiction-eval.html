@@ -17,8 +17,8 @@
   --color-bg:#f7f6f2;--color-surface:#f9f8f5;--color-surface-2:#fbfbf9;
   --color-surface-offset:#f3f0ec;--color-divider:#dcd9d5;--color-border:#d4d1ca;
   --color-text:#28251d;--color-text-muted:#7a7974;--color-text-faint:#bab9b4;
-  --color-primary:#5f7396;--color-primary-hover:#46577a;--color-primary-active:#2c3549;
-  --color-primary-highlight:#eef1f6;
+  --color-primary:#5b4fe8;--color-primary-hover:#4a3fd1;--color-primary-active:#2a2560;
+  --color-primary-highlight:#eeecfc;
   --color-success:#437a22;--color-success-hover:#2e5c10;--color-success-highlight:#d4dfcc;
   --color-error:#a12c7b;--color-error-hover:#7d1e5e;--color-error-highlight:#e0ced7;
   --color-warning:#964219;--color-warning-highlight:#ddcfc6;
@@ -44,8 +44,8 @@
   --color-bg:#171614;--color-surface:#1c1b19;--color-surface-2:#201f1d;
   --color-surface-offset:#1d1c1a;--color-divider:#262523;--color-border:#393836;
   --color-text:#cdccca;--color-text-muted:#797876;--color-text-faint:#5a5957;
-  --color-primary:#8695b3;--color-primary-hover:#6c7c9c;--color-primary-active:#57678a;
-  --color-primary-highlight:#333a4a;
+  --color-primary:#8b7ff5;--color-primary-hover:#a79bff;--color-primary-active:#6c5fd6;
+  --color-primary-highlight:#2e2a52;
   --color-success:#6daa45;--color-success-hover:#4d8f25;--color-success-highlight:#3a4435;
   --color-error:#d163a7;--color-error-hover:#b9478f;--color-error-highlight:#4c3d46;
   --color-warning:#bb653b;--color-warning-highlight:#564942;
@@ -59,8 +59,8 @@
   --color-bg:#171614;--color-surface:#1c1b19;--color-surface-2:#201f1d;
   --color-surface-offset:#1d1c1a;--color-divider:#262523;--color-border:#393836;
   --color-text:#cdccca;--color-text-muted:#797876;--color-text-faint:#5a5957;
-  --color-primary:#8695b3;--color-primary-hover:#6c7c9c;--color-primary-active:#57678a;
-  --color-primary-highlight:#333a4a;
+  --color-primary:#8b7ff5;--color-primary-hover:#a79bff;--color-primary-active:#6c5fd6;
+  --color-primary-highlight:#2e2a52;
   --color-success:#6daa45;--color-success-hover:#4d8f25;--color-success-highlight:#3a4435;
   --color-error:#d163a7;--color-error-hover:#b9478f;--color-error-highlight:#4c3d46;
   --color-warning:#bb653b;--color-warning-highlight:#564942;
@@ -155,6 +155,11 @@ body.mobile-mode .sst-kbd-hint{display:none;}
 .view{display:none;}
 .view.active{display:block;}
 .page-header{margin-bottom:var(--space-6);}
+.reflect-block{background:var(--color-primary-highlight);border-radius:var(--radius-lg);padding:var(--space-6) var(--space-7);margin-top:var(--space-6);}
+.reflect-block h3{font-family:var(--font-display);font-size:var(--text-lg);margin-bottom:var(--space-2);}
+.reflect-block .reflect-note{font-size:var(--text-sm);color:var(--color-text-muted);line-height:1.6;margin-bottom:var(--space-4);max-width:60ch;}
+.reflect-block textarea{width:100%;border:1.5px solid var(--color-border);border-radius:var(--radius-md);padding:var(--space-3) var(--space-4);font-family:var(--font-body);font-size:var(--text-sm);color:var(--color-text);background:var(--color-surface-2);resize:vertical;min-height:88px;line-height:1.6;margin-bottom:var(--space-4);}
+.reflect-done-msg{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);font-weight:600;color:var(--color-primary);margin-bottom:var(--space-1);}
 .page-header h1{font-family:var(--font-display);font-size:var(--text-xl);margin-bottom:var(--space-2);}
 .page-header p{font-size:var(--text-sm);color:var(--color-text-muted);max-width:65ch;}
 
@@ -329,6 +334,7 @@ body.mobile-mode .sst-kbd-hint{display:none;}
 <body>
 <div id="ccg-nav-root"></div>
 <script src="/nav.js" data-subtitle="Addiction Seminar"></script>
+<script src="/storage.js"></script>
 
 <nav class="add-nav">
   <div class="add-steps" id="add-steps">
@@ -769,10 +775,37 @@ body.mobile-mode .sst-kbd-hint{display:none;}
     <p>Integrated multi-method profile — for educational use only. All data are session-only and not stored.</p>
   </div>
   <div id="report-area"></div>
+  <div class="reflect-block" id="reflect-block">
+    <h3>What changed in your understanding?</h3>
+    <p class="reflect-note">You approached Jordan from three perspectives — a categorical diagnosis, a dimensional profile, and a cognitive task you completed yourself. Write a few sentences on what exploring the case this way taught you, then mark it complete.</p>
+    <textarea id="reflect-text" placeholder="What did looking at Jordan's case from three angles add to your understanding?"></textarea>
+    <div id="reflect-done" style="display:none;"></div>
+    <button class="btn-primary" id="reflect-btn" onclick="completeCase()" style="border-radius:999px;padding:12px 24px;">Complete case →</button>
+  </div>
 </div>
 
 </main>
 </div>
+<script src="/a11y.js"></script>
+<script>
+function completeCase() {
+  const text = document.getElementById('reflect-text').value;
+  ClinCog.markCaseComplete('addiction', text);
+  paintReflectState();
+}
+function paintReflectState() {
+  const done = ClinCog.getCaseComplete('addiction');
+  const msg = document.getElementById('reflect-done');
+  const btn = document.getElementById('reflect-btn');
+  const box = document.getElementById('reflect-text');
+  if (done) {
+    if (done.reflection) box.value = done.reflection;
+    msg.style.display = 'flex';
+    msg.innerHTML = '&#10003; Case marked complete. <a href="/dashboard.html" style="color:inherit;text-decoration:underline;margin-left:4px;">Back to dashboard &rarr;</a>';
+    btn.textContent = 'Update reflection';
+  }
+}
+</script>
 <script>
 // ===================== DATA DEFINITIONS =====================
 const CRAFFT_ITEMS = [
@@ -1900,7 +1933,7 @@ function getTheme() {
     text: dark ? '#cdccca' : '#28251d',
     muted: dark ? '#797876' : '#7a7974',
     grid: dark ? '#262523' : '#dcd9d5',
-    primary: dark ? '#8695b3' : '#5f7396',
+    primary: dark ? '#8b7ff5' : '#5b4fe8',
     blue: dark ? '#5591c7' : '#006494',
     error: dark ? '#d163a7' : '#a12c7b',
     gold: dark ? '#e8af34' : '#d19900',
@@ -2190,6 +2223,5 @@ updateAll();
 // STOP_SIGNAL_B64 removed — using inline SST
 
 </script>
-<script src="/a11y.js"></script>
 </body>
 </html>

@@ -24,7 +24,7 @@
   const COMPACT_BREAKPOINT = 860;
 
   const css = `
-  .ccg-nav{position:sticky;top:0;z-index:500;display:flex;align-items:center;justify-content:space-between;height:56px;padding:0 24px;background:#2c3549;font-family:'Poppins','Inter',sans-serif;box-sizing:border-box;}
+  .ccg-nav{position:sticky;top:0;z-index:500;display:flex;align-items:center;justify-content:space-between;height:56px;padding:0 24px;background:#211d3f;font-family:'Poppins','Inter',sans-serif;box-sizing:border-box;}
   .ccg-nav *{box-sizing:border-box;}
   .ccg-nav .ccg-brand{display:flex;align-items:center;gap:9px;text-decoration:none;color:#fff;font-weight:700;font-size:14px;flex-shrink:0;}
   .ccg-nav .ccg-brand img{height:22px;width:auto;display:block;}
@@ -45,7 +45,7 @@
 
   .ccg-hamburger{display:none;background:none;border:none;cursor:pointer;color:#fff;padding:4px;flex-shrink:0;}
   .ccg-hamburger svg{width:22px;height:22px;display:block;}
-  .ccg-mobile-panel{display:none;position:absolute;top:56px;right:0;left:0;background:#2c3549;flex-direction:column;padding:16px 24px;gap:14px;z-index:499;box-shadow:0 12px 20px rgba(0,0,0,.15);}
+  .ccg-mobile-panel{display:none;position:absolute;top:56px;right:0;left:0;background:#211d3f;flex-direction:column;padding:16px 24px;gap:14px;z-index:499;box-shadow:0 12px 20px rgba(0,0,0,.15);}
   .ccg-mobile-panel.open{display:flex;}
   .ccg-mobile-panel a{color:#cfd6e6;text-decoration:none;font-family:'Inter',sans-serif;font-size:14px;font-weight:500;}
 
