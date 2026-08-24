@@ -17,8 +17,9 @@
   }
 </script>
 </head>
-<body class="bg-mesh">
+<body class="app-frame-bg">
 
+<div class="app-frame">
 <div class="app-shell">
 
   <button class="app-menu-btn" id="app-menu-btn" aria-label="Open menu">
@@ -28,6 +29,13 @@
 
   <aside class="app-sidebar" id="app-sidebar">
     <a class="app-sidebar-brand" href="/dashboard.html"><img src="/favicon.svg" alt="" /> ClinCog</a>
+    <div class="app-user">
+      <div class="app-user-avatar" id="app-user-avatar">?</div>
+      <div>
+        <div class="app-user-name" id="app-user-name">Student</div>
+        <div class="app-user-role">Seminar practicum</div>
+      </div>
+    </div>
     <nav class="app-sidebar-nav">
       <a href="/dashboard.html" class="active">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
@@ -37,6 +45,11 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/></svg>
         Cases
       </a>
+      <div class="app-sidebar-cases">
+        <a href="/depression-chat.html"><span class="dot" style="background:var(--domain-mood)"></span>Darren</a>
+        <a href="/anxiety-chat.html"><span class="dot" style="background:var(--domain-anxiety)"></span>Alex</a>
+        <a href="/addiction-chat.html"><span class="dot" style="background:var(--domain-substance)"></span>Jordan</a>
+      </div>
       <a href="#progress">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
         My progress
@@ -59,9 +72,12 @@
 
   <div class="app-main">
     <header class="app-topbar">
-      <span class="app-topbar-term">Clinical Cognitive Science · Seminar Practicum</span>
-      <span class="app-topbar-week" id="app-topbar-week"></span>
+      <span class="app-topbar-term">Dashboard</span>
+      <div class="app-topbar-right">
+        <span class="app-topbar-week" id="app-topbar-week"></span>
+      </div>
     </header>
+
 
     <div class="app-content" id="ccg-viewport">
 
@@ -73,10 +89,16 @@
       <div id="continue-slot"></div>
 
       <section class="term-progress" id="progress">
-        <h2>Your term</h2>
-        <p class="term-sub" id="term-sub"></p>
-        <div class="term-progress-track"><div class="term-progress-fill" id="term-progress-fill"></div></div>
-        <div class="term-week-list" id="term-week-list"></div>
+        <div class="term-progress-text">
+          <h2>Your term</h2>
+          <p class="term-sub" id="term-sub"></p>
+          <div class="term-week-list" id="term-week-list"></div>
+        </div>
+        <div class="term-donut">
+          <svg viewBox="0 0 42 42" id="term-donut-svg"></svg>
+          <div class="term-donut-pct" id="term-donut-pct">0%</div>
+          <div class="term-donut-legend" id="term-donut-legend"></div>
+        </div>
       </section>
 
       <section class="journey-intro">
@@ -152,6 +174,7 @@
     </div>
   </div>
 </div>
+</div>
 
 <script src="/storage.js"></script>
 <script src="/reveal.js"></script>
@@ -166,6 +189,8 @@
     ClinCog.clearName();
     location.href = "/";
   });
+  document.getElementById("app-user-avatar").textContent = name ? name.charAt(0).toUpperCase() : "?";
+  document.getElementById("app-user-name").textContent = name || "Student";
 
   // ---- mobile sidebar drawer ----
   const sidebar = document.getElementById("app-sidebar");
@@ -219,10 +244,30 @@
       </div>`;
   }
 
-  // ---- term progress list ----
+  // ---- term progress: donut chart, segmented by case, colored by domain ----
+  const DOMAIN_VAR = { depression: "--domain-mood", anxiety: "--domain-anxiety", addiction: "--domain-substance" };
   const explored = ClinCog.MODULES.filter(m => statusOf(m.id).state !== "not-started").length;
+  const completedCount = ClinCog.MODULES.filter(m => statusOf(m.id).state === "complete").length;
   document.getElementById("term-sub").textContent = `${explored} of ${ClinCog.MODULES.length} cases explored`;
-  document.getElementById("term-progress-fill").style.width = `${Math.round((explored / ClinCog.MODULES.length) * 100)}%`;
+  document.getElementById("term-donut-pct").textContent = `${Math.round((completedCount / ClinCog.MODULES.length) * 100)}%`;
+
+  const donutSvg = document.getElementById("term-donut-svg");
+  const seg = 100 / ClinCog.MODULES.length;
+  let offset = 0;
+  const circles = ClinCog.MODULES.map((m) => {
+    const s = statusOf(m.id);
+    const filled = s.state === "complete" ? seg : (s.state === "in-progress" ? seg * 0.5 : 0);
+    const dash = `${filled} ${100 - filled}`;
+    const cap = filled > 0 ? "round" : "butt";
+    const circle = `<circle cx="21" cy="21" r="15.9" fill="none" stroke="var(${DOMAIN_VAR[m.id]})" stroke-width="5" stroke-dasharray="${dash}" stroke-dashoffset="${-offset}" stroke-linecap="${cap}" transform="rotate(-90 21 21)" opacity="${s.state === 'not-started' ? 0.18 : 1}"/>`;
+    offset += seg;
+    return circle;
+  }).join("");
+  donutSvg.innerHTML = `<circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--surface-sunken)" stroke-width="5"/>${circles}`;
+
+  document.getElementById("term-donut-legend").innerHTML = ClinCog.MODULES.map(m =>
+    `<div class="row"><span class="dot" style="background:var(${DOMAIN_VAR[m.id]})"></span>${m.patient} · ${DOMAIN_LABEL[m.id]}</div>`
+  ).join("");
 
   const weekList = document.getElementById("term-week-list");
   weekList.innerHTML = ClinCog.MODULES.map(m => {
@@ -230,7 +275,7 @@
     const icon = s.state === "complete" ? "✓" : (s.state === "in-progress" ? "◐" : "○");
     const stateText = s.state === "complete" ? "Completed" : (s.state === "in-progress" ? "In progress" : "Upcoming");
     return `
-      <div class="term-week-row">
+      <div class="term-week-row" style="--domain-color:var(${DOMAIN_VAR[m.id]})">
         <span class="week-status-icon ${s.state}">${icon}</span>
         <div class="week-info">
           <div class="week-label">Week ${m.week}</div>
@@ -247,8 +292,9 @@
     const badgeText = s.state === "complete" ? "✓ Completed" : (s.state === "in-progress" ? "◐ In progress" : "○ Not started");
     return `
       <article class="module-card reveal in-view" data-domain="${DOMAIN_CLASS[m.id]}">
+        <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg></div>
         <span class="week">Week ${m.week} · ${DOMAIN_LABEL[m.id]}</span>
-        <span class="status-badge ${s.state}">${badgeText}</span>
+        <span class="status-badge">${badgeText}</span>
         <h3>${m.patient}</h3>
         <span class="patient-meta">${m.age} · ${m.role}</span>
         <p class="teaser">${m.quote}</p>
