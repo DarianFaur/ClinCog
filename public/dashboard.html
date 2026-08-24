@@ -24,6 +24,7 @@
 <div id="ccg-nav-root"></div>
 <script src="/nav.js"></script>
 
+<div id="ccg-viewport">
 <header class="greeting-hero">
   <h1 id="greeting-h1">Hello.</h1>
   <p class="sub" id="greeting-sub"></p>
@@ -161,9 +162,11 @@
     <span>v1.0.0</span>
   </div>
 </div>
+</div>
 
 <script src="/storage.js"></script>
 <script src="/reveal.js"></script>
+<script src="/a11y.js"></script>
 <script>
   const name = ClinCog.getName();
   document.getElementById("greeting-h1").textContent = name ? `Hello, ${name}.` : "Hello.";

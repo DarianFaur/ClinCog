@@ -76,6 +76,12 @@ button{cursor:pointer;background:none;border:none;font:inherit;color:inherit;}
 input,textarea,select{font:inherit;color:inherit;}
 img{display:block;max-width:100%;height:auto;}
 p,li{text-wrap:pretty;}
+
+/* ---- forced layout preview, driven by the floating a11y button ---- */
+#ccg-viewport{transition:max-width .3s ease,min-width .3s ease,box-shadow .3s ease;}
+html[data-force-layout="phone"] #ccg-viewport{max-width:400px;margin:18px auto;border-radius:28px;box-shadow:0 0 0 1px var(--color-border),0 24px 60px oklch(0.2 0.01 80/0.25);overflow:hidden;}
+html[data-force-layout="desktop"]{overflow-x:auto;}
+html[data-force-layout="desktop"] #ccg-viewport{min-width:820px;}
 h1,h2,h3,h4{text-wrap:balance;line-height:1.2;}
 a,button,[role="button"],input,textarea,select{transition:color var(--transition-interactive),background var(--transition-interactive),border-color var(--transition-interactive),box-shadow var(--transition-interactive);}
 
@@ -442,7 +448,7 @@ body.mobile-mode .sst-kbd-hint{display:none;}
   </div>
 </nav>
 
-<main class="main-content" role="main">
+<main class="main-content" id="ccg-viewport" role="main">
 
 <!-- ===================== INTRO / COVER VIEW ===================== -->
 <div class="view active" id="view-intro">
@@ -2184,5 +2190,6 @@ updateAll();
 // STOP_SIGNAL_B64 removed — using inline SST
 
 </script>
+<script src="/a11y.js"></script>
 </body>
 </html>

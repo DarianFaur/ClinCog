@@ -285,6 +285,15 @@ textarea.interp:focus { outline: none; border-color: var(--accent); }
   .page { display: block !important; }
 }
 
+/* ---- forced layout preview, driven by the floating a11y button ---- */
+#ccg-viewport { transition: max-width .3s ease, min-width .3s ease, box-shadow .3s ease; }
+html[data-force-layout="phone"] #ccg-viewport {
+  max-width: 400px; margin: 18px auto; border-radius: 28px;
+  box-shadow: 0 0 0 1px var(--line), 0 24px 60px rgba(20,25,40,.18); overflow: hidden;
+}
+html[data-force-layout="desktop"] { overflow-x: auto; }
+html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
+
 </style>
 </head>
 <body>
@@ -292,6 +301,7 @@ textarea.interp:focus { outline: none; border-color: var(--accent); }
 <script src="/nav.js" data-subtitle="Depression Seminar"></script>
 
 
+<div id="ccg-viewport">
 <div id="bar"><div id="bar-fill" style="width:0%"></div></div>
 
 <nav>
@@ -771,7 +781,9 @@ textarea.interp:focus { outline: none; border-color: var(--accent); }
     </div>
   </div>
 </div>
+</div>
 
+<script src="/a11y.js"></script>
 <script>
 let cur=0;
 function go(n){document.getElementById('pg'+cur).classList.remove('on');cur=n;document.getElementById('pg'+cur).classList.add('on');window.scrollTo({top:0,behavior:'smooth'});tick();}

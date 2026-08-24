@@ -1,14 +1,26 @@
 // ============================================================
 // theme-init.js — must load synchronously in <head>, before any
-// CSS that depends on [data-theme] paints. Resolves the saved
-// preference ("light" / "dark" / "system") to an actual theme
-// and stamps it on <html> immediately.
+// CSS that depends on these attributes paints. Resolves and
+// stamps three independent, persisted preferences onto <html>:
+//   data-theme         "light" | "dark"            (resolved)
+//   data-theme-pref     "light" | "system" | "dark" (as chosen)
+//   data-force-layout   "auto" | "phone" | "desktop"
+// and applies saved zoom directly as a style, so nothing flashes
+// unstyled/unzoomed on load.
 // ============================================================
 (function () {
-  var pref = localStorage.getItem("clincog_theme") || "system";
-  var resolved = pref === "system"
+  var html = document.documentElement;
+
+  var themePref = localStorage.getItem("clincog_theme") || "system";
+  var resolvedTheme = themePref === "system"
     ? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
-    : pref;
-  document.documentElement.setAttribute("data-theme", resolved);
-  document.documentElement.setAttribute("data-theme-pref", pref);
+    : themePref;
+  html.setAttribute("data-theme", resolvedTheme);
+  html.setAttribute("data-theme-pref", themePref);
+
+  var forceLayout = localStorage.getItem("clincog_layout") || "auto";
+  html.setAttribute("data-force-layout", forceLayout);
+
+  var zoom = parseFloat(localStorage.getItem("clincog_zoom")) || 1;
+  if (zoom !== 1) html.style.zoom = zoom;
 })();

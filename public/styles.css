@@ -204,7 +204,7 @@ a { color: inherit; }
   margin: 0 auto;
   padding: 64px 28px 48px;
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
   gap: 40px;
   align-items: center;
 }
@@ -319,7 +319,7 @@ a { color: inherit; }
   margin: 8px auto 56px;
   padding: 0 28px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: 32px;
 }
 .feature {
@@ -446,7 +446,7 @@ a { color: inherit; }
   margin: 0 auto;
   padding: 52px 28px 28px;
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 40px;
 }
 .site-footer .f-brand { display: flex; align-items: center; gap: 9px; font-family: var(--head); font-weight: 700; font-size: 16px; color: #fff; margin-bottom: 10px; text-decoration: none; }
@@ -469,10 +469,6 @@ a { color: inherit; }
   flex-wrap: wrap;
   gap: 10px;
 }
-@media (max-width: 720px) {
-  .site-footer { grid-template-columns: 1fr; gap: 28px; }
-}
-
 /* ---------- scroll-reveal (respects reduced-motion) ---------- */
 .reveal { opacity: 0; transform: translateY(16px); transition: opacity .5s ease, transform .5s ease; }
 .reveal.in-view { opacity: 1; transform: translateY(0); }
@@ -618,9 +614,7 @@ a { color: inherit; }
 }
 
 @media (max-width: 720px) {
-  .hero-section { grid-template-columns: 1fr; }
   .hero-graphic { max-width: 260px; margin: 0 auto; }
-  .feature-row { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 640px) {
@@ -779,7 +773,36 @@ a { color: inherit; }
   font-family: var(--mono); font-size: 12px; color: var(--ink-faint); line-height: 2;
 }
 
-@media (max-width: 860px) {
-  .site-nav .links > a.nav-link, .site-nav .links > .dropdown { display: none; }
-  .site-nav .hamburger { display: block; }
+/* ============================================================
+   Forced layout preview, driven by the floating accessibility
+   button (a11y.js). "auto" does nothing extra - real viewport
+   width decides, same as any normal responsive page. "phone"
+   visually frames the content at a phone-like width so the
+   auto-fit grids above collapse to a single column even on a
+   wide desktop browser. "desktop" guarantees the wide layout
+   even on an actually-narrow screen, with horizontal scroll.
+   ============================================================ */
+#ccg-viewport { transition: max-width .3s ease, min-width .3s ease, box-shadow .3s ease; }
+html[data-force-layout="phone"] #ccg-viewport {
+  max-width: 400px;
+  margin: 18px auto;
+  border-radius: 28px;
+  box-shadow: 0 0 0 1px var(--line), 0 24px 60px rgba(20,25,40,.18);
+  overflow: hidden;
+}
+html[data-force-layout="desktop"] {
+  overflow-x: auto;
+}
+html[data-force-layout="desktop"] #ccg-viewport {
+  min-width: 960px;
+}
+
+/* Real small-phone tightening - matters whether the narrow width
+   is genuine (a real phone) or simulated (forced preview). */
+@media (max-width: 480px) {
+  .hero-copy h1 { font-size: 28px; }
+  .hero-section, .feature-row, .modules, .site-footer, .chat-page, .help-page, .about-page { padding-left: 18px; padding-right: 18px; }
+  .module-card, .name-gate, .splash-card, .about-card, .help-card { padding: 20px; }
+  .splash-card { padding: 36px 26px; }
+  .greeting-hero h1 { font-size: 26px; }
 }
