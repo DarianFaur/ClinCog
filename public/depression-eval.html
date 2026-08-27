@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
+<meta name="color-scheme" content="light dark">
 <script src="/theme-init.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>ClinCog · Three Ways to Evaluate Depression</title>
@@ -11,15 +12,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet" />
 <style>
+:root { color-scheme: light; }
+html[data-theme="dark"] { color-scheme: dark; }
 :root {
-  --bg: #fffcf2;
+  --bg: #ffffff;
   --surface: #ffffff;
-  --ink: #252422;
-  --ink2: #403d39;
-  --ink3: #8a8579;
-  --line: #ccc5b9;
-  --accent: #eb5e28;
-  --accent-bg: #fbe7db;
+  --ink: #1a1a1a;
+  --ink2: #6b7280;
+  --ink3: #9ca3af;
+  --line: #e5e5e5;
+  --accent: #4d4e8e;
+  --accent-bg: #ececf6;
   --warn: #8b3a00;
   --warn-bg: #fff7f2;
   --serif: 'Poppins', 'Inter', sans-serif;
@@ -29,15 +32,29 @@
 }
 
 html[data-theme="dark"] {
-  --bg: #181715;
-  --surface: #252422;
-  --ink: #fffcf2;
-  --ink2: #ccc5b9;
-  --ink3: #8a8579;
-  --line: #403d39;
-  --accent: #eb5e28;
-  --accent-bg: #3a281f;
+  --bg: #1c1e22;
+  --surface: #262930;
+  --ink: #f2f2f2;
+  --ink2: #a8acaf;
+  --ink3: #9ca3af;
+  --line: #383b42;
+  --accent: #7677c9;
+  --accent-bg: #2c2d42;
   --warn-bg: #2a1c10;
+}
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #1c1e22;
+    --surface: #262930;
+    --ink: #f2f2f2;
+    --ink2: #a8acaf;
+    --ink3: #9ca3af;
+    --line: #383b42;
+    --accent: #7677c9;
+    --accent-bg: #2c2d42;
+    --warn-bg: #2a1c10;
+  }
 }
 html, body { transition: background-color .25s ease, color .25s ease; }
 * { transition: background-color .2s ease, border-color .2s ease, color .2s ease; }
@@ -51,8 +68,8 @@ body::before {
 }
 html[data-theme="dark"] body::before {
   background:
-    radial-gradient(640px 420px at 6% -8%, rgba(235,94,40,.13), transparent 60%),
-    radial-gradient(600px 460px at 100% 105%, rgba(235,94,40,.09), transparent 62%);
+    radial-gradient(640px 420px at 6% -8%, rgba(77,78,142,.14), transparent 60%),
+    radial-gradient(600px 460px at 100% 105%, rgba(77,78,142,.09), transparent 62%);
 }
 
 #bar { position: fixed; top: 0; left: 0; right: 0; height: 2px; background: var(--line); z-index: 200; }
@@ -211,7 +228,7 @@ textarea.interp { width: 100%; border: 1px solid var(--line); padding: 10px 14px
 textarea.interp:focus { outline: none; border-color: var(--accent); }
 
 .btn { display: inline-flex; align-items: center; gap: 6px; padding: 12px 24px; border-radius: 999px; font-family: var(--sans); font-size: .85rem; font-weight: 600; cursor: pointer; border: 0; transition: all .15s; }
-.btn-p { background: linear-gradient(180deg, var(--accent) 0%, #333f57 100%); color: #fff; }
+.btn-p { background: var(--accent); color: #fff; box-shadow: none; }
 .btn-p:hover { filter: brightness(1.08); }
 .btn-s { background: transparent; color: var(--ink2); border: 1px solid var(--line); }
 .btn-s:hover { border-color: var(--ink3); color: var(--ink); }
@@ -305,6 +322,7 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
 <div id="ccg-nav-root"></div>
 <script src="/nav.js" data-subtitle="Depression Seminar"></script>
 <script src="/storage.js"></script>
+<script src="/sidebar.js"></script>
 
 
 <div id="ccg-viewport">

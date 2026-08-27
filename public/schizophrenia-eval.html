@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="color-scheme" content="light dark">
+<script src="/theme-init.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ClinCog · Three Ways to Evaluate Schizophrenia</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet" />
+<style>
+:root { color-scheme: light; }
+html[data-theme="dark"] { color-scheme: dark; }
+:root {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --ink: #1a1a1a;
+  --ink2: #6b7280;
+  --ink3: #9ca3af;
+  --line: #e5e5e5;
+  --accent: #a15c74;
+  --accent-bg: #f6ebee;
+  --warn: #8b3a00;
+  --warn-bg: #fff7f2;
+  --serif: 'Poppins', 'Inter', sans-serif;
+  --sans: 'Inter', system-ui, sans-serif;
+  --mono: 'DM Mono', monospace;
+  --max: 720px;
+}
+
+html[data-theme="dark"] {
+  --bg: #1c1e22;
+  --surface: #262930;
+  --ink: #f2f2f2;
+  --ink2: #a8acaf;
+  --ink3: #9ca3af;
+  --line: #383b42;
+  --accent: #c97e94;
+  --accent-bg: #3a2530;
+  --warn-bg: #2a1c10;
+}
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #1c1e22;
+    --surface: #262930;
+    --ink: #f2f2f2;
+    --ink2: #a8acaf;
+    --ink3: #9ca3af;
+    --line: #383b42;
+    --accent: #c97e94;
+    --accent-bg: #3a2530;
+    --warn-bg: #2a1c10;
+  }
+}
+html, body { transition: background-color .25s ease, color .25s ease; }
+* { transition: background-color .2s ease, border-color .2s ease, color .2s ease; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-size: 14px; line-height: 1.7; position: relative; }
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(640px 420px at 6% -8%, rgba(161,92,116,.10), transparent 60%),
+    radial-gradient(600px 460px at 100% 105%, rgba(161,92,116,.07), transparent 62%);
+}
+html[data-theme="dark"] body::before {
+  background:
+    radial-gradient(640px 420px at 6% -8%, rgba(201,126,148,.14), transparent 60%),
+    radial-gradient(600px 460px at 100% 105%, rgba(201,126,148,.09), transparent 62%);
+}
+
+#bar { position: fixed; top: 0; left: 0; right: 0; height: 2px; background: var(--line); z-index: 200; }
+#bar-fill { height: 100%; background: var(--accent); transition: width .4s; }
+
+nav {
+  position: sticky; top: 2px; z-index: 100;
+  background: var(--surface); border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px; height: 52px;
+}
+.nav-brand { font-family: var(--serif); font-size: 1rem; font-weight: 400; color: var(--ink2); }
+.nav-steps { display: flex; gap: 4px; }
+.nav-steps .s {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 500; color: var(--ink3);
+  font-family: var(--mono); transition: all .3s;
+}
+.nav-steps .s.active { border-color: var(--accent); color: var(--accent); }
+.nav-steps .s.done { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.page { display: none; }
+.page.on { display: block; animation: up .35s ease; }
+@keyframes up { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+.wrap { max-width: var(--max); margin: 0 auto; padding: 56px 24px 100px; }
+
+.eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink3); margin-bottom: 10px; }
+h1 { font-family: var(--serif); font-size: 2.35rem; font-weight: 700; line-height: 1.15; letter-spacing: -0.01em; color: var(--ink); margin-bottom: 16px; }
+h1 em { font-style: normal; color: var(--accent); }
+h2 { font-family: var(--serif); font-size: 1.8rem; font-weight: 400; color: var(--ink); margin-bottom: 10px; }
+h3 { font-size: .75rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); margin-bottom: 12px; }
+p.lead { font-size: 1rem; color: var(--ink2); line-height: 1.75; }
+hr { border: none; border-top: 1px solid var(--line); margin: 36px 0; }
+
+.callout { border-left: 2px solid var(--accent); padding: 10px 16px; background: var(--accent-bg); font-size: .85rem; color: var(--ink2); margin: 16px 0; }
+.callout.warn { border-color: var(--warn); background: var(--warn-bg); color: var(--warn); }
+
+.layers { margin: 28px 0 48px; border-top: 1px solid var(--line); }
+.layer-row { display: flex; align-items: baseline; gap: 20px; padding: 20px 0; border-top: none; border-bottom: 1px solid var(--line); }
+.layer-num { font-family: var(--mono); font-size: 11px; color: var(--accent); padding: 2px 6px; border: 1px solid var(--accent); border-radius: 4px; flex-shrink: 0; letter-spacing: .03em; }
+.layer-text .lt { display: block; font-size: 16px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+.layer-text .ls { font-size: 14px; color: var(--ink3); }
+
+.vignette { font-family: var(--serif); font-size: 1.1rem; line-height: 1.9; color: var(--ink); }
+.vignette p { margin-bottom: 1.3em; }
+.vignette p:last-child { margin-bottom: 0; }
+.patient-line { display: flex; align-items: baseline; gap: 10px; margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+.patient-line h2 { margin: 0; }
+.patient-line span { color: var(--ink3); font-size: .85rem; }
+
+.scid-q { padding: 20px 0; border-bottom: 1px solid var(--line); }
+.scid-q:first-child { border-top: 1px solid var(--line); }
+.scid-q-top { display: flex; gap: 14px; margin-bottom: 12px; }
+.scid-code { font-family: var(--mono); font-size: 11px; color: var(--accent); min-width: 30px; padding-top: 2px; }
+.scid-q-text { font-size: .9rem; color: var(--ink); line-height: 1.6; }
+.scid-q-text .ev { font-size: .78rem; color: var(--ink3); margin-top: 4px; font-style: italic; }
+.radio-row { display: flex; gap: 8px; padding-left: 44px; flex-wrap: wrap; }
+.radio-row label {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border: 1px solid var(--line);
+  cursor: pointer; font-size: .82rem; font-weight: 500;
+  transition: all .15s; color: var(--ink2); user-select: none;
+}
+.radio-row label:hover { border-color: var(--ink3); color: var(--ink); }
+.radio-row input { display: none; }
+.radio-row label:has(input:checked).p { background: var(--accent); border-color: var(--accent); color: #fff; }
+.radio-row label:has(input:checked).n { background: #900; border-color: #900; color: #fff; }
+.radio-row label:has(input:checked).u { background: var(--ink); border-color: var(--ink); color: #fff; }
+
+.a10-strip { margin: 24px 0; padding: 20px 24px; border: 1px solid var(--line); display: flex; align-items: flex-start; gap: 32px; flex-wrap: wrap; }
+.a10-count .n { font-family: var(--serif); font-size: 3rem; font-weight: 300; line-height: 1; }
+.a10-count .l { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink3); }
+.a10-status { font-size: .82rem; color: var(--ink3); margin-top: 4px; }
+.a10-status.ok { color: var(--accent); }
+
+.sec-label { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); padding: 22px 0 4px; }
+
+.dx-options { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+.dx-options label { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid var(--line); cursor: pointer; font-size: .88rem; transition: border-color .15s; }
+.dx-options label:hover { border-color: var(--ink3); }
+.dx-options input { accent-color: var(--accent); }
+.dx-options label:has(input:checked) { border-color: var(--accent); background: var(--accent-bg); }
+
+.yn-row { display: flex; gap: 8px; padding-left: 44px; }
+.yn-row label { display: flex; align-items: center; gap: 6px; padding: 5px 14px; border: 1px solid var(--line); cursor: pointer; font-size: .82rem; font-weight: 500; color: var(--ink2); }
+.yn-row input { display: none; }
+.yn-row label:has(input:checked) { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.hitop-block { padding: 18px 0; border-bottom: 1px solid var(--line); }
+.hitop-block:first-of-type { border-top: 1px solid var(--line); }
+.hitop-scale-name { font-size: .8rem; font-weight: 500; color: var(--ink); margin-bottom: 12px; }
+.hitop-pair { display: flex; flex-direction: column; gap: 10px; }
+.hitop-item { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.hitop-item-text { flex: 1; min-width: 200px; font-size: .85rem; color: var(--ink2); }
+.likert { display: flex; gap: 4px; }
+.likert label { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
+.likert label .num { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: var(--ink3); transition: all .15s; }
+.likert input { display: none; }
+.likert label:has(input:checked) .num { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.ctab-wrap { overflow-x: auto; margin: 20px 0; }
+.ctab { width: 100%; border-collapse: collapse; font-size: .8rem; font-family: var(--sans); border: 1px solid #c4d4dc; }
+.ctab thead tr { background: #1a4a7a; }
+.ctab thead th { padding: 8px 10px; color: #fff; text-align: left; font-size: .72rem; font-weight: 500; border-right: 1px solid rgba(255,255,255,.15); }
+.ctab thead th:last-child { border-right: none; }
+.ctab .tr-head td { background: #dce8f2; font-weight: 700; font-size: .78rem; color: #1a4a7a; padding: 7px 10px; border-top: 1px solid #c4d4dc; border-left: 3px solid #1a4a7a; }
+.ctab tbody tr { border-bottom: 1px solid #e4eef4; }
+.ctab td { padding: 7px 10px; color: #1a2a3a; vertical-align: middle; border-right: 1px solid #e4eef4; }
+.ctab td:last-child { border-right: none; }
+.ctab .mn { font-style: italic; color: #2a4a6a; padding-left: 14px !important; }
+.ctab .imp { color: #c00; font-weight: 600; }
+.ctab .brd { color: #a05000; font-weight: 600; }
+
+.ss-chart { width: 120px; height: 16px; position: relative; }
+.ss-bg { width: 100%; height: 8px; background: #e0eaf0; border-radius: 2px; position: relative; top: 4px; }
+.ss-norm { position: absolute; left: 25%; width: 50%; height: 100%; background: #c0dcc0; }
+.ss-fill { position: absolute; left: 0; height: 100%; border-radius: 2px; }
+.ss-fill.imp { background: #c00; }
+.ss-fill.brd { background: #c06000; }
+.ss-mid { position: absolute; left: 50%; top: -2px; width: 2px; height: 12px; background: #1a4a7a; }
+
+textarea.interp { width: 100%; border: 1px solid var(--line); padding: 10px 14px; font-family: var(--sans); font-size: .88rem; color: var(--ink); background: var(--surface); resize: vertical; min-height: 88px; line-height: 1.6; transition: border-color .2s; }
+textarea.interp:focus { outline: none; border-color: var(--accent); }
+
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 12px 24px; border-radius: 999px; font-family: var(--sans); font-size: .85rem; font-weight: 600; cursor: pointer; border: 0; transition: all .15s; }
+.btn-p { background: var(--accent); color: #fff; box-shadow: none; }
+.btn-p:hover { filter: brightness(1.08); }
+.btn-s { background: transparent; color: var(--ink2); border: 1px solid var(--line); }
+.btn-s:hover { border-color: var(--ink3); color: var(--ink); }
+.nav-row { display: flex; gap: 10px; margin-top: 40px; }
+
+.alert { display: none; padding: 10px 14px; border-left: 3px solid #c00; background: #fff5f5; font-size: .83rem; color: #900; margin-top: 14px; }
+.alert.on { display: block; }
+
+.report-sec { border-top: 1px solid var(--line); padding: 28px 0; }
+.reflect-block { background: var(--accent-bg); border-radius: 14px; padding: 26px 28px; margin-top: 28px; }
+.reflect-block h3 { font-family: var(--serif); font-size: 1.2rem; margin-bottom: 8px; text-transform: none; letter-spacing: 0; }
+.reflect-block .reflect-note { font-size: .88rem; color: var(--ink2); line-height: 1.6; margin-bottom: 16px; max-width: 60ch; }
+.reflect-block textarea { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-family: var(--sans); font-size: .88rem; color: var(--ink); background: var(--surface); resize: vertical; min-height: 88px; line-height: 1.6; margin-bottom: 14px; }
+.reflect-done-msg { display: flex; align-items: center; gap: 8px; font-size: .88rem; font-weight: 600; color: var(--accent); margin-bottom: 4px; }
+.report-sec h3 { margin-bottom: 18px; }
+
+.dx-badge { display: inline-flex; align-items: center; gap: 12px; padding: 12px 20px; border: 1px solid var(--line); margin-bottom: 16px; }
+.dx-badge .dx-icon { font-size: 1.4rem; }
+.dx-badge .dx-name { font-size: 1rem; font-weight: 500; color: var(--ink); }
+.dx-badge .dx-sub { font-size: .78rem; color: var(--ink3); }
+.dx-badge.pos { border-color: var(--accent); background: var(--accent-bg); }
+.dx-badge.neg { border-color: #900; background: #fff5f5; }
+
+.count-row { display: flex; border: 1px solid var(--line); margin-bottom: 14px; flex-wrap: wrap; }
+.count-cell { flex: 1; min-width: 110px; padding: 12px 16px; border-right: 1px solid var(--line); text-align: center; }
+.count-cell:last-child { border-right: none; }
+.count-cell .cn { font-family: var(--serif); font-size: 2rem; font-weight: 300; }
+.count-cell .cl { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink3); }
+
+.cpills { display: flex; gap: 6px; flex-wrap: wrap; }
+.cpill { font-size: .75rem; padding: 3px 10px; border: 1px solid var(--line); }
+.cpill.met { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
+.cpill.unm { border-color: #900; color: #900; background: #fff5f5; }
+.cpill.unk { color: var(--ink3); }
+
+.ht-table { width: 100%; border-collapse: collapse; font-size: .84rem; margin-top: 8px; }
+.ht-table th { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .07em; color: var(--ink3); font-weight: 400; padding: 0 12px 8px; text-align: left; border-bottom: 1px solid var(--line); }
+.ht-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); color: var(--ink2); }
+.ht-table tbody tr:last-child td { border-bottom: none; }
+.ht-table .ht-n { font-family: var(--mono); font-size: .8rem; }
+.mini-bar { height: 6px; background: var(--line); width: 120px; overflow: hidden; display: inline-block; vertical-align: middle; }
+.mini-fill { height: 100%; transition: width .7s; background: var(--accent); }
+
+.interp-block { padding: 14px 0; border-top: 1px solid var(--line); }
+.interp-block .q { font-size: .78rem; color: var(--ink3); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .06em; }
+.interp-block p { font-size: .88rem; color: var(--ink2); line-height: 1.6; }
+
+@media (max-width: 600px) {
+  nav { padding: 0 16px; }
+  .wrap { padding: 36px 16px 80px; }
+  h1 { font-size: 2rem; }
+}
+@media print {
+  nav, #bar, .nav-row { display: none !important; }
+  .page { display: block !important; }
+}
+
+#ccg-viewport { transition: max-width .3s ease, min-width .3s ease, box-shadow .3s ease; }
+html[data-force-layout="phone"] #ccg-viewport {
+  max-width: 400px; margin: 18px auto; border-radius: 28px;
+  box-shadow: 0 0 0 1px var(--line), 0 24px 60px rgba(20,25,40,.18); overflow: hidden;
+}
+html[data-force-layout="desktop"] { overflow-x: auto; }
+html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
+
+</style>
+</head>
+<body>
+<div id="ccg-nav-root"></div>
+<script src="/nav.js" data-subtitle="Schizophrenia Seminar"></script>
+<script src="/storage.js"></script>
+<script src="/sidebar.js"></script>
+
+<div id="ccg-viewport">
+<div id="bar"><div id="bar-fill" style="width:0%"></div></div>
+
+<nav>
+  <div class="nav-brand">Schizophrenia Module</div>
+  <div class="nav-steps">
+    <div class="s active" id="s0">1</div>
+    <div class="s" id="s1">2</div>
+    <div class="s" id="s2">3</div>
+    <div class="s" id="s3">4</div>
+    <div class="s" id="s4">5</div>
+    <div class="s" id="s5">6</div>
+  </div>
+</nav>
+
+<div class="page on" id="pg0">
+  <div class="wrap">
+    <div class="eyebrow">Seminar Activity · Schizophrenia Module</div>
+    <h1>Three Ways to<br><em>Evaluate</em> Schizophrenia</h1>
+    <p class="lead" style="max-width:540px;">You will read a clinical vignette and evaluate the same patient through three different conceptual frameworks. The lens shapes what you see.</p>
+    <div class="layers">
+      <div class="layer-row"><span class="layer-num">01</span><div class="layer-text"><span class="lt">Categorical — DSM-5 via SCID-5-CV</span><span class="ls">Structured diagnostic interview · criterion-based decision</span></div></div>
+      <div class="layer-row"><span class="layer-num">02</span><div class="layer-text"><span class="lt">Dimensional–Psychological — HiTOP-SR</span><span class="ls">Quantified severity · spectrum position</span></div></div>
+      <div class="layer-row"><span class="layer-num">03</span><div class="layer-text"><span class="lt">Dimensional–Cognitive — MATRICS</span><span class="ls">Neuropsychological profile · mechanistic interpretation</span></div></div>
+    </div>
+    <div class="nav-row" style="margin-top:12px;"><button class="btn btn-p" onclick="go(1)">Begin →</button></div>
+  </div>
+</div>
+
+<div class="page" id="pg1">
+  <div class="wrap">
+    <div class="eyebrow">Clinical Vignette</div>
+    <div class="patient-line"><h2>Dennis, 25</h2><span>College student · First psychiatric contact</span></div>
+    <div class="vignette">
+      <p>Dennis, a 25-year-old college student, had always been known for his academic excellence and enthusiasm for learning. Over the past year, his friends and family began noticing subtle but concerning changes. He became increasingly withdrawn, spending long hours alone in his room, barely engaging in conversations, and showing little interest in activities he once enjoyed. His once vibrant personality dulled, and his academic performance declined significantly &mdash; his professors noted he struggled to concentrate, and his work became disorganized, often incomplete or lacking coherence when submitted at all. His hygiene deteriorated, with unwashed clothes and an unkempt appearance becoming the norm. His family initially attributed these changes to academic stress.</p>
+      <p>In recent weeks, Dennis&rsquo;s condition escalated dramatically. One evening, his parents found him pacing frantically around the house, muttering to himself and casting nervous glances at the windows. When asked what was wrong, he responded cryptically, insisting that government agents had planted cameras in their home to monitor him. He became increasingly agitated, accusing his family of conspiring against him, and refused to eat food prepared by his mother, convinced it was poisoned. At times he would burst into laughter for no apparent reason or engage in heated arguments with unseen entities, spending hours responding to voices no one else could hear.</p>
+      <p>His speech became erratic, often shifting from one topic to another without any logical connection &mdash; he would start a sentence but lose his train of thought midway, jumping to unrelated subjects. His family grew deeply concerned when he began wandering the streets at night, dressed in mismatched clothes, gesturing wildly at invisible figures. On one occasion, he was found standing motionless in the backyard, staring at the sky, whispering about secret messages hidden in the stars.</p>
+      <p>Dennis&rsquo;s deteriorating condition reached a critical point when he attempted to barricade himself in his room, convinced that shadowy figures were coming to take him away. This is his first psychiatric contact.</p>
+    </div>
+    <div class="nav-row">
+      <button class="btn btn-s" onclick="go(0)">← Back</button>
+      <button class="btn btn-p" onclick="go(2)">Proceed to SCID-5 →</button>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="pg2">
+  <div class="wrap">
+    <div class="eyebrow">Layer 1 · Categorical · DSM-5</div>
+    <h2>SCID-5-CV — Module B: Psychotic and Associated Symptoms</h2>
+    <p class="lead" style="margin-bottom:6px;">Use the interview questions below to evaluate Dennis.</p>
+    <div class="callout"><strong>Rating guide:</strong>&ensp; <strong>+</strong> = Present &ensp;|&ensp; <strong>−</strong> = Absent &ensp;|&ensp; <strong>?</strong> = Inadequate information</div>
+
+    <div class="sec-label">1) Delusions (B1–B13)</div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B1</span><div class="scid-q-text">"Have you felt that people were spying on you, or plotting against you, or trying to hurt you?"<div class="ev">Persecutory delusion</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="B1" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B1" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B1" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B2</span><div class="scid-q-text">"Have you felt that things happening around you — on TV, in the news, in the way strangers looked at you — were somehow about you specifically, or meant just for you?"<div class="ev">Delusion of reference</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="B2" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B2" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B2" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B3</span><div class="scid-q-text">"Have you felt that you had special powers, or a special mission, that other people don't have?"<div class="ev">Grandiose delusion</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="B3" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B3" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B3" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B4</span><div class="scid-q-text">"Have you felt unusually guilty about something, more than seems warranted?"<div class="ev">Guilt delusion</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="B4" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B4" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B4" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B5</span><div class="scid-q-text">"Have you been concerned that a partner or someone close to you has been unfaithful?"<div class="ev">Jealous delusion</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="B5" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B5" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B5" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B6</span><div class="scid-q-text">"Have you felt that someone was in love with you, even though it seemed unlikely?"<div class="ev">Erotomanic delusion</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="B6" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B6" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B6" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B7</span><div class="scid-q-text">"Have you worried that something was medically wrong with your body, or that your food or drink was contaminated or poisoned?"<div class="ev">Somatic delusion</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="B7" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B7" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B7" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B8</span><div class="scid-q-text">"Have you felt that your feelings or actions were being controlled by some outside force?"<div class="ev">Delusion of control</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="B8" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B8" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B8" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B9</span><div class="scid-q-text">"Have you felt that your thoughts were being broadcast, so that other people could actually hear what you were thinking?"<div class="ev">Thought broadcasting</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="B9" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B9" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B9" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B10</span><div class="scid-q-text">"Have you felt that thoughts were being put into your head that were not your own?"<div class="ev">Thought insertion</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="B10" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B10" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B10" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B11</span><div class="scid-q-text">"Have you felt that thoughts were being taken out of your mind, against your will?"<div class="ev">Thought withdrawal</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="B11" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B11" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B11" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B12</span><div class="scid-q-text">"Have you had any religious or mystical experiences or beliefs that others found hard to accept — for example, receiving special messages meant only for you?"<div class="ev">Religious / mystical delusion</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="B12" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B12" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B12" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B13</span><div class="scid-q-text">"Is there anything else unusual you've believed that we haven't already covered — something others found difficult to believe or hard to follow?"<div class="ev">Other / bizarre delusion</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="B13" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B13" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B13" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+
+    <div class="a10-strip">
+      <div class="a10-count"><div class="n" id="delCount">0</div><div class="l">Delusions present (of 13)</div></div>
+      <div><div class="a10-status" id="delStatus">Rate each item to update the count.</div></div>
+    </div>
+
+    <div class="sec-label">2) Hallucinations (B14–B19)</div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B14</span><div class="scid-q-text">"Have you heard things other people couldn't hear — like voices, when no one else was around?"<div class="ev">Auditory hallucination</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="B14" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B14" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B14" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B15</span><div class="scid-q-text">"Have you seen things that other people couldn't see — shapes, figures, movement?"<div class="ev">Visual hallucination</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="B15" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B15" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B15" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B16</span><div class="scid-q-text">"Have you smelled odors that other people couldn't smell?"<div class="ev">Olfactory hallucination</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="B16" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B16" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B16" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B17</span><div class="scid-q-text">"Have you felt sensations on or under your skin that others couldn't explain — crawling, tingling, being touched when no one was there?"<div class="ev">Tactile hallucination</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="B17" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B17" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B17" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B18</span><div class="scid-q-text">"Have you tasted anything unusual that you couldn't account for?"<div class="ev">Gustatory hallucination</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="B18" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B18" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B18" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B19</span><div class="scid-q-text">"Do the voices or things you notice ever tell you to do something, or comment on what you're doing?"<div class="ev">Command / running-commentary hallucination</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="B19" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B19" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B19" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+
+    <div class="a10-strip">
+      <div class="a10-count"><div class="n" id="hallCount">0</div><div class="l">Hallucinations present (of 6)</div></div>
+      <div><div class="a10-status" id="hallStatus">Rate each item to update the count.</div></div>
+    </div>
+
+    <div class="sec-label">3) Disorganized Speech, Behavior, and Catatonia (B20–B22)</div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B20</span><div class="scid-q-text">Observe the patient's speech during the interview — does it shift abruptly between unrelated topics, or lose coherence partway through a sentence?<div class="ev">Disorganized speech</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="B20" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B20" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B20" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B21</span><div class="scid-q-text">Ask family or observe directly — has behavior become grossly disorganized (e.g. inappropriate dress for the setting, unpredictable agitation, purposeless activity)?<div class="ev">Grossly disorganized behavior</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="B21" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B21" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B21" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B22</span><div class="scid-q-text">Has the patient been observed remaining motionless for extended periods, or adopting unusual postures without apparent purpose?<div class="ev">Catatonic behavior</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="B22" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B22" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B22" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+
+    <div class="a10-strip">
+      <div class="a10-count"><div class="n" id="disCount">0</div><div class="l">Present (of 3)</div></div>
+      <div><div class="a10-status" id="disStatus">Rate each item to update the count.</div></div>
+    </div>
+
+    <div class="sec-label">4) Negative Symptoms (B23–B24)</div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B23</span><div class="scid-q-text">Has the range or intensity of emotional expression visibly narrowed — flattened facial expression, reduced eye contact, little vocal inflection?<div class="ev">Diminished emotional expression (flat affect)</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="B23" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B23" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B23" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B24</span><div class="scid-q-text">Has the patient shown reduced motivation for self-initiated, purposeful activity, and withdrawn from social contact he previously maintained?<div class="ev">Avolition / asociality</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="B24" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B24" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B24" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+
+    <div class="a10-strip">
+      <div class="a10-count"><div class="n" id="negCount">0</div><div class="l">Present (of 2)</div></div>
+      <div><div class="a10-status" id="negStatus">Rate each item to update the count.</div></div>
+    </div>
+
+    <hr />
+
+    <div class="eyebrow" style="margin-top:-8px;">Differential Diagnosis of Psychotic Disorders</div>
+
+    <div class="sec-label">1) Schizophrenia Criteria (C1–C6)</div>
+    <p style="font-size:.85rem;color:var(--ink2);margin-bottom:14px;">Based on everything documented above, does the case meet each DSM-5 criterion for Schizophrenia?</p>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">C1</span><div class="scid-q-text">Criterion A — Two or more characteristic symptoms (delusions, hallucinations, disorganized speech, grossly disorganized/catatonic behavior, negative symptoms) present for a significant portion of a 1-month period, with at least one being delusions, hallucinations, or disorganized speech.</div></div>
+      <div class="yn-row"><label><input type="radio" name="C1" value="yes" onchange="countC()"> Yes</label><label><input type="radio" name="C1" value="no" onchange="countC()"> No</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">C2</span><div class="scid-q-text">Criterion B — Level of functioning in work, relationships, or self-care is markedly below the level achieved before onset.</div></div>
+      <div class="yn-row"><label><input type="radio" name="C2" value="yes" onchange="countC()"> Yes</label><label><input type="radio" name="C2" value="no" onchange="countC()"> No</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">C3</span><div class="scid-q-text">Criterion C — Continuous signs of disturbance persist for at least 6 months, including at least 1 month of active-phase symptoms (or less if successfully treated).</div></div>
+      <div class="yn-row"><label><input type="radio" name="C3" value="yes" onchange="countC()"> Yes</label><label><input type="radio" name="C3" value="no" onchange="countC()"> No</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">C4</span><div class="scid-q-text">Criterion D — Schizoaffective disorder and depressive or bipolar disorder with psychotic features have been ruled out (no major mood episode concurrent with active-phase symptoms, or mood episodes brief relative to psychotic duration).</div></div>
+      <div class="yn-row"><label><input type="radio" name="C4" value="yes" onchange="countC()"> Yes</label><label><input type="radio" name="C4" value="no" onchange="countC()"> No</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">C5</span><div class="scid-q-text">Criterion E — The disturbance is not attributable to the physiological effects of a substance or another medical condition.</div></div>
+      <div class="yn-row"><label><input type="radio" name="C5" value="yes" onchange="countC()"> Yes</label><label><input type="radio" name="C5" value="no" onchange="countC()"> No</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">C6</span><div class="scid-q-text">Criterion F — If there is a history of autism spectrum disorder or a childhood communication disorder, this is either not applicable, or prominent delusions/hallucinations have also been present for at least 1 month.</div></div>
+      <div class="yn-row"><label><input type="radio" name="C6" value="yes" onchange="countC()"> Yes</label><label><input type="radio" name="C6" value="no" onchange="countC()"> No</label></div></div>
+
+    <div class="a10-strip">
+      <div class="a10-count"><div class="n" id="cCount">0</div><div class="l">Criteria met (of 6)</div></div>
+      <div><div class="a10-status" id="cStatus">Rate each criterion to update the count.</div></div>
+    </div>
+
+    <div class="sec-label">2) Chronology (C25)</div>
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">C25</span><div class="scid-q-text">Has the current presentation been continuous since the prodromal changes began roughly a year ago, without an intervening period of full remission?</div></div>
+      <div class="yn-row"><label><input type="radio" name="C25" value="yes"> Yes</label><label><input type="radio" name="C25" value="no"> No</label></div></div>
+
+    <div class="sec-label">Conclusion</div>
+    <div class="dx-options">
+      <label><input type="radio" name="sdx" value="with"> With Schizophrenia</label>
+      <label><input type="radio" name="sdx" value="without"> Without Schizophrenia</label>
+    </div>
+
+    <div class="alert" id="scidAl">Please rate all 24 symptom items, all 6 schizophrenia criteria, chronology, and record a conclusion before continuing.</div>
+    <div class="nav-row">
+      <button class="btn btn-s" onclick="go(1)">← Vignette</button>
+      <button class="btn btn-p" onclick="valSCID()">Proceed to HiTOP-SR →</button>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="pg3">
+  <div class="wrap">
+    <div class="eyebrow">Layer 2 · Dimensional–Psychological</div>
+    <h2>HiTOP-SR — Detachment &amp; Thought Disorder Spectra</h2>
+    <p class="lead" style="margin-bottom:6px;">Rate each statement as if Dennis had completed this self-report himself, based on the vignette.</p>
+    <div class="callout">Please consider whether there have been significant times during the last 12 months during which the following statements applied.<br><strong>1 = Not at all &nbsp; 2 = A little &nbsp; 3 = Moderately &nbsp; 4 = A lot</strong></div>
+
+    <div class="sec-label">Detachment — Restricted Affectivity</div>
+    <div class="hitop-block">
+      <div class="hitop-pair">
+        <div class="hitop-item"><span class="hitop-item-text">I hid my emotions.</span><div class="likert"><label><input type="radio" name="ra1" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="ra1" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="ra1" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="ra1" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I hardly showed any feelings.</span><div class="likert"><label><input type="radio" name="ra2" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="ra2" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="ra2" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="ra2" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I didn't respond to things that other people found emotional.</span><div class="likert"><label><input type="radio" name="ra3" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="ra3" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="ra3" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="ra3" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">People told me that I do not show emotions.</span><div class="likert"><label><input type="radio" name="ra4" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="ra4" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="ra4" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="ra4" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I didn't express my emotions.</span><div class="likert"><label><input type="radio" name="ra5" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="ra5" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="ra5" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="ra5" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+      </div>
+    </div>
+
+    <div class="sec-label">Detachment — Social Aloofness</div>
+    <div class="hitop-block">
+      <div class="hitop-pair">
+        <div class="hitop-item"><span class="hitop-item-text">When I had the chance, I chose to be alone rather than with other people.</span><div class="likert"><label><input type="radio" name="sa1" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="sa1" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="sa1" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="sa1" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">Interacting with others was not very important to me.</span><div class="likert"><label><input type="radio" name="sa2" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="sa2" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="sa2" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="sa2" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I did not feel like spending time with people.</span><div class="likert"><label><input type="radio" name="sa3" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="sa3" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="sa3" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="sa3" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I was happiest when I was alone.</span><div class="likert"><label><input type="radio" name="sa4" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="sa4" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="sa4" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="sa4" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I preferred to stay home than to go to a party.</span><div class="likert"><label><input type="radio" name="sa5" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="sa5" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="sa5" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="sa5" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+      </div>
+    </div>
+
+    <div class="sec-label">Thought Disorder — Dissociation</div>
+    <div class="hitop-block">
+      <div class="hitop-pair">
+        <div class="hitop-item"><span class="hitop-item-text">I had the experience that everything suddenly seemed unfamiliar and I forgot where I was.</span><div class="likert"><label><input type="radio" name="ds1" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="ds1" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="ds1" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="ds1" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I felt like I no longer existed.</span><div class="likert"><label><input type="radio" name="ds2" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="ds2" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="ds2" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="ds2" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I had blank spells or periods of missing time.</span><div class="likert"><label><input type="radio" name="ds3" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="ds3" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="ds3" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="ds3" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I felt that things around me were not real.</span><div class="likert"><label><input type="radio" name="ds4" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="ds4" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="ds4" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="ds4" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I felt like I was outside of my body.</span><div class="likert"><label><input type="radio" name="ds5" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="ds5" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="ds5" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="ds5" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I had trouble telling whether something really happened or I just imagined it.</span><div class="likert"><label><input type="radio" name="ds6" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="ds6" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="ds6" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="ds6" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+      </div>
+    </div>
+
+    <div class="sec-label">Thought Disorder — Fantasy Proneness</div>
+    <div class="hitop-block">
+      <div class="hitop-pair">
+        <div class="hitop-item"><span class="hitop-item-text">I was prone to daydreaming.</span><div class="likert"><label><input type="radio" name="fp1" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="fp1" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="fp1" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="fp1" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">My fantasies felt very real to me.</span><div class="likert"><label><input type="radio" name="fp2" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="fp2" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="fp2" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="fp2" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I wished I lived in my fantasies instead of real life.</span><div class="likert"><label><input type="radio" name="fp3" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="fp3" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="fp3" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="fp3" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">My mind wandered far away from the present.</span><div class="likert"><label><input type="radio" name="fp4" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="fp4" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="fp4" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="fp4" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">My imagination held my attention for hours.</span><div class="likert"><label><input type="radio" name="fp5" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="fp5" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="fp5" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="fp5" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I lost myself in a fictional character.</span><div class="likert"><label><input type="radio" name="fp6" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="fp6" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="fp6" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="fp6" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+      </div>
+    </div>
+
+    <div class="alert" id="htAl">Please complete all 22 HiTOP-SR items before continuing.</div>
+    <div class="nav-row">
+      <button class="btn btn-s" onclick="go(2)">← SCID-5-CV</button>
+      <button class="btn btn-p" onclick="valHiTOP()">Proceed to MATRICS →</button>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="pg4">
+  <div class="wrap">
+    <div class="eyebrow">Layer 3 · Dimensional–Cognitive</div>
+    <h2>MATRICS Consensus Cognitive Battery</h2>
+    <p class="lead" style="margin-bottom:20px;">Read Dennis's automated MATRICS results, then answer the interpretation questions.</p>
+
+    <div style="border:1px solid #c4d4dc;overflow:hidden;margin-bottom:4px;">
+      <table style="width:100%;border-collapse:collapse;font-size:.8rem;background:#dce8f2;">
+        <tr>
+          <td style="padding:5px 10px;font-weight:700;color:#1a4a7a;border-right:1px solid #c4d4dc;">Subject ID</td><td style="padding:5px 10px;border-right:1px solid #c4d4dc;">DN</td>
+          <td style="padding:5px 10px;font-weight:700;color:#1a4a7a;border-right:1px solid #c4d4dc;">Sex</td><td style="padding:5px 10px;border-right:1px solid #c4d4dc;">M</td>
+          <td style="padding:5px 10px;font-weight:700;color:#1a4a7a;border-right:1px solid #c4d4dc;">Session start time</td><td style="padding:5px 10px;">March 14, 2026 · 09:40 AM</td>
+        </tr>
+        <tr style="border-top:1px solid #c4d4dc;">
+          <td style="padding:5px 10px;font-weight:700;color:#1a4a7a;border-right:1px solid #c4d4dc;">Subjects</td><td colspan="3" style="padding:5px 10px;border-right:1px solid #c4d4dc;">Subject: First-episode psychosis</td>
+          <td style="padding:5px 10px;font-weight:700;color:#1a4a7a;border-right:1px solid #c4d4dc;">Age</td><td style="padding:5px 10px;">25</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="ctab-wrap">
+      <table class="ctab">
+        <thead>
+          <tr>
+            <th style="width:30%">Test / Measure</th><th style="width:14%">Raw score</th><th style="width:14%">Standard score (T)</th><th style="width:24%">Standard score chart</th><th style="width:9%">Percentile</th><th style="width:9%">Domain</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="tr-head"><td colspan="6">Speed of Processing</td></tr>
+          <tr><td class="mn">Trail Making Test — Part A (total time)</td><td>96 sec</td><td class="imp">−1.85</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill imp" style="width:20%"></div><div class="ss-mid"></div></div></div></td><td>3%</td><td>Processing speed</td></tr>
+          <tr class="tr-head"><td colspan="6">Working Memory</td></tr>
+          <tr><td class="mn">Letter–Number Span (total score)</td><td>7</td><td class="brd">−1.30</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill brd" style="width:29%"></div><div class="ss-mid"></div></div></div></td><td>9%</td><td>Working memory</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout" style="margin-bottom:28px;font-size:.8rem;">
+      The shaded green band = normal range (±1 SD). Bars left of centre line = below average. Red = significantly impaired; amber = borderline.<br><br>
+      <strong>Trail Making Test (Part A)</strong> — connect numbered circles in ascending order as quickly as possible; a pure measure of visuomotor processing speed, frequently slowed in first-episode psychosis independent of task complexity.<br>
+      <strong>Letter–Number Span</strong> — hold and mentally reorder increasingly long strings of letters and numbers; taps working memory capacity, one of the most consistently impaired domains in schizophrenia.
+    </div>
+
+    <h3 style="margin-bottom:16px;">Interpretation Questions</h3>
+    <div style="display:flex;flex-direction:column;gap:18px;">
+      <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">1. Describe the pattern shown here. Which measure falls further below the norm, and what cognitive domain does it reflect?</label><textarea class="interp" id="cog1" placeholder="Discuss processing speed and working memory findings…"></textarea></div>
+      <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">2. How do these deficits connect to the vignette? Which of Dennis's difficulties — academic decline, disorganized speech, losing his train of thought — can now be explained neuropsychologically?</label><textarea class="interp" id="cog2" placeholder="Link test data to Dennis's academic and functional decline…"></textarea></div>
+      <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">3. What does the cognitive layer add that DSM-5 categories or the HiTOP-SR alone could not reveal?</label><textarea class="interp" id="cog3" placeholder="Mechanisms, functional prognosis, treatment implications…"></textarea></div>
+    </div>
+
+    <div class="alert" id="matAl">Please answer at least the first two questions before generating the report.</div>
+    <div class="nav-row">
+      <button class="btn btn-s" onclick="go(3)">← HiTOP-SR</button>
+      <button class="btn btn-p" onclick="valMATRICS()">Generate Report →</button>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="pg5">
+  <div class="wrap">
+    <div class="eyebrow">Comparative Evaluation Report</div>
+    <h2 style="margin-bottom:4px;">Dennis, 25</h2>
+    <p style="color:var(--ink3);font-size:.85rem;margin-bottom:8px;">College student · Generated from your responses</p>
+    <hr />
+
+    <div class="report-sec">
+      <h3>Layer 1 — Categorical (DSM-5 / SCID-5-CV)</h3>
+      <div id="r-dx"></div>
+      <div class="count-row" id="r-counts" style="margin-top:12px;"></div>
+      <div class="cpills" id="r-pills" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="report-sec">
+      <h3>Layer 2 — Dimensional (HiTOP-SR)</h3>
+      <table class="ht-table">
+        <thead><tr><th>Subscale</th><th>Spectrum</th><th>Raw total</th><th>Range</th><th>Profile</th></tr></thead>
+        <tbody id="r-ht-body"></tbody>
+      </table>
+      <p style="font-size:.74rem;color:var(--ink3);margin-top:10px;">Raw totals shown — each subscale's item count sets its possible range on a 1 (not at all) – 4 (a lot) scale. No population norms are attached here; use the raw totals to compare Dennis's relative elevation across subscales, not against a normed population.</p>
+    </div>
+
+    <div class="report-sec">
+      <h3>Layer 3 — Dimensional–Cognitive (MATRICS)</h3>
+      <div class="ctab-wrap">
+        <table class="ctab" style="font-size:.78rem;">
+          <thead><tr><th>Test / Measure</th><th>Raw</th><th>Std Score</th><th>Standard Score Chart</th><th>Percentile</th></tr></thead>
+          <tbody>
+            <tr class="tr-head"><td colspan="5">Speed of Processing</td></tr>
+            <tr><td class="mn">Trail Making Test — Part A</td><td>96 sec</td><td class="imp">−1.85</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill imp" style="width:20%"></div><div class="ss-mid"></div></div></div></td><td>3%</td></tr>
+            <tr class="tr-head"><td colspan="5">Working Memory</td></tr>
+            <tr><td class="mn">Letter–Number Span</td><td>7</td><td class="brd">−1.30</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill brd" style="width:29%"></div><div class="ss-mid"></div></div></div></td><td>9%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="interp-block"><div class="q">Pattern of impairment</div><p id="r-cog1" style="white-space:pre-wrap;"></p></div>
+      <div class="interp-block"><div class="q">Connection to vignette</div><p id="r-cog2" style="white-space:pre-wrap;"></p></div>
+    </div>
+
+    <hr />
+    <div class="reflect-block" id="reflect-block">
+      <h3>What changed in your understanding?</h3>
+      <p class="reflect-note">You approached Dennis from three perspectives — a categorical diagnosis, a dimensional profile, and a cognitive task. Write a few sentences on what exploring the case this way taught you, then mark it complete.</p>
+      <textarea id="reflect-text" placeholder="What did looking at Dennis's case from three angles add to your understanding?"></textarea>
+      <div id="reflect-done" style="display:none;"></div>
+      <button class="btn btn-p" id="reflect-btn" onclick="completeCase()">Complete case →</button>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;padding-top:20px;">
+      <button class="btn btn-s" onclick="window.print()">Print</button>
+      <button class="btn btn-s" onclick="go(1)">← Vignette</button>
+      <button class="btn btn-s" onclick="go(0)">↺ Start over</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<script src="/reveal.js"></script>
+<script src="/a11y.js"></script>
+<script>
+function completeCase() {
+  const text = document.getElementById('reflect-text').value;
+  ClinCog.markCaseComplete('schizophrenia', text);
+  paintReflectState();
+}
+function paintReflectState() {
+  const done = ClinCog.getCaseComplete('schizophrenia');
+  const msg = document.getElementById('reflect-done');
+  const btn = document.getElementById('reflect-btn');
+  const box = document.getElementById('reflect-text');
+  if (done) {
+    if (done.reflection) box.value = done.reflection;
+    msg.style.display = 'flex';
+    msg.innerHTML = '&#10003; Case marked complete. <a href="/dashboard.html" style="color:inherit;text-decoration:underline;margin-left:4px;">Back to dashboard &rarr;</a>';
+    btn.textContent = 'Update reflection';
+  }
+}
+
+let cur = 0;
+function go(n) {
+  document.getElementById('pg'+cur).classList.remove('on');
+  cur = n;
+  document.getElementById('pg'+cur).classList.add('on');
+  window.scrollTo({top:0, behavior:'smooth'});
+  tick();
+  if (n === 5) { ClinCog.markEvalReached('schizophrenia'); buildReport(); paintReflectState(); }
+}
+function tick() {
+  document.getElementById('bar-fill').style.width = (cur/5*100) + '%';
+  for (let i=0; i<=5; i++) {
+    const d = document.getElementById('s'+i);
+    d.className = 's';
+    if (i < cur) d.classList.add('done');
+    else if (i === cur) d.classList.add('active');
+  }
+}
+
+function countB() {
+  let del=0; for (let i=1;i<=13;i++){const v=document.querySelector('input[name="B'+i+'"]:checked'); if(v&&v.value==='present') del++;}
+  let hall=0; for (let i=14;i<=19;i++){const v=document.querySelector('input[name="B'+i+'"]:checked'); if(v&&v.value==='present') hall++;}
+  let dis=0; for (let i=20;i<=22;i++){const v=document.querySelector('input[name="B'+i+'"]:checked'); if(v&&v.value==='present') dis++;}
+  let neg=0; for (let i=23;i<=24;i++){const v=document.querySelector('input[name="B'+i+'"]:checked'); if(v&&v.value==='present') neg++;}
+  document.getElementById('delCount').textContent = del;
+  document.getElementById('hallCount').textContent = hall;
+  document.getElementById('disCount').textContent = dis;
+  document.getElementById('negCount').textContent = neg;
+  document.getElementById('delStatus').textContent = del > 0 ? (del + ' delusion type' + (del>1?'s':'') + ' endorsed') : 'None endorsed yet.';
+  document.getElementById('delStatus').className = 'a10-status' + (del > 0 ? ' ok' : '');
+  document.getElementById('hallStatus').textContent = hall > 0 ? (hall + ' modalit' + (hall>1?'ies':'y') + ' endorsed') : 'None endorsed yet.';
+  document.getElementById('hallStatus').className = 'a10-status' + (hall > 0 ? ' ok' : '');
+  document.getElementById('disStatus').textContent = dis > 0 ? (dis + ' present') : 'None endorsed yet.';
+  document.getElementById('disStatus').className = 'a10-status' + (dis > 0 ? ' ok' : '');
+  document.getElementById('negStatus').textContent = neg > 0 ? (neg + ' present') : 'None endorsed yet.';
+  document.getElementById('negStatus').className = 'a10-status' + (neg > 0 ? ' ok' : '');
+}
+function countC() {
+  let n=0; for (let i=1;i<=6;i++){const v=document.querySelector('input[name="C'+i+'"]:checked'); if(v&&v.value==='yes') n++;}
+  document.getElementById('cCount').textContent = n;
+  document.getElementById('cStatus').textContent = n === 6 ? 'All criteria met.' : (n + ' of 6 met.');
+  document.getElementById('cStatus').className = 'a10-status' + (n === 6 ? ' ok' : '');
+}
+function calcHiTOP() { }
+
+function valSCID() {
+  let bOk = true;
+  for (let i=1;i<=24;i++){ if(!document.querySelector('input[name="B'+i+'"]:checked')) bOk = false; }
+  let cOk = true;
+  for (let i=1;i<=6;i++){ if(!document.querySelector('input[name="C'+i+'"]:checked')) cOk = false; }
+  const chronOk = document.querySelector('input[name="C25"]:checked');
+  const dxOk = document.querySelector('input[name="sdx"]:checked');
+  if (bOk && cOk && chronOk && dxOk) { document.getElementById('scidAl').classList.remove('on'); go(3); }
+  else { document.getElementById('scidAl').classList.add('on'); }
+}
+function valHiTOP() {
+  const names = ['ra1','ra2','ra3','ra4','ra5','sa1','sa2','sa3','sa4','sa5','ds1','ds2','ds3','ds4','ds5','ds6','fp1','fp2','fp3','fp4','fp5','fp6'];
+  let ok = true;
+  for (const n of names) { if (!document.querySelector('input[name="'+n+'"]:checked')) ok = false; }
+  if (ok) { document.getElementById('htAl').classList.remove('on'); go(4); }
+  else { document.getElementById('htAl').classList.add('on'); }
+}
+function valMATRICS() {
+  const c1 = document.getElementById('cog1').value.trim();
+  const c2 = document.getElementById('cog2').value.trim();
+  if (c1 && c2) { document.getElementById('matAl').classList.remove('on'); go(5); }
+  else { document.getElementById('matAl').classList.add('on'); }
+}
+
+function sumScale(names) {
+  let tot = 0;
+  for (const n of names) { const v = document.querySelector('input[name="'+n+'"]:checked'); if (v) tot += +v.value; }
+  return tot;
+}
+
+function buildReport() {
+  let del=0; for (let i=1;i<=13;i++){const v=document.querySelector('input[name="B'+i+'"]:checked'); if(v&&v.value==='present') del++;}
+  let hall=0; for (let i=14;i<=19;i++){const v=document.querySelector('input[name="B'+i+'"]:checked'); if(v&&v.value==='present') hall++;}
+  let dis=0; for (let i=20;i<=22;i++){const v=document.querySelector('input[name="B'+i+'"]:checked'); if(v&&v.value==='present') dis++;}
+  let neg=0; for (let i=23;i<=24;i++){const v=document.querySelector('input[name="B'+i+'"]:checked'); if(v&&v.value==='present') neg++;}
+  let cn=0; for (let i=1;i<=6;i++){const v=document.querySelector('input[name="C'+i+'"]:checked'); if(v&&v.value==='yes') cn++;}
+  const chron = document.querySelector('input[name="C25"]:checked') ? document.querySelector('input[name="C25"]:checked').value : null;
+  const dxEl = document.querySelector('input[name="sdx"]:checked');
+  const dx = dxEl ? dxEl.value : null;
+
+  const dxMap = { with: ['With Schizophrenia','pos','\u2713'], without: ['Without Schizophrenia','neg','\u2013'] };
+  const picked = dxMap[dx] || ['\u2014','neg','?'];
+  document.getElementById('r-dx').innerHTML = '<div class="dx-badge ' + picked[1] + '"><span class="dx-icon">' + picked[2] + '</span><div><div class="dx-name">' + picked[0] + '</div><div class="dx-sub">Student diagnosis</div></div></div>';
+
+  document.getElementById('r-counts').innerHTML =
+    '<div class="count-cell"><div class="cn">' + del + '/13</div><div class="cl">Delusions</div></div>' +
+    '<div class="count-cell"><div class="cn">' + hall + '/6</div><div class="cl">Hallucinations</div></div>' +
+    '<div class="count-cell"><div class="cn">' + dis + '/3</div><div class="cl">Disorg. speech/behavior</div></div>' +
+    '<div class="count-cell"><div class="cn">' + neg + '/2</div><div class="cl">Negative symptoms</div></div>';
+
+  document.getElementById('r-pills').innerHTML =
+    '<span class="cpill ' + (cn===6?'met':'unm') + '">Criteria C1\u2013C6 \u2014 ' + cn + '/6 met</span>' +
+    '<span class="cpill ' + (chron==='yes'?'met':'unm') + '">C25 Chronology \u2014 ' + (chron==='yes'?'Continuous':'Not continuous') + '</span>';
+
+  const scales = [
+    { n:'Restricted Affectivity', spec:'Detachment', names:['ra1','ra2','ra3','ra4','ra5'] },
+    { n:'Social Aloofness', spec:'Detachment', names:['sa1','sa2','sa3','sa4','sa5'] },
+    { n:'Dissociation', spec:'Thought Disorder', names:['ds1','ds2','ds3','ds4','ds5','ds6'] },
+    { n:'Fantasy Proneness', spec:'Thought Disorder', names:['fp1','fp2','fp3','fp4','fp5','fp6'] }
+  ];
+  let html = '';
+  for (const s of scales) {
+    const tot = sumScale(s.names);
+    const max = s.names.length * 4, min = s.names.length * 1;
+    const pctOfRange = Math.round(((tot - min) / (max - min)) * 100);
+    const label = pctOfRange >= 75 ? 'High' : pctOfRange >= 50 ? 'Moderate' : pctOfRange >= 25 ? 'Low-moderate' : 'Low';
+    html += '<tr><td>' + s.n + '</td><td>' + s.spec + '</td><td class="ht-n">' + tot + '</td><td class="ht-n">' + min + '\u2013' + max + '</td><td><div class="mini-bar"><div class="mini-fill" style="width:' + pctOfRange + '%"></div></div> <span style="font-size:.75rem;color:var(--ink3)">' + label + '</span></td></tr>';
+  }
+  document.getElementById('r-ht-body').innerHTML = html;
+
+  document.getElementById('r-cog1').textContent = document.getElementById('cog1').value.trim() || 'Not answered.';
+  document.getElementById('r-cog2').textContent = document.getElementById('cog2').value.trim() || 'Not answered.';
+}
+</script>
+</body>
+</html>

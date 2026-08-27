@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="color-scheme" content="light dark">
 <script src="/theme-init.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ClinCog · Three Ways to Evaluate Social Anxiety Disorder</title>
@@ -12,24 +13,34 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root { color-scheme: light; }
+html[data-theme="dark"] { color-scheme: dark; }
 :root{
-  --teal:#eb5e28;--teal-pale:#fbe7db;--teal-mid:#d14f1e;
-  --text:#252422;--muted:#403d39;--border:#ccc5b9;
-  --bg:#ffffff;--soft:#fffcf2;--surface:#ffffff;
+  --teal:#8bb6a2;--teal-pale:#eaf2ee;--teal-mid:#729b87;
+  --text:#1a1a1a;--muted:#6b7280;--border:#e5e5e5;
+  --bg:#ffffff;--soft:#f2f2f2;--surface:#ffffff;
   --nav-h:56px;--bar-h:46px;
   --serif:'Poppins','Inter',sans-serif;--sans:'Inter',sans-serif;--mono:'DM Mono',monospace;
 }
 
 html[data-theme="dark"]{
-  --teal:#eb5e28;--teal-pale:#3a281f;--teal-mid:#ff7a47;
-  --text:#fffcf2;--muted:#ccc5b9;--border:#403d39;
-  --bg:#181715;--soft:#1f1e1b;--surface:#252422;
+  --teal:#8bb6a2;--teal-pale:#26332d;--teal-mid:#a3c9b6;
+  --text:#f2f2f2;--muted:#a8acaf;--border:#383b42;
+  --bg:#1c1e22;--soft:#202227;--surface:#262930;
+}
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]){
+    color-scheme: dark;
+    --teal:#8bb6a2;--teal-pale:#26332d;--teal-mid:#a3c9b6;
+    --text:#f2f2f2;--muted:#a8acaf;--border:#383b42;
+    --bg:#1c1e22;--soft:#202227;--surface:#262930;
+  }
 }
 html,body{transition:background-color .25s ease,color .25s ease}
 *{transition:background-color .2s ease,border-color .2s ease,color .2s ease}
 body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:15px;line-height:1.75;position:relative}
-body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(640px 420px at 6% -8%,rgba(91,79,232,.10),transparent 60%),radial-gradient(600px 460px at 100% 105%,rgba(91,79,232,.07),transparent 62%)}
-html[data-theme="dark"] body::before{background:radial-gradient(640px 420px at 6% -8%,rgba(235,94,40,.13),transparent 60%),radial-gradient(600px 460px at 100% 105%,rgba(235,94,40,.09),transparent 62%)}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none}
+html[data-theme="dark"] body::before{}
 h1,h2,h3,h4,h5{font-family:var(--serif)}
 /* NAV */
 #nav{position:sticky;top:0;z-index:300;background:var(--surface);border-bottom:1px solid var(--border);height:var(--nav-h);display:flex;align-items:center;padding:0 24px}
@@ -119,7 +130,7 @@ h1,h2,h3,h4,h5{font-family:var(--serif)}
 .part-tag{font-family:var(--mono);font-size:11px;color:var(--teal);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
 .part-title{font-size:26px;font-weight:600}
 /* BUTTONS */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:12px 24px;background:linear-gradient(180deg, var(--teal) 0%, #333f57 100%);border:0;color:#fff;font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:normal;cursor:pointer;transition:all .15s;border-radius:999px;text-transform:none}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:12px 24px;background:var(--teal-mid);border:0;color:#fff;font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:normal;cursor:pointer;transition:all .15s;border-radius:999px;text-transform:none}
 .btn:hover{filter:brightness(1.08)}
 .btn:hover{background:var(--teal);color:#fff}
 .btn-row{display:flex;justify-content:flex-end;margin-top:48px;gap:12px}
@@ -228,6 +239,7 @@ html[data-force-layout="desktop"] #ccg-viewport{min-width:900px}
 <div id="ccg-nav-root"></div>
 <script src="/nav.js" data-subtitle="Anxiety Seminar"></script>
 <script src="/storage.js"></script>
+<script src="/sidebar.js"></script>
 
 <div id="ccg-viewport">
 

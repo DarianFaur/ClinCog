@@ -24,30 +24,32 @@
   const COMPACT_BREAKPOINT = 860;
 
   const css = `
-  .ccg-nav{position:sticky;top:0;z-index:500;display:flex;align-items:center;justify-content:space-between;height:56px;padding:0 24px;background:#252422;font-family:'Poppins','Inter',sans-serif;box-sizing:border-box;}
+  .ccg-nav{position:sticky;top:0;z-index:500;display:flex;align-items:center;justify-content:space-between;height:56px;padding:0 24px;background:#636d79;font-family:'Poppins','Inter',sans-serif;box-sizing:border-box;}
   .ccg-nav *{box-sizing:border-box;}
   .ccg-nav .ccg-brand{display:flex;align-items:center;gap:9px;text-decoration:none;color:#fff;font-weight:700;font-size:14px;flex-shrink:0;}
   .ccg-nav .ccg-brand img{height:22px;width:auto;display:block;}
   .ccg-nav .ccg-brand span{color:#b7c0d4;font-weight:400;}
   .ccg-links{display:flex;align-items:center;gap:26px;}
   .ccg-links a{color:#cfd6e6;text-decoration:none;font-family:'Inter',sans-serif;font-size:14px;font-weight:500;}
-  .ccg-links a:hover{color:#fff;}
   .ccg-dropdown{position:relative;}
-  .ccg-dropdown>button{background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:14px;font-weight:500;color:#cfd6e6;display:flex;align-items:center;gap:4px;padding:0;}
-  .ccg-dropdown>button:hover{color:#fff;}
+  .ccg-dropdown>button{background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:14px;font-weight:500;color:#cfd6e6;display:flex;align-items:center;gap:4px;padding:0;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
   .ccg-dropdown-panel{display:none;position:absolute;top:28px;right:0;background:#fff;color:#1c2029;border:1px solid #e2e4ea;border-radius:10px;min-width:230px;padding:8px;box-shadow:0 12px 28px rgba(20,25,40,.16);}
   .ccg-dropdown.open .ccg-dropdown-panel{display:block;}
-  .ccg-dropdown-panel a{display:block;padding:9px 12px;border-radius:6px;font-size:13px;color:#949aa6;text-decoration:none;}
-  .ccg-dropdown-panel a:hover{background:#eef0f4;color:#5a5f6b;}
+  .ccg-dropdown-panel a{display:block;padding:9px 12px;border-radius:6px;font-size:13px;color:#949aa6;text-decoration:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
   html[data-theme="dark"] .ccg-dropdown-panel{background:#1c202b;color:#eef0f5;border-color:#2c3140;}
   html[data-theme="dark"] .ccg-dropdown-panel a{color:#a7acba;}
-  html[data-theme="dark"] .ccg-dropdown-panel a:hover{background:#232a3a;color:#eef0f5;}
+  @media (hover:hover) and (pointer:fine){
+    .ccg-links a:hover{color:#fff;}
+    .ccg-dropdown>button:hover{color:#fff;}
+    .ccg-dropdown-panel a:hover{background:#eef0f4;color:#5a5f6b;}
+    html[data-theme="dark"] .ccg-dropdown-panel a:hover{background:#232a3a;color:#eef0f5;}
+  }
 
-  .ccg-hamburger{display:none;background:none;border:none;cursor:pointer;color:#fff;padding:4px;flex-shrink:0;}
+  .ccg-hamburger{display:none;background:none;border:none;cursor:pointer;color:#fff;padding:4px;flex-shrink:0;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
   .ccg-hamburger svg{width:22px;height:22px;display:block;}
-  .ccg-mobile-panel{display:none;position:absolute;top:56px;right:0;left:0;background:#252422;flex-direction:column;padding:16px 24px;gap:14px;z-index:499;box-shadow:0 12px 20px rgba(0,0,0,.15);}
+  .ccg-mobile-panel{display:none;position:absolute;top:56px;right:0;left:0;background:#636d79;flex-direction:column;padding:16px 24px;gap:14px;z-index:499;box-shadow:0 12px 20px rgba(0,0,0,.15);}
   .ccg-mobile-panel.open{display:flex;}
-  .ccg-mobile-panel a{color:#cfd6e6;text-decoration:none;font-family:'Inter',sans-serif;font-size:14px;font-weight:500;}
+  .ccg-mobile-panel a{color:#cfd6e6;text-decoration:none;font-family:'Inter',sans-serif;font-size:14px;font-weight:500;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
 
   /* Compact state is toggled by JS (see below), not a media query,
      so it reacts to a forced phone/desktop preview too. */

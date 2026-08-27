@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="color-scheme" content="light dark">
 <script src="/theme-init.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ClinCog · Addiction Assessment Seminar</title>
@@ -13,12 +14,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300..700&display=swap" rel="stylesheet">
 <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
 <style>
+:root { color-scheme: light; }
+[data-theme="dark"] { color-scheme: dark; }
 :root,[data-theme="light"]{
-  --color-bg:#fffcf2;--color-surface:#ffffff;--color-surface-2:#f4efe1;
-  --color-surface-offset:#f4efe1;--color-divider:#ccc5b9;--color-border:#ccc5b9;
-  --color-text:#252422;--color-text-muted:#403d39;--color-text-faint:#8a8579;
-  --color-primary:#eb5e28;--color-primary-hover:#d14f1e;--color-primary-active:#252422;
-  --color-primary-highlight:#fbe7db;
+  --color-bg:#ffffff;--color-surface:#ffffff;--color-surface-2:#f2f2f2;
+  --color-surface-offset:#f2f2f2;--color-divider:#e5e5e5;--color-border:#e5e5e5;
+  --color-text:#1a1a1a;--color-text-muted:#6b7280;--color-text-faint:#9ca3af;
+  --color-primary:#c99b4a;--color-primary-hover:#b3853a;--color-primary-active:#1a1a1a;
+  --color-primary-highlight:#f6ecd9;
   --color-success:#437a22;--color-success-hover:#2e5c10;--color-success-highlight:#d4dfcc;
   --color-error:#a12c7b;--color-error-hover:#7d1e5e;--color-error-highlight:#e0ced7;
   --color-warning:#964219;--color-warning-highlight:#ddcfc6;
@@ -41,11 +44,11 @@
   --space-12:3rem;--space-16:4rem;
 }
 [data-theme="dark"]{
-  --color-bg:#181715;--color-surface:#252422;--color-surface-2:#1f1e1b;
-  --color-surface-offset:#1f1e1b;--color-divider:#403d39;--color-border:#403d39;
-  --color-text:#fffcf2;--color-text-muted:#ccc5b9;--color-text-faint:#8a8579;
-  --color-primary:#eb5e28;--color-primary-hover:#ff7a47;--color-primary-active:#d14f1e;
-  --color-primary-highlight:#3a281f;
+  --color-bg:#1c1e22;--color-surface:#262930;--color-surface-2:#202227;
+  --color-surface-offset:#202227;--color-divider:#383b42;--color-border:#383b42;
+  --color-text:#f2f2f2;--color-text-muted:#a8acaf;--color-text-faint:#6b7280;
+  --color-primary:#d9a441;--color-primary-hover:#e8b862;--color-primary-active:#c99b4a;
+  --color-primary-highlight:#332c1c;
   --color-success:#6daa45;--color-success-hover:#4d8f25;--color-success-highlight:#3a4435;
   --color-error:#d163a7;--color-error-hover:#b9478f;--color-error-highlight:#4c3d46;
   --color-warning:#bb653b;--color-warning-highlight:#564942;
@@ -55,12 +58,13 @@
   --shadow-md:0 4px 12px oklch(0 0 0/0.3);
   --shadow-lg:0 12px 32px oklch(0 0 0/0.4);
 }
-@media(prefers-color-scheme:dark){:root:not([data-theme]){
-  --color-bg:#181715;--color-surface:#252422;--color-surface-2:#1f1e1b;
-  --color-surface-offset:#1f1e1b;--color-divider:#403d39;--color-border:#403d39;
-  --color-text:#fffcf2;--color-text-muted:#ccc5b9;--color-text-faint:#8a8579;
-  --color-primary:#eb5e28;--color-primary-hover:#ff7a47;--color-primary-active:#d14f1e;
-  --color-primary-highlight:#3a281f;
+@media(prefers-color-scheme:dark){html:not([data-theme="light"]){
+  color-scheme: dark;
+  --color-bg:#1c1e22;--color-surface:#262930;--color-surface-2:#202227;
+  --color-surface-offset:#202227;--color-divider:#383b42;--color-border:#383b42;
+  --color-text:#f2f2f2;--color-text-muted:#a8acaf;--color-text-faint:#6b7280;
+  --color-primary:#d9a441;--color-primary-hover:#e8b862;--color-primary-active:#c99b4a;
+  --color-primary-highlight:#332c1c;
   --color-success:#6daa45;--color-success-hover:#4d8f25;--color-success-highlight:#3a4435;
   --color-error:#d163a7;--color-error-hover:#b9478f;--color-error-highlight:#4c3d46;
   --color-warning:#bb653b;--color-warning-highlight:#564942;
@@ -70,7 +74,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth;}
 body{min-height:100dvh;font-family:var(--font-body);font-size:var(--text-base);color:var(--color-text);background:var(--color-bg);line-height:1.6;position:relative;}
-body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(640px 420px at 6% -8%,rgba(235,94,40,.09),transparent 60%),radial-gradient(600px 460px at 100% 105%,rgba(235,94,40,.06),transparent 62%)}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none}
 [data-theme="dark"] body::before{background:radial-gradient(640px 420px at 6% -8%,rgba(135,152,184,.12),transparent 60%),radial-gradient(600px 460px at 100% 105%,rgba(135,152,184,.09),transparent 62%)}
 button{cursor:pointer;background:none;border:none;font:inherit;color:inherit;}
 input,textarea,select{font:inherit;color:inherit;}
@@ -335,6 +339,7 @@ body.mobile-mode .sst-kbd-hint{display:none;}
 <div id="ccg-nav-root"></div>
 <script src="/nav.js" data-subtitle="Addiction Seminar"></script>
 <script src="/storage.js"></script>
+<script src="/sidebar.js"></script>
 
 <nav class="add-nav">
   <div class="add-steps" id="add-steps">
@@ -1933,7 +1938,7 @@ function getTheme() {
     text: dark ? '#cdccca' : '#28251d',
     muted: dark ? '#797876' : '#7a7974',
     grid: dark ? '#262523' : '#dcd9d5',
-    primary: dark ? '#eb5e28' : '#eb5e28',
+    primary: dark ? '#d9a441' : '#c99b4a',
     blue: dark ? '#5591c7' : '#006494',
     error: dark ? '#d163a7' : '#a12c7b',
     gold: dark ? '#e8af34' : '#d19900',

@@ -19,6 +19,32 @@
 
 const VIGNETTES = {
 
+  schizophrenia: {
+    name: "Dennis",
+    text: `
+Dennis is a 25-year-old college student, brought in by his family after they
+found him attempting to barricade himself in his bedroom, convinced shadowy
+figures were coming to take him away. This is his first psychiatric contact.
+Known for academic excellence, he began withdrawing roughly a year ago -
+spending long hours alone, losing interest in things he once enjoyed, and
+letting his hygiene slip (unwashed clothes, unkempt appearance). His grades
+declined sharply; professors noted he struggled to concentrate and that his
+written work, when submitted at all, was disorganized and lacked coherence.
+His family initially attributed this to academic stress. In recent weeks his
+condition escalated: his parents found him pacing the house at night,
+muttering to himself and glancing nervously at the windows, insisting
+government agents had planted cameras to monitor him and that his family was
+conspiring against him. He refuses food his mother prepares, convinced it is
+poisoned. He has been observed laughing suddenly for no apparent reason and
+arguing with people who are not there, and spends hours responding to voices
+no one else can hear. His speech often shifts abruptly between unrelated
+topics mid-sentence, losing his train of thought partway through. He has
+been seen wandering the streets at night in mismatched clothing, gesturing
+at unseen figures, and was once found standing motionless in the backyard,
+staring at the sky and whispering about secret messages hidden in the stars.
+`.trim(),
+  },
+
   depression: {
     name: "Darren",
     text: `
@@ -121,14 +147,18 @@ Non-negotiable safety boundaries, even in character:
 - Never describe methods, plans, or step-by-step detail related to suicide
   or self-harm beyond exactly what is stated in the case file.
 - Never escalate risk content beyond the case file - do not add new crisis
-  details, intentions, or urgency that isn't already there.
+  details, intentions, urgency, delusional targets, or conspiratorial
+  detail that isn't already there.
 - If the case file mentions sensitive material (thoughts of death,
-  self-harm), present it matter-of-factly, exactly as documented, without
-  dramatizing or elaborating on it.
+  self-harm, paranoid or persecutory beliefs, hallucinations), present it
+  matter-of-factly, exactly as documented, without dramatizing or
+  elaborating on it.
 - If a student's question would require inventing or elaborating on
-  self-harm or suicide detail beyond the case file, stay in character but
-  decline gently (e.g. "I don't really want to get into more detail about
-  that") rather than generating new content.
+  self-harm, suicide, or delusional/paranoid detail beyond the case file,
+  stay in character but decline or deflect the way that patient plausibly
+  would (e.g. "I don't really want to get into more detail about that", or
+  becoming guarded and changing the subject if that fits the presentation)
+  rather than generating new content.
 
 CASE FILE:
 ${vignette.text}

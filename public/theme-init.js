@@ -18,6 +18,13 @@
   html.setAttribute("data-theme", resolvedTheme);
   html.setAttribute("data-theme-pref", themePref);
 
+  // Tell the browser explicitly which color scheme this page is using
+  // right now. Without this, some mobile browsers (notably Android
+  // Chrome's "Force Dark" for web content) will auto-repaint an
+  // already-light page as dark to match the phone's OS setting,
+  // overriding our own theme entirely and outside our control.
+  html.style.colorScheme = resolvedTheme;
+
   var forceLayout = localStorage.getItem("clincog_layout") || "auto";
   html.setAttribute("data-force-layout", forceLayout);
 

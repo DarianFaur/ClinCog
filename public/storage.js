@@ -77,15 +77,19 @@ const ClinCog = {
   // ---- derived status, used by the dashboard. Every value here is
   // computed from the real data above - nothing is invented. ----
   MODULES: [
-    { id: "depression", week: 1, domain: "Mood", patient: "Darren", age: 34,
+    { id: "schizophrenia", week: 1, domain: "Psychosis", patient: "Dennis", age: 25,
+      role: "College student",
+      quote: "\u201cThey planted cameras. Nobody believes me.\u201d",
+      chat: "/schizophrenia-chat.html", eval: "/schizophrenia-eval.html" },
+    { id: "depression", week: 2, domain: "Mood", patient: "Darren", age: 34,
       role: "High school English teacher",
       quote: "\u201cWhat's the point? Nothing I do matters.\u201d",
       chat: "/depression-chat.html", eval: "/depression-eval.html" },
-    { id: "anxiety", week: 2, domain: "Anxiety", patient: "Alex", age: 24,
+    { id: "anxiety", week: 3, domain: "Anxiety", patient: "Alex", age: 24,
       role: "Undergraduate student",
       quote: "\u201cI just feel like everyone is watching me.\u201d",
       chat: "/anxiety-chat.html", eval: "/anxiety-eval.html" },
-    { id: "addiction", week: 3, domain: "Substance use", patient: "Jordan", age: 25,
+    { id: "addiction", week: 4, domain: "Substance use", patient: "Jordan", age: 25,
       role: "Software engineer",
       quote: "\u201cI just need to dial it back a little.\u201d",
       chat: "/addiction-chat.html", eval: "/addiction-eval.html" },
