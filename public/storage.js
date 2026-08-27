@@ -121,6 +121,19 @@ const ClinCog = {
     return null;
   },
 
+  // Wipes all case progress (chat history, evaluation-reached markers,
+  // completion + reflections) across every case, for a student who wants
+  // to start the whole term over. Deliberately leaves the student's name
+  // and any display preferences (theme, zoom, sidebar state) untouched -
+  // this is a progress reset, not a "forget me" action.
+  resetAllProgress() {
+    for (const m of this.MODULES) {
+      this.clearHistory(m.id);
+      localStorage.removeItem(this.evalKey(m.id));
+      localStorage.removeItem(this.completeKey(m.id));
+    }
+  },
+
   // Honest, derived-only metrics for the dashboard's "clinical thinking"
   // section - every number here is a direct count of real local data.
   getMetrics() {

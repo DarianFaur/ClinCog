@@ -1016,7 +1016,7 @@ html[data-theme="dark"] body.app-frame-bg {
 
 /* ---------- continue-your-case hero ---------- */
 .continue-card {
-  background: linear-gradient(155deg, var(--brand) 0%, var(--brand-deep) 100%);
+  background: linear-gradient(155deg, var(--domain-color, var(--brand)) 0%, var(--brand-deep) 100%);
   border-radius: 24px; padding: 34px 36px; color: #fff;
   margin-bottom: 36px; position: relative; overflow: hidden;
 }

@@ -193,10 +193,19 @@
   const name = ClinCog.getName();
   document.getElementById("greeting-h1").textContent = name ? `Hello, ${name}.` : "Hello.";
   document.getElementById("greeting-sub").innerHTML =
-    `Ready to continue with this term's cases. <button class="link" id="change-name">Not you?</button>`;
+    `Ready to continue with this term's cases. <button class="link" id="change-name">Not you?</button> · <button class="link" id="restart-progress">Restart all progress</button>`;
   document.getElementById("change-name").addEventListener("click", () => {
     ClinCog.clearName();
     location.href = "/";
+  });
+  document.getElementById("restart-progress").addEventListener("click", () => {
+    const ok = confirm(
+      "This clears every case's chat history, evaluation progress, and reflections — for all cases, not just one. Your name stays saved. This can't be undone. Restart the whole term?"
+    );
+    if (ok) {
+      ClinCog.resetAllProgress();
+      location.reload();
+    }
   });
   document.getElementById("app-user-avatar").textContent = name ? name.charAt(0).toUpperCase() : "?";
   document.getElementById("app-user-name").textContent = name || "Student";
@@ -257,6 +266,8 @@
     ? `Week ${current.week} of ${ClinCog.MODULES.length}`
     : "Term complete";
 
+  const DOMAIN_VAR = { schizophrenia: "--domain-psychosis", depression: "--domain-mood", anxiety: "--domain-anxiety", addiction: "--domain-substance" };
+
   // ---- continue-your-case hero ----
   const continueSlot = document.getElementById("continue-slot");
   if (current) {
@@ -264,7 +275,7 @@
     const nextHref = !s.evalReached ? current.chat : current.eval;
     const nextLabel = s.exchanges === 0 ? "Start case" : (!s.evalReached ? "Continue interview" : "Continue evaluation");
     continueSlot.innerHTML = `
-      <div class="continue-card">
+      <div class="continue-card" style="--domain-color:var(${DOMAIN_VAR[current.id]})">
         <span class="eyebrow">Continue your case</span>
         <div class="continue-week">Week ${current.week} · ${DOMAIN_LABEL[current.id]}</div>
         <h2>${current.patient}</h2>
@@ -287,7 +298,6 @@
   }
 
   // ---- term progress: donut chart, segmented by case, colored by domain ----
-  const DOMAIN_VAR = { schizophrenia: "--domain-psychosis", depression: "--domain-mood", anxiety: "--domain-anxiety", addiction: "--domain-substance" };
   const explored = ClinCog.MODULES.filter(m => statusOf(m.id).state !== "not-started").length;
   const completedCount = ClinCog.MODULES.filter(m => statusOf(m.id).state === "complete").length;
   document.getElementById("term-sub").textContent = `${explored} of ${ClinCog.MODULES.length} cases explored`;
