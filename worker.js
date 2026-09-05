@@ -527,15 +527,18 @@ async function respondAsPatientGemini(history, geminiKey, vignette, model = "gem
           contents,
           systemInstruction: { parts: [{ text: buildSystemPrompt(vignette) }] },
           generationConfig: {
-            maxOutputTokens: 600,
             // Gemini 2.5/3.x models "think" before answering by default,
-            // and those internal reasoning tokens count against the same
-            // maxOutputTokens budget as the visible reply - with a short
-            // budget, thinking alone can consume nearly all of it, cutting
-            // the actual answer off mid-sentence. A patient roleplay reply
-            // doesn't need multi-step reasoning, so thinking is switched
-            // off entirely rather than just padding the budget around it.
-            thinkingConfig: { thinkingBudget: 0 },
+            // and those internal reasoning tokens count against this same
+            // budget as the visible reply - a short budget can let
+            // thinking alone consume nearly all of it, cutting the actual
+            // answer off mid-sentence. The clean fix would be disabling
+            // thinking via thinkingConfig, but that field has multiple
+            // independently-reported 400 errors specifically on this
+            // streaming endpoint with gemini-3.x models (Google's own
+            // developer forum, several unrelated projects, same error
+            // pattern) - not worth the fragility. A generous ceiling that
+            // comfortably covers thinking + a real reply is the safer fix.
+            maxOutputTokens: 1024,
           },
           // Gemini's default safety filters are tuned for general
           // consumer use and can misfire on legitimate clinical content

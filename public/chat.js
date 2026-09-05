@@ -114,10 +114,14 @@
     const label = document.createElement("span");
     label.className = "who";
     label.textContent = who === "student" ? "You" : "Patient";
+    const body = document.createElement("span");
+    body.className = "msg-text";
+    body.textContent = text;
     wrap.appendChild(label);
-    wrap.appendChild(document.createTextNode(text));
+    wrap.appendChild(body);
     chatDiv.appendChild(wrap);
     chatDiv.scrollTop = chatDiv.scrollHeight;
+    return body; // caller can keep this to update the text progressively
   }
 
   function updateStatus() {
@@ -185,11 +189,28 @@
       }
       if (!response.ok) throw new Error("Server error: " + response.status);
 
-      const data = await response.json();
-      history = [...historyToSend, { role: "assistant", content: data.text }];
-      ClinCog.setHistory(moduleId, history);
+      // The reply now arrives as a plain-text stream, not one JSON blob -
+      // an empty bubble is shown immediately and filled in as text
+      // arrives, rather than staring at "Waiting..." until the whole
+      // reply is ready. Works the same regardless of which provider or
+      // tier answered - the worker already normalized the stream shape.
+      statusDiv.textContent = "";
+      const patientBubble = renderMessage("", "patient");
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let fullText = "";
 
-      renderMessage(data.text, "patient");
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        fullText += decoder.decode(value, { stream: true });
+        patientBubble.textContent = fullText;
+        chatDiv.scrollTop = chatDiv.scrollHeight;
+      }
+
+      history = [...historyToSend, { role: "assistant", content: fullText || "(no response)" }];
+      ClinCog.setHistory(moduleId, history);
+      if (!fullText) patientBubble.textContent = "(no response)";
       updateStatus();
     } catch (err) {
       statusDiv.textContent = "Something went wrong — that question wasn't counted. Try again.";
