@@ -422,6 +422,7 @@ async function respondAsPatient(history, anthropicKey, vignette, model = "claude
         max_tokens: 300,
         system: buildSystemPrompt(vignette),
         messages: history,
+        stream: true,
       }),
     });
 
@@ -434,12 +435,13 @@ async function respondAsPatient(history, anthropicKey, vignette, model = "claude
       });
     }
 
-    const data = await anthropicResponse.json();
-    const text = data.content?.[0]?.text ?? "(no response)";
-
-    return new Response(JSON.stringify({ text }), {
-      headers: { "Content-Type": "application/json" },
-    });
+    // Anthropic streams Server-Sent Events - "content_block_delta" events
+    // carry the incremental text. We re-emit just that plain text, chunk
+    // by chunk, so the frontend doesn't need to know anything about SSE
+    // or which provider is even being used underneath.
+    return streamPlainTextFromSSE(anthropicResponse, (parsed) =>
+      parsed.type === "content_block_delta" ? parsed.delta?.text : null
+    );
 
   } catch (err) {
     return new Response(JSON.stringify({ text: "Invalid request." }), {
@@ -456,6 +458,56 @@ async function respondAsPatient(history, anthropicKey, vignette, model = "claude
 //   - roles are "user"/"model", not "user"/"assistant"
 //   - the system prompt is its own top-level "systemInstruction" field
 //   - response text lives at candidates[0].content.parts[0].text
+// ---- Streaming helper ------------------------------------------------------
+// Every provider streams Server-Sent Events, but each wraps the actual
+// text delta in a differently-shaped JSON payload. Rather than have the
+// frontend understand three different SSE dialects, we parse each
+// provider's stream here, server-side, and re-emit a single uniform
+// format: plain text chunks, nothing else. chat.js just reads bytes and
+// appends them - it never needs to know which provider answered.
+function streamPlainTextFromSSE(providerResponse, extractDelta) {
+  const encoder = new TextEncoder();
+  const decoder = new TextDecoder();
+  const reader = providerResponse.body.getReader();
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      let buffer = "";
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop(); // last (possibly incomplete) line carries over
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed.startsWith("data:")) continue;
+            const payload = trimmed.slice(5).trim();
+            if (!payload || payload === "[DONE]") continue;
+            try {
+              const parsed = JSON.parse(payload);
+              const delta = extractDelta(parsed);
+              if (delta) controller.enqueue(encoder.encode(delta));
+            } catch {
+              // Non-JSON or partial line - safe to skip, next chunk will
+              // usually complete it.
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Stream relay error:", err);
+      } finally {
+        controller.close();
+      }
+    },
+  });
+
+  return new Response(stream, {
+    headers: { "Content-Type": "text/plain; charset=utf-8" },
+  });
+}
+
 async function respondAsPatientGemini(history, geminiKey, vignette, model = "gemini-3.5-flash") {
   try {
     const contents = history.map((m) => ({
@@ -464,7 +516,7 @@ async function respondAsPatientGemini(history, geminiKey, vignette, model = "gem
     }));
 
     const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse`,
       {
         method: "POST",
         headers: {
@@ -474,7 +526,17 @@ async function respondAsPatientGemini(history, geminiKey, vignette, model = "gem
         body: JSON.stringify({
           contents,
           systemInstruction: { parts: [{ text: buildSystemPrompt(vignette) }] },
-          generationConfig: { maxOutputTokens: 300 },
+          generationConfig: {
+            maxOutputTokens: 600,
+            // Gemini 2.5/3.x models "think" before answering by default,
+            // and those internal reasoning tokens count against the same
+            // maxOutputTokens budget as the visible reply - with a short
+            // budget, thinking alone can consume nearly all of it, cutting
+            // the actual answer off mid-sentence. A patient roleplay reply
+            // doesn't need multi-step reasoning, so thinking is switched
+            // off entirely rather than just padding the budget around it.
+            thinkingConfig: { thinkingBudget: 0 },
+          },
           // Gemini's default safety filters are tuned for general
           // consumer use and can misfire on legitimate clinical content
           // (this platform's cases involve delusions, suicidal ideation,
@@ -500,12 +562,15 @@ async function respondAsPatientGemini(history, geminiKey, vignette, model = "gem
       });
     }
 
-    const data = await geminiResponse.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "(no response)";
-
-    return new Response(JSON.stringify({ text }), {
-      headers: { "Content-Type": "application/json" },
-    });
+    // With ?alt=sse, Gemini streams proper Server-Sent Events - without
+    // it, this same endpoint would instead return one giant JSON array,
+    // which the SSE parser below could not read at all (a real, easy-to-
+    // hit gotcha, confirmed by several independent implementation
+    // write-ups). Each event repeats the same candidates/parts shape as
+    // the non-streaming response, just one incremental chunk at a time.
+    return streamPlainTextFromSSE(geminiResponse, (parsed) =>
+      parsed.candidates?.[0]?.content?.parts?.[0]?.text
+    );
 
   } catch (err) {
     return new Response(JSON.stringify({ text: "Invalid request." }), {
