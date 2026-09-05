@@ -1,163 +1,166 @@
-# Cum să găzduiești propria ta versiune de ClinCog
+# How to host your own copy of ClinCog
 
-Acest ghid te duce de la zero — nici cont, nici cod, nici experiență tehnică —
-până la o versiune complet a ta de ClinCog, funcțională, cu propria cheie API,
-propriul domeniu, complet independentă de orice altă instalare a platformei.
-Nu trece nimic prin `clincog.net` — ai control total, iar tu ești singurul
-care vede cheia ta.
+This guide takes you from zero — no account, no code, no technical
+background — to a fully working, completely independent copy of ClinCog:
+your own API key, your own domain, entirely separate from any other
+installation of the platform. Nothing routes through `clincog.net` — you
+have full control, and you're the only one who ever sees your key.
 
-Durează, prima dată, undeva la 30-45 de minute, majoritatea timpul fiind
-descărcări și așteptat răspunsuri de la servicii externe (Cloudflare, WHO).
-Nu ai nevoie de experiență de programare — doar de răbdare să copiezi comenzi
-exact cum sunt scrise.
-
----
-
-## Ce vei avea la final
-
-- Propriul tău site, la o adresă de forma `numele-tau.workers.dev` (gratuit,
-  imediat) — sau, dacă vrei, pe propriul tău domeniu, dacă ai unul.
-- Propria cheie Anthropic, plătită de tine, folosită doar de instanța ta.
-- Control complet: poți schimba orice, opri orice, nu depinzi de nimeni.
-
-## Glosar rapid — termenii pe care-i vei întâlni
-
-Nu ai nevoie să-i memorezi, doar să știi ce înseamnă când îi vezi:
-
-- **Terminal** — o fereastră unde tastezi comenzi text, în loc să dai clic pe
-  butoane. Pe Mac se numește "Terminal" (îl găsești în Launchpad → Other).
-  Pe Windows, folosim "PowerShell" (căutare din Start → scrie "PowerShell").
-- **Comandă** — o linie de text pe care o tastezi (sau o copiezi) în terminal
-  și apeși Enter. Terminalul execută ce scrie acolo.
-- **npm** — un instrument care instalează alte instrumente. Vine automat cu
-  Node.js (pasul 1).
-- **Cloudflare Worker** — "serverul" care rulează codul tău. Nu găzduiești
-  nimic pe propriul calculator; Cloudflare rulează totul, gratuit, la scara
-  unei clase de studenți.
-- **Secret** — o cheie API sau o parolă, stocată în siguranță de Cloudflare,
-  niciodată vizibilă în cod sau pe internet.
+The first time through takes roughly 30-45 minutes, most of it spent
+downloading things and waiting on external services (Cloudflare, WHO). No
+programming experience is required — just the patience to copy commands
+exactly as written.
 
 ---
 
-## Pasul 1 — Instalează Node.js
+## What you'll end up with
 
-Node.js e programul care-ți dă acces la `npm` (pasul următor).
+- Your own site, at an address like `your-name.workers.dev` (free,
+  immediate) — or your own domain, if you have one.
+- Your own Anthropic key, billed to you, used only by your instance.
+- Full control: change anything, turn anything off, depend on no one.
 
-1. Mergi la **[nodejs.org](https://nodejs.org)**.
-2. Descarcă versiunea recomandată ("LTS") pentru sistemul tău (Windows/Mac).
-3. Deschide fișierul descărcat și urmează instalarea (Next → Next → Install,
-   fără să bifezi/debifezi nimic special).
-4. Deschide terminalul (vezi glosarul de mai sus) și scrie:
+## Quick glossary — terms you'll run into
+
+No need to memorize these, just to recognize them when they show up:
+
+- **Terminal** — a window where you type text commands instead of clicking
+  buttons. On Mac it's called "Terminal" (Launchpad → Other). On Windows,
+  use "PowerShell" (search from the Start menu).
+- **Command** — a line of text you type (or paste) into the terminal and
+  press Enter on. The terminal runs whatever it says.
+- **npm** — a tool that installs other tools. It comes bundled with
+  Node.js (Step 1).
+- **Cloudflare Worker** — the "server" that runs your code. You're not
+  hosting anything on your own computer; Cloudflare runs it, free, at the
+  scale of a single class.
+- **Secret** — an API key or password, stored securely by Cloudflare,
+  never visible in the code or on the public internet.
+
+---
+
+## Step 1 — Install Node.js
+
+Node.js is what gives you access to `npm` (the next step).
+
+1. Go to **[nodejs.org](https://nodejs.org)**.
+2. Download the recommended ("LTS") version for your system.
+3. Open the downloaded file and follow the installer (Next → Next →
+   Install, nothing special to check or uncheck).
+4. Open a terminal (see the glossary above) and type:
    ```
    node --version
    ```
-   Dacă vezi ceva de genul `v22.x.x`, ai reușit. Dacă primești o eroare de
-   tip "comanda nu a fost găsită", închide și redeschide terminalul (uneori
-   e nevoie de un restart al lui) și încearcă din nou.
+   If you see something like `v22.x.x`, you're set. If you get a "command
+   not found" error, close and reopen the terminal (it sometimes needs a
+   restart to pick up a newly installed program) and try again.
 
-## Pasul 2 — Descarcă codul ClinCog
+## Step 2 — Download the ClinCog code
 
-1. Mergi la pagina GitHub a proiectului (link-ul pe care ți l-a dat autorul).
-2. Caută butonul verde **"Code"** → **"Download ZIP"**.
-3. Dezarhivează fișierul descărcat undeva ușor de găsit — de exemplu, direct
-   pe Desktop, într-un folder numit `clincog`.
+1. Go to the project's GitHub page (the link the author gave you).
+2. Find the green **"Code"** button → **"Download ZIP"**.
+3. Unzip the downloaded file somewhere easy to find — for example,
+   directly on your Desktop, in a folder called `clincog`.
 
-## Pasul 3 — Creează-ți cont Cloudflare
+## Step 3 — Create a Cloudflare account
 
-1. Mergi la **[dash.cloudflare.com/sign-up](https://dash.cloudflare.com/sign-up)**.
-2. Creează un cont gratuit (email + parolă). Nu ai nevoie de card, de niciun
-   plan plătit — tot ce urmează funcționează pe planul gratuit.
-3. Confirmă emailul dacă ți se cere.
+1. Go to **[dash.cloudflare.com/sign-up](https://dash.cloudflare.com/sign-up)**.
+2. Create a free account (email + password). No card needed, no paid
+   plan — everything below works on the free tier.
+3. Confirm your email if asked.
 
-## Pasul 4 — Deschide terminalul în folderul corect
+## Step 4 — Open a terminal in the right folder
 
-1. Deschide terminalul.
-2. Scrie `cd ` (cu spațiu după), apoi **trage folderul `clincog`** (cel
-   dezarhivat la pasul 2) direct în fereastra terminalului — calea se
-   completează automat. Apasă Enter.
-   - Pe Mac, comanda ar arăta cam așa:
-     `cd /Users/numele-tau/Desktop/clincog`
-   - Pe Windows, cam așa:
-     `cd C:\Users\numele-tau\Desktop\clincog`
-3. Confirmă că ești în locul corect:
+1. Open a terminal.
+2. Type `cd ` (with a trailing space), then **drag the `clincog` folder**
+   (the one you unzipped in Step 2) directly into the terminal window —
+   the path fills in automatically. Press Enter.
+   - On Mac, this looks something like:
+     `cd /Users/yourname/Desktop/clincog`
+   - On Windows, something like:
+     `cd C:\Users\yourname\Desktop\clincog`
+3. Confirm you're in the right place:
    ```
    ls
    ```
-   (pe Windows: `dir`) — ar trebui să vezi fișiere ca `worker.js` și
-   `wrangler.toml` în listă.
+   (on Windows: `dir`) — you should see files like `worker.js` and
+   `wrangler.toml` in the list.
 
-## Pasul 5 — Instalează și conectează Wrangler
+## Step 5 — Install and connect Wrangler
 
-Wrangler e instrumentul care trimite codul tău către Cloudflare.
+Wrangler is the tool that sends your code to Cloudflare.
 
-1. În terminal, scrie:
+1. In the terminal, type:
    ```
    npm install -g wrangler
    ```
-   Așteaptă până se termină (poate dura 1-2 minute).
-2. Conectează-l la contul tău Cloudflare:
+   Wait for it to finish (can take 1-2 minutes).
+2. Connect it to your Cloudflare account:
    ```
    wrangler login
    ```
-   Se deschide o pagină în browser — apasă "Allow" / "Autorizează". Revii
-   apoi în terminal, unde ar trebui să vezi un mesaj de succes.
+   A page opens in your browser — click "Allow". Come back to the
+   terminal, where you should see a success message.
 
-## Pasul 6 — Obține propria cheie Anthropic
+## Step 6 — Get your own Anthropic key
 
-1. Mergi la **[console.anthropic.com](https://console.anthropic.com)**,
-   creează-ți cont dacă nu ai deja.
-2. Adaugă o metodă de plată (Anthropic nu are tier gratuit permanent, dar
-   costurile pentru o clasă sunt mici — vezi nota de buget mai jos).
-3. Din meniu, mergi la **API Keys** → **Create Key**. Dă-i un nume (orice,
-   de ex. "ClinCog") și copiază cheia generată — arată cam așa:
-   `sk-ant-...`. **Copiaz-o acum** — unele console-uri n-o mai arată a doua
-   oară.
-4. **Recomandare de buget**: din același Console, caută secțiunea de
-   Billing/Limits și setează un plafon lunar de cheltuială (de exemplu 20-30
-   USD, suficient pentru o clasă), plus o alertă la 50-90% din plafon — ca
-   să nu fii surprins de o factură neașteptată.
+1. Go to **[console.anthropic.com](https://console.anthropic.com)** and
+   create an account if you don't have one.
+2. Add a payment method (Anthropic has no permanent free tier, but the
+   cost for a single class is small — see the budget note below).
+3. From the menu, go to **API Keys** → **Create Key**. Give it any name
+   (e.g. "ClinCog") and copy the generated key — it looks like
+   `sk-ant-...`. **Copy it now** — some consoles won't show it again.
+4. **Budget recommendation**: in the same Console, find the
+   Billing/Limits section and set a monthly spending cap (e.g. $20-30,
+   plenty for a class), plus an alert at 50-90% of that cap — so you're
+   never surprised by an unexpected bill.
 
-## Pasul 7 — Ajustează un singur lucru în cod, înainte de deploy
+## Step 7 — Change one line of code before deploying
 
-Codul original are hardcodat un subdomeniu specific autorului
-(`uvt.clincog.net`), folosit pentru a decide ce cheie API se folosește.
-Pe **instanța ta**, acel subdomeniu nu va exista niciodată — deci, fără
-acest pas, platforma ta ar cădea implicit pe un tier "demo" cu limite
-foarte stricte, chiar și pentru propriii tăi studenți. Reparăm asta acum.
+The original code has a specific subdomain hardcoded
+(`uvt.clincog.net`), used to decide which API key to use. On **your**
+instance, that subdomain will never exist — so without this step, your
+platform would silently fall back to a heavily rate-limited "demo" tier,
+even for your own students. Let's fix that now.
 
-1. Deschide folderul `clincog` cu orice editor de text simplu — dacă nu ai
-   unul preferat, [VS Code](https://code.visualstudio.com) e gratuit și
-   simplu de instalat.
-2. Deschide fișierul **`worker.js`**.
-3. Caută (Ctrl+F / Cmd+F) linia:
+1. Open the `clincog` folder in any plain text editor — if you don't have
+   one you prefer, [VS Code](https://code.visualstudio.com) is free and
+   simple to install.
+2. Open the file **`worker.js`**.
+3. Find (Ctrl+F / Cmd+F) the line:
    ```
    const STUDENT_HOSTNAME = "uvt.clincog.net";
    ```
-4. Înlocuiește `"uvt.clincog.net"` cu domeniul pe care vei folosi tu — dacă
-   nu ai un domeniu propriu încă, poți pune orice, de exemplu:
+4. Replace `"uvt.clincog.net"` with whatever domain you'll actually be
+   using — if you don't have your own domain yet, put anything for now,
+   for example:
    ```
-   const STUDENT_HOSTNAME = "clincog-mit.workers.dev";
+   const STUDENT_HOSTNAME = "clincog-mycollege.workers.dev";
    ```
-   (o să vezi exact ce adresă vei primi la pasul 9 — dacă vrei, poți reveni
-   și corecta acest rând după aceea, apoi redeploy).
-5. Salvează fișierul.
+   (you'll see your exact address in Step 10 — if needed, you can come
+   back and correct this line afterward, then redeploy.)
+5. Save the file.
 
-Cu acest singur rând corectat, **toată** platforma ta va folosi automat
-cheia ta Anthropic, generos, fără să te mai preocupe deloc de tier-ul demo,
-Gemini, sau BYOK — acelea rămân relevante doar pentru instanța originală de
-la `clincog.net`.
+With this one line fixed, your **entire** platform will automatically use
+your own Anthropic key, generously, without you ever needing to think
+about the demo tier, Gemini, or BYOK — those stay relevant only to the
+original instance at `clincog.net`.
 
-## Pasul 8 — Simplifică `wrangler.toml`
+## Step 8 — Simplify `wrangler.toml`
 
-Deschide **`wrangler.toml`** din același folder. Șterge complet blocul
-`routes = [ ... ]` (cele câteva linii care menționează `clincog.net`,
-`www.clincog.net`, `uvt.clincog.net`) — acelea sunt domeniile autorului
-original, nu ale tale. Fără acel bloc, Cloudflare îți dă automat o adresă
-gratuită de tipul `numele-proiectului.contul-tau.workers.dev` — perfect
-pentru a începe; poți adăuga oricând un domeniu propriu mai târziu (pasul
-10).
+Open **`wrangler.toml`** in the same folder. Delete the whole
+`routes = [ ... ]` block (the few lines mentioning `clincog.net`,
+`www.clincog.net`, `uvt.clincog.net`) — those are the original author's
+domains, not yours. Without that block, Cloudflare automatically gives
+you a free address like `project-name.your-account.workers.dev` — perfect
+to start with; you can add your own domain later (Step 11).
 
-Fișierul tău ar trebui să arate cam așa după ștergere:
+You can also delete the `CHAT_RATE_LIMITER_DEMO` block — it exists only
+to protect the original demo tier's Gemini budget, which doesn't apply to
+your instance at all.
+
+Your file should look something like this afterward:
 ```toml
 name = "clincog"
 main = "worker.js"
@@ -171,104 +174,107 @@ name = "CHAT_RATE_LIMITER"
 namespace_id = "1001"
 simple = { limit = 200, period = 60 }
 
+[[ratelimits]]
+name = "ICD_RATE_LIMITER"
+namespace_id = "1002"
+simple = { limit = 200, period = 60 }
+
 [assets]
 directory = "./public"
 binding = "ASSETS"
 ```
 
-(Poți lăsa restul blocurilor `[[ratelimits]]` — nu strică nimic dacă rămân,
-doar cele legate strict de tier-ul demo/Gemini nu ți se vor aplica ție.)
+## Step 9 — Set your key as a secret, then deploy
 
-## Pasul 9 — Setează cheia ta ca secret, apoi fă deploy
+Back in the terminal (make sure you're still in the `clincog` folder):
 
-Înapoi în terminal (asigură-te că ești tot în folderul `clincog`):
-
-1. Setează cheia Anthropic:
+1. Set the Anthropic key:
    ```
    wrangler secret put ANTHROPIC_API_KEY
    ```
-   Ți se cere să lipești cheia (cea de la pasul 6) — o lipești și apeși
-   Enter. Nu se vede pe ecran cât o tastezi/lipești — e normal, e o măsură
-   de siguranță.
-2. Fă primul deploy:
+   You'll be asked to paste the key (from Step 6) — paste it and press
+   Enter. It won't show on screen as you paste it — that's normal, a
+   security measure.
+2. Deploy for the first time:
    ```
    wrangler deploy
    ```
-   Așteaptă câteva secunde. La final, terminalul îți arată adresa ta live
-   — ceva de forma:
+   Wait a few seconds. At the end, the terminal shows your live address —
+   something like:
    ```
-   https://clincog.numele-contului-tau.workers.dev
+   https://clincog.your-account-name.workers.dev
    ```
 
-## Pasul 10 — Testează
+## Step 10 — Test it
 
-Deschide adresa primită la pasul 9 într-un browser. Ar trebui să vezi
-ecranul de start al ClinCog. Introdu un nume, deschide un caz, încearcă o
-conversație cu pacientul — dacă primești un răspuns, totul funcționează.
+Open the address from Step 9 in a browser. You should see ClinCog's start
+screen. Enter a name, open a case, try a conversation with the patient —
+if you get a reply, everything's working.
 
-Dacă nu ai reparat exact adresa la Pasul 7 (poate n-o știai încă), acum o
-ai — întoarce-te, corectează linia din `worker.js` cu adresa reală primită
-aici, salvează, și rulează din nou `wrangler deploy` (fără să mai repeți
-pasul cu secretul, acela rămâne setat).
+If you didn't already know your exact address for Step 7, you do now — go
+back, correct the line in `worker.js` with the real address you got here,
+save, and run `wrangler deploy` again (no need to repeat the secret step —
+that one stays set).
 
-## Pasul 11 (opțional) — Domeniu propriu
+## Step 11 (optional) — Your own domain
 
-Dacă ai deja un domeniu (de exemplu, cumpărat separat, sau unul al
-universității tale), poți să-l legi de Worker:
+If you already have a domain (bought separately, or one from your
+university), you can attach it to the Worker:
 
-1. În [dash.cloudflare.com](https://dash.cloudflare.com), adaugă domeniul
-   tău ca site nou în Cloudflare (dacă nu e deja acolo).
-2. Mergi la Workers & Pages → worker-ul tău → Settings → Domains & Routes
-   → Add → Custom Domain, și introdu domeniul dorit.
-3. Așteaptă câteva minute pentru propagare DNS.
+1. In [dash.cloudflare.com](https://dash.cloudflare.com), add your domain
+   as a new site in Cloudflare (if it isn't already there).
+2. Go to Workers & Pages → your worker → Settings → Domains & Routes →
+   Add → Custom Domain, and enter the domain you want.
+3. Wait a few minutes for DNS to propagate.
 
-## Pasul 12 (opțional, dar recomandat) — Protecții suplimentare
+## Step 12 (optional, but recommended) — Extra protections
 
-Platforma originală include protecție împotriva traficului automatizat
-(rate limiting, deja prezent implicit) și verificare anti-bot (Turnstile).
-Turnstile e opțional pentru o clasă mică, controlată, dar recomandat dacă
-link-ul tău ar putea circula public:
+The original platform includes protection against automated traffic
+(rate limiting, already present by default) and bot verification
+(Turnstile). Turnstile is optional for a small, controlled class, but
+recommended if your link might circulate publicly:
 
 1. [dash.cloudflare.com](https://dash.cloudflare.com) → Turnstile → Add
-   widget manually → tip **Invisible** → notează Site Key și Secret Key.
-2. În `public/chat.js`, caută linia `TURNSTILE_SITE_KEY = "..."` și
-   înlocuiește cu Site Key-ul tău.
-3. În terminal: `wrangler secret put TURNSTILE_SECRET_KEY`, lipește Secret
-   Key-ul.
-4. `wrangler deploy` din nou.
+   widget manually → type **Invisible** → note down the Site Key and
+   Secret Key.
+2. In `public/chat.js`, find the line `TURNSTILE_SITE_KEY = "..."` and
+   replace it with your Site Key.
+3. In the terminal: `wrangler secret put TURNSTILE_SECRET_KEY`, paste
+   your Secret Key.
+4. `wrangler deploy` again.
 
-Dacă preferi să sari peste acest pas acum, platforma funcționează normal
-fără el — doar fără stratul suplimentar anti-bot.
+If you'd rather skip this step for now, the platform works normally
+without it — just without the extra anti-bot layer.
 
-## Dacă vrei și widget-ul de căutare ICD-11 (diagnostic probabil)
+## If you also want the ICD-11 diagnosis search widget
 
-Necesită înregistrare separată, gratuită, la WHO:
+Requires a separate, free registration with WHO:
 
-1. **[icd.who.int/icdapi](https://icd.who.int/icdapi)** → înregistrare →
-   primești `client_id` și `client_secret`.
-2. În terminal:
+1. **[icd.who.int/icdapi](https://icd.who.int/icdapi)** → register → get
+   a `client_id` and `client_secret`.
+2. In the terminal:
    ```
    wrangler secret put ICD_CLIENT_ID
    wrangler secret put ICD_CLIENT_SECRET
    ```
 3. `wrangler deploy`.
 
-Fără acest pas, restul platformei funcționează normal — doar pasul de
-"alege diagnosticul probabil" dintre conceptualizare și evaluare nu va găsi
-rezultate la căutare.
+Without this step, the rest of the platform works normally — only the
+"pick a probable diagnosis" step between conceptualization and evaluation
+won't return search results.
 
 ---
 
-## Ce faci dacă ceva nu merge
+## If something goes wrong
 
-- **"command not found" la orice comandă** — închide și redeschide
-  terminalul, apoi încearcă din nou (uneori terminalul are nevoie să
-  "recunoască" un program nou instalat).
-- **`wrangler deploy` dă eroare despre secrete lipsă** — înseamnă că ai
-  uitat pasul 9(1); rulează `wrangler secret put ANTHROPIC_API_KEY` din nou.
-- **Site-ul se deschide, dar conversația cu pacientul nu răspunde** —
-  verifică în Cloudflare Dashboard → Workers & Pages → worker-ul tău →
-  Logs, pentru mesajul exact de eroare (deseori e o cheie Anthropic
-  greșit copiată sau fără credit disponibil în cont).
-- **Orice altceva** — deschide un Issue pe pagina GitHub a proiectului,
-  descriind exact ce comandă ai rulat și ce mesaj ai primit.
+- **"command not found" on any command** — close and reopen the
+  terminal, then try again (it sometimes needs to "notice" a newly
+  installed program).
+- **`wrangler deploy` complains about a missing secret** — you likely
+  skipped Step 9(1); run `wrangler secret put ANTHROPIC_API_KEY` again.
+- **The site opens, but the patient conversation doesn't reply** — check
+  Cloudflare Dashboard → Workers & Pages → your worker → Logs for the
+  exact error (often a mistyped Anthropic key, or no credit left on the
+  account).
+- **Anything else** — open an Issue on the project's GitHub page,
+  describing exactly which command you ran and what message you got.
