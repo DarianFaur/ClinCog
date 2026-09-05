@@ -293,7 +293,7 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
     <h1>Three Ways to<br><em>Evaluate</em> Schizophrenia</h1>
     <p class="lead" style="max-width:540px;">You will read a clinical vignette and evaluate the same patient through three different conceptual frameworks. The lens shapes what you see.</p>
     <div class="layers">
-      <div class="layer-row"><span class="layer-num">01</span><div class="layer-text"><span class="lt">Categorical — DSM-5 via SCID-5-CV</span><span class="ls">Structured diagnostic interview · criterion-based decision</span></div></div>
+      <div class="layer-row"><span class="layer-num">01</span><div class="layer-text"><span class="lt">Categorical — ICD-11 via CDDR</span><span class="ls">Structured diagnostic interview · criterion-based decision</span></div></div>
       <div class="layer-row"><span class="layer-num">02</span><div class="layer-text"><span class="lt">Dimensional–Psychological — HiTOP-SR</span><span class="ls">Quantified severity · spectrum position</span></div></div>
       <div class="layer-row"><span class="layer-num">03</span><div class="layer-text"><span class="lt">Dimensional–Cognitive — MATRICS</span><span class="ls">Neuropsychological profile · mechanistic interpretation</span></div></div>
     </div>
@@ -313,159 +313,65 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
     </div>
     <div class="nav-row">
       <button class="btn btn-s" onclick="go(0)">← Back</button>
-      <button class="btn btn-p" onclick="go(2)">Proceed to SCID-5 →</button>
+      <button class="btn btn-p" onclick="go(2)">Proceed to ICD-11 →</button>
     </div>
   </div>
 </div>
 
 <div class="page" id="pg2">
   <div class="wrap">
-    <div class="eyebrow">Layer 1 · Categorical · DSM-5</div>
-    <h2>SCID-5-CV — Module B: Psychotic and Associated Symptoms</h2>
-    <p class="lead" style="margin-bottom:6px;">Use the interview questions below to evaluate Dennis.</p>
-    <div class="callout"><strong>Rating guide:</strong>&ensp; <strong>+</strong> = Present &ensp;|&ensp; <strong>−</strong> = Absent &ensp;|&ensp; <strong>?</strong> = Inadequate information</div>
+    <div class="eyebrow">Layer 1 · Categorical · ICD-11</div>
+    <h2>Let's confirm this by rating the clinical symptoms described by the character through structured questions.</h2>
+    <p class="lead" style="margin-bottom:6px;">Rate each symptom domain from the ICD-11 Clinical Descriptions and Diagnostic Requirements (CDDR) for Schizophrenia (6A20), reproduced verbatim below.</p>
+    <div class="callout"><strong>Rating guide:</strong>&ensp; <strong>+</strong> = Present &ensp;|&ensp; <strong>&minus;</strong> = Absent &ensp;|&ensp; <strong>?</strong> = Inadequate information</div>
 
-    <div class="sec-label">1) Delusions (B1–B13)</div>
+    <div class="sec-label">Essential (Required) Features</div>
+    <p style="font-size:.85rem;color:var(--ink2);margin-bottom:14px;">At least two of the following symptoms must be present (by the individual's report or through observation by the clinician or other informants) most of the time for a period of 1 month or more. At least one of the qualifying symptoms should be from item a) through d) below.</p>
 
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B1</span><div class="scid-q-text">"Have you felt that people were spying on you, or plotting against you, or trying to hurt you?"<div class="ev">Persecutory delusion</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="B1" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B1" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B1" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">a)</span><div class="scid-q-text">Persistent delusions (e.g., grandiose delusions, delusions of reference, persecutory delusions).</div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="cddr_a" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_a" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_a" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
 
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B2</span><div class="scid-q-text">"Have you felt that things happening around you — on TV, in the news, in the way strangers looked at you — were somehow about you specifically, or meant just for you?"<div class="ev">Delusion of reference</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="B2" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B2" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B2" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">b)</span><div class="scid-q-text">Persistent hallucinations (most commonly auditory, although they may be in any sensory modality).</div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="cddr_b" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_b" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_b" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
 
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B3</span><div class="scid-q-text">"Have you felt that you had special powers, or a special mission, that other people don't have?"<div class="ev">Grandiose delusion</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="B3" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B3" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B3" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">c)</span><div class="scid-q-text">Disorganized thinking (formal thought disorder) (e.g., tangentiality and loose associations, irrelevant speech, neologisms). When severe, the person's speech may be so incoherent as to be incomprehensible ('word salad').</div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="cddr_c" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_c" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_c" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
 
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B4</span><div class="scid-q-text">"Have you felt unusually guilty about something, more than seems warranted?"<div class="ev">Guilt delusion</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="B4" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B4" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B4" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">d)</span><div class="scid-q-text">Experiences of influence, passivity or control (i.e., the experience that one's feelings, impulses, actions or thoughts are not generated by oneself, are being placed in one's mind or withdrawn from one's mind by others, or that one's thoughts are being broadcast to others).</div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="cddr_d" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_d" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_d" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
 
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B5</span><div class="scid-q-text">"Have you been concerned that a partner or someone close to you has been unfaithful?"<div class="ev">Jealous delusion</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="B5" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B5" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B5" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">e)</span><div class="scid-q-text">Negative symptoms such as affective flattening, alogia or paucity of speech, avolition, asociality and anhedonia.</div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="cddr_e" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_e" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_e" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
 
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B6</span><div class="scid-q-text">"Have you felt that someone was in love with you, even though it seemed unlikely?"<div class="ev">Erotomanic delusion</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="B6" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B6" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B6" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">f)</span><div class="scid-q-text">Grossly disorganized behaviour that impedes goal-directed activity (e.g., behaviour that appears bizarre or purposeless, unpredictable or inappropriate emotional responses that interferes with the ability to organize behaviour).</div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="cddr_f" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_f" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_f" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
 
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B7</span><div class="scid-q-text">"Have you worried that something was medically wrong with your body, or that your food or drink was contaminated or poisoned?"<div class="ev">Somatic delusion</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="B7" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B7" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B7" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
-
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B8</span><div class="scid-q-text">"Have you felt that your feelings or actions were being controlled by some outside force?"<div class="ev">Delusion of control</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="B8" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B8" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B8" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
-
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B9</span><div class="scid-q-text">"Have you felt that your thoughts were being broadcast, so that other people could actually hear what you were thinking?"<div class="ev">Thought broadcasting</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="B9" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B9" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B9" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
-
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B10</span><div class="scid-q-text">"Have you felt that thoughts were being put into your head that were not your own?"<div class="ev">Thought insertion</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="B10" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B10" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B10" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
-
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B11</span><div class="scid-q-text">"Have you felt that thoughts were being taken out of your mind, against your will?"<div class="ev">Thought withdrawal</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="B11" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B11" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B11" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
-
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B12</span><div class="scid-q-text">"Have you had any religious or mystical experiences or beliefs that others found hard to accept — for example, receiving special messages meant only for you?"<div class="ev">Religious / mystical delusion</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="B12" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B12" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B12" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
-
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B13</span><div class="scid-q-text">"Is there anything else unusual you've believed that we haven't already covered — something others found difficult to believe or hard to follow?"<div class="ev">Other / bizarre delusion</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="B13" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B13" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B13" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">g)</span><div class="scid-q-text">Psychomotor disturbances such as catatonic restlessness or agitation, posturing, waxy flexibility, negativism, mutism, or stupor.</div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="cddr_g" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_g" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_g" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
 
     <div class="a10-strip">
-      <div class="a10-count"><div class="n" id="delCount">0</div><div class="l">Delusions present (of 13)</div></div>
-      <div><div class="a10-status" id="delStatus">Rate each item to update the count.</div></div>
+      <div class="a10-count"><div class="n" id="cddrCount">0</div><div class="l">Symptom domains present (of 7)</div></div>
+      <div>
+        <div class="a10-status" id="cddrStatus">Rate each item to update the count.</div>
+        <div class="a10-status" id="cddrCoreStatus"></div>
+      </div>
     </div>
 
-    <div class="sec-label">2) Hallucinations (B14–B19)</div>
-
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B14</span><div class="scid-q-text">"Have you heard things other people couldn't hear — like voices, when no one else was around?"<div class="ev">Auditory hallucination</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="B14" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B14" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B14" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
-
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B15</span><div class="scid-q-text">"Have you seen things that other people couldn't see — shapes, figures, movement?"<div class="ev">Visual hallucination</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="B15" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B15" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B15" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
-
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B16</span><div class="scid-q-text">"Have you smelled odors that other people couldn't smell?"<div class="ev">Olfactory hallucination</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="B16" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B16" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B16" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
-
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B17</span><div class="scid-q-text">"Have you felt sensations on or under your skin that others couldn't explain — crawling, tingling, being touched when no one was there?"<div class="ev">Tactile hallucination</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="B17" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B17" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B17" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
-
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B18</span><div class="scid-q-text">"Have you tasted anything unusual that you couldn't account for?"<div class="ev">Gustatory hallucination</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="B18" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B18" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B18" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
-
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B19</span><div class="scid-q-text">"Do the voices or things you notice ever tell you to do something, or comment on what you're doing?"<div class="ev">Command / running-commentary hallucination</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="B19" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B19" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B19" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
-
-    <div class="a10-strip">
-      <div class="a10-count"><div class="n" id="hallCount">0</div><div class="l">Hallucinations present (of 6)</div></div>
-      <div><div class="a10-status" id="hallStatus">Rate each item to update the count.</div></div>
-    </div>
-
-    <div class="sec-label">3) Disorganized Speech, Behavior, and Catatonia (B20–B22)</div>
-
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B20</span><div class="scid-q-text">Observe the patient's speech during the interview — does it shift abruptly between unrelated topics, or lose coherence partway through a sentence?<div class="ev">Disorganized speech</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="B20" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B20" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B20" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
-
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B21</span><div class="scid-q-text">Ask family or observe directly — has behavior become grossly disorganized (e.g. inappropriate dress for the setting, unpredictable agitation, purposeless activity)?<div class="ev">Grossly disorganized behavior</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="B21" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B21" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B21" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
-
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B22</span><div class="scid-q-text">Has the patient been observed remaining motionless for extended periods, or adopting unusual postures without apparent purpose?<div class="ev">Catatonic behavior</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="B22" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B22" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B22" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
-
-    <div class="a10-strip">
-      <div class="a10-count"><div class="n" id="disCount">0</div><div class="l">Present (of 3)</div></div>
-      <div><div class="a10-status" id="disStatus">Rate each item to update the count.</div></div>
-    </div>
-
-    <div class="sec-label">4) Negative Symptoms (B23–B24)</div>
-
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B23</span><div class="scid-q-text">Has the range or intensity of emotional expression visibly narrowed — flattened facial expression, reduced eye contact, little vocal inflection?<div class="ev">Diminished emotional expression (flat affect)</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="B23" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B23" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B23" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
-
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">B24</span><div class="scid-q-text">Has the patient shown reduced motivation for self-initiated, purposeful activity, and withdrawn from social contact he previously maintained?<div class="ev">Avolition / asociality</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="B24" value="present" onchange="countB()"> + Present</label><label class="n"><input type="radio" name="B24" value="absent" onchange="countB()"> − Absent</label><label class="u"><input type="radio" name="B24" value="unknown" onchange="countB()"> ? Info lacking</label></div></div>
-
-    <div class="a10-strip">
-      <div class="a10-count"><div class="n" id="negCount">0</div><div class="l">Present (of 2)</div></div>
-      <div><div class="a10-status" id="negStatus">Rate each item to update the count.</div></div>
-    </div>
-
-    <hr />
-
-    <div class="eyebrow" style="margin-top:-8px;">Differential Diagnosis of Psychotic Disorders</div>
-
-    <div class="sec-label">1) Schizophrenia Criteria (C1–C6)</div>
-    <p style="font-size:.85rem;color:var(--ink2);margin-bottom:14px;">Based on everything documented above, does the case meet each DSM-5 criterion for Schizophrenia?</p>
-
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">C1</span><div class="scid-q-text">Criterion A — Two or more characteristic symptoms (delusions, hallucinations, disorganized speech, grossly disorganized/catatonic behavior, negative symptoms) present for a significant portion of a 1-month period, with at least one being delusions, hallucinations, or disorganized speech.</div></div>
-      <div class="yn-row"><label><input type="radio" name="C1" value="yes" onchange="countC()"> Yes</label><label><input type="radio" name="C1" value="no" onchange="countC()"> No</label></div></div>
-
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">C2</span><div class="scid-q-text">Criterion B — Level of functioning in work, relationships, or self-care is markedly below the level achieved before onset.</div></div>
-      <div class="yn-row"><label><input type="radio" name="C2" value="yes" onchange="countC()"> Yes</label><label><input type="radio" name="C2" value="no" onchange="countC()"> No</label></div></div>
-
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">C3</span><div class="scid-q-text">Criterion C — Continuous signs of disturbance persist for at least 6 months, including at least 1 month of active-phase symptoms (or less if successfully treated).</div></div>
-      <div class="yn-row"><label><input type="radio" name="C3" value="yes" onchange="countC()"> Yes</label><label><input type="radio" name="C3" value="no" onchange="countC()"> No</label></div></div>
-
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">C4</span><div class="scid-q-text">Criterion D — Schizoaffective disorder and depressive or bipolar disorder with psychotic features have been ruled out (no major mood episode concurrent with active-phase symptoms, or mood episodes brief relative to psychotic duration).</div></div>
-      <div class="yn-row"><label><input type="radio" name="C4" value="yes" onchange="countC()"> Yes</label><label><input type="radio" name="C4" value="no" onchange="countC()"> No</label></div></div>
-
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">C5</span><div class="scid-q-text">Criterion E — The disturbance is not attributable to the physiological effects of a substance or another medical condition.</div></div>
-      <div class="yn-row"><label><input type="radio" name="C5" value="yes" onchange="countC()"> Yes</label><label><input type="radio" name="C5" value="no" onchange="countC()"> No</label></div></div>
-
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">C6</span><div class="scid-q-text">Criterion F — If there is a history of autism spectrum disorder or a childhood communication disorder, this is either not applicable, or prominent delusions/hallucinations have also been present for at least 1 month.</div></div>
-      <div class="yn-row"><label><input type="radio" name="C6" value="yes" onchange="countC()"> Yes</label><label><input type="radio" name="C6" value="no" onchange="countC()"> No</label></div></div>
-
-    <div class="a10-strip">
-      <div class="a10-count"><div class="n" id="cCount">0</div><div class="l">Criteria met (of 6)</div></div>
-      <div><div class="a10-status" id="cStatus">Rate each criterion to update the count.</div></div>
-    </div>
-
-    <div class="sec-label">2) Chronology (C25)</div>
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">C25</span><div class="scid-q-text">Has the current presentation been continuous since the prodromal changes began roughly a year ago, without an intervening period of full remission?</div></div>
-      <div class="yn-row"><label><input type="radio" name="C25" value="yes"> Yes</label><label><input type="radio" name="C25" value="no"> No</label></div></div>
+    <div class="sec-label">Exclusion Criterion</div>
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">&#10005;</span><div class="scid-q-text">The symptoms are not a manifestation of another medical condition (e.g., a brain tumour) and are not due to the effects of a substance or medication (e.g., corticosteroids) on the central nervous system, including withdrawal effects (e.g., from alcohol).</div></div>
+      <div class="yn-row"><label><input type="radio" name="cddr_exclusion" value="yes" onchange="countCddr()"> Confirmed</label><label><input type="radio" name="cddr_exclusion" value="no" onchange="countCddr()"> Not confirmed</label></div></div>
 
     <div class="sec-label">Conclusion</div>
     <div class="dx-options">
-      <label><input type="radio" name="sdx" value="with"> With Schizophrenia</label>
-      <label><input type="radio" name="sdx" value="without"> Without Schizophrenia</label>
+      <label><input type="radio" name="sdx" value="with"> Meets diagnostic requirements for Schizophrenia (6A20)</label>
+      <label><input type="radio" name="sdx" value="without"> Does not meet diagnostic requirements for Schizophrenia (6A20)</label>
     </div>
 
-    <div class="alert" id="scidAl">Please rate all 24 symptom items, all 6 schizophrenia criteria, chronology, and record a conclusion before continuing.</div>
+    <div class="callout" style="font-size:.76rem;margin-top:26px;line-height:1.6;">
+      Diagnostic criteria reproduced verbatim from: World Health Organization. <em>Clinical descriptions and diagnostic requirements for ICD-11 mental, behavioural and neurodevelopmental disorders (CDDR)</em>. Geneva: WHO; 2024. Text licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/3.0/igo/" target="_blank" rel="noopener">CC BY-NC-ND 3.0 IGO</a>. ICD-11 classification content licensed under CC BY-ND 3.0 IGO.
+    </div>
+
+    <div class="alert" id="scidAl">Please rate all 7 symptom domains, the exclusion criterion, and record a conclusion before continuing.</div>
     <div class="nav-row">
       <button class="btn btn-s" onclick="go(1)">← Vignette</button>
       <button class="btn btn-p" onclick="valSCID()">Proceed to HiTOP-SR →</button>
@@ -528,7 +434,7 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
 
     <div class="alert" id="htAl">Please complete all 22 HiTOP-SR items before continuing.</div>
     <div class="nav-row">
-      <button class="btn btn-s" onclick="go(2)">← SCID-5-CV</button>
+      <button class="btn btn-s" onclick="go(2)">← ICD-11</button>
       <button class="btn btn-p" onclick="valHiTOP()">Proceed to MATRICS →</button>
     </div>
   </div>
@@ -580,7 +486,7 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
     <div style="display:flex;flex-direction:column;gap:18px;">
       <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">1. Describe the pattern shown here. Which measure falls further below the norm, and what cognitive domain does it reflect?</label><textarea class="interp" id="cog1" placeholder="Discuss processing speed and working memory findings…"></textarea></div>
       <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">2. How do these deficits connect to the vignette? Which of Dennis's difficulties — academic decline, disorganized speech, losing his train of thought — can now be explained neuropsychologically?</label><textarea class="interp" id="cog2" placeholder="Link test data to Dennis's academic and functional decline…"></textarea></div>
-      <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">3. What does the cognitive layer add that DSM-5 categories or the HiTOP-SR alone could not reveal?</label><textarea class="interp" id="cog3" placeholder="Mechanisms, functional prognosis, treatment implications…"></textarea></div>
+      <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">3. What does the cognitive layer add that ICD-11 categories or the HiTOP-SR alone could not reveal?</label><textarea class="interp" id="cog3" placeholder="Mechanisms, functional prognosis, treatment implications…"></textarea></div>
     </div>
 
     <div class="alert" id="matAl">Please answer at least the first two questions before generating the report.</div>
@@ -599,10 +505,11 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
     <hr />
 
     <div class="report-sec">
-      <h3>Layer 1 — Categorical (DSM-5 / SCID-5-CV)</h3>
+      <h3>Layer 1 — Categorical (ICD-11 / CDDR)</h3>
       <div id="r-dx"></div>
       <div class="count-row" id="r-counts" style="margin-top:12px;"></div>
       <div class="cpills" id="r-pills" style="margin-top:10px;"></div>
+      <div id="r-hypothesis" style="margin-top:20px;"></div>
     </div>
 
     <div class="report-sec">
@@ -688,40 +595,32 @@ function tick() {
   }
 }
 
-function countB() {
-  let del=0; for (let i=1;i<=13;i++){const v=document.querySelector('input[name="B'+i+'"]:checked'); if(v&&v.value==='present') del++;}
-  let hall=0; for (let i=14;i<=19;i++){const v=document.querySelector('input[name="B'+i+'"]:checked'); if(v&&v.value==='present') hall++;}
-  let dis=0; for (let i=20;i<=22;i++){const v=document.querySelector('input[name="B'+i+'"]:checked'); if(v&&v.value==='present') dis++;}
-  let neg=0; for (let i=23;i<=24;i++){const v=document.querySelector('input[name="B'+i+'"]:checked'); if(v&&v.value==='present') neg++;}
-  document.getElementById('delCount').textContent = del;
-  document.getElementById('hallCount').textContent = hall;
-  document.getElementById('disCount').textContent = dis;
-  document.getElementById('negCount').textContent = neg;
-  document.getElementById('delStatus').textContent = del > 0 ? (del + ' delusion type' + (del>1?'s':'') + ' endorsed') : 'None endorsed yet.';
-  document.getElementById('delStatus').className = 'a10-status' + (del > 0 ? ' ok' : '');
-  document.getElementById('hallStatus').textContent = hall > 0 ? (hall + ' modalit' + (hall>1?'ies':'y') + ' endorsed') : 'None endorsed yet.';
-  document.getElementById('hallStatus').className = 'a10-status' + (hall > 0 ? ' ok' : '');
-  document.getElementById('disStatus').textContent = dis > 0 ? (dis + ' present') : 'None endorsed yet.';
-  document.getElementById('disStatus').className = 'a10-status' + (dis > 0 ? ' ok' : '');
-  document.getElementById('negStatus').textContent = neg > 0 ? (neg + ' present') : 'None endorsed yet.';
-  document.getElementById('negStatus').className = 'a10-status' + (neg > 0 ? ' ok' : '');
-}
-function countC() {
-  let n=0; for (let i=1;i<=6;i++){const v=document.querySelector('input[name="C'+i+'"]:checked'); if(v&&v.value==='yes') n++;}
-  document.getElementById('cCount').textContent = n;
-  document.getElementById('cStatus').textContent = n === 6 ? 'All criteria met.' : (n + ' of 6 met.');
-  document.getElementById('cStatus').className = 'a10-status' + (n === 6 ? ' ok' : '');
+function countCddr() {
+  const items = ['a','b','c','d','e','f','g'];
+  const core = ['a','b','c','d'];
+  let count = 0, coreMet = false;
+  for (const it of items) {
+    const v = document.querySelector('input[name="cddr_' + it + '"]:checked');
+    if (v && v.value === 'present') { count++; if (core.includes(it)) coreMet = true; }
+  }
+  const symptomCriterionMet = count >= 2 && coreMet;
+  document.getElementById('cddrCount').textContent = count;
+  document.getElementById('cddrStatus').textContent = count > 0 ? (count + ' of 7 symptom domains endorsed') : 'None endorsed yet.';
+  document.getElementById('cddrStatus').className = 'a10-status' + (count > 0 ? ' ok' : '');
+  document.getElementById('cddrCoreStatus').textContent = symptomCriterionMet
+    ? '✓ Symptom criterion met (≥ 2 domains, including ≥ 1 from a–d)'
+    : (count > 0 ? '✗ Symptom criterion not yet met' : '');
+  document.getElementById('cddrCoreStatus').className = 'a10-status' + (symptomCriterionMet ? ' ok' : '');
 }
 function calcHiTOP() { }
 
 function valSCID() {
-  let bOk = true;
-  for (let i=1;i<=24;i++){ if(!document.querySelector('input[name="B'+i+'"]:checked')) bOk = false; }
-  let cOk = true;
-  for (let i=1;i<=6;i++){ if(!document.querySelector('input[name="C'+i+'"]:checked')) cOk = false; }
-  const chronOk = document.querySelector('input[name="C25"]:checked');
+  const items = ['a','b','c','d','e','f','g'];
+  let itemsOk = true;
+  for (const it of items) { if (!document.querySelector('input[name="cddr_' + it + '"]:checked')) itemsOk = false; }
+  const exclusionOk = document.querySelector('input[name="cddr_exclusion"]:checked');
   const dxOk = document.querySelector('input[name="sdx"]:checked');
-  if (bOk && cOk && chronOk && dxOk) { document.getElementById('scidAl').classList.remove('on'); go(3); }
+  if (itemsOk && exclusionOk && dxOk) { document.getElementById('scidAl').classList.remove('on'); go(3); }
   else { document.getElementById('scidAl').classList.add('on'); }
 }
 function valHiTOP() {
@@ -745,28 +644,51 @@ function sumScale(names) {
 }
 
 function buildReport() {
-  let del=0; for (let i=1;i<=13;i++){const v=document.querySelector('input[name="B'+i+'"]:checked'); if(v&&v.value==='present') del++;}
-  let hall=0; for (let i=14;i<=19;i++){const v=document.querySelector('input[name="B'+i+'"]:checked'); if(v&&v.value==='present') hall++;}
-  let dis=0; for (let i=20;i<=22;i++){const v=document.querySelector('input[name="B'+i+'"]:checked'); if(v&&v.value==='present') dis++;}
-  let neg=0; for (let i=23;i<=24;i++){const v=document.querySelector('input[name="B'+i+'"]:checked'); if(v&&v.value==='present') neg++;}
-  let cn=0; for (let i=1;i<=6;i++){const v=document.querySelector('input[name="C'+i+'"]:checked'); if(v&&v.value==='yes') cn++;}
-  const chron = document.querySelector('input[name="C25"]:checked') ? document.querySelector('input[name="C25"]:checked').value : null;
+  const items = ['a','b','c','d','e','f','g'];
+  const core = ['a','b','c','d'];
+  let count=0, coreMet=false;
+  for (const it of items) {
+    const v = document.querySelector('input[name="cddr_' + it + '"]:checked');
+    if (v && v.value === 'present') { count++; if (core.includes(it)) coreMet = true; }
+  }
+  const symptomCriterionMet = count >= 2 && coreMet;
+  const exclEl = document.querySelector('input[name="cddr_exclusion"]:checked');
+  const exclConfirmed = exclEl ? exclEl.value === 'yes' : null;
   const dxEl = document.querySelector('input[name="sdx"]:checked');
   const dx = dxEl ? dxEl.value : null;
 
-  const dxMap = { with: ['With Schizophrenia','pos','\u2713'], without: ['Without Schizophrenia','neg','\u2013'] };
+  const dxMap = { with: ['Meets requirements for Schizophrenia (6A20)','pos','\u2713'], without: ['Does not meet requirements for Schizophrenia (6A20)','neg','\u2013'] };
   const picked = dxMap[dx] || ['\u2014','neg','?'];
-  document.getElementById('r-dx').innerHTML = '<div class="dx-badge ' + picked[1] + '"><span class="dx-icon">' + picked[2] + '</span><div><div class="dx-name">' + picked[0] + '</div><div class="dx-sub">Student diagnosis</div></div></div>';
+  document.getElementById('r-dx').innerHTML = '<div class="dx-badge ' + picked[1] + '"><span class="dx-icon">' + picked[2] + '</span><div><div class="dx-name">' + picked[0] + '</div><div class="dx-sub">Student judgment, ICD-11 CDDR</div></div></div>';
 
   document.getElementById('r-counts').innerHTML =
-    '<div class="count-cell"><div class="cn">' + del + '/13</div><div class="cl">Delusions</div></div>' +
-    '<div class="count-cell"><div class="cn">' + hall + '/6</div><div class="cl">Hallucinations</div></div>' +
-    '<div class="count-cell"><div class="cn">' + dis + '/3</div><div class="cl">Disorg. speech/behavior</div></div>' +
-    '<div class="count-cell"><div class="cn">' + neg + '/2</div><div class="cl">Negative symptoms</div></div>';
+    '<div class="count-cell"><div class="cn">' + count + '/7</div><div class="cl">Symptom domains (a\u2013g)</div></div>' +
+    '<div class="count-cell"><div class="cn">' + (coreMet ? 'Yes' : 'No') + '</div><div class="cl">\u22651 from a\u2013d</div></div>';
 
   document.getElementById('r-pills').innerHTML =
-    '<span class="cpill ' + (cn===6?'met':'unm') + '">Criteria C1\u2013C6 \u2014 ' + cn + '/6 met</span>' +
-    '<span class="cpill ' + (chron==='yes'?'met':'unm') + '">C25 Chronology \u2014 ' + (chron==='yes'?'Continuous':'Not continuous') + '</span>';
+    '<span class="cpill ' + (symptomCriterionMet?'met':'unm') + '">Symptom criterion \u2014 ' + (symptomCriterionMet?'Met':'Not met') + '</span>' +
+    '<span class="cpill ' + (exclConfirmed?'met':'unm') + '">Exclusion criterion \u2014 ' + (exclConfirmed?'Confirmed':(exclConfirmed===false?'Not confirmed':'Not rated')) + '</span>';
+
+  // Metacognitive check: compare the student's initial ICD-11 search
+  // hypothesis (picked before seeing the structured criteria) against
+  // where the criteria-based rating actually landed.
+  const hyp = typeof ClinCog !== "undefined" && ClinCog.getDiagnosisHypothesis('schizophrenia');
+  const hypBox = document.getElementById('r-hypothesis');
+  if (hypBox) {
+    if (hyp) {
+      const matches = /schizophrenia/i.test(hyp.label) && dx === 'with';
+      hypBox.innerHTML =
+        '<div class="hitop-block" style="border-top:none;padding-top:0;">' +
+        '<div class="hitop-scale-name" style="margin-bottom:10px;">Before rating any criteria, you searched ICD-11 and chose:</div>' +
+        '<div class="dx-badge ' + (matches ? 'pos' : 'neg') + '" style="margin-bottom:8px;"><span class="dx-icon">' + (matches ? '\u2713' : '\u2260') + '</span><div><div class="dx-name">' + hyp.label + '</div><div class="dx-sub">Your initial hypothesis</div></div></div>' +
+        '<p style="font-size:.82rem;color:var(--ink2);">' + (matches
+          ? 'Your working hypothesis and the criteria-based result agree.'
+          : 'Your working hypothesis and the criteria-based result differ \u2014 worth reflecting on which parts of the interview shifted your thinking.') + '</p>' +
+        '</div>';
+    } else {
+      hypBox.innerHTML = '<p style="font-size:.82rem;color:var(--ink3);">No initial hypothesis was recorded for this case.</p>';
+    }
+  }
 
   const scales = [
     { n:'Restricted Affectivity', spec:'Detachment', names:['ra1','ra2','ra3','ra4','ra5'] },

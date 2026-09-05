@@ -88,7 +88,7 @@
   document.head.appendChild(Object.assign(document.createElement("style"), { textContent: css }));
   document.documentElement.classList.add("ccg-has-sidebar");
 
-  const name = (window.ClinCog && ClinCog.getName && ClinCog.getName()) || "Student";
+  const name = (typeof ClinCog !== "undefined" && ClinCog.getName && ClinCog.getName()) || "Student";
   const currentFile = location.pathname.split("/").pop();
   const CASES = [
     { name: "Dennis", chat: "schizophrenia-chat.html", eval: "schizophrenia-eval.html", dot: "#a15c74" },

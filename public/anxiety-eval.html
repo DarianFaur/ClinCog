@@ -258,7 +258,7 @@ html[data-force-layout="desktop"] #ccg-viewport{min-width:900px}
     <div class="step-line"></div>
     <div class="step" id="step-3">
       <div class="step-dot">3</div>
-      <span class="step-lbl">SCID-5</span>
+      <span class="step-lbl">ICD-11</span>
     </div>
     <div class="step-line"></div>
     <div class="step" id="step-4">
@@ -315,7 +315,7 @@ html[data-force-layout="desktop"] #ccg-viewport{min-width:900px}
       <span class="layer-num">Layer 1</span>
       <div class="layer-body">
         <div class="layer-name">Categorical Evaluation</div>
-        <div class="layer-desc">DSM-5 criteria assessed via SCID-5 structured interview (Module F) — a symptom checklist yielding a binary diagnostic decision with specified exclusion criteria.</div>
+        <div class="layer-desc">ICD-11 criteria assessed via structured interview, reproduced verbatim from the CDDR — a checklist yielding a binary diagnostic decision.</div>
       </div>
     </li>
     <li class="layer-item">
@@ -385,8 +385,8 @@ html[data-force-layout="desktop"] #ccg-viewport{min-width:900px}
 <div class="container"><div class="page-inner">
 
   <p style="font-family:var(--mono);font-size:11px;color:var(--teal);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px">Layer 1 — Categorical Evaluation</p>
-  <h1 class="page-title">SCID-5 Interview</h1>
-  <p class="page-tagline">Social Anxiety Disorder · Module F, Items F32–F41</p>
+  <h1 class="page-title">ICD-11 / CDDR</h1>
+  <p class="page-tagline">Social Anxiety Disorder (6B04)</p>
 
   <p style="font-size:14px;color:var(--muted);margin-bottom:40px;max-width:560px">Rate each item as present (<strong>+</strong>), absent (<strong>−</strong>), or uncertain (<strong>?</strong>) based on the vignette and your clinical judgement. All items must be rated before proceeding.</p>
 
@@ -394,154 +394,77 @@ html[data-force-layout="desktop"] #ccg-viewport{min-width:900px}
 
     <div class="scid-item">
       <div class="scid-row">
-        <div>
-          <span class="item-code">F32</span>
-        </div>
+        <div><span class="item-code">a)</span></div>
         <div class="item-body">
-          <p class="item-q">"In the past several months, have you had a strong fear or anxiety about one or more social situations in which you could be observed or scrutinised by others — for example, having a conversation, meeting unfamiliar people, being observed eating or drinking, or performing in front of others?"</p>
-          <em class="item-sublabel">Fear of social/performance situations (DSM-5 Criterion A)</em>
+          <p class="item-q">Marked and excessive fear or anxiety that consistently occurs in one or more social situations, such as social interactions, doing something while feeling observed, or performing in front of others.</p>
+          <em class="item-sublabel">Core symptom (CDDR essential feature)</em>
         </div>
         <div class="rating-group">
-          <div class="rating-btn"><input type="radio" name="scid_F32" id="F32p" value="+" onchange="scidChange()"><label for="F32p">+</label></div>
-          <div class="rating-btn"><input type="radio" name="scid_F32" id="F32n" value="-" onchange="scidChange()"><label for="F32n">−</label></div>
-          <div class="rating-btn"><input type="radio" name="scid_F32" id="F32q" value="?" onchange="scidChange()"><label for="F32q">?</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_a" id="cddr_ap" value="+" onchange="scidChange()"><label for="cddr_ap">+</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_a" id="cddr_an" value="-" onchange="scidChange()"><label for="cddr_an">&minus;</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_a" id="cddr_aq" value="?" onchange="scidChange()"><label for="cddr_aq">?</label></div>
+        </div>
+      </div>
+    </div>
+    <div class="scid-item">
+      <div class="scid-row">
+        <div><span class="item-code">b)</span></div>
+        <div class="item-body">
+          <p class="item-q">The individual is concerned that he or she will act in a way, or show anxiety symptoms, that will be negatively evaluated by others.</p>
+          <em class="item-sublabel">Fear of negative evaluation</em>
+        </div>
+        <div class="rating-group">
+          <div class="rating-btn"><input type="radio" name="cddr_b" id="cddr_bp" value="+" onchange="scidChange()"><label for="cddr_bp">+</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_b" id="cddr_bn" value="-" onchange="scidChange()"><label for="cddr_bn">&minus;</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_b" id="cddr_bq" value="?" onchange="scidChange()"><label for="cddr_bq">?</label></div>
+        </div>
+      </div>
+    </div>
+    <div class="scid-item">
+      <div class="scid-row">
+        <div><span class="item-code">c)</span></div>
+        <div class="item-body">
+          <p class="item-q">Relevant social situations are consistently avoided, or else endured with intense fear or anxiety.</p>
+          <em class="item-sublabel">Avoidance or distressed endurance</em>
+        </div>
+        <div class="rating-group">
+          <div class="rating-btn"><input type="radio" name="cddr_c" id="cddr_cp" value="+" onchange="scidChange()"><label for="cddr_cp">+</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_c" id="cddr_cn" value="-" onchange="scidChange()"><label for="cddr_cn">&minus;</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_c" id="cddr_cq" value="?" onchange="scidChange()"><label for="cddr_cq">?</label></div>
+        </div>
+      </div>
+    </div>
+    <div class="scid-item">
+      <div class="scid-row">
+        <div><span class="item-code">d)</span></div>
+        <div class="item-body">
+          <p class="item-q">The symptoms persist for at least several months.</p>
+          <em class="item-sublabel">Duration</em>
+        </div>
+        <div class="rating-group">
+          <div class="rating-btn"><input type="radio" name="cddr_d" id="cddr_dp" value="+" onchange="scidChange()"><label for="cddr_dp">+</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_d" id="cddr_dn" value="-" onchange="scidChange()"><label for="cddr_dn">&minus;</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_d" id="cddr_dq" value="?" onchange="scidChange()"><label for="cddr_dq">?</label></div>
+        </div>
+      </div>
+    </div>
+    <div class="scid-item">
+      <div class="scid-row">
+        <div><span class="item-code">e)</span></div>
+        <div class="item-body">
+          <p class="item-q">The symptoms are sufficiently severe to result in significant distress or significant impairment in personal, family, social, educational, occupational, or other important areas of functioning.</p>
+          <em class="item-sublabel">Severity / functional impairment</em>
+        </div>
+        <div class="rating-group">
+          <div class="rating-btn"><input type="radio" name="cddr_e" id="cddr_ep" value="+" onchange="scidChange()"><label for="cddr_ep">+</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_e" id="cddr_en" value="-" onchange="scidChange()"><label for="cddr_en">&minus;</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_e" id="cddr_eq" value="?" onchange="scidChange()"><label for="cddr_eq">?</label></div>
         </div>
       </div>
     </div>
 
-    <div class="scid-item">
-      <div class="scid-row">
-        <div><span class="item-code">F33</span></div>
-        <div class="item-body">
-          <p class="item-q">"In these situations, were you afraid that you might act in a way, or show anxiety symptoms, that would be negatively evaluated by others — for instance, that you would be humiliated or embarrassed, or that your behaviour might offend someone?"</p>
-          <em class="item-sublabel">Fear of negative evaluation / humiliation (DSM-5 Criterion B)</em>
-        </div>
-        <div class="rating-group">
-          <div class="rating-btn"><input type="radio" name="scid_F33" id="F33p" value="+" onchange="scidChange()"><label for="F33p">+</label></div>
-          <div class="rating-btn"><input type="radio" name="scid_F33" id="F33n" value="-" onchange="scidChange()"><label for="F33n">−</label></div>
-          <div class="rating-btn"><input type="radio" name="scid_F33" id="F33q" value="?" onchange="scidChange()"><label for="F33q">?</label></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="scid-item">
-      <div class="scid-row">
-        <div><span class="item-code">F34</span></div>
-        <div class="item-body">
-          <p class="item-q">"Did these social situations almost always provoke fear or anxiety in you — even when you knew the fear was probably excessive?"</p>
-          <em class="item-sublabel">Near-invariant provocation of anxiety (DSM-5 Criterion C)</em>
-        </div>
-        <div class="rating-group">
-          <div class="rating-btn"><input type="radio" name="scid_F34" id="F34p" value="+" onchange="scidChange()"><label for="F34p">+</label></div>
-          <div class="rating-btn"><input type="radio" name="scid_F34" id="F34n" value="-" onchange="scidChange()"><label for="F34n">−</label></div>
-          <div class="rating-btn"><input type="radio" name="scid_F34" id="F34q" value="?" onchange="scidChange()"><label for="F34q">?</label></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="scid-item">
-      <div class="scid-row">
-        <div><span class="item-code">F35</span></div>
-        <div class="item-body">
-          <p class="item-q">"Did you actively try to avoid these situations, or if you had to be in them, did you endure them with intense fear or anxiety?"</p>
-          <em class="item-sublabel">Avoidance or distressed endurance (DSM-5 Criterion D)</em>
-        </div>
-        <div class="rating-group">
-          <div class="rating-btn"><input type="radio" name="scid_F35" id="F35p" value="+" onchange="scidChange()"><label for="F35p">+</label></div>
-          <div class="rating-btn"><input type="radio" name="scid_F35" id="F35n" value="-" onchange="scidChange()"><label for="F35n">−</label></div>
-          <div class="rating-btn"><input type="radio" name="scid_F35" id="F35q" value="?" onchange="scidChange()"><label for="F35q">?</label></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="scid-item">
-      <div class="scid-row">
-        <div><span class="item-code">F36</span></div>
-        <div class="item-body">
-          <p class="item-q">"Looking back at these situations, would you say your fear or anxiety was out of proportion to the actual threat they posed? Did you recognise at some level that the fear was excessive or unreasonable?"</p>
-          <em class="item-sublabel">Disproportionate fear, some retained insight (DSM-5 Criterion E)</em>
-        </div>
-        <div class="rating-group">
-          <div class="rating-btn"><input type="radio" name="scid_F36" id="F36p" value="+" onchange="scidChange()"><label for="F36p">+</label></div>
-          <div class="rating-btn"><input type="radio" name="scid_F36" id="F36n" value="-" onchange="scidChange()"><label for="F36n">−</label></div>
-          <div class="rating-btn"><input type="radio" name="scid_F36" id="F36q" value="?" onchange="scidChange()"><label for="F36q">?</label></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="scid-item">
-      <div class="scid-row">
-        <div><span class="item-code">F37</span></div>
-        <div class="item-body">
-          <p class="item-q">"How long have you been experiencing this fear, anxiety, or avoidance of social situations? Has it lasted for at least six months?"</p>
-          <em class="item-sublabel">Persistence: duration ≥ 6 months (DSM-5 Criterion F)</em>
-        </div>
-        <div class="rating-group">
-          <div class="rating-btn"><input type="radio" name="scid_F37" id="F37p" value="+" onchange="scidChange()"><label for="F37p">+</label></div>
-          <div class="rating-btn"><input type="radio" name="scid_F37" id="F37n" value="-" onchange="scidChange()"><label for="F37n">−</label></div>
-          <div class="rating-btn"><input type="radio" name="scid_F37" id="F37q" value="?" onchange="scidChange()"><label for="F37q">?</label></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="scid-item">
-      <div class="scid-row">
-        <div><span class="item-code">F38</span></div>
-        <div class="item-body">
-          <p class="item-q">"Has this fear, anxiety, or avoidance caused you significant distress — for instance, marked worry about experiencing it? Or has it caused problems in your work, studies, or relationships?"</p>
-          <em class="item-sublabel">Clinically significant distress or functional impairment (DSM-5 Criterion G)</em>
-        </div>
-        <div class="rating-group">
-          <div class="rating-btn"><input type="radio" name="scid_F38" id="F38p" value="+" onchange="scidChange()"><label for="F38p">+</label></div>
-          <div class="rating-btn"><input type="radio" name="scid_F38" id="F38n" value="-" onchange="scidChange()"><label for="F38n">−</label></div>
-          <div class="rating-btn"><input type="radio" name="scid_F38" id="F38q" value="?" onchange="scidChange()"><label for="F38q">?</label></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="scid-item">
-      <div class="scid-row">
-        <div><span class="item-code">F39</span></div>
-        <div class="item-body">
-          <p class="item-q">"Is the fear, anxiety, or avoidance attributable to the direct physiological effects of a substance — such as a drug of abuse or a medication — or to another medical condition?"</p>
-          <em class="item-sublabel">Substance/medical exclusion (DSM-5 Criterion H — rate + if exclusion applies, making SAD diagnosis inappropriate)</em>
-        </div>
-        <div class="rating-group">
-          <div class="rating-btn"><input type="radio" name="scid_F39" id="F39p" value="+" onchange="scidChange()"><label for="F39p">+</label></div>
-          <div class="rating-btn"><input type="radio" name="scid_F39" id="F39n" value="-" onchange="scidChange()"><label for="F39n">−</label></div>
-          <div class="rating-btn"><input type="radio" name="scid_F39" id="F39q" value="?" onchange="scidChange()"><label for="F39q">?</label></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="scid-item">
-      <div class="scid-row">
-        <div><span class="item-code">F40</span></div>
-        <div class="item-body">
-          <p class="item-q">"Is the social fear or anxiety better explained by the symptoms of another mental disorder — such as panic disorder, body dysmorphic disorder, autism spectrum disorder, or separation anxiety disorder?"</p>
-          <em class="item-sublabel">Better-explanation exclusion (DSM-5 Criterion I — rate + if another disorder better accounts for the presentation)</em>
-        </div>
-        <div class="rating-group">
-          <div class="rating-btn"><input type="radio" name="scid_F40" id="F40p" value="+" onchange="scidChange()"><label for="F40p">+</label></div>
-          <div class="rating-btn"><input type="radio" name="scid_F40" id="F40n" value="-" onchange="scidChange()"><label for="F40n">−</label></div>
-          <div class="rating-btn"><input type="radio" name="scid_F40" id="F40q" value="?" onchange="scidChange()"><label for="F40q">?</label></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="scid-item">
-      <div class="scid-row">
-        <div><span class="item-code">F41</span></div>
-        <div class="item-body">
-          <p class="item-q">"Is the fear or avoidance directly related to a medical condition — for example, stuttering, tremor due to Parkinson's disease, or a disfiguring condition such as obesity — and is the fear clearly excessive in relation to that condition?"</p>
-          <em class="item-sublabel">Medical condition exclusion (DSM-5 Criterion J — rate + only if fear is excessive relative to the condition)</em>
-        </div>
-        <div class="rating-group">
-          <div class="rating-btn"><input type="radio" name="scid_F41" id="F41p" value="+" onchange="scidChange()"><label for="F41p">+</label></div>
-          <div class="rating-btn"><input type="radio" name="scid_F41" id="F41n" value="-" onchange="scidChange()"><label for="F41n">−</label></div>
-          <div class="rating-btn"><input type="radio" name="scid_F41" id="F41q" value="?" onchange="scidChange()"><label for="F41q">?</label></div>
-        </div>
-      </div>
+    <div class="callout" style="font-size:.76rem;line-height:1.6;margin-top:20px;">
+      Diagnostic criteria reproduced verbatim from: World Health Organization. <em>Clinical descriptions and diagnostic requirements for ICD-11 mental, behavioural and neurodevelopmental disorders (CDDR)</em>. Geneva: WHO; 2024. Text licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/3.0/igo/" target="_blank" rel="noopener">CC BY-NC-ND 3.0 IGO</a>. ICD-11 classification content licensed under CC BY-ND 3.0 IGO.
     </div>
 
   </div><!-- /scid-items -->
@@ -553,15 +476,11 @@ html[data-force-layout="desktop"] #ccg-viewport{min-width:900px}
     <div class="diag-opts">
       <div class="diag-opt">
         <input type="radio" name="diagnosis" id="d1" value="SAD" onchange="diagChange()">
-        <label for="d1">Social Anxiety Disorder — full criteria met (including performance and non-performance situations)</label>
-      </div>
-      <div class="diag-opt">
-        <input type="radio" name="diagnosis" id="d2" value="SAD-PO" onchange="diagChange()">
-        <label for="d2">Social Anxiety Disorder, <em>performance only</em> specifier — fear restricted to speaking or performing in public</label>
+        <label for="d1">Meets diagnostic requirements for Social Anxiety Disorder (6B04)</label>
       </div>
       <div class="diag-opt">
         <input type="radio" name="diagnosis" id="d3" value="none" onchange="diagChange()">
-        <label for="d3">No diagnosis — criteria not sufficiently met</label>
+        <label for="d3">Does not meet diagnostic requirements for Social Anxiety Disorder (6B04)</label>
       </div>
     </div>
   </div>
@@ -1083,7 +1002,7 @@ when_stimuli_loaded_do(&quot;blocks&quot;+psy_blockorder+&quot;.run()&quot;)}let
     <div class="dp-q">
       <label>
         <span>Question 4</span>
-        What does the cognitive layer add that the SCID-5 or STAI alone could not reveal? What aspects of Alex's anxiety become visible only through implicit task data?
+        What does the cognitive layer add that the ICD-11 criteria or STAI alone could not reveal? What aspects of Alex's anxiety become visible only through implicit task data?
       </label>
       <textarea id="dp-q4" rows="5" placeholder="Your interpretation…" oninput="dpChange()"></textarea>
     </div>
@@ -1244,9 +1163,9 @@ function buildHiTopOpts() {
 // EVENT HANDLERS
 // ═══════════════════════════════════════════════
 function scidChange() {
-  const items = ['F32','F33','F34','F35','F36','F37','F38','F39','F40','F41'];
+  const items = ['a','b','c','d','e'];
   items.forEach(k => {
-    const sel = document.querySelector(`input[name="scid_${k}"]:checked`);
+    const sel = document.querySelector(`input[name="cddr_${k}"]:checked`);
     if (sel) S.scid[k] = sel.value;
   });
 }
@@ -1403,7 +1322,7 @@ function toggleScoreBar() {
 // ═══════════════════════════════════════════════
 function validate(page) {
   if (page === 3) {
-    const scidItems = ['F32','F33','F34','F35','F36','F37','F38','F39','F40','F41'];
+    const scidItems = ['a','b','c','d','e'];
     const allRated = scidItems.every(k => S.scid[k]);
     if (!allRated || !S.diag) {
       document.getElementById('err-p3').style.display='block';
@@ -1477,38 +1396,24 @@ function generateReport() {
 }
 
 function buildSection1() {
-  const scidItems = ['F32','F33','F34','F35','F36','F37','F38','F39','F40','F41'];
-  const plus = scidItems.slice(0,8).filter(k => S.scid[k]==='+').length;
-  const coreMet = S.scid['F32'] === '+';
-  const diagMet = S.diag === 'SAD' || S.diag === 'SAD-PO';
-  const diagLabel = S.diag === 'SAD' ? 'Social Anxiety Disorder'
-                  : S.diag === 'SAD-PO' ? 'SAD — Performance Only'
-                  : 'No Diagnosis';
+  const items = ['a','b','c','d','e'];
+  const plus = items.filter(k => S.scid[k]==='+').length;
+  const coreMet = S.scid['a'] === '+';
+  const diagMet = S.diag === 'SAD';
+  const diagLabel = S.diag === 'SAD' ? 'Meets requirements for Social Anxiety Disorder (6B04)'
+                  : S.diag === 'none' ? 'Does not meet requirements for Social Anxiety Disorder (6B04)'
+                  : 'No conclusion recorded';
   const badgeCls = diagMet ? 'diag-pos' : S.diag === 'none' ? 'diag-neg' : 'diag-neutral';
 
-  const exclH = S.scid['F39'] === '-' ? 'pill-met' : (S.scid['F39'] === '?' ? 'pill-unknown' : 'pill-unmet');
-  const exclI = S.scid['F40'] === '-' ? 'pill-met' : (S.scid['F40'] === '?' ? 'pill-unknown' : 'pill-unmet');
-  const exclJ = S.scid['F41'] === '-' ? 'pill-met' : (S.scid['F41'] === '?' ? 'pill-unknown' : 'pill-unmet');
-  const impair = S.scid['F38'] === '+' ? 'pill-met' : (S.scid['F38'] === '?' ? 'pill-unknown' : 'pill-unmet');
-
   return `<div class="report-section">
-    <div class="report-section-title">Section 1 — SCID-5 · Social Anxiety Disorder</div>
+    <div class="report-section-title">Section 1 — ICD-11 / CDDR · Social Anxiety Disorder</div>
     <div class="diag-badge ${badgeCls}">${diagLabel}</div>
     <div class="count-strip">
-      <div class="count-cell"><span class="count-num">${plus}</span><span class="count-desc">Symptoms rated +</span></div>
-      <div class="count-cell"><span class="count-num">${coreMet ? '✓' : '✗'}</span><span class="count-desc">Core criterion (F32) met</span></div>
-      <div class="count-cell"><span class="count-num">${diagMet ? 'Met' : 'Not met'}</span><span class="count-desc">Diagnostic criteria</span></div>
+      <div class="count-cell"><span class="count-num">${plus}/5</span><span class="count-desc">Criteria present (a–e)</span></div>
+      <div class="count-cell"><span class="count-num">${coreMet ? '✓' : '✗'}</span><span class="count-desc">Core symptom (a) present</span></div>
+      <div class="count-cell"><span class="count-num">${diagMet ? 'Met' : 'Not met'}</span><span class="count-desc">Student judgment</span></div>
     </div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Exclusion criteria:</p>
-    <div class="pill-row">
-      <span class="pill ${exclH}">H: Substance/medication ${S.scid['F39']||'?'}</span>
-      <span class="pill ${exclI}">I: Better explanation ${S.scid['F40']||'?'}</span>
-      <span class="pill ${exclJ}">J: Medical condition ${S.scid['F41']||'?'}</span>
-    </div>
-    <p style="font-size:13px;color:var(--muted);margin:14px 0 10px">Impairment criterion:</p>
-    <div class="pill-row">
-      <span class="pill ${impair}">G: Functional impairment ${S.scid['F38']||'?'}</span>
-    </div>
+    <p style="font-size:12px;color:var(--muted);margin-top:14px;line-height:1.6;">Diagnostic criteria reproduced verbatim from WHO's ICD-11 CDDR, licensed CC BY-NC-ND 3.0 IGO.</p>
   </div>`;
 }
 

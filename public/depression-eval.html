@@ -347,7 +347,7 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
     <h1>Three Ways to<br><em>Evaluate</em> Depression</h1>
     <p class="lead" style="max-width:540px;">You will read a clinical vignette and evaluate the same patient through three different conceptual frameworks. The lens shapes what you see.</p>
     <div class="layers">
-      <div class="layer-row"><span class="layer-num">01</span><div class="layer-text"><span class="lt">Categorical — DSM-5 via SCID-5</span><span class="ls">Structured diagnostic interview · criterion-based decision</span></div></div>
+      <div class="layer-row"><span class="layer-num">01</span><div class="layer-text"><span class="lt">Categorical — ICD-11 via CDDR</span><span class="ls">Structured diagnostic interview · criterion-based decision</span></div></div>
       <div class="layer-row"><span class="layer-num">02</span><div class="layer-text"><span class="lt">Dimensional–Psychological — BDI-II &amp; HiTOP</span><span class="ls">Quantified severity · spectrum position</span></div></div>
       <div class="layer-row"><span class="layer-num">03</span><div class="layer-text"><span class="lt">Dimensional–Cognitive — CANTAB</span><span class="ls">Neuropsychological profile · mechanistic interpretation</span></div></div>
     </div>
@@ -369,7 +369,7 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
     </div>
     <div class="nav-row">
       <button class="btn btn-s" onclick="go(0)">← Back</button>
-      <button class="btn btn-p" onclick="go(2)">Proceed to SCID-5 →</button>
+      <button class="btn btn-p" onclick="go(2)">Proceed to ICD-11 →</button>
     </div>
   </div>
 </div>
@@ -377,103 +377,71 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
 <!-- PAGE 2: SCID-5 -->
 <div class="page" id="pg2">
   <div class="wrap">
-    <div class="eyebrow">Layer 1 · Categorical · DSM-5</div>
-    <h2>SCID-5 — Current Major Depressive Episode</h2>
-    <p class="lead" style="margin-bottom:6px;">Use the interview questions below to evaluate Darren.</p>
-    <div class="callout"><strong>Rating guide:</strong>&ensp; <strong>+</strong> = Present &ensp;|&ensp; <strong>−</strong> = Absent &ensp;|&ensp; <strong>?</strong> = Inadequate information</div>
+    <div class="eyebrow">Layer 1 · Categorical · ICD-11</div>
+    <h2>Let's confirm this by rating the clinical symptoms described by the character through structured questions.</h2>
+    <p class="lead" style="margin-bottom:6px;">Rate each item from the ICD-11 Clinical Descriptions and Diagnostic Requirements (CDDR) for a Depressive Episode, reproduced verbatim below.</p>
+    <div class="callout"><strong>Rating guide:</strong>&ensp; <strong>+</strong> = Present &ensp;|&ensp; <strong>&minus;</strong> = Absent &ensp;|&ensp; <strong>?</strong> = Inadequate information</div>
+    <div class="callout" style="font-size:.78rem;">Unlike DSM-5, ICD-11 does not require a fixed symptom count. A depressive episode requires at least one of the two core symptoms (a&ndash;b), occurring most of the day nearly every day for at least two weeks, <em>accompanied by</em> several of the symptoms below &mdash; the overall clinical picture, not a checklist total, determines the diagnosis. Use the live count to inform your own judgment on the Conclusion below.</div>
 
-    <div class="sec-label">Criterion A — Symptom Assessment (A1–A9)</div>
+    <div class="sec-label">Depressive Episode &mdash; Core and Associated Symptoms</div>
 
-    <div class="scid-q">
-      <div class="scid-q-top"><span class="scid-code">A1</span><div class="scid-q-text">"In the past month, has there been a period when you were feeling depressed or down most of the day, nearly every day?"<div class="ev">Depressed mood</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="A1" value="present" onchange="countA()"> + Present</label><label class="n"><input type="radio" name="A1" value="absent" onchange="countA()"> − Absent</label><label class="u"><input type="radio" name="A1" value="unknown" onchange="countA()"> ? Info lacking</label></div>
-    </div>
-    <div class="scid-q">
-      <div class="scid-q-top"><span class="scid-code">A2</span><div class="scid-q-text">"What about losing interest or pleasure in things you usually enjoyed — was that nearly every day?"<div class="ev">Anhedonia — loss of interest or pleasure</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="A2" value="present" onchange="countA()"> + Present</label><label class="n"><input type="radio" name="A2" value="absent" onchange="countA()"> − Absent</label><label class="u"><input type="radio" name="A2" value="unknown" onchange="countA()"> ? Info lacking</label></div>
-    </div>
-    <div class="scid-q">
-      <div class="scid-q-top"><span class="scid-code">A3</span><div class="scid-q-text">"Has there been a significant change in your appetite or weight — gaining or losing without trying?"<div class="ev">Appetite / weight change</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="A3" value="present" onchange="countA()"> + Present</label><label class="n"><input type="radio" name="A3" value="absent" onchange="countA()"> − Absent</label><label class="u"><input type="radio" name="A3" value="unknown" onchange="countA()"> ? Info lacking</label></div>
-    </div>
-    <div class="scid-q">
-      <div class="scid-q-top"><span class="scid-code">A4</span><div class="scid-q-text">"How have you been sleeping? Have you had trouble sleeping, or been sleeping much more than usual, nearly every night?"<div class="ev">Insomnia or hypersomnia</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="A4" value="present" onchange="countA()"> + Present</label><label class="n"><input type="radio" name="A4" value="absent" onchange="countA()"> − Absent</label><label class="u"><input type="radio" name="A4" value="unknown" onchange="countA()"> ? Info lacking</label></div>
-    </div>
-    <div class="scid-q">
-      <div class="scid-q-top"><span class="scid-code">A5</span><div class="scid-q-text">"Have other people noticed that you were moving or speaking more slowly than usual — or were you so restless you couldn't stay still?"<div class="ev">Psychomotor agitation or retardation (observable)</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="A5" value="present" onchange="countA()"> + Present</label><label class="n"><input type="radio" name="A5" value="absent" onchange="countA()"> − Absent</label><label class="u"><input type="radio" name="A5" value="unknown" onchange="countA()"> ? Info lacking</label></div>
-    </div>
-    <div class="scid-q">
-      <div class="scid-q-top"><span class="scid-code">A6</span><div class="scid-q-text">"Have you been feeling tired or without energy nearly every day?"<div class="ev">Fatigue or loss of energy</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="A6" value="present" onchange="countA()"> + Present</label><label class="n"><input type="radio" name="A6" value="absent" onchange="countA()"> − Absent</label><label class="u"><input type="radio" name="A6" value="unknown" onchange="countA()"> ? Info lacking</label></div>
-    </div>
-    <div class="scid-q">
-      <div class="scid-q-top"><span class="scid-code">A7</span><div class="scid-q-text">"Have you been feeling worthless, or excessively guilty — even about things you hadn't done wrong?"<div class="ev">Worthlessness or excessive guilt</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="A7" value="present" onchange="countA()"> + Present</label><label class="n"><input type="radio" name="A7" value="absent" onchange="countA()"> − Absent</label><label class="u"><input type="radio" name="A7" value="unknown" onchange="countA()"> ? Info lacking</label></div>
-    </div>
-    <div class="scid-q">
-      <div class="scid-q-top"><span class="scid-code">A8</span><div class="scid-q-text">"Have you had trouble thinking or concentrating? Has it been hard to make even small decisions?"<div class="ev">Diminished concentration or indecisiveness</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="A8" value="present" onchange="countA()"> + Present</label><label class="n"><input type="radio" name="A8" value="absent" onchange="countA()"> − Absent</label><label class="u"><input type="radio" name="A8" value="unknown" onchange="countA()"> ? Info lacking</label></div>
-    </div>
-    <div class="scid-q" style="border-left:2px solid var(--warn);padding-left:12px;margin-left:-14px;">
-      <div class="scid-q-top"><span class="scid-code">A9</span><div class="scid-q-text">"Have you been having thoughts that life is not worth living, or wishing you were dead? Have you been thinking about killing yourself?"<div class="ev">Recurrent thoughts of death / suicidal ideation ⚠</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="A9" value="present" onchange="countA()"> + Present</label><label class="n"><input type="radio" name="A9" value="absent" onchange="countA()"> − Absent</label><label class="u"><input type="radio" name="A9" value="unknown" onchange="countA()"> ? Info lacking</label></div>
-    </div>
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">a)</span><div class="scid-q-text">Depressed mood, occurring most of the day, nearly every day, for a period of at least two weeks.<div class="ev">Core symptom</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="cddr_a" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_a" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_a" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">b)</span><div class="scid-q-text">Diminished interest in activities, occurring most of the day, nearly every day, for a period of at least two weeks.<div class="ev">Core symptom</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="cddr_b" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_b" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_b" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">c)</span><div class="scid-q-text">Difficulty concentrating.</div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="cddr_c" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_c" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_c" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">d)</span><div class="scid-q-text">Feelings of worthlessness or excessive or inappropriate guilt.</div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="cddr_d" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_d" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_d" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">e)</span><div class="scid-q-text">Hopelessness.</div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="cddr_e" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_e" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_e" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q" style="border-left:2px solid var(--warn);padding-left:12px;margin-left:-14px;"><div class="scid-q-top"><span class="scid-code">f)</span><div class="scid-q-text">Recurrent thoughts of death or suicide.<div class="ev">&#9888;</div></div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="cddr_f" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_f" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_f" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">g)</span><div class="scid-q-text">Changes in appetite or sleep.</div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="cddr_g" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_g" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_g" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">h)</span><div class="scid-q-text">Psychomotor agitation or retardation.</div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="cddr_h" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_h" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_h" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
+
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">i)</span><div class="scid-q-text">Reduced energy or fatigue.</div></div>
+      <div class="radio-row"><label class="p"><input type="radio" name="cddr_i" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_i" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_i" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
 
     <div class="a10-strip">
-      <div class="a10-count">
-        <div class="n" id="a-count">0</div>
-        <div class="l">Symptoms rated +</div>
-        <div class="a10-status" id="a-status">Rate items above</div>
-      </div>
-      <div class="a10-dec">
-        <label>A10 — Criterion A decision</label>
-        <div class="radio-row" style="padding-left:0;">
-          <label class="p"><input type="radio" name="A10" value="yes"> ✓ Met — ≥5 symptoms, includes A1 or A2</label>
-          <label class="n"><input type="radio" name="A10" value="no"> ✗ Not Met</label>
-        </div>
+      <div class="a10-count"><div class="n" id="cddrCount">0</div><div class="l">Symptoms present (of 9)</div></div>
+      <div>
+        <div class="a10-status" id="cddrStatus">Rate each item to update the count.</div>
+        <div class="a10-status" id="cddrCoreStatus"></div>
       </div>
     </div>
 
-    <div class="sec-label">Exclusion &amp; Impairment Criteria</div>
+    <div class="sec-label">Exclusion Criterion</div>
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">&#10005;</span><div class="scid-q-text">There have never been any prior manic, hypomanic, or mixed episodes, which would indicate the presence of a bipolar disorder.</div></div>
+      <div class="yn-row"><label><input type="radio" name="cddr_exclusion" value="yes" onchange="countCddr()"> Confirmed</label><label><input type="radio" name="cddr_exclusion" value="no" onchange="countCddr()"> Not confirmed</label></div></div>
 
-    <div class="scid-q">
-      <div class="scid-q-top"><span class="scid-code">A11</span><div class="scid-q-text">"Could these symptoms be due to the effects of a substance, medication, or a general medical condition?"<div class="ev">Criterion B — Medical/substance exclusion. Rate + if <em>no</em> organic cause (criterion is met).</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="A11" value="met"> + Met (no organic cause)</label><label class="n"><input type="radio" name="A11" value="unmet"> − Not Met (organic cause present)</label><label class="u"><input type="radio" name="A11" value="unknown"> ? Info lacking</label></div>
-    </div>
-    <div class="scid-q">
-      <div class="scid-q-top"><span class="scid-code">A12</span><div class="scid-q-text">"Have these symptoms caused significant distress or problems at work, in relationships, or in other important areas of your life?"<div class="ev">Criterion C — Clinically significant distress or impairment</div></div></div>
-      <div class="radio-row"><label class="p"><input type="radio" name="A12" value="met"> + Met (significant impairment)</label><label class="n"><input type="radio" name="A12" value="unmet"> − Not Met</label><label class="u"><input type="radio" name="A12" value="unknown"> ? Info lacking</label></div>
-    </div>
-
-    <div class="sec-label">Episode History</div>
-
-    <div class="scid-q">
-      <div class="scid-q-top"><span class="scid-code">A13</span><div class="scid-q-text">"When did this period of depression begin? How long ago would you say it started?"<div class="ev">Onset of current episode</div></div></div>
-      <input class="text-field" type="text" id="A13v" placeholder="e.g., Approximately 3–4 weeks ago…" />
-    </div>
-    <div class="scid-q">
-      <div class="scid-q-top"><span class="scid-code">A14</span><div class="scid-q-text">"How many separate times in your life have you been depressed nearly every day for at least two weeks?"<div class="ev">Number of lifetime depressive episodes</div></div></div>
-      <input class="text-field" type="text" id="A14v" placeholder="e.g., 1 (first episode) / Unknown from vignette…" />
-    </div>
-
-    <div class="sec-label">Diagnostic Conclusion</div>
+    <div class="sec-label">Conclusion</div>
     <div class="dx-options">
-      <label><input type="radio" name="sdx" value="mdd"> Major Depressive Disorder</label>
-      <label><input type="radio" name="sdx" value="other"> Other depressive / related disorder</label>
-      <label><input type="radio" name="sdx" value="sub"> Subthreshold — criteria not fully met</label>
+      <label><input type="radio" name="sdx" value="with"> Meets diagnostic requirements for a Depressive Episode (6A70)</label>
+      <label><input type="radio" name="sdx" value="without"> Does not meet diagnostic requirements for a Depressive Episode (6A70)</label>
     </div>
 
-    <div class="alert" id="sal">Please rate all A1–A12 items and select a diagnostic conclusion before continuing.</div>
+    <div class="callout" style="font-size:.76rem;margin-top:26px;line-height:1.6;">
+      Diagnostic criteria reproduced verbatim from: World Health Organization. <em>Clinical descriptions and diagnostic requirements for ICD-11 mental, behavioural and neurodevelopmental disorders (CDDR)</em>. Geneva: WHO; 2024. Text licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/3.0/igo/" target="_blank" rel="noopener">CC BY-NC-ND 3.0 IGO</a>. ICD-11 classification content licensed under CC BY-ND 3.0 IGO.
+    </div>
+
+    <div class="alert" id="sal">Please rate all 9 symptom items, the exclusion criterion, and record a conclusion before continuing.</div>
     <div class="nav-row">
       <button class="btn btn-s" onclick="go(1)">← Vignette</button>
-      <button class="btn btn-p" onclick="valSCID()">Proceed to BDI-II &amp; HiTOP →</button>
+      <button class="btn btn-p" onclick="valSCID()">Proceed →</button>
     </div>
   </div>
 </div>
 
-<!-- PAGE 3: BDI-II + HiTOP -->
 <div class="page" id="pg3">
   <div class="score-bar">
     <div><div class="sc" id="bdi-raw">0</div><div class="sl">BDI-II raw</div></div>
@@ -666,7 +634,7 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
 
     <div class="alert" id="bal">Please complete all 21 BDI-II items and all 6 HiTOP subscales before continuing.</div>
     <div class="nav-row">
-      <button class="btn btn-s" onclick="go(2)">← SCID-5</button>
+      <button class="btn btn-s" onclick="go(2)">← ICD-11</button>
       <button class="btn btn-p" onclick="valBDI()">Proceed to CANTAB →</button>
     </div>
   </div>
@@ -723,7 +691,7 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
     <div style="display:flex;flex-direction:column;gap:18px;">
       <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">1. Describe the pattern of impairment. Which measures fall furthest below the norm, and what cognitive domains do they reflect?</label><textarea class="interp" id="cog1" placeholder="Discuss SWM and OTS findings…"></textarea></div>
       <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">2. How do these deficits connect to the vignette? Which of Darren's behaviours can now be explained neuropsychologically?</label><textarea class="interp" id="cog2" placeholder="Link test data to Darren's difficulties at work, indecisiveness, inability to plan…"></textarea></div>
-      <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">3. What does the cognitive layer add that DSM-5 categories or the BDI-II alone could not reveal?</label><textarea class="interp" id="cog3" placeholder="Mechanisms, treatment implications, prognosis…"></textarea></div>
+      <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">3. What does the cognitive layer add that ICD-11 categories or the BDI-II alone could not reveal?</label><textarea class="interp" id="cog3" placeholder="Mechanisms, treatment implications, prognosis…"></textarea></div>
     </div>
 
     <div class="alert" id="cal">Please answer at least the first two questions before generating the report.</div>
@@ -743,7 +711,7 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
     <hr />
 
     <div class="report-sec">
-      <h3>Layer 1 — Categorical (DSM-5 / SCID-5)</h3>
+      <h3>Layer 1 — Categorical (ICD-11 / CDDR)</h3>
       <div id="r-dx"></div>
       <div class="count-row" id="r-counts" style="margin-top:12px;"></div>
       <div class="cpills" id="r-pills" style="margin-top:10px;"></div>
@@ -837,21 +805,22 @@ let cur=0;
 function go(n){document.getElementById('pg'+cur).classList.remove('on');cur=n;document.getElementById('pg'+cur).classList.add('on');window.scrollTo({top:0,behavior:'smooth'});tick();if(n===5){ClinCog.markEvalReached('depression');paintReflectState();}}
 function tick(){document.getElementById('bar-fill').style.width=(cur/5*100)+'%';for(let i=0;i<=5;i++){const d=document.getElementById('s'+i);d.className='s';if(i<cur)d.classList.add('done');else if(i===cur)d.classList.add('active');}}
 
-function countA(){
-  let n=0,core=false;
-  for(let i=1;i<=9;i++){const v=document.querySelector(`input[name="A${i}"]:checked`);if(v&&v.value==='present'){n++;if(i<=2)core=true;}}
-  document.getElementById('a-count').textContent=n;
-  const s=document.getElementById('a-status');
-  if(n>=5&&core){s.textContent='✓ Threshold met (≥5, includes A1 or A2)';s.className='a10-status ok';}
-  else if(n>=5){s.textContent='⚠ 5+ symptoms but no core symptom';s.className='a10-status wc';}
-  else{s.textContent=n+' symptoms — need ≥5 including A1 or A2';s.className='a10-status';}
+function countCddr(){
+  const items=['a','b','c','d','e','f','g','h','i'];
+  const core=['a','b'];
+  let n=0,coreMet=false;
+  for(const it of items){const v=document.querySelector(`input[name="cddr_${it}"]:checked`);if(v&&v.value==='present'){n++;if(core.includes(it))coreMet=true;}}
+  document.getElementById('cddrCount').textContent=n;
+  document.getElementById('cddrStatus').textContent=n>0?(n+' of 9 symptoms endorsed'):'None endorsed yet.';
+  document.getElementById('cddrStatus').className='a10-status'+(n>0?' ok':'');
+  document.getElementById('cddrCoreStatus').textContent=coreMet?'✓ At least one core symptom (depressed mood or diminished interest) present':(n>0?'✗ No core symptom endorsed yet':'');
+  document.getElementById('cddrCoreStatus').className='a10-status'+(coreMet?' ok':'');
 }
 function valSCID(){
   let ok=true;
-  for(let i=1;i<=9;i++)if(!document.querySelector(`input[name="A${i}"]:checked`)){ok=false;break;}
-  if(ok&&!document.querySelector('input[name="A10"]:checked'))ok=false;
-  if(ok&&!document.querySelector('input[name="A11"]:checked'))ok=false;
-  if(ok&&!document.querySelector('input[name="A12"]:checked'))ok=false;
+  const items=['a','b','c','d','e','f','g','h','i'];
+  for(const it of items)if(!document.querySelector(`input[name="cddr_${it}"]:checked`)){ok=false;break;}
+  if(ok&&!document.querySelector('input[name="cddr_exclusion"]:checked'))ok=false;
   if(ok&&!document.querySelector('input[name="sdx"]:checked'))ok=false;
   const al=document.getElementById('sal');
   if(!ok){al.classList.add('on');setTimeout(()=>al.classList.remove('on'),3500);return;}
@@ -1014,17 +983,17 @@ function drawNormPlot(canvasId, tScore, label) {
 }
 
 function buildReport(){
-  let n=0,core=[];
-  for(let i=1;i<=9;i++){const v=document.querySelector(`input[name="A${i}"]:checked`);if(v&&v.value==='present'){n++;if(i===1)core.push('Depressed Mood');if(i===2)core.push('Anhedonia');}}
+  const items=['a','b','c','d','e','f','g','h','i'];
+  const core=['a','b'];
+  let n=0,coreLabels=[];
+  for(const it of items){const v=document.querySelector(`input[name="cddr_${it}"]:checked`);if(v&&v.value==='present'){n++;if(it==='a')coreLabels.push('Depressed mood');if(it==='b')coreLabels.push('Diminished interest');}}
   const dx=document.querySelector('input[name="sdx"]:checked')?.value;
-  const dxMap={mdd:['Major Depressive Disorder','pos','✓'],other:['Other Depressive Disorder','neg','~'],sub:['Subthreshold — Criteria Not Met','neg','–']};
+  const dxMap={with:['Meets requirements for a Depressive Episode (6A70)','pos','✓'],without:['Does not meet requirements for a Depressive Episode (6A70)','neg','–']};
   const[name,cls,icon]=dxMap[dx]||['—','neg','?'];
-  document.getElementById('r-dx').innerHTML=`<div class="dx-badge ${cls}"><span class="dx-icon">${icon}</span><div><div class="dx-name">${name}</div><div class="dx-sub">Student diagnosis</div></div></div>`;
-  const a10=document.querySelector('input[name="A10"]:checked')?.value||'';
-  const a11=document.querySelector('input[name="A11"]:checked')?.value||'';
-  const a12=document.querySelector('input[name="A12"]:checked')?.value||'';
-  document.getElementById('r-counts').innerHTML=`<div class="count-cell"><div class="cn">${n}</div><div class="cl">Criterion A symptoms</div></div><div class="count-cell"><div class="cn">${core.length?'✓':'✗'}</div><div class="cl">Core symptom<br><span style="font-size:.7rem;color:var(--ink3)">${core.join(', ')||'None'}</span></div></div><div class="count-cell"><div class="cn">${n>=5&&core.length?'✓':'✗'}</div><div class="cl">Criterion A<br>${n>=5&&core.length?'Met':'Not Met'}</div></div>`;
-  document.getElementById('r-pills').innerHTML=`<span class="cpill ${a10==='yes'?'met':'unm'}">A10 Criterion A — ${a10==='yes'?'Met':'Not Met'}</span><span class="cpill ${a11==='met'?'met':a11==='unmet'?'unm':'unk'}">A11 Criterion B — ${a11==='met'?'Met':a11==='unmet'?'Not Met':'?'}</span><span class="cpill ${a12==='met'?'met':a12==='unmet'?'unm':'unk'}">A12 Criterion C — ${a12==='met'?'Met':a12==='unmet'?'Not Met':'?'}</span>`;
+  document.getElementById('r-dx').innerHTML=`<div class="dx-badge ${cls}"><span class="dx-icon">${icon}</span><div><div class="dx-name">${name}</div><div class="dx-sub">Student judgment, ICD-11 CDDR</div></div></div>`;
+  const excl=document.querySelector('input[name="cddr_exclusion"]:checked')?.value||'';
+  document.getElementById('r-counts').innerHTML=`<div class="count-cell"><div class="cn">${n}/9</div><div class="cl">Symptoms (a–i)</div></div><div class="count-cell"><div class="cn">${coreLabels.length?'✓':'✗'}</div><div class="cl">Core symptom<br><span style="font-size:.7rem;color:var(--ink3)">${coreLabels.join(', ')||'None'}</span></div></div>`;
+  document.getElementById('r-pills').innerHTML=`<span class="cpill ${excl==='yes'?'met':'unm'}">Bipolar exclusion — ${excl==='yes'?'Confirmed':excl==='no'?'Not confirmed':'Not rated'}</span>`;
 
   let raw=0;for(let i=1;i<=21;i++){const v=document.querySelector(`input[name="b${i}"]:checked`);if(v)raw+=+v.value;}
   const bT=rawToT_bdi(raw),bP=tPct(bT);

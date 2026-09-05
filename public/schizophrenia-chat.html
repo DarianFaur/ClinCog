@@ -41,7 +41,7 @@
     Talk to Dennis directly, as if conducting a clinical interview. Ask about
     onset, duration, severity, and anything relevant to a diagnostic
     conceptualization. He can only tell you what's documented in his case —
-    up to 10 exchanges.
+    up to 20 exchanges.
   </p>
 
   <div id="chat" class="chat-window"></div>
@@ -52,16 +52,12 @@
   </form>
   <div id="chat-status" class="chat-status"></div>
   <button id="chat-restart" class="chat-restart" type="button">Restart this interview</button>
-
-  <div class="eval-link">
-    <p>Done exploring the case?</p>
-    <a class="btn btn-secondary" href="/schizophrenia-eval.html">Proceed to evaluation →</a>
-  </div>
 </main>
 
 <script src="/storage.js"></script>
 <script src="/sidebar.js"></script>
 <script src="/chat.js" data-module="schizophrenia"></script>
+<script src="/icd-select.js" data-module="schizophrenia" data-eval-href="/schizophrenia-eval.html"></script>
 <script src="/reveal.js"></script>
 <script src="/a11y.js"></script>
 </body>

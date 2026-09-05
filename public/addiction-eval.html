@@ -349,7 +349,7 @@ body.mobile-mode .sst-kbd-hint{display:none;}
     <span class="add-step-line"></span>
     <button class="add-step" data-view="crafft" onclick="showView('crafft')"><span class="add-step-dot">3</span><span class="add-step-lbl">CRAFFT</span></button>
     <span class="add-step-line"></span>
-    <button class="add-step" data-view="scid" onclick="showView('scid')"><span class="add-step-dot">4</span><span class="add-step-lbl">SCID-5</span></button>
+    <button class="add-step" data-view="scid" onclick="showView('scid')"><span class="add-step-dot">4</span><span class="add-step-lbl">ICD-11</span></button>
     <span class="add-step-line"></span>
     <button class="add-step" data-view="hitop" onclick="showView('hitop')"><span class="add-step-dot">5</span><span class="add-step-lbl">HiTOP</span></button>
     <span class="add-step-line"></span>
@@ -402,7 +402,7 @@ body.mobile-mode .sst-kbd-hint{display:none;}
   </button>
   <button class="mobile-nav-btn" id="mob-nav-scid" onclick="showView('scid')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-    SCID-5
+    ICD-11
   </button>
   <button class="mobile-nav-btn" id="mob-nav-hitop" onclick="showView('hitop')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
@@ -436,8 +436,8 @@ body.mobile-mode .sst-kbd-hint{display:none;}
     </button>
     <button class="sidebar-item" onclick="showView('scid')" id="nav-scid">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      SCID-5 AUD
-      <span class="sidebar-badge" id="badge-scid">0/11</span>
+      ICD-11
+      <span class="sidebar-badge" id="badge-scid">0/7</span>
     </button>
     <button class="sidebar-item" onclick="showView('hitop')" id="nav-hitop">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
@@ -470,7 +470,7 @@ body.mobile-mode .sst-kbd-hint{display:none;}
     <div style="border-top:1px solid var(--color-border);margin-bottom:32px;">
       <div style="display:flex;align-items:baseline;gap:20px;padding:20px 0;border-bottom:1px solid var(--color-border);">
         <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--color-primary);border:1px solid var(--color-primary);border-radius:4px;padding:2px 6px;flex-shrink:0;">01</span>
-        <div><div style="font-size:16px;font-weight:600;margin-bottom:4px;">Categorical — DSM-5 via CRAFFT &amp; SCID-5</div><div style="font-size:14px;color:var(--color-text-muted);">Screening plus structured diagnostic interview · criterion-based decision</div></div>
+        <div><div style="font-size:16px;font-weight:600;margin-bottom:4px;">Categorical — ICD-11 via CRAFFT &amp; CDDR</div><div style="font-size:14px;color:var(--color-text-muted);">Screening plus structured diagnostic interview · criterion-based decision</div></div>
       </div>
       <div style="display:flex;align-items:baseline;gap:20px;padding:20px 0;border-bottom:1px solid var(--color-border);">
         <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--color-primary);border:1px solid var(--color-primary);border-radius:4px;padding:2px 6px;flex-shrink:0;">02</span>
@@ -553,7 +553,7 @@ body.mobile-mode .sst-kbd-hint{display:none;}
     </div>
   </div>
   <div style="display:flex;gap:var(--space-3);margin-top:var(--space-4);">
-    <button class="btn-primary" onclick="showView('scid')">Next: SCID-5 AUD →</button>
+    <button class="btn-primary" onclick="showView('scid')">Next: ICD-11 →</button>
     <button class="btn-secondary" onclick="showView('vignette')">← Vignette</button>
   </div>
 </div>
@@ -561,8 +561,8 @@ body.mobile-mode .sst-kbd-hint{display:none;}
 <!-- ===================== SCID-5 VIEW ===================== -->
 <div class="view" id="view-scid">
   <div class="page-header">
-    <h1>SCID-5 — Alcohol Use Disorder</h1>
-    <p>Structured Clinical Interview for DSM-5. Administer the probe questions exactly as written. Rate each criterion based on the past 12 months.</p>
+    <h1>ICD-11 — Alcohol Dependence</h1>
+    <p>Clinical Descriptions and Diagnostic Requirements (CDDR), reproduced verbatim. Rate each feature based on the past 12 months.</p>
   </div>
   <div class="tool-section">
     <div class="tool-section-header">
@@ -570,34 +570,34 @@ body.mobile-mode .sst-kbd-hint{display:none;}
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
       </div>
       <div>
-        <div class="tool-section-title">DSM-5 AUD Criteria · 11 items</div>
-        <div class="tool-section-sub">Mild 2–3 · Moderate 4–5 · Severe ≥ 6 endorsed criteria</div>
+        <div class="tool-section-title">ICD-11 CDDR Criteria · 7 items</div>
+        <div class="tool-section-sub">Core dependence triad: impaired control, priority, persistence despite harm (a–c)</div>
       </div>
     </div>
     <div class="instrument-card">
       <div style="background:var(--color-gold-highlight);border:1px solid var(--color-gold);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);font-size:var(--text-xs);color:var(--color-warning);margin-bottom:var(--space-4);">
-        <strong>Interviewer note:</strong> All criteria are assessed in reference to the past 12 months. Read each probe question aloud exactly as written. If the patient is uncertain, read the follow-up probe. Rate only what is endorsed as clinically significant (i.e., causes distress or impairment — not just occurrence).
+        <strong>Rater note:</strong> All features are assessed in reference to the past 12 months, based on what the conversation with Jordan revealed. Use the clarifying note under each item if the case file is ambiguous. Rate only what is clearly evidenced, not assumed.
       </div>
       <div id="scid-questions"></div>
       <div class="score-preview" style="margin-top:var(--space-5);">
         <div>
           <div class="score-label">Criteria Endorsed</div>
-          <div class="score-value" id="scid-score-val">0 / 11</div>
+          <div class="score-value" id="scid-score-val">0 / 7</div>
           <div class="score-interpretation" id="scid-interp">Complete all items</div>
         </div>
         <span class="instrument-badge badge-pending" id="scid-badge">Not started</span>
       </div>
-      <!-- Severity specifier -->
+      <!-- Diagnostic conclusion -->
       <div id="scid-specifier-box" style="display:none;margin-top:var(--space-5);padding:var(--space-4);background:var(--color-surface-offset);border-radius:var(--radius-lg);border:1px solid var(--color-divider);">
-        <div style="font-size:var(--text-sm);font-weight:600;margin-bottom:var(--space-3)">State the Diagnosis Specifier</div>
-        <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-3)">Based on the criteria endorsed, select the severity specifier that applies:</div>
+        <div style="font-size:var(--text-sm);font-weight:600;margin-bottom:var(--space-3)">Diagnostic Conclusion</div>
+        <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-3)">Based on the features endorsed above \u2014 particularly whether the core triad (a\u2013c) is present \u2014 select your conclusion:</div>
         <div class="radio-group" style="flex-wrap:wrap">
-          <label class="radio-option" onclick="setSpecifier('no_aud',this)"><input type="radio" name="specifier"> No AUD</label>
-          <label class="radio-option" onclick="setSpecifier('mild',this)"><input type="radio" name="specifier"> Mild (2–3)</label>
-          <label class="radio-option" onclick="setSpecifier('moderate',this)"><input type="radio" name="specifier"> Moderate (4–5)</label>
-          <label class="radio-option" onclick="setSpecifier('severe',this)"><input type="radio" name="specifier"> Severe (≥ 6)</label>
+          <label class="radio-option" onclick="setConclusion('with',this)"><input type="radio" name="specifier"> Meets diagnostic requirements for Alcohol Dependence (6C40.2)</label>
+          <label class="radio-option" onclick="setConclusion('without',this)"><input type="radio" name="specifier"> Does not meet diagnostic requirements for Alcohol Dependence (6C40.2)</label>
         </div>
-        <div id="specifier-feedback" style="margin-top:var(--space-3);font-size:var(--text-sm);display:none;padding:var(--space-3);border-radius:var(--radius-md);"></div>
+      </div>
+      <div class="callout" style="font-size:.76rem;line-height:1.6;margin-top:16px;">
+        Diagnostic criteria reproduced verbatim from: World Health Organization. <em>Clinical descriptions and diagnostic requirements for ICD-11 mental, behavioural and neurodevelopmental disorders (CDDR)</em>. Geneva: WHO; 2024. Text licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/3.0/igo/" target="_blank" rel="noopener">CC BY-NC-ND 3.0 IGO</a>. ICD-11 classification content licensed under CC BY-ND 3.0 IGO.
       </div>
     </div>
   </div>
@@ -643,7 +643,7 @@ body.mobile-mode .sst-kbd-hint{display:none;}
   </div>
   <div style="display:flex;gap:var(--space-3);margin-top:var(--space-4);">
     <button class="btn-primary" onclick="showView('ana')">Next: ANA Tasks →</button>
-    <button class="btn-secondary" onclick="showView('scid')">← SCID-5</button>
+    <button class="btn-secondary" onclick="showView('scid')">← ICD-11</button>
   </div>
 </div>
 
@@ -823,39 +823,27 @@ const CRAFFT_ITEMS = [
 ];
 
 const SCID_ITEMS = [
-  { id:'A1', criterion:'Larger amounts / longer than intended',
-    probe:'"In the past year, did you often find that when you started drinking, you ended up drinking much more than you intended to, or that you kept drinking for much longer than you planned?"',
-    followup:'If unclear: "For example, did you sometimes plan to have just one or two drinks, but ended up drinking much more?"' },
-  { id:'A2', criterion:'Persistent desire or repeated unsuccessful efforts to cut down',
-    probe:'"Did you want to cut down or stop drinking? [If yes] Did you try to cut down or stop more than once but found you couldn\'t, or that you went back to drinking the same amount?"',
-    followup:'Rate Yes if the patient tried and failed OR wanted to but could not bring themselves to attempt.' },
-  { id:'A3', criterion:'Great deal of time spent',
-    probe:'"Did you spend a great deal of time doing things related to drinking — like obtaining alcohol, drinking, or recovering from the aftereffects of drinking?"',
-    followup:'"For example, did drinking or feeling sick from drinking ever take up most of your day on a regular basis?"' },
-  { id:'A4', criterion:'Craving or strong urge to drink',
-    probe:'"In the past year, did you often have a strong desire, urge, or craving to drink — a feeling that was difficult to ignore?"',
-    followup:'"For example, did thoughts about drinking intrude into your daily activities or concentration at work?"' },
-  { id:'A5', criterion:'Failure to fulfil major role obligations',
-    probe:'"Did drinking often interfere with your work, your responsibilities at home, or your performance at school — for example, missing work or school, or performing poorly because of drinking or a hangover?"',
-    followup:'Include near-misses and informal warnings from supervisors or colleagues.' },
-  { id:'A6', criterion:'Continued use despite social or interpersonal problems',
-    probe:'"Did you keep on drinking even though it was causing arguments, conflicts, or serious problems with family members or friends — or making those problems worse?"',
-    followup:'Rate Yes if the patient continued to drink despite awareness of the interpersonal consequence.' },
-  { id:'A7', criterion:'Important activities given up or reduced',
-    probe:'"Were there important activities — hobbies, social events, recreational activities, or time with friends or family — that you gave up or spent much less time doing because of your drinking?"',
-    followup:'"This could also include activities you stopped doing because you preferred to drink, or because drinking left you feeling too unwell."' },
-  { id:'A8', criterion:'Recurrent use in physically hazardous situations',
-    probe:'"More than once in the past year, were you in a situation where drinking, or being under the influence of alcohol, significantly increased your chances of getting hurt — such as driving, operating machinery, swimming, or having unprotected sex?"',
-    followup:'Rate Yes even if no actual harm occurred; the criterion requires only repeated occurrence of the high-risk situation.' },
-  { id:'A9', criterion:'Continued use despite knowledge of recurrent physical or psychological problems',
-    probe:'"Did you continue to drink even though you thought drinking was causing, or worsening, a physical health problem or a psychological problem such as anxiety, depression, or memory difficulties?"',
-    followup:'The patient must have had awareness of the link between drinking and the problem.' },
-  { id:'A10', criterion:'Tolerance',
-    probe:'"Did you notice that over time, drinking the same amount of alcohol had much less effect on you? OR: Did you need to drink a lot more than you used to in order to get the effect you wanted — to get drunk or feel relaxed?"',
-    followup:'Rate Yes for either form: needing more to achieve the effect, or achieving less effect with the same amount.' },
-  { id:'A11', criterion:'Withdrawal',
-    probe:'"When you stopped or cut down on drinking after a period of heavy use, did you experience withdrawal symptoms — such as hand tremor, sweating, racing heartbeat, trouble sleeping, nausea, or feeling anxious? OR: Did you drink (or take another substance) specifically to prevent or relieve withdrawal symptoms?"',
-    followup:'Rate Yes for either the presence of withdrawal symptoms OR drinking to avoid/relieve them.' }
+  { id:'a', criterion:'Impaired ability to control alcohol use',
+    probe:'Impaired ability to control alcohol use — drinking more, or for longer, than intended, or difficulty stopping or cutting down despite wanting to.',
+    followup:'Part of the CDDR\'s "characteristic feature" of dependence, alongside items b) and c) below.' },
+  { id:'b', criterion:'Increasing priority given to alcohol use over other activities',
+    probe:'Alcohol use is given increasing priority over other activities and responsibilities — work, family, hobbies, or self-care.',
+    followup:'Rate present if drinking has visibly displaced things Jordan used to prioritize.' },
+  { id:'c', criterion:'Persistence of use despite harm or negative consequences',
+    probe:'Continued alcohol use despite awareness that it is causing or worsening harm — physical, psychological, social, or occupational.',
+    followup:'Requires evidence Jordan continued despite recognizing the harm, not just that harm occurred.' },
+  { id:'d', criterion:'Subjective sensation of urge or craving to use alcohol',
+    probe:'A subjective sensation of urge or craving to drink.',
+    followup:'Often, but not always, accompanies the control/priority/persistence triad above.' },
+  { id:'e', criterion:'Tolerance to the effects of alcohol',
+    probe:'Tolerance to the effects of alcohol — needing more to achieve the same effect, or a markedly reduced effect from the same amount.',
+    followup:'A physiological feature of dependence — CDDR notes this "may also be present," not a strict requirement.' },
+  { id:'f', criterion:'Withdrawal symptoms following cessation or reduction in use',
+    probe:'Withdrawal symptoms — such as tremor, sweating, racing heartbeat, nausea, or anxiety — following cessation or reduction of alcohol use.',
+    followup:'A physiological feature of dependence — CDDR notes this "may also be present," not a strict requirement.' },
+  { id:'g', criterion:'Use of alcohol (or similar substances) to prevent or relieve withdrawal',
+    probe:'Repeated use of alcohol, or a pharmacologically similar substance, specifically to prevent or alleviate withdrawal symptoms.',
+    followup:'A physiological feature of dependence — CDDR notes this "may also be present," not a strict requirement.' }
 ];
 
 const HITOP_DIS = [
@@ -901,7 +889,8 @@ const HITOP_NORMS = {
 // ===================== STATE =====================
 const state = {
   crafft: Array(6).fill(null),
-  scid:   Array(11).fill(null),
+  scid:   Array(7).fill(null),
+  scidConclusion: null, // student's final judgment: 'with' | 'without'
   hitop:  {},  // key: "scaleName_itemIdx" -> 1..4
   purchase: Array(10).fill(null),
   stopResult: null // parsed stop-signal output
@@ -1059,10 +1048,10 @@ function scidScore() { return state.scid.reduce((a,b) => a + (b === 1 ? 1 : 0), 
 function scidDone()  { return state.scid.every(v => v !== null); }
 
 function scidDiagnosis(n) {
-  if (n < 2) return 'No AUD (< 2 criteria)';
-  if (n <= 3) return 'Mild AUD (2–3 criteria)';
-  if (n <= 5) return 'Moderate AUD (4–5 criteria)';
-  return 'Severe AUD (≥ 6 criteria)';
+  const core = ['a','b','c'].every((k,idx) => state.scid[idx] === 1);
+  if (n === 0) return 'No features endorsed';
+  if (core) return n + ' of 7 features present \u2014 core dependence triad (a\u2013c) met';
+  return n + ' of 7 features present \u2014 core dependence triad (a\u2013c) not fully met';
 }
 
 function hitopAnswered() {
@@ -1116,32 +1105,12 @@ function demandIndices(prices, qty) {
 }
 
 // ===================== SPECIFIER FEEDBACK =====================
-function setSpecifier(chosen, el) {
-  const ss = scidScore();
-  let correct;
-  if (ss < 2)       correct = 'no_aud';
-  else if (ss <= 3) correct = 'mild';
-  else if (ss <= 5) correct = 'moderate';
-  else              correct = 'severe';
-
-  const labels = { no_aud:'No AUD', mild:'Mild (2–3)', moderate:'Moderate (4–5)', severe:'Severe (≥ 6)' };
-  const fb = document.getElementById('specifier-feedback');
-  fb.style.display = 'block';
-
+function setConclusion(chosen, el) {
+  state.scidConclusion = chosen;
   document.querySelectorAll('[name="specifier"]').forEach(r => {
     r.closest('.radio-option').classList.remove('selected', 'selected-yes');
   });
-  el.classList.add(chosen === correct ? 'selected-yes' : 'selected');
-
-  if (chosen === correct) {
-    fb.style.background = 'var(--color-success-highlight)';
-    fb.style.color = 'var(--color-success)';
-    fb.innerHTML = '<strong>✓ Correct.</strong> With ' + ss + ' criteria endorsed, the diagnosis specifier is <strong>' + labels[correct] + '</strong>. (Mild = 2–3 · Moderate = 4–5 · Severe = ≥ 6)';
-  } else {
-    fb.style.background = 'var(--color-error-highlight)';
-    fb.style.color = 'var(--color-error)';
-    fb.innerHTML = '<strong>✗ Reconsider.</strong> You selected <strong>' + labels[chosen] + '</strong>. Review the endorsed criteria count (' + ss + ') and the threshold ranges.';
-  }
+  el.classList.add('selected-yes');
 }
 
 // ===================== UPDATE BADGES & PROGRESS =====================
@@ -1158,8 +1127,8 @@ function updateAll() {
 
   // SCID
   const ss = scidScore();
-  document.getElementById('scid-score-val').textContent = ss + ' / 11';
-  document.getElementById('badge-scid').textContent = state.scid.filter(v=>v!==null).length + '/11';
+  document.getElementById('scid-score-val').textContent = ss + ' / 7';
+  document.getElementById('badge-scid').textContent = state.scid.filter(v=>v!==null).length + '/7';
   if (scidDone()) {
     const unknowns = state.scid.filter(v => v === 2).length;
     document.getElementById('scid-interp').textContent = scidDiagnosis(ss) + (unknowns ? ' · ' + unknowns + ' uncertain' : '');
@@ -1696,8 +1665,8 @@ function buildReport() {
         <div class="kpi-note">${cs >= 2 ? '⚠ Positive screen' : '✓ Negative screen'}</div>
       </div>
       <div class="report-kpi">
-        <div class="kpi-label">SCID-5 AUD</div>
-        <div class="kpi-value">${ss}/11</div>
+        <div class="kpi-label">ICD-11 Dependence</div>
+        <div class="kpi-value">${ss}/7</div>
         <div class="kpi-note">${scidDiagnosis(ss)}</div>
       </div>
       <div class="report-kpi">
@@ -1755,11 +1724,11 @@ function buildReport() {
 
     <div class="report-tool-card">
       <div class="report-tool-header">
-        <div class="report-tool-name">SCID-5-CV — Alcohol Use Disorder</div>
-        <span class="score-pill ${ss>=6?'score-high':ss>=4?'score-moderate':ss>=2?'score-moderate':'score-low'}">${ss}/11 · ${scidDiagnosis(ss)}</span>
+        <div class="report-tool-name">ICD-11 CDDR — Alcohol Dependence (6C40.2)</div>
+        <span class="score-pill ${state.scidConclusion==='with'?'score-high':state.scidConclusion==='without'?'score-low':'score-moderate'}">${ss}/7 · ${state.scidConclusion==='with'?'Meets requirements':state.scidConclusion==='without'?'Does not meet requirements':'No conclusion recorded'}</span>
       </div>
       <table class="report-items-table">
-        <tr><th>Criterion</th><th>DSM-5 Domain</th><th>Rating</th></tr>
+        <tr><th>Criterion</th><th>ICD-11 Feature</th><th>Rating</th></tr>
         ${SCID_ITEMS.map((it,i) => `<tr>
           <td style="font-weight:600;white-space:nowrap">${it.id}</td>
           <td style="color:var(--color-text-muted);font-size:var(--text-xs)">${it.criterion}</td>
@@ -1878,9 +1847,9 @@ function buildFormulationBoxes(cs, ss, disAvgT, hsuAvgT, di) {
     },
     {
       id: 'fb-scid',
-      label: 'SCID-5 — AUD Diagnosis & Specifier',
-      meta: ss + ' of 11 criteria endorsed · ' + scidDiagnosis(ss),
-      hint: 'Describe the pattern of endorsed criteria. Which clusters are most prominent (impaired control, social/role impairment, pharmacological)? How does the specifier reflect overall severity?'
+      label: 'ICD-11 CDDR — Alcohol Dependence',
+      meta: ss + ' of 7 features endorsed · ' + scidDiagnosis(ss),
+      hint: 'Describe the pattern of endorsed features. Is the core triad (impaired control, priority, persistence despite harm) present? Do the physiological features (tolerance, withdrawal) add anything the triad alone would not capture?'
     },
     {
       id: 'fb-dis',
@@ -1892,7 +1861,7 @@ function buildFormulationBoxes(cs, ss, disAvgT, hsuAvgT, di) {
       id: 'fb-hsu',
       label: 'HiTOP — Harmful Substance Use Spectrum',
       meta: 'Spectrum average T = ' + hsuAvgT + (hsuAvgT >= 70 ? ' · Clinically elevated' : hsuAvgT >= 60 ? ' · Elevated' : ' · Within normal limits'),
-      hint: 'Summarise the HSU T-score. Which subscales (Craving, Hazardous Use, Impaired Control, Role Interference, Tolerance, Withdrawal) are most clinically relevant? How do they map onto DSM-5 AUD criteria?'
+      hint: 'Summarise the HSU T-score. Which subscales (Craving, Hazardous Use, Impaired Control, Role Interference, Tolerance, Withdrawal) are most clinically relevant? How do they map onto the ICD-11 dependence features?'
     }
   ];
 

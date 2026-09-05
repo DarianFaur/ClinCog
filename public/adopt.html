@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="color-scheme" content="light dark">
+<script src="/theme-init.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClinCog · Adopt this platform</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .adopt-form { display: flex; flex-direction: column; gap: 10px; margin: 18px 0 22px; }
+  .adopt-field label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+  .adopt-field .hint { font-size: 12.5px; color: var(--ink-muted); margin-bottom: 8px; line-height: 1.5; }
+  .adopt-field input { width: 100%; padding: 11px 14px; border: 1px solid var(--line); border-radius: 10px;
+    font-family: var(--mono); font-size: 13.5px; color: var(--ink); background: var(--surface); box-sizing: border-box; }
+  .adopt-field input:focus { outline: none; border-color: var(--brand); }
+  .adopt-status { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; padding: 4px 0; }
+  .adopt-status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--line); flex-shrink: 0; }
+  .adopt-status.on .dot { background: var(--brand); }
+  .adopt-status.on { color: var(--brand); }
+  .adopt-status.off { color: var(--ink-muted); }
+  .adopt-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+  .adopt-section { border-top: 1px solid var(--line); padding-top: 24px; margin-top: 24px; }
+  .adopt-section:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+  .adopt-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0 24px; }
+  @media (max-width: 640px) { .adopt-compare { grid-template-columns: 1fr; } }
+  .adopt-compare-card { border: 1px solid var(--line); border-radius: 14px; padding: 20px; background: var(--surface); display: flex; flex-direction: column; }
+  .adopt-compare-label { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--brand); margin-bottom: 8px; }
+  .adopt-compare-card h3 { font-size: 16px; margin-bottom: 10px; }
+  .adopt-compare-card ul { margin: 0 0 16px; padding-left: 18px; font-size: 13px; color: var(--ink-muted); display: flex; flex-direction: column; gap: 6px; }
+  .adopt-compare-card .btn { margin-top: auto; text-align: center; }
+  .provider-toggle { display: flex; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
+  .provider-btn { padding: 8px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface);
+    color: var(--ink-muted); font-family: var(--sans); font-size: 13px; font-weight: 600; cursor: pointer; transition: all .15s; }
+  .provider-btn:hover { border-color: var(--brand); color: var(--ink); }
+  .provider-btn.active { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .adopt-select { width: 100%; padding: 11px 14px; border: 1px solid var(--line); border-radius: 10px;
+    font-family: var(--sans); font-size: 14px; color: var(--ink); background: var(--surface); box-sizing: border-box; cursor: pointer; }
+  .adopt-select:focus { outline: none; border-color: var(--brand); }
+</style>
+</head>
+<body class="bg-mesh">
+
+<div id="ccg-nav-root"></div>
+<script src="/nav.js"></script>
+
+<main class="about-page" id="ccg-viewport">
+  <span class="eyebrow">For instructors</span>
+  <div class="about-card reveal">
+    <h1>Adopt this platform</h1>
+    <p>
+      ClinCog is free to try, right here on this domain — but every conversation
+      you have on this page draws from the author's own API budget, which is why
+      it's kept deliberately modest for casual use.
+    </p>
+    <p>
+      There are two different ways to adopt ClinCog for a real class, depending
+      on how much control you want.
+    </p>
+
+    <div class="adopt-compare">
+      <div class="adopt-compare-card">
+        <span class="adopt-compare-label">Option A · Quick</span>
+        <h3>Bring your own key, right here</h3>
+        <ul>
+          <li>Two minutes, no account beyond an Anthropic API key</li>
+          <li>Still runs through ClinCog's own server (this domain)</li>
+          <li>Your key lives only in this browser — see below for the form</li>
+        </ul>
+        <a class="btn btn-secondary" href="#adopt-form-section">Use this option ↓</a>
+      </div>
+      <div class="adopt-compare-card">
+        <span class="adopt-compare-label">Option B · Full independence</span>
+        <h3>Deploy your own copy</h3>
+        <ul>
+          <li>~30-45 minutes, no coding experience needed</li>
+          <li>Runs on your own Cloudflare account, nothing touches this server</li>
+          <li>Your own domain (or a free one), your own budget, full control</li>
+        </ul>
+        <a class="btn btn-secondary" href="https://github.com/YOUR-ORG/clincog/blob/main/SELF_HOSTING.md" target="_blank" rel="noopener">Read the full guide on GitHub →</a>
+      </div>
+    </div>
+
+    <p style="font-size: 13px; color: var(--ink-muted);" id="adopt-form-section">
+      Continuing below sets up <strong>Option A</strong>. Your keys are stored
+      only in this browser's local storage. They're sent to ClinCog's server
+      with each request — used for that single call, then discarded — never
+      logged, never saved anywhere server-side.
+    </p>
+
+    <div class="adopt-section">
+      <div class="adopt-status" id="status-llm">
+        <span class="dot"></span><span id="status-llm-text">Checking…</span>
+      </div>
+      <div class="adopt-form">
+        <div class="adopt-field">
+          <label>Which model provider?</label>
+          <div class="hint">Pick whichever you already have (or want) an API key for — the conversation with each simulated patient runs on this.</div>
+          <div class="provider-toggle" id="provider-toggle">
+            <button type="button" class="provider-btn active" data-provider="anthropic">Anthropic</button>
+            <button type="button" class="provider-btn" data-provider="gemini">Google Gemini</button>
+            <button type="button" class="provider-btn" data-provider="openai">OpenAI</button>
+          </div>
+        </div>
+        <div class="adopt-field">
+          <label>Which model?</label>
+          <div class="hint" id="model-hint">Faster/cheaper models work well for this — the patient's replies are short by design.</div>
+          <select id="model-select" class="adopt-select"></select>
+        </div>
+        <div class="adopt-field">
+          <label for="llm-key" id="llm-key-label">Anthropic API key</label>
+          <div class="hint" id="llm-key-hint">Get one at <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a>.</div>
+          <input type="password" id="llm-key" placeholder="sk-ant-..." autocomplete="off" spellcheck="false" />
+        </div>
+      </div>
+    </div>
+
+    <div class="adopt-section">
+      <div class="adopt-status" id="status-icd">
+        <span class="dot"></span><span id="status-icd-text">Checking…</span>
+      </div>
+      <div class="adopt-form">
+        <div class="adopt-field">
+          <label for="icd-client-id">WHO ICD-11 client ID</label>
+          <div class="hint">Powers the diagnosis search widget after each conversation. Free to register at <a href="https://icd.who.int/icdapi" target="_blank" rel="noopener">icd.who.int/icdapi</a>. Optional — if left blank, the demo's shared ICD-11 access is used instead.</div>
+          <input type="text" id="icd-client-id" placeholder="client_id" autocomplete="off" spellcheck="false" />
+        </div>
+        <div class="adopt-field">
+          <label for="icd-client-secret">WHO ICD-11 client secret</label>
+          <input type="password" id="icd-client-secret" placeholder="client_secret" autocomplete="off" spellcheck="false" />
+        </div>
+      </div>
+    </div>
+
+    <div class="adopt-row">
+      <button class="btn btn-primary" id="save-btn">Save and adopt</button>
+      <button class="btn btn-secondary" id="clear-btn">Clear my keys</button>
+      <a class="btn btn-secondary" href="/dashboard.html">Back to dashboard</a>
+    </div>
+    <div id="save-confirm" style="display:none; margin-top:14px; font-size:13px; color: var(--brand); font-weight:600;">✓ Saved to this browser.</div>
+  </div>
+</main>
+
+<script src="/storage.js"></script>
+<script src="/reveal.js"></script>
+<script src="/a11y.js"></script>
+<script>
+  const PROVIDER_INFO = {
+    anthropic: { label: "Anthropic API key", placeholder: "sk-ant-...",
+      hint: 'Get one at <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a>.' },
+    gemini: { label: "Google Gemini API key", placeholder: "AIza...",
+      hint: 'Get one for free at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a>.' },
+    openai: { label: "OpenAI API key", placeholder: "sk-...",
+      hint: 'Get one at <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">platform.openai.com</a>.' },
+  };
+  const PROVIDER_LABEL = { anthropic: "Anthropic", gemini: "Google Gemini", openai: "OpenAI" };
+
+  const PROVIDER_MODELS = {
+    anthropic: [
+      { id: "claude-haiku-4-5-20251001", label: "Claude Haiku 4.5 — fast & affordable" },
+      { id: "claude-sonnet-5", label: "Claude Sonnet 5 — balanced" },
+      { id: "claude-opus-5", label: "Claude Opus 5 — most capable" },
+    ],
+    gemini: [
+      { id: "gemini-3.1-flash-lite", label: "Gemini 3.1 Flash-Lite — fast & affordable" },
+      { id: "gemini-3.5-flash", label: "Gemini 3.5 Flash — balanced" },
+      { id: "gemini-3.1-pro", label: "Gemini 3.1 Pro — most capable" },
+    ],
+    openai: [
+      { id: "gpt-5-nano", label: "GPT-5 Nano — fast & affordable" },
+      { id: "gpt-5.6-terra", label: "GPT-5.6 Terra — balanced" },
+      { id: "gpt-5.6-sol", label: "GPT-5.6 Sol — most capable" },
+    ],
+  };
+
+  let selectedProvider = "anthropic";
+  const providerButtons = document.querySelectorAll(".provider-btn");
+  const modelSelect = document.getElementById("model-select");
+  const llmKeyInput = document.getElementById("llm-key");
+  const llmKeyLabel = document.getElementById("llm-key-label");
+  const llmKeyHint = document.getElementById("llm-key-hint");
+  const icdIdInput = document.getElementById("icd-client-id");
+  const icdSecretInput = document.getElementById("icd-client-secret");
+  const saveBtn = document.getElementById("save-btn");
+  const clearBtn = document.getElementById("clear-btn");
+  const saveConfirm = document.getElementById("save-confirm");
+
+  function populateModels(provider, preselectId) {
+    modelSelect.innerHTML = "";
+    PROVIDER_MODELS[provider].forEach((m) => {
+      const opt = document.createElement("option");
+      opt.value = m.id;
+      opt.textContent = m.label;
+      modelSelect.appendChild(opt);
+    });
+    if (preselectId) modelSelect.value = preselectId;
+  }
+
+  function selectProvider(provider, preselectModel) {
+    selectedProvider = provider;
+    providerButtons.forEach((b) => b.classList.toggle("active", b.dataset.provider === provider));
+    const info = PROVIDER_INFO[provider];
+    llmKeyLabel.textContent = info.label;
+    llmKeyInput.placeholder = info.placeholder;
+    llmKeyHint.innerHTML = info.hint;
+    populateModels(provider, preselectModel);
+  }
+  providerButtons.forEach((btn) => {
+    btn.addEventListener("click", () => selectProvider(btn.dataset.provider));
+  });
+
+  function paintStatus() {
+    const byok = ClinCog.getByok();
+    const llmOn = ClinCog.hasByokLlm();
+    const icdOn = ClinCog.hasByokIcd();
+    const lBox = document.getElementById("status-llm");
+    const iBox = document.getElementById("status-icd");
+    lBox.className = "adopt-status " + (llmOn ? "on" : "off");
+    iBox.className = "adopt-status " + (icdOn ? "on" : "off");
+    if (llmOn) {
+      const modelLabel = (PROVIDER_MODELS[byok.llmProvider] || []).find((m) => m.id === byok.llmModel)?.label;
+      document.getElementById("status-llm-text").textContent =
+        `Using your own ${PROVIDER_LABEL[byok.llmProvider] || byok.llmProvider} key` +
+        (modelLabel ? ` (${modelLabel.split(" — ")[0]})` : "");
+      // Default the toggle to the saved provider/model so re-visiting
+      // this page doesn't look like it reset to Anthropic.
+      selectProvider(byok.llmProvider, byok.llmModel);
+    } else {
+      document.getElementById("status-llm-text").textContent = "Using the shared demo key (limited)";
+      selectProvider(selectedProvider);
+    }
+    document.getElementById("status-icd-text").textContent =
+      icdOn ? "Using your own WHO ICD-11 credentials" : "Using the shared demo ICD-11 credentials";
+  }
+
+  // Never pre-fill the actual secret values back into the inputs - only
+  // reflect status. A saved key stays write-only from this screen on.
+  paintStatus();
+
+  saveBtn.addEventListener("click", () => {
+    const llmKey = llmKeyInput.value.trim();
+    const icdClientId = icdIdInput.value.trim();
+    const icdClientSecret = icdSecretInput.value.trim();
+
+    ClinCog.setByok({
+      llmProvider: llmKey ? selectedProvider : undefined,
+      llmKey: llmKey || undefined,
+      llmModel: llmKey ? modelSelect.value : undefined,
+      icdClientId: icdClientId || undefined,
+      icdClientSecret: icdClientSecret || undefined,
+    });
+
+    llmKeyInput.value = "";
+    icdIdInput.value = "";
+    icdSecretInput.value = "";
+    paintStatus();
+    saveConfirm.style.display = "block";
+    setTimeout(() => { saveConfirm.style.display = "none"; }, 3000);
+  });
+
+  clearBtn.addEventListener("click", () => {
+    if (!confirm("Clear your saved keys from this browser? Future conversations here will go back to the shared demo limits.")) return;
+    ClinCog.clearByok();
+    paintStatus();
+  });
+</script>
+</body>
+</html>

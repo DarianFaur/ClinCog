@@ -30,12 +30,12 @@
 
   <div class="help-section">
     <h2><span class="num">2</span> Conceptualize: talk to the patient</h2>
-    <p>Each case opens with a short written summary, followed by a chat where you interview the patient directly — ask about onset, duration, severity, anything relevant to building your own clinical picture. You have up to 10 exchanges per case. The patient can only discuss what's documented in their file; if you ask about something outside it, they'll say so rather than invent an answer.</p>
+    <p>Each case opens with a short written summary, followed by a chat where you interview the patient directly — ask about onset, duration, severity, anything relevant to building your own clinical picture. You have up to 20 exchanges per case. The patient can only discuss what's documented in their file; if you ask about something outside it, they'll say so rather than invent an answer.</p>
   </div>
 
   <div class="help-section">
     <h2><span class="num">3</span> Evaluate: apply the three instruments</h2>
-    <p>Once you're done exploring, move to that case's evaluation page — a categorical interview (SCID-5), a dimensional questionnaire, and a cognitive task. For the cognitive task, you're the one being measured, not the patient; use your own result as a point of comparison, not a diagnosis.</p>
+    <p>Once you're done exploring, move to that case's evaluation page — a categorical interview (ICD-11 diagnostic criteria), a dimensional questionnaire, and a cognitive task. For the cognitive task, you're the one being measured, not the patient; use your own result as a point of comparison, not a diagnosis.</p>
   </div>
 
   <div class="help-section">
@@ -48,12 +48,29 @@
     <h2><span class="num">5</span> If something looks broken</h2>
     <ul>
       <li>Refresh the page before assuming something's wrong — most display hiccups clear on reload.</li>
-      <li>If a chat reply fails, it won't count against your 10 exchanges — just try again.</li>
+      <li>If a chat reply fails, it won't count against your 20 exchanges — just try again.</li>
       <li>Still stuck? Flag it to your seminar instructor with the case name and what you were doing.</li>
     </ul>
+  </div>
+
+  <div class="help-section" id="instructor-section">
+    <h2><span class="num">6</span> For instructors: adopting ClinCog</h2>
+    <p>This demo runs on a shared key with modest limits, meant for trying it out. If you'd like to use ClinCog with a real class, you can adopt it: enter your own Anthropic and WHO ICD-11 credentials, and every conversation from your browser runs on your own account from then on, with none of the demo limits. Takes about two minutes.</p>
+    <a class="btn btn-secondary" href="/adopt.html">Adopt with your own keys →</a>
+  </div>
+
+  <div class="help-section" id="student-redirect-section" style="display:none;">
+    <h2><span class="num">6</span> Using your own API keys</h2>
+    <p>This is the seminar version of ClinCog, running on the instructor's own credentials — there's nothing to configure here. If you're an instructor looking to adopt the platform with your own API keys for your own class, visit <a href="https://clincog.net/adopt.html">clincog.net</a> and follow the instructions there.</p>
   </div>
 </main>
 
 <script src="/a11y.js"></script>
+<script>
+  if (window.location.hostname === "uvt.clincog.net") {
+    document.getElementById("instructor-section").style.display = "none";
+    document.getElementById("student-redirect-section").style.display = "block";
+  }
+</script>
 </body>
 </html>

@@ -131,7 +131,83 @@ const ClinCog = {
       this.clearHistory(m.id);
       localStorage.removeItem(this.evalKey(m.id));
       localStorage.removeItem(this.completeKey(m.id));
+      localStorage.removeItem(this.hypothesisKey(m.id));
     }
+  },
+
+  // ---- the student's probable-diagnosis guess, chosen via the ICD-11
+  // search widget after the conceptualization chat, before the structured
+  // evaluation. Not graded - purely for the later self-comparison step. ----
+  hypothesisKey(moduleId) {
+    return `clincog_hypothesis_${moduleId}`;
+  },
+  setDiagnosisHypothesis(moduleId, { foundationUri, label }) {
+    localStorage.setItem(
+      this.hypothesisKey(moduleId),
+      JSON.stringify({ foundationUri, label, chosenAt: Date.now() })
+    );
+  },
+  getDiagnosisHypothesis(moduleId) {
+    try {
+      const raw = localStorage.getItem(this.hypothesisKey(moduleId));
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  },
+
+  // ---- BYOK: an instructor's own LLM credentials (any of the three
+  // major providers) + WHO ICD-API credentials. Lives only in this
+  // browser (see adopt.html) - sent with each request to the Worker,
+  // used for that single call, never stored server-side. The LLM key
+  // and the ICD credentials are independent: an instructor can BYOK
+  // just the model key and still ride on the shared demo WHO
+  // credentials, or vice versa.
+  BYOK_KEY: "clincog_byok",
+  setByok({ llmProvider, llmKey, llmModel, icdClientId, icdClientSecret }) {
+    const current = this.getByok() || {};
+    const next = {
+      llmProvider: llmProvider !== undefined ? llmProvider : current.llmProvider,
+      llmKey: llmKey !== undefined ? llmKey : current.llmKey,
+      llmModel: llmModel !== undefined ? llmModel : current.llmModel,
+      icdClientId: icdClientId !== undefined ? icdClientId : current.icdClientId,
+      icdClientSecret: icdClientSecret !== undefined ? icdClientSecret : current.icdClientSecret,
+    };
+    localStorage.setItem(this.BYOK_KEY, JSON.stringify(next));
+  },
+  getByok() {
+    try {
+      const raw = localStorage.getItem(this.BYOK_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  },
+  hasByokLlm() {
+    const b = this.getByok();
+    return !!(b && b.llmProvider && b.llmKey);
+  },
+  hasByokIcd() {
+    const b = this.getByok();
+    return !!(b && b.icdClientId && b.icdClientSecret);
+  },
+  clearByok() {
+    localStorage.removeItem(this.BYOK_KEY);
+  },
+
+  // ---- Student model choice (uvt.clincog.net only) - deliberately just
+  // two options, Haiku or Sonnet. Global across cases, not per-case,
+  // since a student's preference for speed vs. depth is unlikely to
+  // change from one week's patient to the next.
+  STUDENT_MODEL_KEY: "clincog_student_model",
+  STUDENT_MODEL_OPTIONS: ["claude-haiku-4-5-20251001", "claude-sonnet-5"],
+  setStudentModel(model) {
+    if (!this.STUDENT_MODEL_OPTIONS.includes(model)) return;
+    localStorage.setItem(this.STUDENT_MODEL_KEY, model);
+  },
+  getStudentModel() {
+    const saved = localStorage.getItem(this.STUDENT_MODEL_KEY);
+    return this.STUDENT_MODEL_OPTIONS.includes(saved) ? saved : this.STUDENT_MODEL_OPTIONS[0];
   },
 
   // Honest, derived-only metrics for the dashboard's "clinical thinking"

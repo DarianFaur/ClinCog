@@ -39,7 +39,7 @@
     Talk to Alex directly, as if conducting a clinical interview. Ask about
     onset, triggers, avoidance patterns, and anything relevant to a
     diagnostic conceptualization. Alex can only tell you what's documented
-    in their case — up to 10 exchanges.
+    in their case — up to 20 exchanges.
   </p>
 
   <div id="chat" class="chat-window"></div>
@@ -51,15 +51,12 @@
   <div id="chat-status" class="chat-status"></div>
   <button id="chat-restart" class="chat-restart" type="button">Restart this interview</button>
 
-  <div class="eval-link">
-    <p>Done exploring the case?</p>
-    <a class="btn btn-secondary" href="/anxiety-eval.html">Proceed to evaluation →</a>
-  </div>
 </main>
 
 <script src="/storage.js"></script>
 <script src="/sidebar.js"></script>
 <script src="/chat.js" data-module="anxiety"></script>
+<script src="/icd-select.js" data-module="anxiety" data-eval-href="/anxiety-eval.html"></script>
 <script src="/reveal.js"></script>
 <script src="/a11y.js"></script>
 </body>

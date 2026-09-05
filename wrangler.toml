@@ -2,6 +2,51 @@ name = "clincog"
 main = "worker.js"
 compatibility_date = "2026-08-01"
 
+routes = [
+  { pattern = "clincog.net", custom_domain = true },
+  { pattern = "www.clincog.net", custom_domain = true },
+  { pattern = "uvt.clincog.net", custom_domain = true }
+]
+
+workers_dev = true
+preview_urls = true
+
+# Rate limiting for the public API routes. This is a coarse volume
+# backstop, not the primary anti-abuse layer - Turnstile (verified on
+# every single chat request, see worker.js) is what actually filters
+# out non-human traffic.
+#
+# CHAT_RATE_LIMITER: student traffic (uvt.clincog.net) and adopted-BYOK
+# traffic on the root domain - neither costs the author's own budget, so
+# this is set generously high so a full classroom on shared WiFi never
+# gets throttled. A real scripted abuser sending hundreds of requests per
+# minute would still hit this ceiling, and would be rejected by Turnstile
+# on every request regardless.
+[[ratelimits]]
+name = "CHAT_RATE_LIMITER"
+namespace_id = "1001"
+simple = { limit = 200, period = 60 }
+
+# CHAT_RATE_LIMITER_DEMO: root-domain visitors who have NOT entered their
+# own key - this spends the author's own demo budget, so it's deliberately
+# strict, matched to Gemini's own free-tier ceiling. Multiple 2026 sources
+# converge on 10-15 requests/minute for Flash-tier models on the free tier
+# (exact figure for gemini-3.5-flash specifically wasn't pinned by a single
+# authoritative source at time of writing) - set to 10, the conservative
+# end of that range, so our own limiter always triggers before Gemini's
+# does, keeping the friendlier in-app message as the one users actually see.
+[[ratelimits]]
+name = "CHAT_RATE_LIMITER_DEMO"
+namespace_id = "1003"
+simple = { limit = 10, period = 60 }
+
+# ICD-11 lookups are free, so there's no budget reason to tier this one -
+# same generous ceiling for every visitor, purely an abuse backstop.
+[[ratelimits]]
+name = "ICD_RATE_LIMITER"
+namespace_id = "1002"
+simple = { limit = 200, period = 60 }
+
 [assets]
 directory = "./public"
 binding = "ASSETS"
