@@ -10,61 +10,78 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/favicon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
+<style>
+  .help-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; border-radius: 50%; background: var(--domain-anxiety-soft);
+    color: var(--domain-anxiety); font-size: var(--text-xs); font-weight: 600; margin-right: 8px; flex-shrink: 0;
+  }
+  .help-section-title { display: flex; align-items: center; margin-bottom: 8px; }
+  .help-note { margin-top: var(--sp-3); padding: var(--sp-3) var(--sp-4); background: var(--bg-surface-alt); border-radius: var(--radius-md); font-size: var(--text-xs); color: var(--text-secondary); }
+  .help-list { margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: var(--text-sm); line-height: 1.8; }
+</style>
 </head>
-<body class="bg-mesh">
+<body>
 
-<div id="ccg-nav-root"></div>
-<script src="/nav.js"></script>
+<div id="shell-content">
 
-<main class="help-page" id="ccg-viewport">
-  <span class="eyebrow">Guide</span>
-  <h1>How to use ClinCog</h1>
-  <p class="lede">Everything you need to know to get through a week's case smoothly — five minutes, once, and you're set for the rest of the term.</p>
-
-  <div class="help-section">
-    <h2><span class="num">1</span> Set your name, once</h2>
-    <p>The first time you open ClinCog, it asks for your first name. This personalizes the site and lets it recognize you the next time you visit — nothing more.</p>
+  <div style="margin-bottom:var(--sp-6);">
+    <span class="text-eyebrow">Guide</span>
+    <h1 class="text-page-title" style="font-size:var(--text-lg);margin-top:4px;">How to use ClinCog</h1>
+    <p class="text-secondary" style="margin-top:8px;max-width:65ch;">Everything you need to know to get through a week's case smoothly — five minutes, once, and you're set for the rest of the term.</p>
   </div>
 
-  <div class="help-section">
-    <h2><span class="num">2</span> Conceptualize: talk to the patient</h2>
-    <p>Each case opens with a short written summary, followed by a chat where you interview the patient directly — ask about onset, duration, severity, anything relevant to building your own clinical picture. You have up to 20 exchanges per case. The patient can only discuss what's documented in their file; if you ask about something outside it, they'll say so rather than invent an answer.</p>
-  </div>
+  <div class="card" style="margin-bottom:var(--sp-4);"><div class="card-body">
+    <div class="help-section-title"><span class="help-num">1</span><span class="text-card-title">Set your name, once</span></div>
+    <p class="text-secondary" style="margin:0;">The first time you open ClinCog, it asks for your first name. This personalizes the site and lets it recognize you the next time you visit — nothing more.</p>
+  </div></div>
 
-  <div class="help-section">
-    <h2><span class="num">3</span> Evaluate: apply the three instruments</h2>
-    <p>Once you're done exploring, move to that case's evaluation page — a categorical interview (ICD-11 diagnostic criteria), a dimensional questionnaire, and a cognitive task. For the cognitive task, you're the one being measured, not the patient; use your own result as a point of comparison, not a diagnosis.</p>
-  </div>
+  <div class="card" style="margin-bottom:var(--sp-4);"><div class="card-body">
+    <div class="help-section-title"><span class="help-num">2</span><span class="text-card-title">Conceptualize: talk to the patient</span></div>
+    <p class="text-secondary" style="margin:0;">Each case opens with a short written summary, followed by a chat where you interview the patient directly — ask about onset, duration, severity, anything relevant to building your own clinical picture. You have up to 20 exchanges per case. The patient can only discuss what's documented in their file; if you ask about something outside it, they'll say so rather than invent an answer.</p>
+  </div></div>
 
-  <div class="help-section">
-    <h2><span class="num">4</span> Your progress is saved automatically</h2>
-    <p>Every conversation is saved as you go. Close the tab, come back tomorrow, and you'll find each case exactly where you left it. Want a clean slate on a case? Open it and click "Restart this interview."</p>
+  <div class="card" style="margin-bottom:var(--sp-4);"><div class="card-body">
+    <div class="help-section-title"><span class="help-num">3</span><span class="text-card-title">Evaluate: apply the three instruments</span></div>
+    <p class="text-secondary" style="margin:0;">Once you're done exploring, move to that case's evaluation page — a categorical interview (ICD-11 diagnostic criteria), a dimensional questionnaire, and a cognitive task. For the cognitive task, you're the one being measured, not the patient; use your own result as a point of comparison, not a diagnosis.</p>
+  </div></div>
+
+  <div class="card" style="margin-bottom:var(--sp-4);"><div class="card-body">
+    <div class="help-section-title"><span class="help-num">4</span><span class="text-card-title">Your progress is saved automatically</span></div>
+    <p class="text-secondary" style="margin:0;">Every conversation is saved as you go. Close the tab, come back tomorrow, and you'll find each case exactly where you left it. Want a clean slate on a case? Open it and click "Restart this interview."</p>
     <div class="help-note">This all happens in this specific browser, on this specific device. Switching browsers (e.g. Chrome → Safari) or devices starts that case fresh — so stick to one browser and one device for the whole term.</div>
-  </div>
+  </div></div>
 
-  <div class="help-section">
-    <h2><span class="num">5</span> If something looks broken</h2>
-    <ul>
+  <div class="card" style="margin-bottom:var(--sp-4);"><div class="card-body">
+    <div class="help-section-title"><span class="help-num">5</span><span class="text-card-title">If something looks broken</span></div>
+    <ul class="help-list">
       <li>Refresh the page before assuming something's wrong — most display hiccups clear on reload.</li>
       <li>If a chat reply fails, it won't count against your 20 exchanges — just try again.</li>
       <li>Still stuck? Flag it to your seminar instructor with the case name and what you were doing.</li>
     </ul>
-  </div>
+  </div></div>
 
-  <div class="help-section" id="instructor-section">
-    <h2><span class="num">6</span> For instructors: adopting ClinCog</h2>
-    <p>This demo runs on a shared key with modest limits, meant for trying it out. If you'd like to use ClinCog with a real class, you can adopt it: enter your own Anthropic and WHO ICD-11 credentials, and every conversation from your browser runs on your own account from then on, with none of the demo limits. Takes about two minutes.</p>
+  <div class="card" style="margin-bottom:var(--sp-4);" id="instructor-section"><div class="card-body">
+    <div class="help-section-title"><span class="help-num">6</span><span class="text-card-title">For instructors: adopting ClinCog</span></div>
+    <p class="text-secondary" style="margin:0 0 var(--sp-3);">This demo runs on a shared key with modest limits, meant for trying it out. If you'd like to use ClinCog with a real class, you can adopt it: enter your own Anthropic and WHO ICD-11 credentials, and every conversation from your browser runs on your own account from then on, with none of the demo limits. Takes about two minutes.</p>
     <a class="btn btn-secondary" href="/adopt.html">Adopt with your own keys →</a>
-  </div>
+  </div></div>
 
-  <div class="help-section" id="student-redirect-section" style="display:none;">
-    <h2><span class="num">6</span> Using your own API keys</h2>
-    <p>This is the seminar version of ClinCog, running on the instructor's own credentials — there's nothing to configure here. If you're an instructor looking to adopt the platform with your own API keys for your own class, visit <a href="https://clincog.net/adopt.html">clincog.net</a> and follow the instructions there.</p>
-  </div>
-</main>
+  <div class="card" style="display:none;margin-bottom:var(--sp-4);" id="student-redirect-section"><div class="card-body">
+    <div class="help-section-title"><span class="help-num">6</span><span class="text-card-title">Using your own API keys</span></div>
+    <p class="text-secondary" style="margin:0;">This is the seminar version of ClinCog, running on the instructor's own credentials — there's nothing to configure here. If you're an instructor looking to adopt the platform with your own API keys for your own class, visit <a href="https://clincog.net/adopt.html">clincog.net</a> and follow the instructions there.</p>
+  </div></div>
 
+</div>
+
+<script>window.CLINCOG_SHELL = { activeNav: "help", breadcrumb: [{ label: "Help" }] };</script>
+<script src="/storage.js"></script>
+<script src="/icons.js"></script>
+<script src="/shell.js"></script>
 <script src="/a11y.js"></script>
 <script>
   if (window.location.hostname === "uvt.clincog.net") {

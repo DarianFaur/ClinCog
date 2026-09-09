@@ -10,42 +10,46 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/favicon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root { color-scheme: light; }
-html[data-theme="dark"] { color-scheme: dark; }
 :root{
-  --teal:#8bb6a2;--teal-pale:#eaf2ee;--teal-mid:#729b87;
-  --text:#1a1a1a;--muted:#6b7280;--border:#e5e5e5;
-  --bg:#ffffff;--soft:#f2f2f2;--surface:#ffffff;
+  --teal: var(--domain-anxiety);
+  --teal-pale: var(--domain-anxiety-soft);
+  --teal-mid: var(--domain-anxiety);
+  --text: var(--text-primary);
+  --muted: var(--text-secondary);
+  --bg: var(--bg-app);
+  --soft: var(--bg-surface-alt);
+  --surface: var(--bg-surface);
   --nav-h:56px;--bar-h:46px;
-  --serif:'Poppins','Inter',sans-serif;--sans:'Inter',sans-serif;--mono:'DM Mono',monospace;
+  --serif:'Poppins','Inter',sans-serif;--sans:var(--font-sans);--mono:var(--font-mono);
+  /* bridge for the ported eval-layout/context/scoring/v-step CSS block,
+     which uses a different naming convention than this page's own */
+  --line: var(--border);
+  --ink: var(--text-primary);
+  --ink2: var(--text-secondary);
+  --ink3: var(--text-tertiary, var(--text-secondary));
+  --bg-surface-alt: var(--bg-surface-alt);
+  --accent-bg: var(--domain-anxiety-soft);
+  --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+  --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+  --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
 }
-
-html[data-theme="dark"]{
-  --teal:#8bb6a2;--teal-pale:#26332d;--teal-mid:#a3c9b6;
-  --text:#f2f2f2;--muted:#a8acaf;--border:#383b42;
-  --bg:#1c1e22;--soft:#202227;--surface:#262930;
-}
-@media (prefers-color-scheme: dark) {
-  html:not([data-theme="light"]){
-    color-scheme: dark;
-    --teal:#8bb6a2;--teal-pale:#26332d;--teal-mid:#a3c9b6;
-    --text:#f2f2f2;--muted:#a8acaf;--border:#383b42;
-    --bg:#1c1e22;--soft:#202227;--surface:#262930;
-  }
-}
-html,body{transition:background-color .25s ease,color .25s ease}
-*{transition:background-color .2s ease,border-color .2s ease,color .2s ease}
 body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:15px;line-height:1.75;position:relative}
-body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none}
-html[data-theme="dark"] body::before{}
 h1,h2,h3,h4,h5{font-family:var(--serif)}
+
 /* NAV */
-#nav{position:sticky;top:0;z-index:300;background:var(--surface);border-bottom:1px solid var(--border);height:var(--nav-h);display:flex;align-items:center;padding:0 24px}
+#nav{position:sticky;top:56px;z-index:20;background:var(--surface);border-bottom:1px solid var(--border);height:var(--nav-h);display:flex;align-items:center;padding:0 24px;margin:calc(-1 * var(--sp-6, 24px)) -24px 0}
 .steps{display:flex;align-items:center;gap:0;width:100%;max-width:720px;margin:0 auto}
 .step{display:flex;align-items:center;gap:6px}
+.step{cursor:default}
+.step.done,.step.current{cursor:pointer}
 .step-dot{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;color:#aaa;flex-shrink:0;transition:all .2s}
 .step.done .step-dot{border-color:var(--teal);background:var(--teal);color:#fff;font-size:13px}
 .step.current .step-dot{border-color:var(--teal);color:var(--teal);font-weight:400}
@@ -53,7 +57,7 @@ h1,h2,h3,h4,h5{font-family:var(--serif)}
 .step.current .step-lbl{color:var(--teal)}
 .step-line{flex:1;height:1px;background:var(--border);margin:0 4px}
 /* SCORE BAR */
-#score-bar{display:none;position:fixed;top:var(--nav-h);left:0;right:0;z-index:200;background:var(--surface);border-bottom:1px solid var(--border);height:var(--bar-h);align-items:center;padding:0 24px;gap:32px;font-size:12px}
+#score-bar{display:none;position:sticky;top:calc(56px + var(--nav-h) + 2px);z-index:19;background:var(--surface);border-bottom:1px solid var(--border);height:var(--bar-h);align-items:center;padding:0 24px;gap:32px;font-size:12px;margin:0 -24px}
 #score-bar.visible{display:flex}
 .sb-group{display:flex;align-items:center;gap:10px}
 .sb-label{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
@@ -67,7 +71,7 @@ h1,h2,h3,h4,h5{font-family:var(--serif)}
 .page.active{display:block}
 .container{max-width:720px;margin:0 auto;padding:0 24px}
 .page-inner{padding:56px 0 100px}
-#p4 .page-inner{padding-top:calc(56px + var(--bar-h) + 8px)}
+#p4 .page-inner{padding-top:56px}
 /* TYPOGRAPHY */
 .page-title{font-family:var(--serif);font-size:38px;font-weight:700;letter-spacing:-.01em;line-height:1.15;margin-bottom:6px}
 .page-tagline{font-size:17px;font-weight:400;font-style:normal;color:var(--muted);margin-bottom:48px}
@@ -86,6 +90,17 @@ h1,h2,h3,h4,h5{font-family:var(--serif)}
 /* VIGNETTE */
 .vignette{font-family:var(--serif);font-size:17px;line-height:1.8;color:var(--text);padding:32px 0}
 .vignette p+p{margin-top:20px}
+.vignette-page-title { font-size: 37.6px; font-weight: 700; color: var(--ink); margin: 0 0 16px; line-height: 1.15; }
+.vignette-page-sub { font-size: 16px; color: var(--ink2); margin-bottom: 24px; }
+.vignette-card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 24px; box-shadow: var(--shadow-xs); margin-bottom: 24px; }
+.vignette-card-name { font-size: 18px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.vignette-card-meta { font-size: 16px; color: var(--ink2); margin-bottom: 16px; }
+.vignette-card-divider { border-top: 1px solid var(--line); margin-bottom: 20px; }
+.vignette-section { margin-bottom: 16px; }
+.vignette-section:last-child { margin-bottom: 0; }
+.vignette-section-title { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--ink3); margin-bottom: 8px; }
+.vignette-section p { font-size: 16px; line-height: 1.75; color: var(--ink); margin: 0; }
+.vignette-highlight { background: var(--accent-bg); border-left: 3px solid var(--domain-anxiety); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 16px; line-height: 1.6; color: var(--ink); }
 .patient-meta{display:flex;gap:24px;margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid var(--border)}
 .meta-item{display:flex;flex-direction:column;gap:2px}
 .meta-lbl{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
@@ -94,15 +109,16 @@ h1,h2,h3,h4,h5{font-family:var(--serif)}
 .scid-item{padding:20px 0;border-bottom:1px solid var(--border)}
 .scid-item:last-child{border-bottom:none}
 .scid-row{display:flex;align-items:flex-start;gap:12px}
-.item-code{font-family:var(--mono);font-size:11px;color:var(--teal);padding:2px 6px;border:1px solid var(--teal);border-radius:2px;flex-shrink:0;margin-top:2px}
+.item-code{font-family:var(--mono);font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:none;padding:0;border:none;border-radius:0;flex-shrink:0;margin-top:2px}
 .item-body{flex:1}
-.item-q{font-size:15px;line-height:1.65;color:var(--text)}
-.item-sublabel{display:block;font-size:13px;color:var(--muted);font-style:italic;margin-top:5px}
+.item-q{font-size:var(--text-base);line-height:1.65;color:var(--text);font-style:italic;}
+.item-sublabel{display:block;font-size:var(--text-xs);color:var(--muted);font-style:italic;margin-top:5px}
 .rating-group{display:flex;gap:8px;flex-shrink:0;margin-top:2px}
 .rating-btn{position:relative}
 .rating-btn input{display:none}
-.rating-btn label{width:34px;height:34px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:14px;cursor:pointer;color:var(--muted);transition:all .15s;border-radius:2px}
-.rating-btn input:checked+label{background:var(--teal);border-color:var(--teal);color:#fff}
+.rating-btn label{width:36px;height:36px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:14px;cursor:pointer;color:var(--muted);transition:all .15s;border-radius:var(--radius-md,6px)}
+.rating-btn label:hover{border-color:var(--teal);background:var(--accent-bg);}
+.rating-btn input:checked+label{background:var(--accent-bg);border-color:var(--teal);color:var(--teal);font-weight:600;}
 /* DIAGNOSIS SECTION */
 .diag-section{margin:40px 0 0;padding:28px 0 0;border-top:1px solid var(--border)}
 .diag-section h3{font-size:16px;font-weight:600;margin-bottom:16px}
@@ -111,28 +127,32 @@ h1,h2,h3,h4,h5{font-family:var(--serif)}
 .diag-opt input{accent-color:var(--teal);width:16px;height:16px;flex-shrink:0}
 .diag-opt label{font-size:15px;cursor:pointer}
 /* STAI ITEMS */
-.stai-item{display:grid;grid-template-columns:28px 1fr;gap:12px;padding:16px 0;border-bottom:1px solid var(--border);align-items:start}
+.stai-item{display:block;padding:16px 0;border-bottom:1px solid var(--border)}
+.item-num{display:none;}
 .stai-item:last-child{border-bottom:none}
 .item-num{font-family:var(--mono);font-size:12px;color:var(--muted);padding-top:1px}
-.stai-body{}
-.stai-label{font-size:15px;margin-bottom:10px}
+.stai-body{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.stai-label{flex:1;min-width:200px;font-size:var(--text-sm);}
 .option-row{display:flex;gap:6px;flex-wrap:wrap}
 .opt-btn{position:relative}
 .opt-btn input{display:none}
-.opt-btn label{display:block;padding:5px 10px;border:1px solid var(--border);border-radius:2px;font-size:12px;cursor:pointer;color:var(--muted);transition:all .15s;white-space:nowrap}
-.opt-btn input:checked+label{background:var(--teal);border-color:var(--teal);color:#fff}
+.opt-btn label{display:flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;border:1.5px solid var(--border);border-radius:var(--radius-md,8px);font-size:var(--text-sm);font-weight:600;cursor:pointer;color:var(--muted);transition:all .15s;}
+.opt-btn label:hover{border-color:var(--teal);background:var(--accent-bg);}
+.opt-btn input:checked+label{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:600;}
+.likert-legend { display: flex; gap: 8px; margin-bottom: 20px; background: var(--bg-surface-alt,var(--soft)); border-radius: 12px; padding: 16px 18px; }
+.likert-legend-item { flex: 1; text-align: center; }
+.likert-legend-num { font-size: 22px; font-weight: 700; color: var(--teal); }
+.likert-legend-label { font-size: 11px; color: var(--muted); line-height: 1.3; margin-top: 2px; }
+.subscale-name-colored { font-family: var(--sans); font-size: 13px; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: .06em; border-bottom: 1px solid var(--accent-bg); padding-bottom: 8px; margin: 18px 0 14px; }
 /* HITOP */
 .subscale-block{margin-bottom:32px}
 .subscale-block:last-child{margin-bottom:0}
-.subscale-name{font-family:var(--mono);font-size:11px;color:var(--teal);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;padding:4px 0;border-bottom:1px solid var(--border)}
+.subscale-name{font-family:var(--sans);font-weight:700;font-size:var(--text-xs);color:var(--teal);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;padding:4px 0 8px;border-bottom:1px solid var(--accent-bg)}
 /* PAGE 4 PART HEADERS */
 .part-header{padding:24px 0 20px;border-bottom:2px solid var(--border);margin-bottom:8px}
 .part-tag{font-family:var(--mono);font-size:11px;color:var(--teal);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
 .part-title{font-size:26px;font-weight:600}
 /* BUTTONS */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:12px 24px;background:var(--teal-mid);border:0;color:#fff;font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:normal;cursor:pointer;transition:all .15s;border-radius:999px;text-transform:none}
-.btn:hover{filter:brightness(1.08)}
-.btn:hover{background:var(--teal);color:#fff}
 .btn-row{display:flex;justify-content:flex-end;margin-top:48px;gap:12px}
 .err-msg{color:#dc2626;font-size:13px;font-family:var(--mono);display:none;margin-top:8px}
 /* DOT PROBE */
@@ -149,7 +169,15 @@ h1,h2,h3,h4,h5{font-family:var(--serif)}
 .dp-q textarea{width:100%;padding:12px;border:1px solid var(--border);border-radius:2px;font-family:var(--sans);font-size:14px;color:var(--text);resize:vertical;min-height:90px;outline:none;line-height:1.65}
 .dp-q textarea:focus{border-color:var(--teal)}
 /* REPORT */
-.report-section{padding:40px 0;border-bottom:1px solid var(--border)}
+.report-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin:0 -24px}
+.report-col-stack{display:flex;flex-direction:column}
+.report-section{padding:8px 24px;border-bottom:none}
+.report-col-stack .report-section:nth-child(2){border-top:1px dashed var(--border);margin-top:20px;padding-top:28px}
+.report-cols>.report-section+.report-section,.report-cols>.report-col-stack+.report-section,.report-cols>.report-section+.report-col-stack{border-left:1px solid var(--border)}
+@media (max-width:1300px){
+  .report-cols{grid-template-columns:1fr;margin:0}
+  .report-cols>.report-section,.report-cols>.report-col-stack{border-left:none !important;border-top:1px solid var(--border);margin-top:8px;padding-top:24px}
+}
 .report-section:last-child{border-bottom:none}
 .report-section-title{font-family:var(--mono);font-size:10px;color:var(--teal);text-transform:uppercase;letter-spacing:.12em;margin-bottom:20px}
 /* Diagnosis badge */
@@ -177,6 +205,7 @@ h1,h2,h3,h4,h5{font-family:var(--serif)}
 .severity-pill{display:inline-block;padding:3px 10px;border-radius:2px;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.04em;margin-left:8px}
 /* Canvas */
 .canvas-wrap{margin:24px 0 8px;border-top:1px solid var(--border);padding-top:20px}
+.canvas-wrap canvas{max-width:100%;height:auto;}
 canvas{width:100%;height:auto;display:block}
 .canvas-footnote{font-family:var(--mono);font-size:10px;color:#aaa;margin-top:8px}
 /* HiTOP table */
@@ -227,82 +256,284 @@ canvas{width:100%;height:auto;display:block}
 .reflect-done-msg{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--teal);margin-bottom:4px}
 .methodology-note{font-size:13px;color:var(--muted);border-top:1px solid var(--border);padding-top:24px;margin-top:48px}
 
-/* ---- forced layout preview, driven by the floating a11y button ---- */
-#ccg-viewport{transition:max-width .3s ease,min-width .3s ease,box-shadow .3s ease}
-html[data-force-layout="phone"] #ccg-viewport{max-width:400px;margin:18px auto;border-radius:28px;box-shadow:0 0 0 1px var(--border),0 24px 60px rgba(20,25,40,.18);overflow:hidden}
-html[data-force-layout="desktop"]{overflow-x:auto}
-html[data-force-layout="desktop"] #ccg-viewport{min-width:900px}
+
+
+
+/* ============================================================
+   THREE-ZONE EVALUATION LAYOUT (steps with active rating: ICD-11,
+   HiTOP-SR, MATRICS). Overview/Vignette/Report keep the simple
+   centered .wrap - there's nothing to reference alongside them yet
+   (or, for Report, that's its own separate redesign pass).
+   ============================================================ */
+
+/* Widen this page's content region beyond the shell's shared 1440px
+   cap - safer than escaping via 100vw, which ignored the persistent
+   sidebar's width and caused content to render partly underneath it. */
+.shell-content-inner { max-width: 1900px; }
+
+.eval-layout {
+  max-width: 1900px; margin: 0 auto; padding: 32px 32px 100px;
+  display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 28px; align-items: start;
+  justify-content: center;
+}
+.eval-context {
+  display: flex; flex-direction: column; gap: 16px;
+  position: sticky; top: 75px;
+}
+.ctx-sticky-top { flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; }
+.ctx-scroll-area { display: flex; flex-direction: column; gap: 16px; }
+.eval-work { min-width: 0; max-width: 1100px; }
+/* A "normal laptop" screen (1366-1536px wide) still has the app's own
+   260px sidebar eating into that width before our layout even starts -
+   three content columns plus gaps plus padding left almost nothing for
+   the actual reading column at those sizes. Drop to two columns much
+   earlier than the raw viewport width would suggest. */
+@media (max-width: 1100px) {
+  .eval-layout { grid-template-columns: 1fr; }
+}
+
+.ctx-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-xs); padding: 0; overflow: hidden; flex-shrink: 0; }
+.ctx-card > .ctx-card-body { padding: 16px 18px; }
+.ctx-card h4 { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink3); font-weight: 600; margin-bottom: 12px; }
+.ctx-card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 18px; border-bottom: 1px solid var(--line);
+}
+.ctx-card-header h4 { margin: 0; }
+.ctx-toggle-btn {
+  background: none; border: none; cursor: pointer; padding: 4px; margin: -4px; color: var(--ink3);
+  display: flex; align-items: center; border-radius: var(--radius-sm); transition: all .15s;
+}
+.ctx-toggle-btn:hover { color: var(--ink); background: var(--bg-surface-alt); }
+.ctx-toggle-btn .chev { transition: transform .2s; display: block; }
+.ctx-card.open .ctx-toggle-btn .chev { transform: rotate(180deg); }
+.ctx-patient-name { font-family: var(--serif); font-size: 1.15rem; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.ctx-patient-meta { font-size: 14px; color: var(--ink3); margin-bottom: 12px; }
+.ctx-patient-complaint { font-size: 13px; color: var(--ink2); line-height: 1.6; padding-top: 12px; border-top: 1px solid var(--line); }
+
+.ctx-body { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+.ctx-body > .ctx-card-body { padding: 14px 18px 18px; }
+.ctx-vignette-text { font-family: var(--font-sans); font-size: 15px; line-height: 1.65; color: var(--ink2); max-height: 280px; overflow-y: auto; }
+.ctx-vignette-text p { margin-bottom: 1em; }
+.ctx-vignette-text p:last-child { margin-bottom: 0; }
+
+.ctx-chat { display: flex; flex-direction: column; gap: 10px; max-height: 280px; overflow-y: auto; }
+.ctx-chat .chat-row { max-width: 92%; }
+.ctx-chat .chat-bubble { padding: 8px 12px; font-size: 15px; line-height: 1.65; }
+.ctx-chat-empty { font-size: 14px; color: var(--ink3); font-style: italic; }
+
+.ctx-guide-row { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ink2); margin-bottom: 8px; }
+.ctx-guide-row:last-child { margin-bottom: 0; }
+.ctx-guide-mark {
+  display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px;
+  border-radius: var(--radius-sm); font-family: var(--mono); font-size: 11px; font-weight: 600; flex-shrink: 0;
+}
+.ctx-guide-mark.p { background: var(--success-soft, var(--accent-bg)); color: var(--success, var(--domain-anxiety)); }
+.ctx-guide-mark.n { background: var(--bg-surface-alt); color: var(--ink3); }
+.ctx-guide-mark.u { background: var(--warning-soft, #fff3e0); color: var(--warning, #a05a00); }
+
+.scoring-card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow-xs); padding: 12px 14px; }
+.scoring-card h4 { font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink3); font-weight: 600; margin-bottom: 3px; }
+.scoring-count { font-family: var(--serif); font-size: 1.35rem; font-weight: 600; color: var(--ink); line-height: 1.1; margin-bottom: 1px; transition: color .2s; }
+.scoring-count .of { font-size: .78rem; color: var(--ink3); font-weight: 400; }
+.scoring-sub { font-size: 11.5px; color: var(--ink3); margin-bottom: 8px; line-height: 1.4; }
+.scoring-dots { display: flex; flex-wrap: wrap; gap: 4px; }
+.scoring-dot {
+  width: 18px; height: 18px; border-radius: 5px; display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 9px; font-weight: 600; background: var(--bg-surface-alt); color: var(--ink3);
+  transition: all .2s;
+}
+.scoring-dot.p { background: var(--accent-bg); color: var(--domain-anxiety); }
+.scoring-dot.n { background: var(--bg-surface-alt); color: var(--ink2); }
+.scoring-dot.u { background: #fff3e0; color: #a05a00; }
+
+.mini-stats { display: flex; gap: 8px; }
+.mini-stat { flex: 1; min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 4px; text-align: center; }
+.mini-stat-num { font-family: var(--serif); font-size: 17px; font-weight: 700; color: var(--ink); line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mini-stat-lbl { font-size: 8.5px; color: var(--ink3); text-transform: uppercase; letter-spacing: .02em; margin-top: 3px; line-height: 1.2; }
+
+/* Alex's overview page already has .layer-list/.layer-item markup with
+   its own content - reskin it to the same 3-column card grid look
+   used elsewhere, without renaming anything in the HTML. */
+.layer-list { list-style: none; margin: 32px 0 40px; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 800px) { .layer-list { grid-template-columns: 1fr; } }
+.layer-item {
+  display: block; padding: 22px; border: 1px solid var(--border); border-radius: var(--radius-lg);
+  background: var(--surface); box-shadow: var(--shadow-sm); transition: transform .15s, box-shadow .15s;
+}
+.layer-item:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.layer-num {
+  display: inline-flex; align-items: center; justify-content: center; padding: 0 10px; height: 24px;
+  font-family: var(--mono); font-size: 11px; color: var(--teal); background: var(--teal-pale);
+  border-radius: var(--radius-md); margin-bottom: 14px; letter-spacing: 0;
+}
+.layer-body { display: block; }
+.layer-name { display: block; font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.layer-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+
+.v-stepper-card { padding: 8px 4px; }
+.v-step { position: relative; display: flex; align-items: center; gap: 12px; padding: 9px 0; cursor: not-allowed; }
+.v-step.done, .v-step.current { cursor: pointer; }
+.v-step-line { position: absolute; left: 12px; top: 35px; width: 2px; height: 18px; background: var(--line); z-index: 0; transition: background .3s; }
+.v-step:last-child .v-step-line { display: none; }
+.v-step.done .v-step-line { background: var(--domain-anxiety); }
+.v-step-dot {
+  width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--surface);
+  display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px;
+  color: var(--ink3); flex-shrink: 0; z-index: 1; transition: all .2s;
+}
+.v-step.done .v-step-dot { border: none; background: var(--domain-anxiety); color: #fff; font-size: 13px; }
+.v-step.current .v-step-dot { border-width: 2px; border-color: var(--domain-anxiety); background: var(--accent-bg); color: var(--domain-anxiety); font-weight: 600; }
+.v-step-label { font-size: 14.5px; color: var(--ink3); transition: color .2s; }
+.v-step.current .v-step-label { color: var(--domain-anxiety); font-weight: 600; }
+.v-step.done .v-step-label { color: var(--ink2); }
+.v-step:hover:not(.v-step.current):not([style*="cursor: not-allowed"]) .v-step-label { color: var(--ink); }
+
+/* ============================================================
+   THREE-ZONE EVALUATION LAYOUT (steps with active rating: ICD-11,
+   HiTOP-SR, MATRICS). Overview/Vignette/Report keep the simple
+   centered .wrap - there's nothing to reference alongside them yet
+   (or, for Report, that's its own separate redesign pass).
+   ============================================================ */
+
+/* Widen this page's content region beyond the shell's shared 1440px
+   cap - safer than escaping via 100vw, which ignored the persistent
+   sidebar's width and caused content to render partly underneath it. */
+.shell-content-inner { max-width: 1900px; }
+
+.eval-layout {
+  max-width: 1900px; margin: 0 auto; padding: 32px 32px 100px;
+  display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 28px; align-items: start;
+  justify-content: center;
+}
+.eval-context {
+  display: flex; flex-direction: column; gap: 16px;
+  position: sticky; top: 75px;
+}
+.ctx-sticky-top { flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; }
+.ctx-scroll-area { display: flex; flex-direction: column; gap: 16px; }
+.eval-work { min-width: 0; max-width: 1100px; }
+/* A "normal laptop" screen (1366-1536px wide) still has the app's own
+   260px sidebar eating into that width before our layout even starts -
+   three content columns plus gaps plus padding left almost nothing for
+   the actual reading column at those sizes. Drop to two columns much
+   earlier than the raw viewport width would suggest. */
+@media (max-width: 1100px) {
+  .eval-layout { grid-template-columns: 1fr; }
+}
+
+.ctx-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-xs); padding: 0; overflow: hidden; flex-shrink: 0; }
+.ctx-card > .ctx-card-body { padding: 16px 18px; }
+.ctx-card h4 { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink3); font-weight: 600; margin-bottom: 12px; }
+.ctx-card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 18px; border-bottom: 1px solid var(--line);
+}
+.ctx-card-header h4 { margin: 0; }
+.ctx-toggle-btn {
+  background: none; border: none; cursor: pointer; padding: 4px; margin: -4px; color: var(--ink3);
+  display: flex; align-items: center; border-radius: var(--radius-sm); transition: all .15s;
+}
+.ctx-toggle-btn:hover { color: var(--ink); background: var(--bg-surface-alt); }
+.ctx-toggle-btn .chev { transition: transform .2s; display: block; }
+.ctx-card.open .ctx-toggle-btn .chev { transform: rotate(180deg); }
+.ctx-patient-name { font-family: var(--serif); font-size: 1.15rem; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.ctx-patient-meta { font-size: 14px; color: var(--ink3); margin-bottom: 12px; }
+.ctx-patient-complaint { font-size: 13px; color: var(--ink2); line-height: 1.6; padding-top: 12px; border-top: 1px solid var(--line); }
+
+.ctx-body { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+.ctx-body > .ctx-card-body { padding: 14px 18px 18px; }
+.ctx-vignette-text { font-family: var(--font-sans); font-size: 15px; line-height: 1.65; color: var(--ink2); max-height: 280px; overflow-y: auto; }
+.ctx-vignette-text p { margin-bottom: 1em; }
+.ctx-vignette-text p:last-child { margin-bottom: 0; }
+
+.ctx-chat { display: flex; flex-direction: column; gap: 10px; max-height: 280px; overflow-y: auto; }
+.ctx-chat .chat-row { max-width: 92%; }
+.ctx-chat .chat-bubble { padding: 8px 12px; font-size: 15px; line-height: 1.65; }
+.ctx-chat-empty { font-size: 14px; color: var(--ink3); font-style: italic; }
+
+.ctx-guide-row { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ink2); margin-bottom: 8px; }
+.ctx-guide-row:last-child { margin-bottom: 0; }
+.ctx-guide-mark {
+  display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px;
+  border-radius: var(--radius-sm); font-family: var(--mono); font-size: 11px; font-weight: 600; flex-shrink: 0;
+}
+.ctx-guide-mark.p { background: var(--success-soft, var(--accent-bg)); color: var(--success, var(--domain-anxiety)); }
+.ctx-guide-mark.n { background: var(--bg-surface-alt); color: var(--ink3); }
+.ctx-guide-mark.u { background: var(--warning-soft, #fff3e0); color: var(--warning, #a05a00); }
+
+.scoring-card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow-xs); padding: 12px 14px; }
+.scoring-card h4 { font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink3); font-weight: 600; margin-bottom: 3px; }
+.scoring-count { font-family: var(--serif); font-size: 1.35rem; font-weight: 600; color: var(--ink); line-height: 1.1; margin-bottom: 1px; transition: color .2s; }
+.scoring-count .of { font-size: .78rem; color: var(--ink3); font-weight: 400; }
+.scoring-sub { font-size: 11.5px; color: var(--ink3); margin-bottom: 8px; line-height: 1.4; }
+.scoring-dots { display: flex; flex-wrap: wrap; gap: 4px; }
+.scoring-dot {
+  width: 18px; height: 18px; border-radius: 5px; display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 9px; font-weight: 600; background: var(--bg-surface-alt); color: var(--ink3);
+  transition: all .2s;
+}
+.scoring-dot.p { background: var(--accent-bg); color: var(--domain-anxiety); }
+.scoring-dot.n { background: var(--bg-surface-alt); color: var(--ink2); }
+.scoring-dot.u { background: #fff3e0; color: #a05a00; }
+
+.mini-stats { display: flex; gap: 8px; }
+.mini-stat { flex: 1; min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 4px; text-align: center; }
+.mini-stat-num { font-family: var(--serif); font-size: 17px; font-weight: 700; color: var(--ink); line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mini-stat-lbl { font-size: 8.5px; color: var(--ink3); text-transform: uppercase; letter-spacing: .02em; margin-top: 3px; line-height: 1.2; }
+
+
+/* ============================================================
+   JORDAN-STYLE QUESTIONNAIRE THEME - ported to match the flat,
+   list-divider look (no per-item card/shadow, italic prompts,
+   bordered+tinted selected state instead of filled pills).
+   ============================================================ */
+.scid-q { border: none; border-radius: 0; box-shadow: none; background: transparent; padding: 20px 0; border-top: 1px solid var(--line); margin: 0; }
+.scid-q:first-child { border-top: none; }
+.scid-q:has(.radio-row label.p:has(input:checked)) { border-color: var(--line); }
+.scid-code {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--ink3); background: none; border: none; border-radius: 0; width: auto; height: auto;
+  display: inline; padding: 0; margin-bottom: 6px;
+}
+.scid-q-top { display: block; margin-bottom: 10px; }
+.scid-q-text { font-size: .95rem; font-style: italic; color: var(--ink); line-height: 1.6; margin-top: 4px; }
+.radio-row { padding-left: 0; gap: 10px; margin-top: 12px; }
+.radio-row label {
+  border-radius: var(--radius-md); border: 1px solid var(--line); background: var(--bg-surface-alt);
+  padding: 8px 18px; font-weight: 500; transition: all .15s;
+}
+.radio-row label:hover { border-color: var(--teal); background: var(--accent-bg); }
+.radio-row label:has(input:checked).p,
+.radio-row label:has(input:checked).n,
+.radio-row label:has(input:checked).u {
+  background: var(--accent-bg); border-color: var(--teal); color: var(--teal); font-weight: 600;
+}
+
+.hitop-block { border: none; border-radius: 0; background: transparent; padding: 20px 0; border-top: 1px solid var(--line); margin-bottom: 0; }
+.hitop-block:first-child { border-top: none; }
+.instrument-card { background: var(--surface); border: 1px solid var(--line,var(--border)); border-radius: 16px; padding: 20px; box-shadow: var(--shadow-xs,0 1px 2px rgba(0,0,0,.06)); }
+.instrument-card .scid-item:first-child { border-top: none; }
+.likert label .num { border-radius: var(--radius-md); width: 40px; height: 40px; border-width: 1.5px; }
+.likert label:has(input:checked) .num { background: var(--accent-bg); border-color: var(--teal); color: var(--teal); }
 
 </style>
 </head>
 <body>
-<div id="ccg-nav-root"></div>
-<script src="/nav.js" data-subtitle="Anxiety Seminar"></script>
-<script src="/storage.js"></script>
-<script src="/sidebar.js"></script>
+<script>
+  if (!localStorage.getItem("clincog_name")) { location.replace("/"); }
+</script>
 
-<div id="ccg-viewport">
-
-<!-- ── STICKY NAV ── -->
-<nav id="nav">
-  <div class="steps">
-    <div class="step current" id="step-1">
-      <div class="step-dot">1</div>
-      <span class="step-lbl">Overview</span>
-    </div>
-    <div class="step-line"></div>
-    <div class="step" id="step-2">
-      <div class="step-dot">2</div>
-      <span class="step-lbl">Vignette</span>
-    </div>
-    <div class="step-line"></div>
-    <div class="step" id="step-3">
-      <div class="step-dot">3</div>
-      <span class="step-lbl">ICD-11</span>
-    </div>
-    <div class="step-line"></div>
-    <div class="step" id="step-4">
-      <div class="step-dot">4</div>
-      <span class="step-lbl">STAI &amp; HiTOP</span>
-    </div>
-    <div class="step-line"></div>
-    <div class="step" id="step-5">
-      <div class="step-dot">5</div>
-      <span class="step-lbl">Dot-probe</span>
-    </div>
-    <div class="step-line"></div>
-    <div class="step" id="step-6">
-      <div class="step-dot">6</div>
-      <span class="step-lbl">Report</span>
-    </div>
-  </div>
-</nav>
-
-<!-- ── STAI LIVE SCORE BAR ── -->
-<div id="score-bar">
-  <div class="sb-group">
-    <span class="sb-label">STAI-State</span>
-    <span class="sb-score" id="sb-state-score">—</span>
-    <span class="sb-band" id="sb-state-band"></span>
-  </div>
-  <div class="sb-sep"></div>
-  <div class="sb-group">
-    <span class="sb-label">STAI-Trait</span>
-    <span class="sb-score" id="sb-trait-score">—</span>
-    <span class="sb-band" id="sb-trait-band"></span>
-  </div>
-  <div class="sb-sep"></div>
-  <div class="sb-group" style="margin-left:auto">
-    <span class="sb-label" style="font-size:10px;color:#bbb">Items completed</span>
-    <span class="sb-score" style="font-size:14px" id="sb-progress">0 / 54</span>
-  </div>
-</div>
+<div id="shell-content">
 
 <!-- ══════════════════════════════════════════════
      PAGE 1 — WELCOME
 ══════════════════════════════════════════════ -->
 <div id="p1" class="page active">
-<div class="container"><div class="page-inner">
+<div class="eval-layout two-col">
+  <aside class="eval-context" id="ctx-p1"></aside>
+  <div class="eval-work" style="max-width:900px;">
 
   <p style="font-family:var(--mono);font-size:11px;color:var(--teal);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px">Seminar Activity</p>
   <h1 class="page-title">Three Ways to Evaluate<br>Social Anxiety Disorder</h1>
@@ -337,52 +568,67 @@ html[data-force-layout="desktop"] #ccg-viewport{min-width:900px}
   <p class="methodology-note">You will encounter a patient vignette first, then complete each evaluation layer in sequence. A comparative report is auto-generated at the end. <strong>All sections must be completed before proceeding.</strong></p>
 
   <div class="btn-row">
-    <button class="btn" onclick="goTo(2)">Begin →</button>
+    <button class="btn btn-primary" onclick="goTo(2)">Begin →</button>
   </div>
 
-</div></div>
+  </div>
+</div>
 </div>
 
 <!-- ══════════════════════════════════════════════
      PAGE 2 — CLINICAL VIGNETTE
 ══════════════════════════════════════════════ -->
 <div id="p2" class="page">
-<div class="container"><div class="page-inner">
+<div class="eval-layout two-col">
+  <aside class="eval-context" id="ctx-p2"></aside>
+  <div class="eval-work" style="max-width:820px;">
 
-  <p style="font-family:var(--mono);font-size:11px;color:var(--teal);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px">Clinical Vignette</p>
-  <h1 class="page-title">Patient Presentation</h1>
-  <p class="page-tagline">Read carefully before proceeding to the assessment layers.</p>
+  <h1 class="vignette-page-title">Clinical Vignette</h1>
+  <p class="vignette-page-sub">Read the case carefully before administering the assessment tools.</p>
 
-  <div class="patient-meta">
-    <div class="meta-item"><span class="meta-lbl">Name</span><span class="meta-val">Alex</span></div>
-    <div class="meta-item"><span class="meta-lbl">Age</span><span class="meta-val">24</span></div>
-    <div class="meta-item"><span class="meta-lbl">Occupation</span><span class="meta-val">Undergraduate student</span></div>
-    <div class="meta-item"><span class="meta-lbl">Referral</span><span class="meta-val">General practitioner</span></div>
-  </div>
+  <div class="vignette-card">
+    <div class="vignette-card-name">Alex, 24</div>
+    <div class="vignette-card-meta">Undergraduate student · Referred by general practitioner</div>
+    <div class="vignette-card-divider"></div>
 
-  <div class="vignette">
-    <p>Alex is a 24-year-old undergraduate student referred by their general practitioner following persistent difficulties with academic performance and social engagement. Alex describes a longstanding pattern — dating back to early adolescence — of intense fear in situations where they might be observed or evaluated by others. In seminar settings, Alex sits near the door and rarely contributes to discussion, convinced that any comment they make will sound foolish. When called upon unexpectedly, Alex reports immediate physical symptoms: rapid heartbeat, flushed cheeks, and a sensation of the throat closing up. Following such episodes, Alex ruminates for several hours, replaying what was said and cataloguing perceived failures in tone, word choice, and facial expression.</p>
+    <div class="vignette-section">
+      <div class="vignette-section-title">Presentation</div>
+      <p>Alex is a 24-year-old undergraduate student referred by their general practitioner following persistent difficulties with academic performance and social engagement. Alex describes a longstanding pattern &mdash; dating back to early adolescence &mdash; of intense fear in situations where they might be observed or evaluated by others. In seminar settings, Alex sits near the door and rarely contributes to discussion, convinced that any comment they make will sound foolish. When called upon unexpectedly, Alex reports immediate physical symptoms: rapid heartbeat, flushed cheeks, and a sensation of the throat closing up. Following such episodes, Alex ruminates for several hours, replaying what was said and cataloguing perceived failures in tone, word choice, and facial expression.</p>
+    </div>
 
-    <p>Social occasions outside the university are managed through avoidance. Alex has declined two part-time job offers in the past year, both of which required customer-facing interaction, and has cancelled plans with friends on multiple occasions citing vague physical complaints. A recent departmental networking event was attended only because a close friend agreed to stand nearby throughout; even so, Alex left after forty minutes, reporting sustained distress and a sense of not belonging anywhere in the room.</p>
+    <div class="vignette-section">
+      <div class="vignette-section-title">Avoidance &amp; Social Functioning</div>
+      <p>Social occasions outside the university are managed through avoidance. Alex has declined two part-time job offers in the past year, both of which required customer-facing interaction, and has cancelled plans with friends on multiple occasions citing vague physical complaints.</p>
+      <div class="vignette-highlight">A recent departmental networking event was attended only because a close friend agreed to stand nearby throughout; even so, Alex left after forty minutes, reporting sustained distress and a sense of not belonging anywhere in the room.</div>
+    </div>
 
-    <p>Alex acknowledges that the fear is probably excessive — "I know people aren't actually watching me that closely, but it doesn't help" — but has not previously sought professional support, attributing the difficulties to shyness or personality. There is no history of panic attacks in non-social contexts, no current psychotic symptoms, and no substance use that would account for the presentation. Alex reports the difficulties have been consistently present for at least three years and have worsened markedly since beginning university.</p>
+    <div class="vignette-section">
+      <div class="vignette-section-title">Insight &amp; Differential History</div>
+      <p>Alex acknowledges that the fear is probably excessive &mdash; "I know people aren't actually watching me that closely, but it doesn't help" &mdash; but has not previously sought professional support, attributing the difficulties to shyness or personality. There is no history of panic attacks in non-social contexts, no current psychotic symptoms, and no substance use that would account for the presentation. Alex reports the difficulties have been consistently present for at least three years and have worsened markedly since beginning university.</p>
+    </div>
 
-    <p>On mental state examination, Alex appeared neatly dressed but visibly tense during the interview, making limited eye contact and speaking quietly. Affect was restricted but reactive; mood was described as low-moderate, largely secondary to the social difficulties rather than representing an independent depressive episode. There was no evidence of thought disorder or perceptual abnormality. Insight was good.</p>
+    <div class="vignette-section">
+      <div class="vignette-section-title">Mental State Examination</div>
+      <p>On mental state examination, Alex appeared neatly dressed but visibly tense during the interview, making limited eye contact and speaking quietly. Affect was restricted but reactive; mood was described as low-moderate, largely secondary to the social difficulties rather than representing an independent depressive episode. There was no evidence of thought disorder or perceptual abnormality. Insight was good.</p>
+    </div>
   </div>
 
   <div class="btn-row">
-    <button class="btn" onclick="goTo(1)">← Back</button>
-    <button class="btn" onclick="goTo(3)">Continue →</button>
+    <button class="btn btn-secondary" onclick="goTo(1)">← Back</button>
+    <button class="btn btn-primary" onclick="goTo(3)">Continue →</button>
   </div>
 
-</div></div>
+  </div>
+</div>
 </div>
 
 <!-- ══════════════════════════════════════════════
      PAGE 3 — SCID-5
 ══════════════════════════════════════════════ -->
 <div id="p3" class="page">
-<div class="container"><div class="page-inner">
+<div class="eval-layout">
+  <aside class="eval-context" id="ctx-p3"></aside>
+  <div class="eval-work">
 
   <p style="font-family:var(--mono);font-size:11px;color:var(--teal);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px">Layer 1 — Categorical Evaluation</p>
   <h1 class="page-title">ICD-11 / CDDR</h1>
@@ -390,14 +636,14 @@ html[data-force-layout="desktop"] #ccg-viewport{min-width:900px}
 
   <p style="font-size:14px;color:var(--muted);margin-bottom:40px;max-width:560px">Rate each item as present (<strong>+</strong>), absent (<strong>−</strong>), or uncertain (<strong>?</strong>) based on the vignette and your clinical judgement. All items must be rated before proceeding.</p>
 
-  <div id="scid-items">
+  <div id="scid-items" class="instrument-card">
 
     <div class="scid-item">
       <div class="scid-row">
         <div><span class="item-code">a)</span></div>
         <div class="item-body">
           <p class="item-q">Marked and excessive fear or anxiety that consistently occurs in one or more social situations, such as social interactions, doing something while feeling observed, or performing in front of others.</p>
-          <em class="item-sublabel">Core symptom (CDDR essential feature)</em>
+          <em class="item-sublabel">↳ The core symptom; must occur consistently across social situations, not as an isolated incident.</em>
         </div>
         <div class="rating-group">
           <div class="rating-btn"><input type="radio" name="cddr_a" id="cddr_ap" value="+" onchange="scidChange()"><label for="cddr_ap">+</label></div>
@@ -411,7 +657,7 @@ html[data-force-layout="desktop"] #ccg-viewport{min-width:900px}
         <div><span class="item-code">b)</span></div>
         <div class="item-body">
           <p class="item-q">The individual is concerned that he or she will act in a way, or show anxiety symptoms, that will be negatively evaluated by others.</p>
-          <em class="item-sublabel">Fear of negative evaluation</em>
+          <em class="item-sublabel">↳ Distinguishes social anxiety from generalized anxiety — the fear is specifically about others' judgment.</em>
         </div>
         <div class="rating-group">
           <div class="rating-btn"><input type="radio" name="cddr_b" id="cddr_bp" value="+" onchange="scidChange()"><label for="cddr_bp">+</label></div>
@@ -425,7 +671,7 @@ html[data-force-layout="desktop"] #ccg-viewport{min-width:900px}
         <div><span class="item-code">c)</span></div>
         <div class="item-body">
           <p class="item-q">Relevant social situations are consistently avoided, or else endured with intense fear or anxiety.</p>
-          <em class="item-sublabel">Avoidance or distressed endurance</em>
+          <em class="item-sublabel">↳ Either active avoidance or enduring the situation with marked distress satisfies this criterion.</em>
         </div>
         <div class="rating-group">
           <div class="rating-btn"><input type="radio" name="cddr_c" id="cddr_cp" value="+" onchange="scidChange()"><label for="cddr_cp">+</label></div>
@@ -439,7 +685,7 @@ html[data-force-layout="desktop"] #ccg-viewport{min-width:900px}
         <div><span class="item-code">d)</span></div>
         <div class="item-body">
           <p class="item-q">The symptoms persist for at least several months.</p>
-          <em class="item-sublabel">Duration</em>
+          <em class="item-sublabel">↳ The 'several months' threshold distinguishes a disorder from ordinary social discomfort.</em>
         </div>
         <div class="rating-group">
           <div class="rating-btn"><input type="radio" name="cddr_d" id="cddr_dp" value="+" onchange="scidChange()"><label for="cddr_dp">+</label></div>
@@ -453,7 +699,7 @@ html[data-force-layout="desktop"] #ccg-viewport{min-width:900px}
         <div><span class="item-code">e)</span></div>
         <div class="item-body">
           <p class="item-q">The symptoms are sufficiently severe to result in significant distress or significant impairment in personal, family, social, educational, occupational, or other important areas of functioning.</p>
-          <em class="item-sublabel">Severity / functional impairment</em>
+          <em class="item-sublabel">↳ Required for diagnosis — distress alone, without functional impact, is not sufficient under ICD-11.</em>
         </div>
         <div class="rating-group">
           <div class="rating-btn"><input type="radio" name="cddr_e" id="cddr_ep" value="+" onchange="scidChange()"><label for="cddr_ep">+</label></div>
@@ -488,18 +734,21 @@ html[data-force-layout="desktop"] #ccg-viewport{min-width:900px}
   <p id="err-p3" class="err-msg" style="margin-top:16px">All items and the diagnostic conclusion must be completed before proceeding.</p>
 
   <div class="btn-row">
-    <button class="btn" onclick="goTo(2)">← Back</button>
-    <button class="btn" onclick="tryNext(3)">Continue →</button>
+    <button class="btn btn-secondary" onclick="goTo(2)">← Back</button>
+    <button class="btn btn-primary" onclick="tryNext(3)">Continue →</button>
   </div>
 
-</div></div>
+  </div>
+</div>
 </div>
 
 <!-- ══════════════════════════════════════════════
      PAGE 4 — STAI + HiTOP
 ══════════════════════════════════════════════ -->
 <div id="p4" class="page">
-<div class="container"><div class="page-inner">
+<div class="eval-layout">
+  <aside class="eval-context" id="ctx-p4"></aside>
+  <div class="eval-work">
 
   <p style="font-family:var(--mono);font-size:11px;color:var(--teal);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px">Layer 2 — Dimensional–Psychological Evaluation</p>
   <h1 class="page-title">STAI &amp; HiTOP</h1>
@@ -515,20 +764,30 @@ html[data-force-layout="desktop"] #ccg-viewport{min-width:900px}
   <div class="sub-hdr" style="margin-top:32px">
     <h3>Y1 — State Anxiety Scale</h3>
     <p>How Alex feels <em>right now, at this moment.</em> Rate each item from 1 to 4.</p>
-    <p style="font-size:12px;color:var(--muted);margin-top:6px;font-family:var(--mono)">1 = Not at all &nbsp;·&nbsp; 2 = Somewhat &nbsp;·&nbsp; 3 = Moderately so &nbsp;·&nbsp; 4 = Very much so</p>
   </div>
 
-  <div id="stai-state-items">
+  <div id="stai-state-items" class="instrument-card">
+    <div class="likert-legend">
+      <div class="likert-legend-item"><div class="likert-legend-num">1</div><div class="likert-legend-label">Not at all</div></div>
+      <div class="likert-legend-item"><div class="likert-legend-num">2</div><div class="likert-legend-label">Somewhat</div></div>
+      <div class="likert-legend-item"><div class="likert-legend-num">3</div><div class="likert-legend-label">Moderately so</div></div>
+      <div class="likert-legend-item"><div class="likert-legend-num">4</div><div class="likert-legend-label">Very much so</div></div>
+    </div>
   </div>
 
   <!-- TRAIT -->
   <div class="sub-hdr" style="margin-top:40px">
     <h3>Y2 — Trait Anxiety Scale</h3>
     <p>How Alex <em>generally feels</em> — their typical or habitual anxiety disposition. Rate each item from 1 to 4.</p>
-    <p style="font-size:12px;color:var(--muted);margin-top:6px;font-family:var(--mono)">1 = Almost never &nbsp;·&nbsp; 2 = Sometimes &nbsp;·&nbsp; 3 = Often &nbsp;·&nbsp; 4 = Almost always</p>
   </div>
 
-  <div id="stai-trait-items">
+  <div id="stai-trait-items" class="instrument-card">
+    <div class="likert-legend">
+      <div class="likert-legend-item"><div class="likert-legend-num">1</div><div class="likert-legend-label">Almost never</div></div>
+      <div class="likert-legend-item"><div class="likert-legend-num">2</div><div class="likert-legend-label">Sometimes</div></div>
+      <div class="likert-legend-item"><div class="likert-legend-num">3</div><div class="likert-legend-label">Often</div></div>
+      <div class="likert-legend-item"><div class="likert-legend-num">4</div><div class="likert-legend-label">Almost always</div></div>
+    </div>
   </div>
 
   <!-- PART B: HiTOP -->
@@ -537,9 +796,15 @@ html[data-force-layout="desktop"] #ccg-viewport{min-width:900px}
     <div class="part-title">HiTOP Subfactors</div>
   </div>
 
-  <p style="font-size:14px;color:var(--muted);margin-top:16px;margin-bottom:8px;max-width:560px">Selected items from the Hierarchical Taxonomy of Psychopathology (HiTOP) assessing three subfactors relevant to the anxiety spectrum. Rate each item from 1 to 4.</p>
-  <p style="font-size:12px;color:var(--muted);font-family:var(--mono)">1 = Not at all &nbsp;·&nbsp; 2 = A little &nbsp;·&nbsp; 3 = Somewhat &nbsp;·&nbsp; 4 = A lot</p>
+  <p style="font-size:14px;color:var(--muted);margin-top:16px;margin-bottom:24px;max-width:560px">Selected items from the Hierarchical Taxonomy of Psychopathology (HiTOP) assessing three subfactors relevant to the anxiety spectrum. Rate each item from 1 to 4.</p>
 
+  <div class="instrument-card">
+    <div class="likert-legend">
+      <div class="likert-legend-item"><div class="likert-legend-num">1</div><div class="likert-legend-label">Not at all</div></div>
+      <div class="likert-legend-item"><div class="likert-legend-num">2</div><div class="likert-legend-label">A little</div></div>
+      <div class="likert-legend-item"><div class="likert-legend-num">3</div><div class="likert-legend-label">Somewhat</div></div>
+      <div class="likert-legend-item"><div class="likert-legend-num">4</div><div class="likert-legend-label">A lot</div></div>
+    </div>
   <!-- FEAR SUBFACTOR -->
   <div class="sec-hdr" style="margin-top:36px">
     <h2>Fear Subfactor</h2>
@@ -679,22 +944,26 @@ html[data-force-layout="desktop"] #ccg-viewport{min-width:900px}
       </div>
     </div>
   </div>
+  </div>
 
   <p id="err-p4" class="err-msg" style="margin-top:16px">All 54 items must be completed before proceeding.</p>
 
   <div class="btn-row">
-    <button class="btn" onclick="goTo(3)">← Back</button>
-    <button class="btn" onclick="tryNext(4)">Continue →</button>
+    <button class="btn btn-secondary" onclick="goTo(3)">← Back</button>
+    <button class="btn btn-primary" onclick="tryNext(4)">Continue →</button>
   </div>
 
-</div></div>
+  </div>
+</div>
 </div>
 
 <!-- ══════════════════════════════════════════════
      PAGE 5 — DOT-PROBE TASK
 ══════════════════════════════════════════════ -->
 <div id="p5" class="page">
-<div class="container"><div class="page-inner">
+<div class="eval-layout">
+  <aside class="eval-context" id="ctx-p5"></aside>
+  <div class="eval-work">
 
   <p style="font-family:var(--mono);font-size:11px;color:var(--teal);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px">Layer 3 — Dimensional–Cognitive Evaluation</p>
   <h1 class="page-title">Dot-probe Task</h1>
@@ -1012,18 +1281,21 @@ when_stimuli_loaded_do(&quot;blocks&quot;+psy_blockorder+&quot;.run()&quot;)}let
   <p id="err-p5" class="err-msg">Please complete the reaction time fields and both interpretation questions before proceeding.</p>
 
   <div class="btn-row">
-    <button class="btn" onclick="goTo(4)">← Back</button>
-    <button class="btn" onclick="tryNext(5)">Generate Report →</button>
+    <button class="btn btn-secondary" onclick="goTo(4)">← Back</button>
+    <button class="btn btn-primary" onclick="tryNext(5)">Generate Report →</button>
   </div>
 
-</div></div>
+  </div>
+</div>
 </div>
 
 <!-- ══════════════════════════════════════════════
      PAGE 6 — COMPARATIVE REPORT
 ══════════════════════════════════════════════ -->
 <div id="p6" class="page">
-<div class="container"><div class="page-inner">
+<div class="eval-layout two-col">
+  <aside class="eval-context" id="ctx-p6"></aside>
+  <div class="eval-work" style="max-width:1700px;">
 
   <p style="font-family:var(--mono);font-size:11px;color:var(--teal);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px">Comparative Report</p>
   <h1 class="page-title">Evaluation Summary</h1>
@@ -1039,18 +1311,23 @@ when_stimuli_loaded_do(&quot;blocks&quot;+psy_blockorder+&quot;.run()&quot;)}let
     <p class="reflect-note">You approached Alex from three perspectives — a categorical diagnosis, a dimensional profile, and a cognitive task you completed yourself. Write a few sentences on what exploring the case this way taught you, then mark it complete.</p>
     <textarea id="reflect-text" placeholder="What did looking at Alex's case from three angles add to your understanding?"></textarea>
     <div id="reflect-done" style="display:none;"></div>
-    <button class="btn" style="background:var(--teal);color:#fff;border-color:var(--teal);" id="reflect-btn" onclick="completeCase()">Complete case →</button>
+    <button class="btn btn-primary" id="reflect-btn" onclick="completeCase()">Complete case →</button>
   </div>
 
   <div class="btn-row" style="margin-top:32px">
-    <button class="btn" onclick="goTo(5)">← Back</button>
-    <button class="btn" onclick="window.print()">Print Report</button>
+    <button class="btn btn-secondary" onclick="goTo(5)">← Back</button>
+    <button class="btn btn-secondary" onclick="window.print()">Print Report</button>
   </div>
 
-</div></div>
+  </div>
+</div>
 </div>
 </div>
 
+<script>window.CLINCOG_SHELL = { autoCollapse: true, activeCaseId: "anxiety", breadcrumb: [{ label: "Dashboard", href: "/dashboard.html" }, { label: "Cases", href: "/dashboard.html" }, { label: "Alex", href: "/anxiety-chat.html" }, { label: "Evaluation" }] };</script>
+<script src="/storage.js"></script>
+<script src="/icons.js"></script>
+<script src="/shell.js?v=2"></script>
 <script src="/a11y.js"></script>
 <script>
 // ═══════════════════════════════════════════════
@@ -1058,6 +1335,7 @@ when_stimuli_loaded_do(&quot;blocks&quot;+psy_blockorder+&quot;.run()&quot;)}let
 // ═══════════════════════════════════════════════
 const S = {
   page: 1,
+  maxPage: 1,
   scid: {},      // F32-F41 → '+'/'-'/'?'
   diag: null,    // 'SAD'/'SAD-PO'/'none'
   stateAns: {},  // 1-20 → 1-4
@@ -1120,10 +1398,21 @@ const HITOP_KEYS = ['agora1','agora2','hyperv1','hyperv2','panic1','panic2','sph
 // ═══════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════
+function expandContextCardsByDefault() {
+  document.querySelectorAll('.ctx-card[data-role="vignette"], .ctx-card[data-role="chat"]').forEach(card => {
+    const body = card.querySelector('.ctx-body');
+    if (!body) return;
+    card.classList.add('open');
+    body.style.maxHeight = body.scrollHeight + 'px';
+  });
+}
 document.addEventListener('DOMContentLoaded', () => {
   buildStaiItems('stai-state-items', STAI_STATE, 's', ['Not at all','Somewhat','Moderately so','Very much so'], 'stateChange');
   buildStaiItems('stai-trait-items', STAI_TRAIT, 't', ['Almost never','Sometimes','Often','Almost always'], 'traitChange');
   buildHiTopOpts();
+  paintContextPanels();
+  expandContextCardsByDefault();
+  updateNav();
 });
 
 function buildStaiItems(containerId, items, prefix, opts, changeFn) {
@@ -1134,7 +1423,7 @@ function buildStaiItems(containerId, items, prefix, opts, changeFn) {
     const optHtml = opts.map((o,i) => `
       <div class="opt-btn">
         <input type="radio" name="${prefix}${item.n}" id="${prefix}${item.n}_${i+1}" value="${i+1}" onchange="${changeFn}()">
-        <label for="${prefix}${item.n}_${i+1}">${i+1} — ${o}</label>
+        <label for="${prefix}${item.n}_${i+1}">${i+1}</label>
       </div>`).join('');
     div.innerHTML = `<span class="item-num">${item.n}.</span>
       <div class="stai-body">
@@ -1154,7 +1443,7 @@ function buildHiTopOpts() {
     el.innerHTML = opts.map((o,i) => `
       <div class="opt-btn">
         <input type="radio" name="h_${key}" id="h_${key}_${i+1}" value="${i+1}" onchange="hitopChange('${key}', ${i+1})">
-        <label for="h_${key}_${i+1}">${i+1} — ${o}</label>
+        <label for="h_${key}_${i+1}">${i+1}</label>
       </div>`).join('');
   });
 }
@@ -1164,10 +1453,16 @@ function buildHiTopOpts() {
 // ═══════════════════════════════════════════════
 function scidChange() {
   const items = ['a','b','c','d','e'];
+  let n = 0;
   items.forEach(k => {
     const sel = document.querySelector(`input[name="cddr_${k}"]:checked`);
     if (sel) S.scid[k] = sel.value;
+    const dot = document.getElementById('dot-'+k);
+    if (dot) dot.className = 'scoring-dot' + (sel ? (sel.value === '+' ? ' p' : sel.value === '-' ? ' n' : ' u') : '');
+    if (sel && sel.value === '+') n++;
   });
+  const countEl = document.getElementById('scidCount');
+  if (countEl) countEl.textContent = n;
 }
 
 function diagChange() {
@@ -1201,6 +1496,9 @@ function dpChange() {
   S.dp.anxiety = parseFloat(document.getElementById('dp-anxiety-rt').value) || null;
   S.dp.q3 = document.getElementById('dp-q3').value.trim();
   S.dp.q4 = document.getElementById('dp-q4').value.trim();
+  const done = (S.dp.neutral ? 1 : 0) + (S.dp.anxiety ? 1 : 0) + (S.dp.q3 ? 1 : 0) + (S.dp.q4 ? 1 : 0);
+  const el = document.getElementById('dpCount');
+  if (el) el.textContent = done + '/4';
 }
 
 // ═══════════════════════════════════════════════
@@ -1216,7 +1514,7 @@ function updateScoreBar() {
 
   document.getElementById('sb-state-score').textContent = stateRaw !== null ? stateRaw : '—';
   document.getElementById('sb-trait-score').textContent = traitRaw !== null ? traitRaw : '—';
-  document.getElementById('sb-progress').textContent = total + ' / 54';
+  document.getElementById('sb-progress').textContent = total + '/54';
 
   setScoreBand('sb-state-band', stateRaw);
   setScoreBand('sb-trait-band', traitRaw);
@@ -1224,13 +1522,14 @@ function updateScoreBar() {
 
 function setScoreBand(id, raw) {
   const el = document.getElementById(id);
-  if (raw === null) { el.textContent = ''; el.className = 'sb-band'; return; }
-  let cls, lbl;
-  if (raw <= 37) { cls='band-low'; lbl='Low'; }
-  else if (raw <= 44) { cls='band-mod'; lbl='Moderate'; }
-  else { cls='band-high'; lbl='High'; }
-  el.textContent = lbl;
-  el.className = 'sb-band ' + cls;
+  const scaleName = id.includes('state') ? 'State' : 'Trait';
+  if (raw === null) { el.textContent = scaleName; el.className = 'mini-stat-lbl'; return; }
+  let lbl;
+  if (raw <= 37) { lbl='Low'; }
+  else if (raw <= 44) { lbl='Moderate'; }
+  else { lbl='High'; }
+  el.textContent = scaleName + ' · ' + lbl;
+  el.className = 'mini-stat-lbl';
 }
 
 // ═══════════════════════════════════════════════
@@ -1266,13 +1565,16 @@ function tToPercentile(t) { return normalCDF((t-50)/10)*100; }
 // ═══════════════════════════════════════════════
 // NAVIGATION
 // ═══════════════════════════════════════════════
+function stepClick(n) { if (n <= S.maxPage) goTo(n); }
 function goTo(n) {
   document.getElementById('p'+S.page).classList.remove('active');
   S.page = n;
+  if (n > S.maxPage) S.maxPage = n;
   document.getElementById('p'+n).classList.add('active');
   updateNav();
   toggleScoreBar();
   window.scrollTo(0, 0);
+  expandContextCardsByDefault();
   if (n === 6) { ClinCog.markEvalReached('anxiety'); paintReflectState(); }
 }
 
@@ -1301,20 +1603,131 @@ function tryNext(from) {
   goTo(next);
 }
 
+const STEP_LABELS_1IDX = ["", "Overview", "Vignette", "ICD-11", "STAI & HiTOP", "Dot-probe", "Report"];
+
+function verticalStepperHtml() {
+  const rows = [1,2,3,4,5,6].map(i => `
+    <div class="v-step" data-step="${i}" onclick="stepClick(${i})">
+      <div class="v-step-line"></div>
+      <div class="v-step-dot">${i}</div>
+      <div class="v-step-label">${STEP_LABELS_1IDX[i]}</div>
+    </div>`).join('');
+  return `<div class="ctx-card"><div class="ctx-card-body v-stepper-card"><div class="v-stepper">${rows}</div></div></div>`;
+}
+
+function escapeHtmlA(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function buildConceptHistoryHtmlA() {
+  const history = (typeof ClinCog !== "undefined") ? ClinCog.getHistory("anxiety") : [];
+  if (!history || history.length === 0) {
+    return '<div class="ctx-chat-empty">You haven\'t started this conversation yet.</div>';
+  }
+  return '<div class="ctx-chat">' + history.map(m => {
+    const who = m.role === "user" ? "from-student" : "from-patient";
+    return `<div class="chat-row ${who}"><div class="chat-bubble">${escapeHtmlA(m.content)}</div></div>`;
+  }).join('') + '</div>';
+}
+
+function toggleCtxCard(btn) {
+  const card = btn.closest('.ctx-card');
+  const body = card.querySelector('.ctx-body');
+  if (card.classList.contains('open')) {
+    body.style.maxHeight = '0px';
+    card.classList.remove('open');
+  } else {
+    card.classList.add('open');
+    body.style.maxHeight = body.scrollHeight + 'px';
+  }
+}
+
+const VIGNETTE_HTML_ALEX = `
+  <p>Alex is a 24-year-old undergraduate student referred by their general practitioner following persistent difficulties with academic performance and social engagement. Alex describes a longstanding pattern &mdash; dating back to early adolescence &mdash; of intense fear in situations where they might be observed or evaluated by others. In seminar settings, Alex sits near the door and rarely contributes to discussion, convinced that any comment they make will sound foolish. When called upon unexpectedly, Alex reports immediate physical symptoms: rapid heartbeat, flushed cheeks, and a sensation of the throat closing up. Following such episodes, Alex ruminates for several hours, replaying what was said and cataloguing perceived failures in tone, word choice, and facial expression.</p>
+  <p>Social occasions outside the university are managed through avoidance. Alex has declined two part-time job offers in the past year, both of which required customer-facing interaction, and has cancelled plans with friends on multiple occasions citing vague physical complaints. A recent departmental networking event was attended only because a close friend agreed to stand nearby throughout; even so, Alex left after forty minutes, reporting sustained distress and a sense of not belonging anywhere in the room.</p>
+  <p>Alex acknowledges that the fear is probably excessive &mdash; &ldquo;I know people aren&rsquo;t actually watching me that closely, but it doesn&rsquo;t help&rdquo; &mdash; but has not previously sought professional support, attributing the difficulties to shyness or personality. There is no history of panic attacks in non-social contexts, no current psychotic symptoms, and no substance use that would account for the presentation. Alex reports the difficulties have been consistently present for at least three years and have worsened markedly since beginning university.</p>
+  <p>On mental state examination, Alex appeared neatly dressed but visibly tense during the interview, making limited eye contact and speaking quietly. Affect was restricted but reactive; mood was described as low-moderate, largely secondary to the social difficulties rather than representing an independent depressive episode. There was no evidence of thought disorder or perceptual abnormality. Insight was good.</p>`;
+
+function fullContextExtrasHtml() {
+  return `
+    <div class="ctx-card"><div class="ctx-card-body">
+      <div class="ctx-patient-name">Alex, 24</div>
+      <div class="ctx-patient-meta">Undergraduate student · Referred by GP</div>
+      <div class="ctx-patient-complaint">Declined job offers requiring customer contact, avoids seminar participation, left a networking event after 40 minutes in distress.</div>
+    </div></div>
+    <div class="ctx-card" data-role="vignette">
+      <div class="ctx-card-header">
+        <h4 style="margin:0;">Clinical vignette</h4>
+        <button type="button" class="ctx-toggle-btn" onclick="toggleCtxCard(this)" aria-label="Expand"><span class="chev">▾</span></button>
+      </div>
+      <div class="ctx-body"><div class="ctx-card-body"><div class="ctx-vignette-text">${VIGNETTE_HTML_ALEX}</div></div></div>
+    </div>
+    <div class="ctx-card" data-role="chat">
+      <div class="ctx-card-header">
+        <h4 style="margin:0;">Your conversation with Alex</h4>
+        <button type="button" class="ctx-toggle-btn" onclick="toggleCtxCard(this)" aria-label="Expand"><span class="chev">▾</span></button>
+      </div>
+      <div class="ctx-body"><div class="ctx-card-body">${buildConceptHistoryHtmlA()}</div></div>
+    </div>
+    <div class="ctx-card"><div class="ctx-card-body">
+      <h4>Rating guide</h4>
+      <div class="ctx-guide-row"><span class="ctx-guide-mark p">+</span> Present</div>
+      <div class="ctx-guide-row"><span class="ctx-guide-mark n">&minus;</span> Absent</div>
+      <div class="ctx-guide-row"><span class="ctx-guide-mark u">?</span> Inadequate information</div>
+    </div></div>`;
+}
+
+const FULL_CONTEXT_IDS_ALEX = ["ctx-p3", "ctx-p4", "ctx-p5"];
+
+function scoringMiniHtml(pageId) {
+  if (pageId === "ctx-p3") {
+    return `<div class="mini-stats">
+      <div class="mini-stat"><div class="mini-stat-num"><span id="scidCount">0</span>/5</div><div class="mini-stat-lbl">symptoms</div></div>
+    </div>
+    <span id="dot-a" style="display:none;"></span><span id="dot-b" style="display:none;"></span><span id="dot-c" style="display:none;"></span>
+    <span id="dot-d" style="display:none;"></span><span id="dot-e" style="display:none;"></span>`;
+  }
+  if (pageId === "ctx-p4") {
+    return `<div class="mini-stats">
+      <div class="mini-stat"><div class="mini-stat-num" id="sb-state-score">—</div><div class="mini-stat-lbl" id="sb-state-band">State</div></div>
+      <div class="mini-stat"><div class="mini-stat-num" id="sb-trait-score">—</div><div class="mini-stat-lbl" id="sb-trait-band">Trait</div></div>
+      <div class="mini-stat"><div class="mini-stat-num" id="sb-progress">0/54</div><div class="mini-stat-lbl">items</div></div>
+    </div>`;
+  }
+  if (pageId === "ctx-p5") {
+    return `<div class="mini-stats">
+      <div class="mini-stat"><div class="mini-stat-num" id="dpCount">0/4</div><div class="mini-stat-lbl">responses</div></div>
+    </div>`;
+  }
+  return '';
+}
+
+function paintContextPanels() {
+  document.querySelectorAll('.eval-context').forEach(el => {
+    const isFull = FULL_CONTEXT_IDS_ALEX.includes(el.id);
+    const extras = isFull ? fullContextExtrasHtml() : '';
+    const mini = isFull ? scoringMiniHtml(el.id) : '';
+    el.innerHTML = `<div class="ctx-sticky-top">${verticalStepperHtml()}${mini}</div>`
+      + (extras ? `<div class="ctx-scroll-area">${extras}</div>` : '');
+  });
+}
+
 function updateNav() {
   for (let i=1; i<=6; i++) {
-    const el = document.getElementById('step-'+i);
-    el.classList.remove('done','current');
-    if (i < S.page) { el.classList.add('done'); el.querySelector('.step-dot').innerHTML = '✓'; }
-    else if (i === S.page) { el.classList.add('current'); el.querySelector('.step-dot').textContent = i; }
-    else { el.querySelector('.step-dot').textContent = i; }
+    document.querySelectorAll('[data-step="'+i+'"]').forEach(el => {
+      el.className = 'v-step';
+      const dot = el.querySelector('.v-step-dot');
+      if (i === S.page) { el.classList.add('current'); dot.textContent = i; }
+      else if (i <= S.maxPage) { el.classList.add('done'); dot.innerHTML = '✓'; }
+      else { dot.textContent = i; }
+    });
   }
 }
 
 function toggleScoreBar() {
-  const bar = document.getElementById('score-bar');
-  if (S.page === 4) bar.classList.add('visible');
-  else bar.classList.remove('visible');
+  // score-bar was relocated into the p4 scoring sidebar; nothing to toggle here anymore.
 }
 
 // ═══════════════════════════════════════════════
@@ -1360,16 +1773,29 @@ function validate(page) {
 // ═══════════════════════════════════════════════
 // REPORT GENERATION
 // ═══════════════════════════════════════════════
-const NORMS = {
-  stateM: 37,    stateSD: 10.5,   // STAI-State community norms (Spielberger)
-  traitM: 36,    traitSD: 9.8,    // STAI-Trait community norms
-  fearItemM: 1.75, fearItemSD: 1.237, // HiTOP Fear per-item norms (1–4 scale); subscale total M=3.5, SD=1.75
-  fearTotalM: 14,  fearTotalSD: 3.5,  // Fear subfactor total (4 subscales × 2 items)
-  distItemM: 2.0,  distItemSD: 0.9,   // Distress subfactor per-item norms
-  disinItemM: 2.0, disinItemSD: 0.9,  // Disinhibited externalizing per-item norms
-  dpNeutralM: 410, dpNeutralSD: 60,   // Dot-probe neutral trial norms (ms)
-  dpAnxietyM: 400, dpAnxietySD: 60    // Dot-probe anxiety trial norms (ms)
-};
+function getFreshNorms() {
+  const staiCite = "Spielberger, C.D., Gorsuch, R.L., Lushene, R., Vagg, P.R., & Jacobs, G.A. (1983). Manual for the State-Trait Anxiety Inventory. Palo Alto, CA: Consulting Psychologists Press.";
+  const hitopCite = "Kotov, R., Krueger, R.F., Watson, D., et al. (2017). The Hierarchical Taxonomy of Psychopathology (HiTOP): A dimensional alternative to traditional nosologies. Journal of Abnormal Psychology, 126(4), 454–477.";
+  const dpCite = "MacLeod, C., Mathews, A., & Tata, P. (1986). Attentional bias in emotional disorders. Journal of Abnormal Psychology, 95(1), 15–20.";
+  const stai = ClinCog.getBenchmark('staiState', {mean:37, sd:10.5, threshold:60, citation:staiCite});
+  const staiT = ClinCog.getBenchmark('staiTrait', {mean:36, sd:9.8, threshold:60, citation:staiCite});
+  const ha = ClinCog.getBenchmark('hitopAnxiety', {
+    fearItemMean:1.75, fearItemSD:1.237, fearTotalMean:14, fearTotalSD:3.5,
+    distItemMean:2.0, distItemSD:0.9, disinItemMean:2.0, disinItemSD:0.9, threshold:60, citation:hitopCite
+  });
+  const dp = ClinCog.getBenchmark('dotProbe', {neutralMean:410, neutralSD:60, anxietyMean:400, anxietySD:60, citation:dpCite});
+  return {
+    stateM: stai.mean, stateSD: stai.sd, stateThreshold: stai.threshold, staiCitation: stai.citation,
+    traitM: staiT.mean, traitSD: staiT.sd, traitThreshold: staiT.threshold, traitCitation: staiT.citation,
+    fearItemM: ha.fearItemMean, fearItemSD: ha.fearItemSD,
+    fearTotalM: ha.fearTotalMean, fearTotalSD: ha.fearTotalSD,
+    distItemM: ha.distItemMean, distItemSD: ha.distItemSD,
+    disinItemM: ha.disinItemMean, disinItemSD: ha.disinItemSD,
+    hitopThreshold: ha.threshold, hitopCitation: ha.citation,
+    dpNeutralM: dp.neutralMean, dpNeutralSD: dp.neutralSD,
+    dpAnxietyM: dp.anxietyMean, dpAnxietySD: dp.anxietySD, dpCitation: dp.citation,
+  };
+}
 
 function generateReport() {
   const ts = document.getElementById('report-ts');
@@ -1378,24 +1804,25 @@ function generateReport() {
     ts.textContent = 'Generated ' + now.toLocaleDateString('en-GB', { day:'2-digit', month:'long', year:'numeric' })
       + ' · ' + now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
   }
-  const html = [
-    buildSection1(),
-    buildSection2(),
-    buildSection3(),
-    buildSection4()
-  ].join('');
+  const html = '<div class="report-cols">'
+    + buildSection1()
+    + '<div class="report-col-stack">' + buildSection2() + buildSection3() + '</div>'
+    + buildSection4()
+    + '</div>';
   document.getElementById('report-content').innerHTML = html;
   // Use rAF + setTimeout to ensure the browser has both painted and sized the canvases
   requestAnimationFrame(() => {
     setTimeout(() => {
-      drawCanvas('canvas-stai-state', NORMS.stateM,    NORMS.stateSD,    calcStaiScore(S.stateAns, STAI_STATE));
-      drawCanvas('canvas-stai-trait', NORMS.traitM,    NORMS.traitSD,    calcStaiScore(S.traitAns, STAI_TRAIT));
-      drawCanvas('canvas-hitop-fear', NORMS.fearTotalM, NORMS.fearTotalSD, calcFearTotal());
+      const _n = getFreshNorms();
+      drawCanvas('canvas-stai-state', _n.stateM,    _n.stateSD,    calcStaiScore(S.stateAns, STAI_STATE));
+      drawCanvas('canvas-stai-trait', _n.traitM,    _n.traitSD,    calcStaiScore(S.traitAns, STAI_TRAIT));
+      drawCanvas('canvas-hitop-fear', _n.fearTotalM, _n.fearTotalSD, calcFearTotal());
     }, 60);
   });
 }
 
 function buildSection1() {
+  const NORMS = getFreshNorms();
   const items = ['a','b','c','d','e'];
   const plus = items.filter(k => S.scid[k]==='+').length;
   const coreMet = S.scid['a'] === '+';
@@ -1418,6 +1845,7 @@ function buildSection1() {
 }
 
 function buildSection2() {
+  const NORMS = getFreshNorms();
   const stateRaw = calcStaiScore(S.stateAns, STAI_STATE);
   const traitRaw = calcStaiScore(S.traitAns, STAI_TRAIT);
   const stateT = rawToT(stateRaw, NORMS.stateM, NORMS.stateSD);
@@ -1448,7 +1876,8 @@ function buildSection2() {
     <p class="score-meta">T = <strong style="font-family:var(--mono)">${stateT.toFixed(1)}</strong> &nbsp;·&nbsp; ${statePct.toFixed(0)}th percentile</p>
     <div class="canvas-wrap">
       <canvas id="canvas-stai-state" width="640" height="130"></canvas>
-      <p class="canvas-footnote">Community norms (M = 37, SD = 10.5) &nbsp;·&nbsp; T ≥ 60 = clinically elevated &nbsp;·&nbsp; Range 20–80</p>
+      <p class="canvas-footnote">Community norms (M = ${NORMS.stateM}, SD = ${NORMS.stateSD}) &nbsp;·&nbsp; T ≥ ${NORMS.stateThreshold} = clinically elevated &nbsp;·&nbsp; Range 20–80</p>
+      ${NORMS.staiCitation ? `<p class="canvas-footnote" style="font-style:italic;color:#999;">Source: ${NORMS.staiCitation}</p>` : ''}
     </div>
 
     <h3 style="font-family:var(--serif);font-size:17px;font-weight:400;font-style:italic;margin:36px 0 16px">Y2 — Trait Anxiety</h3>
@@ -1460,12 +1889,14 @@ function buildSection2() {
     <p class="score-meta">T = <strong style="font-family:var(--mono)">${traitT.toFixed(1)}</strong> &nbsp;·&nbsp; ${traitPct.toFixed(0)}th percentile</p>
     <div class="canvas-wrap">
       <canvas id="canvas-stai-trait" width="640" height="130"></canvas>
-      <p class="canvas-footnote">Community norms (M = 36, SD = 9.8) &nbsp;·&nbsp; T ≥ 60 = clinically elevated &nbsp;·&nbsp; Range 20–80</p>
+      <p class="canvas-footnote">Community norms (M = ${NORMS.traitM}, SD = ${NORMS.traitSD}) &nbsp;·&nbsp; T ≥ ${NORMS.traitThreshold} = clinically elevated &nbsp;·&nbsp; Range 20–80</p>
+      ${NORMS.traitCitation ? `<p class="canvas-footnote" style="font-style:italic;color:#999;">Source: ${NORMS.traitCitation}</p>` : ''}
     </div>
   </div>`;
 }
 
 function buildSection3() {
+  const NORMS = getFreshNorms();
   const fearSubscales = [
     { key: ['agora1','agora2'],   label: 'Agoraphobia' },
     { key: ['hyperv1','hyperv2'], label: 'Hypervigilance' },
@@ -1526,7 +1957,8 @@ function buildSection3() {
     <p class="score-meta">T = <strong style="font-family:var(--mono)">${fearT.toFixed(1)}</strong> &nbsp;·&nbsp; ${fearPct.toFixed(0)}th percentile</p>
     <div class="canvas-wrap">
       <canvas id="canvas-hitop-fear" width="640" height="130"></canvas>
-      <p class="canvas-footnote">Community norms (M = 1.75 per item, SD = 1.237) &nbsp;·&nbsp; Subfactor total M = 14, SD = 3.5 &nbsp;·&nbsp; T ≥ 60 = clinically elevated</p>
+      <p class="canvas-footnote">Community norms (M = ${NORMS.fearItemM} per item, SD = ${NORMS.fearItemSD}) &nbsp;·&nbsp; Subfactor total M = ${NORMS.fearTotalM}, SD = ${NORMS.fearTotalSD} &nbsp;·&nbsp; T ≥ ${NORMS.hitopThreshold} = clinically elevated</p>
+      ${NORMS.hitopCitation ? `<p class="canvas-footnote" style="font-style:italic;color:#999;">Source: ${NORMS.hitopCitation}</p>` : ''}
     </div>
 
     <h3 style="font-family:var(--serif);font-size:17px;font-weight:400;font-style:italic;margin:36px 0 12px">Distress Subfactor</h3>
@@ -1535,6 +1967,7 @@ function buildSection3() {
       <tbody>${subscaleRow(distress.label, distress.key, NORMS.distItemM, NORMS.distItemSD)}</tbody>
     </table>
     <p class="score-meta" style="margin-top:6px">T = <strong style="font-family:var(--mono)">${distT.toFixed(1)}</strong> &nbsp;·&nbsp; ${distPct.toFixed(0)}th percentile &nbsp;·&nbsp; Raw = ${distRaw} / 12</p>
+    <p style="font-size:12px;color:var(--muted);margin-top:4px;font-family:var(--mono)">Community norms per item: M = ${NORMS.distItemM}, SD = ${NORMS.distItemSD}</p>
 
     <h3 style="font-family:var(--serif);font-size:17px;font-weight:400;font-style:italic;margin:36px 0 12px">Disinhibited Externalizing Subfactor</h3>
     <table class="hitop-table">
@@ -1542,7 +1975,7 @@ function buildSection3() {
       <tbody>${subscaleRow(disinhibit.label, disinhibit.key, NORMS.disinItemM, NORMS.disinItemSD)}</tbody>
     </table>
     <p class="score-meta" style="margin-top:6px">T = <strong style="font-family:var(--mono)">${disinT.toFixed(1)}</strong> &nbsp;·&nbsp; ${disinPct.toFixed(0)}th percentile &nbsp;·&nbsp; Raw = ${disinRaw} / 12</p>
-    <p style="font-size:12px;color:var(--muted);margin-top:8px;font-family:var(--mono)">Community norms per item: M = 2.0, SD = 0.9 &nbsp;·&nbsp; T ≥ 60 = clinically elevated</p>
+    <p style="font-size:12px;color:var(--muted);margin-top:4px;font-family:var(--mono)">Community norms per item: M = ${NORMS.disinItemM}, SD = ${NORMS.disinItemSD} &nbsp;·&nbsp; T ≥ ${NORMS.hitopThreshold} = clinically elevated</p>
   </div>`;
 }
 
@@ -1552,6 +1985,7 @@ function calcFearTotal() {
 }
 
 function buildSection4() {
+  const NORMS = getFreshNorms();
   const nRT = S.dp.neutral;
   const aRT = S.dp.anxiety;
   const nZ = (nRT - NORMS.dpNeutralM) / NORMS.dpNeutralSD;

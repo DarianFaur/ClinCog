@@ -6,24 +6,49 @@
 <script src="/theme-init.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ClinCog · Conceptualize — Jordan</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
+<script>
+  if (!localStorage.getItem("clincog_name")) { location.replace("/"); }
+</script>
+<style>
+  .chat-page-intro { font-size: 13px; color: var(--text-secondary); margin: 0 0 var(--sp-4); text-align: center; }
+  .chat-card { display: flex; flex-direction: column; height: 680px; margin-bottom: var(--sp-3); position: relative; }
+  .chat-card .chat-scroll { flex: 1; }
+  .chat-restart-row { display: flex; justify-content: flex-end; margin-bottom: var(--sp-5); }
+  .chat-fullscreen-btn {
+    position: absolute; top: 10px; right: 10px; z-index: 5;
+    width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-surface);
+    color: var(--text-secondary); cursor: pointer; transition: all .15s;
+  }
+  .chat-fullscreen-btn:hover { background: var(--bg-surface-alt); color: var(--text-primary); }
+  .chat-card.is-fullscreen {
+    position: fixed; inset: 16px; z-index: 1000; height: auto; width: auto;
+    box-shadow: var(--shadow-lg); margin-bottom: 0;
+  }
+  .chat-fullscreen-backdrop { display: none; }
+  .chat-fullscreen-backdrop.on { display: block; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 999; }
+</style>
 </head>
-<body class="bg-mesh">
+<body>
 
-<div id="ccg-nav-root"></div>
-<script src="/nav.js" data-subtitle="Addiction Seminar"></script>
+<div id="shell-content">
 
-<main class="chat-page" id="ccg-viewport">
-  <span class="eyebrow">Week 3 · Substance use · Conceptualization</span>
-  <h1>Jordan, 25</h1>
+  <div style="margin-bottom:var(--sp-5);">
+    <span class="text-eyebrow">Week 4 · Substance use · Conceptualization</span>
+    <h1 class="text-page-title" style="font-size:22px;margin-top:4px;">Jordan, 25</h1>
+  </div>
 
-  <div class="vignette-box reveal">
-    <b>Case summary:</b> Jordan is a 25-year-old software engineer, self-referred
+  <div class="card" style="margin-bottom:var(--sp-4);">
+    <div class="card-body">
+      <strong>Case summary:</strong> Jordan is a 25-year-old software engineer, self-referred
     after a formal performance review noting missed deadlines, late arrivals,
     and declining code quality. He minimizes concern, rating motivation to
     change 5/10. Drinking escalated over the past 14 months to a daily
@@ -33,31 +58,63 @@
     has roughly doubled. Missed four sprint deadlines, withdrawn from his
     climbing gym, partner has issued an ultimatum. No prior psychiatric
     treatment; father was a heavy drinker.
+    </div>
   </div>
 
-  <p style="font-size:14px;color:var(--ink-muted);margin-bottom:16px">
+  <p class="chat-page-intro">
     Talk to Jordan directly, as if conducting a clinical interview. Ask about
     pattern of use, withdrawal, functional impact, and anything relevant to
     a diagnostic conceptualization. Jordan can only tell you what's
     documented in his case — up to 20 exchanges.
   </p>
 
-  <div id="chat" class="chat-window"></div>
+  <div class="chat-fullscreen-backdrop" id="chat-fullscreen-backdrop" onclick="toggleChatFullscreen()"></div>
+  <div class="card chat-card" id="chat-card">
+    <button type="button" class="chat-fullscreen-btn" id="chat-fullscreen-btn" onclick="toggleChatFullscreen()" aria-label="Toggle fullscreen">
+      <svg id="chat-fullscreen-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 2H2v4M10 2h4v4M2 10v4h4M14 10v4h-4"/>
+      </svg>
+    </button>
+    <div id="chat" class="chat-scroll"></div>
+    <form id="chat-form" class="chat-composer">
+      <input id="chat-input" type="text" placeholder="e.g. Can you tell me what's been happening lately?" autocomplete="off" />
+      <button type="submit" id="chat-send" class="btn btn-primary">Ask</button>
+    </form>
+  </div>
+  <div id="chat-status" class="text-secondary" style="font-size:12px;margin-bottom:var(--sp-3);"></div>
+  <div class="chat-restart-row">
+    <button id="chat-restart" class="btn btn-ghost btn-sm" type="button">Restart this interview</button>
+  </div>
 
-  <form id="chat-form" class="chat-form">
-    <input id="chat-input" type="text" placeholder="e.g. What happens on the mornings you haven't had a drink yet?" autocomplete="off" />
-    <button type="submit" id="chat-send" class="btn btn-primary">Ask</button>
-  </form>
-  <div id="chat-status" class="chat-status"></div>
-  <button id="chat-restart" class="chat-restart" type="button">Restart this interview</button>
+</div>
 
-</main>
-
+<script>window.CLINCOG_SHELL = { autoCollapse: true, activeCaseId: "addiction", breadcrumb: [{ label: "Dashboard", href: "/dashboard.html" }, { label: "Cases", href: "/dashboard.html" }, { label: "Jordan", href: "/addiction-chat.html" }, { label: "Conceptualization" }] };</script>
 <script src="/storage.js"></script>
-<script src="/sidebar.js"></script>
+<script src="/icons.js"></script>
+<script src="/shell.js?v=2"></script>
 <script src="/chat.js" data-module="addiction"></script>
 <script src="/icd-select.js" data-module="addiction" data-eval-href="/addiction-eval.html"></script>
 <script src="/reveal.js"></script>
 <script src="/a11y.js"></script>
+<script>
+function toggleChatFullscreen() {
+  const card = document.getElementById('chat-card');
+  const backdrop = document.getElementById('chat-fullscreen-backdrop');
+  const icon = document.getElementById('chat-fullscreen-icon');
+  const isFs = card.classList.toggle('is-fullscreen');
+  backdrop.classList.toggle('on', isFs);
+  document.body.style.overflow = isFs ? 'hidden' : '';
+  icon.innerHTML = isFs
+    ? '<path d="M3 6V3h3M13 6V3h-3M3 10v3h3M13 10v3h-3"/>'
+    : '<path d="M6 2H2v4M10 2h4v4M2 10v4h4M14 10v4h-4"/>';
+  const chatScroll = document.getElementById('chat');
+  if (chatScroll) chatScroll.scrollTop = chatScroll.scrollHeight;
+}
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && document.getElementById('chat-card')?.classList.contains('is-fullscreen')) {
+    toggleChatFullscreen();
+  }
+});
+</script>
 </body>
 </html>

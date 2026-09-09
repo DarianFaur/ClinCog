@@ -6,24 +6,49 @@
 <script src="/theme-init.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ClinCog · Conceptualize — Alex</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
+<script>
+  if (!localStorage.getItem("clincog_name")) { location.replace("/"); }
+</script>
+<style>
+  .chat-page-intro { font-size: 13px; color: var(--text-secondary); margin: 0 0 var(--sp-4); text-align: center; }
+  .chat-card { display: flex; flex-direction: column; height: 680px; margin-bottom: var(--sp-3); position: relative; }
+  .chat-card .chat-scroll { flex: 1; }
+  .chat-restart-row { display: flex; justify-content: flex-end; margin-bottom: var(--sp-5); }
+  .chat-fullscreen-btn {
+    position: absolute; top: 10px; right: 10px; z-index: 5;
+    width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-surface);
+    color: var(--text-secondary); cursor: pointer; transition: all .15s;
+  }
+  .chat-fullscreen-btn:hover { background: var(--bg-surface-alt); color: var(--text-primary); }
+  .chat-card.is-fullscreen {
+    position: fixed; inset: 16px; z-index: 1000; height: auto; width: auto;
+    box-shadow: var(--shadow-lg); margin-bottom: 0;
+  }
+  .chat-fullscreen-backdrop { display: none; }
+  .chat-fullscreen-backdrop.on { display: block; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 999; }
+</style>
 </head>
-<body class="bg-mesh">
+<body>
 
-<div id="ccg-nav-root"></div>
-<script src="/nav.js" data-subtitle="Anxiety Seminar"></script>
+<div id="shell-content">
 
-<main class="chat-page" id="ccg-viewport">
-  <span class="eyebrow">Week 2 · Anxiety · Conceptualization</span>
-  <h1>Alex, 24</h1>
+  <div style="margin-bottom:var(--sp-5);">
+    <span class="text-eyebrow">Week 3 · Anxiety · Conceptualization</span>
+    <h1 class="text-page-title" style="font-size:22px;margin-top:4px;">Alex, 24</h1>
+  </div>
 
-  <div class="vignette-box reveal">
-    <b>Case summary:</b> Alex is a 24-year-old undergraduate student referred
+  <div class="card" style="margin-bottom:var(--sp-4);">
+    <div class="card-body">
+      <strong>Case summary:</strong> Alex is a 24-year-old undergraduate student referred
     by their GP after persistent difficulties with academic performance and
     social engagement. Alex describes intense fear, dating back to early
     adolescence, of being observed or judged by others — avoiding seminar
@@ -33,31 +58,63 @@
     of rumination. No panic attacks outside social contexts, no substance
     use, no psychotic symptoms. Symptoms present for at least three years,
     worsened since starting university.
+    </div>
   </div>
 
-  <p style="font-size:14px;color:var(--ink-muted);margin-bottom:16px">
+  <p class="chat-page-intro">
     Talk to Alex directly, as if conducting a clinical interview. Ask about
     onset, triggers, avoidance patterns, and anything relevant to a
     diagnostic conceptualization. Alex can only tell you what's documented
     in their case — up to 20 exchanges.
   </p>
 
-  <div id="chat" class="chat-window"></div>
+  <div class="chat-fullscreen-backdrop" id="chat-fullscreen-backdrop" onclick="toggleChatFullscreen()"></div>
+  <div class="card chat-card" id="chat-card">
+    <button type="button" class="chat-fullscreen-btn" id="chat-fullscreen-btn" onclick="toggleChatFullscreen()" aria-label="Toggle fullscreen">
+      <svg id="chat-fullscreen-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 2H2v4M10 2h4v4M2 10v4h4M14 10v4h-4"/>
+      </svg>
+    </button>
+    <div id="chat" class="chat-scroll"></div>
+    <form id="chat-form" class="chat-composer">
+      <input id="chat-input" type="text" placeholder="e.g. Can you tell me what's been happening lately?" autocomplete="off" />
+      <button type="submit" id="chat-send" class="btn btn-primary">Ask</button>
+    </form>
+  </div>
+  <div id="chat-status" class="text-secondary" style="font-size:12px;margin-bottom:var(--sp-3);"></div>
+  <div class="chat-restart-row">
+    <button id="chat-restart" class="btn btn-ghost btn-sm" type="button">Restart this interview</button>
+  </div>
 
-  <form id="chat-form" class="chat-form">
-    <input id="chat-input" type="text" placeholder="e.g. What happens physically when you're called on in class?" autocomplete="off" />
-    <button type="submit" id="chat-send" class="btn btn-primary">Ask</button>
-  </form>
-  <div id="chat-status" class="chat-status"></div>
-  <button id="chat-restart" class="chat-restart" type="button">Restart this interview</button>
+</div>
 
-</main>
-
+<script>window.CLINCOG_SHELL = { autoCollapse: true, activeCaseId: "anxiety", breadcrumb: [{ label: "Dashboard", href: "/dashboard.html" }, { label: "Cases", href: "/dashboard.html" }, { label: "Alex", href: "/anxiety-chat.html" }, { label: "Conceptualization" }] };</script>
 <script src="/storage.js"></script>
-<script src="/sidebar.js"></script>
+<script src="/icons.js"></script>
+<script src="/shell.js?v=2"></script>
 <script src="/chat.js" data-module="anxiety"></script>
 <script src="/icd-select.js" data-module="anxiety" data-eval-href="/anxiety-eval.html"></script>
 <script src="/reveal.js"></script>
 <script src="/a11y.js"></script>
+<script>
+function toggleChatFullscreen() {
+  const card = document.getElementById('chat-card');
+  const backdrop = document.getElementById('chat-fullscreen-backdrop');
+  const icon = document.getElementById('chat-fullscreen-icon');
+  const isFs = card.classList.toggle('is-fullscreen');
+  backdrop.classList.toggle('on', isFs);
+  document.body.style.overflow = isFs ? 'hidden' : '';
+  icon.innerHTML = isFs
+    ? '<path d="M3 6V3h3M13 6V3h-3M3 10v3h3M13 10v3h-3"/>'
+    : '<path d="M6 2H2v4M10 2h4v4M2 10v4h4M14 10v4h-4"/>';
+  const chatScroll = document.getElementById('chat');
+  if (chatScroll) chatScroll.scrollTop = chatScroll.scrollHeight;
+}
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && document.getElementById('chat-card')?.classList.contains('is-fullscreen')) {
+    toggleChatFullscreen();
+  }
+});
+</script>
 </body>
 </html>

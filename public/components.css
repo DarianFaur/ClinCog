@@ -1,0 +1,299 @@
+/* ============================================================
+   components.css — the full component library. Every rule here
+   references tokens.css variables; nothing is hardcoded. See
+   styleguide.html for a live, visual index of everything below.
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--bg-app);
+  color: var(--text-primary);
+  font-size: var(--text-body-size);
+  font-weight: var(--text-body-weight);
+  line-height: var(--text-body-lh);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------------------------------------------------------------
+   Typography utility classes - one class per role from the tokens
+   table, so no page ever hand-rolls a font-size/weight combo.
+--------------------------------------------------------------- */
+.text-metric { font-size: var(--text-metric-size); font-weight: var(--text-metric-weight); line-height: var(--text-metric-lh); color: var(--text-primary); }
+.text-page-title { font-size: var(--text-page-title-size); font-weight: var(--text-page-title-weight); line-height: var(--text-page-title-lh); color: var(--text-primary); }
+.text-card-title { font-size: var(--text-card-title-size); font-weight: var(--text-card-title-weight); line-height: var(--text-card-title-lh); color: var(--text-primary); }
+.text-body { font-size: var(--text-body-size); font-weight: var(--text-body-weight); line-height: var(--text-body-lh); }
+.text-label { font-size: var(--text-label-size); font-weight: var(--text-label-weight); line-height: var(--text-label-lh); letter-spacing: var(--text-label-spacing); color: var(--text-secondary); }
+.text-eyebrow { font-size: var(--text-eyebrow-size); font-weight: var(--text-eyebrow-weight); letter-spacing: var(--text-eyebrow-spacing); text-transform: uppercase; color: var(--text-tertiary); }
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }
+
+/* ---------------------------------------------------------------
+   Card
+--------------------------------------------------------------- */
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--duration-hover) var(--ease-standard),
+              box-shadow var(--duration-hover) var(--ease-standard);
+}
+.card-hoverable:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.card-body { padding: var(--sp-5); }
+@media (max-width: 640px) { .card-body { padding: var(--sp-4); } }
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--sp-4) var(--sp-5);
+  border-bottom: 1px solid var(--border);
+}
+.card-header .text-card-title { margin: 0; }
+.card-header-actions { display: flex; align-items: center; gap: var(--sp-2); }
+
+/* ---------------------------------------------------------------
+   Stat card
+--------------------------------------------------------------- */
+.stat-card { position: relative; padding: var(--sp-5); }
+.stat-card .stat-icon {
+  position: absolute; top: var(--sp-5); right: var(--sp-5);
+  width: 40px; height: 40px; border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  background: var(--accent-soft, var(--domain-anxiety-soft)); color: var(--accent);
+}
+.stat-card .stat-label { display: block; margin-bottom: var(--sp-2); }
+.stat-card .stat-value { display: block; margin-bottom: var(--sp-2); }
+.stat-card .stat-delta { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; }
+.stat-card .stat-delta.up { color: var(--success); }
+.stat-card .stat-delta.down { color: var(--danger); }
+.stat-card .stat-delta .stat-delta-note { color: var(--text-tertiary); font-weight: 400; margin-left: 2px; }
+
+/* ---------------------------------------------------------------
+   Progress bar
+--------------------------------------------------------------- */
+.progress-track {
+  height: 6px; border-radius: var(--radius-pill);
+  background: var(--border); overflow: hidden; width: 100%;
+}
+.progress-fill {
+  height: 100%; border-radius: var(--radius-pill);
+  background: var(--accent);
+  transition: width var(--duration-progress) ease-out;
+}
+.progress-row { display: flex; align-items: center; gap: var(--sp-3); }
+.progress-row .progress-track { flex: 1; }
+.progress-row .progress-pct { font-size: 12px; font-weight: 600; color: var(--text-secondary); min-width: 32px; text-align: right; }
+
+/* ---------------------------------------------------------------
+   Badge
+--------------------------------------------------------------- */
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  border-radius: var(--radius-pill); padding: 3px 10px;
+  font-size: 11px; font-weight: 600; line-height: 1.4; white-space: nowrap;
+}
+.badge-neutral { background: var(--bg-surface-alt); color: var(--text-secondary); border: 1px solid var(--border); }
+.badge-success { background: var(--success-soft); color: var(--success); }
+.badge-warning { background: var(--warning-soft); color: var(--warning); }
+.badge-danger  { background: var(--danger-soft);  color: var(--danger); }
+.badge-info    { background: var(--info-soft);    color: var(--info); }
+/* domain variants: badge-domain-{psychosis|mood|anxiety|substance} */
+.badge-domain-psychosis { background: var(--domain-psychosis-soft); color: var(--domain-psychosis-ink); }
+.badge-domain-mood      { background: var(--domain-mood-soft);      color: var(--domain-mood-ink); }
+.badge-domain-anxiety   { background: var(--domain-anxiety-soft);   color: var(--domain-anxiety-ink); }
+.badge-domain-substance { background: var(--domain-substance-soft); color: var(--domain-substance-ink); }
+.badge .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+/* ---------------------------------------------------------------
+   Button
+--------------------------------------------------------------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 36px; padding: 0 var(--sp-4); border-radius: var(--radius-md);
+  font-family: var(--font-sans); font-size: 13px; font-weight: 500;
+  border: 1px solid transparent; cursor: pointer;
+  transition: background var(--duration-hover) var(--ease-standard),
+              border-color var(--duration-hover) var(--ease-standard),
+              color var(--duration-hover) var(--ease-standard);
+}
+.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn-sm { height: 30px; padding: 0 var(--sp-3); font-size: 12px; }
+
+/* Deliberately monochrome, not colored - a bright accent here would
+   compete with whatever domain color a page is theming its own content
+   in (e.g. Dennis's pink CDDR items). text-primary/bg-surface invert
+   cleanly between light/dark themes on their own, so this never needs
+   a separate dark-mode override. */
+/* Deliberately monochrome, not colored - a bright accent here would
+   compete with whatever domain color a page is theming its own content
+   in (e.g. Dennis's pink CDDR items). Uses the sidebar's own fixed
+   color rather than text-primary/bg-surface, so primary actions read
+   as an echo of the app's persistent chrome - intentional, not
+   arbitrary. Theme-invariant on purpose, matching the sidebar itself. */
+.btn-primary { background: var(--sidebar-bg); color: #fff; border-color: rgba(255,255,255,.18); }
+.btn-primary:hover:not(:disabled) { opacity: .85; }
+.btn-primary:active:not(:disabled) { transform: translateY(1px); }
+
+.btn-secondary { background: var(--bg-surface); color: var(--text-primary); border-color: var(--border); }
+.btn-secondary:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+
+.btn-ghost { background: transparent; color: var(--text-secondary); }
+.btn-ghost:hover:not(:disabled) { background: var(--bg-surface-alt); color: var(--text-primary); }
+
+/* ---------------------------------------------------------------
+   Case card - the dashboard's centerpiece
+--------------------------------------------------------------- */
+.case-card { padding: var(--sp-5); display: flex; flex-direction: column; gap: var(--sp-4); }
+.case-card-top { display: flex; align-items: flex-start; gap: var(--sp-3); }
+.case-card-icon {
+  width: 44px; height: 44px; border-radius: var(--radius-md); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.case-card-icon.domain-psychosis { background: var(--domain-psychosis-soft); color: var(--domain-psychosis); }
+.case-card-icon.domain-mood      { background: var(--domain-mood-soft);      color: var(--domain-mood); }
+.case-card-icon.domain-anxiety   { background: var(--domain-anxiety-soft);   color: var(--domain-anxiety); }
+.case-card-icon.domain-substance { background: var(--domain-substance-soft); color: var(--domain-substance); }
+.case-card-identity { flex: 1; min-width: 0; }
+.case-card-name { font-size: var(--text-card-title-size); font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+.case-card-meta { font-size: 12px; color: var(--text-secondary); }
+
+.case-card-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3) var(--sp-4);
+  padding: var(--sp-3) 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+}
+.case-card-grid-item { display: flex; flex-direction: column; gap: 2px; }
+.case-card-grid-item .val { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.case-card-grid-item .lbl { font-size: 11px; color: var(--text-tertiary); }
+
+.case-card-footer { display: flex; gap: var(--sp-2); }
+.case-card-footer .btn { flex: 1; }
+
+/* ---------------------------------------------------------------
+   Table
+--------------------------------------------------------------- */
+.table-wrap {
+  overflow-x: auto;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.table-wrap::-webkit-scrollbar { height: 6px; }
+.table-wrap::-webkit-scrollbar-track { background: transparent; }
+.table-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.table thead th {
+  background: var(--bg-surface-alt); text-align: left;
+  font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em;
+  color: var(--text-tertiary); padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--border); white-space: nowrap;
+}
+.table thead th.sortable { cursor: pointer; user-select: none; }
+.table thead th.sortable:hover { color: var(--text-secondary); }
+.table tbody tr { height: 48px; border-bottom: 1px solid var(--border); transition: background var(--duration-hover); }
+.table tbody tr:hover { background: var(--bg-surface-alt); }
+.table tbody td { padding: 0 var(--sp-4); color: var(--text-primary); }
+
+@media (max-width: 768px) {
+  .table-wrap.collapse-mobile thead { display: none; }
+  .table-wrap.collapse-mobile, .table-wrap.collapse-mobile tbody, .table-wrap.collapse-mobile tr, .table-wrap.collapse-mobile td { display: block; width: 100%; }
+  .table-wrap.collapse-mobile tr {
+    height: auto; padding: var(--sp-3) var(--sp-4); margin-bottom: var(--sp-3);
+    border: 1px solid var(--border); border-radius: var(--radius-md);
+  }
+  .table-wrap.collapse-mobile td { padding: 4px 0; border: none; }
+  .table-wrap.collapse-mobile td::before { content: attr(data-label); display: block; font-size: 11px; color: var(--text-tertiary); }
+}
+
+/* ---------------------------------------------------------------
+   Chat
+--------------------------------------------------------------- */
+.chat-scroll {
+  display: flex; flex-direction: column; gap: var(--sp-4); padding: var(--sp-5); overflow-y: auto;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.chat-scroll::-webkit-scrollbar { width: 6px; }
+.chat-scroll::-webkit-scrollbar-track { background: transparent; }
+.chat-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.chat-row { display: flex; flex-direction: column; max-width: 72%; }
+.chat-row.from-patient { align-self: flex-start; align-items: flex-start; }
+.chat-row.from-student { align-self: flex-end; align-items: flex-end; }
+
+.chat-bubble { padding: var(--sp-3) var(--sp-4); font-size: 14px; line-height: 1.55; }
+.chat-row.from-patient .chat-bubble {
+  background: var(--bg-surface-alt); color: var(--text-primary);
+  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) 4px;
+}
+.chat-row.from-student .chat-bubble {
+  background: color-mix(in srgb, var(--accent) 12%, var(--bg-surface));
+  color: var(--text-primary);
+  border-radius: var(--radius-lg) var(--radius-lg) 4px var(--radius-lg);
+}
+.chat-timestamp { font-size: 11px; color: var(--text-tertiary); margin-top: 4px; padding: 0 4px; }
+
+.chat-speaker { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: var(--text-tertiary); margin-bottom: 4px; padding: 0 4px; text-transform: uppercase; letter-spacing: .03em; }
+.chat-row.from-student .chat-speaker { flex-direction: row-reverse; }
+.chat-speaker svg { flex-shrink: 0; opacity: .75; }
+
+.chat-typing { display: inline-flex; align-items: center; gap: 4px; padding: var(--sp-3) var(--sp-4);
+  background: var(--bg-surface-alt); border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) 4px; }
+.chat-typing .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-tertiary); animation: chat-typing-bounce 1.2s infinite ease-in-out; }
+.chat-typing .dot:nth-child(2) { animation-delay: .15s; }
+.chat-typing .dot:nth-child(3) { animation-delay: .3s; }
+@keyframes chat-typing-bounce { 0%, 60%, 100% { transform: translateY(0); opacity:.5; } 30% { transform: translateY(-3px); opacity:1; } }
+
+.chat-composer {
+  display: flex; align-items: flex-end; gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-5); border-top: 1px solid var(--border);
+  background: var(--bg-surface); position: sticky; bottom: 0;
+}
+.chat-composer input, .chat-composer textarea {
+  flex: 1; resize: none; border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 9px 12px; font-family: var(--font-sans); font-size: 14px; color: var(--text-primary);
+  background: var(--bg-app); max-height: 120px; line-height: 1.5;
+}
+.chat-composer input:focus, .chat-composer textarea:focus { outline: none; border-color: var(--accent); }
+
+/* ---------------------------------------------------------------
+   Empty state
+--------------------------------------------------------------- */
+.empty-state { display: flex; flex-direction: column; align-items: center; text-align: center;
+  padding: var(--sp-8) var(--sp-5); gap: var(--sp-3); color: var(--text-tertiary); }
+.empty-state svg { color: var(--text-tertiary); }
+.empty-state .empty-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.empty-state .empty-note { font-size: 13px; color: var(--text-secondary); max-width: 36ch; }
+
+/* ---------------------------------------------------------------
+   Activity row - a single timeline entry (dashboard "Recent
+   activity", progress.html "Full activity history"). Always built
+   from real, timestamped events - never a placeholder feed.
+--------------------------------------------------------------- */
+.activity-row { display: flex; align-items: flex-start; gap: var(--sp-3); padding: var(--sp-3) 0; border-bottom: 1px solid var(--border); }
+.activity-row:last-child { border-bottom: none; }
+.activity-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+.activity-text { font-size: 13px; color: var(--text-primary); }
+.activity-time { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+
+.grid-2-col { display: grid; grid-template-columns: 1.4fr 1fr; gap: var(--sp-5); align-items: start; margin-bottom: var(--sp-6); }
+@media (max-width: 1100px) { .grid-2-col { grid-template-columns: 1fr; } }
+
+/* ---------------------------------------------------------------
+   Skeleton
+--------------------------------------------------------------- */
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-surface-alt) 25%, var(--border) 37%, var(--bg-surface-alt) 63%);
+  background-size: 400% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+@keyframes skeleton-shimmer { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+  .chat-typing .dot { animation: none; opacity: .7; }
+  .card, .btn, .progress-fill { transition: none; }
+}

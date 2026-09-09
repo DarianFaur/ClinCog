@@ -10,88 +10,67 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/favicon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=DM+Mono:wght@400&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
 <style>
-:root { color-scheme: light; }
-html[data-theme="dark"] { color-scheme: dark; }
+/* Colors now alias the shared tokens.css system (loaded via <link>
+   below) instead of defining their own - every var(--ink)/var(--surface)
+   reference below the fold still works unchanged, but now resolves to
+   the same palette as the dashboard/chat pages. This page's own
+   content-specific styles (CDDR checklist rows, HiTOP likert scales,
+   the MATRICS table) are kept as-is - only the shared color layer and
+   chrome (nav/sidebar) changed. */
 :root {
-  --bg: #ffffff;
-  --surface: #ffffff;
-  --ink: #1a1a1a;
-  --ink2: #6b7280;
-  --ink3: #9ca3af;
-  --line: #e5e5e5;
-  --accent: #a15c74;
-  --accent-bg: #f6ebee;
+  --bg: var(--bg-app);
+  --surface: var(--bg-surface);
+  --ink: var(--text-primary);
+  --ink2: var(--text-secondary);
+  --ink3: var(--text-tertiary);
+  --line: var(--border);
+  --accent-bg: var(--domain-psychosis-soft);
   --warn: #8b3a00;
   --warn-bg: #fff7f2;
   --serif: 'Poppins', 'Inter', sans-serif;
-  --sans: 'Inter', system-ui, sans-serif;
-  --mono: 'DM Mono', monospace;
-  --max: 720px;
+  --sans: var(--font-sans);
+  --mono: var(--font-mono);
+  --max: 980px;
+  /* fluid type scale, identical to Jordan's (addiction-eval.html) so
+     both pages scale together at any viewport width, not just the
+     ones we happened to test at */
+  --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+  --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+  --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
 }
-
-html[data-theme="dark"] {
-  --bg: #1c1e22;
-  --surface: #262930;
-  --ink: #f2f2f2;
-  --ink2: #a8acaf;
-  --ink3: #9ca3af;
-  --line: #383b42;
-  --accent: #c97e94;
-  --accent-bg: #3a2530;
-  --warn-bg: #2a1c10;
-}
-@media (prefers-color-scheme: dark) {
-  html:not([data-theme="light"]) {
-    color-scheme: dark;
-    --bg: #1c1e22;
-    --surface: #262930;
-    --ink: #f2f2f2;
-    --ink2: #a8acaf;
-    --ink3: #9ca3af;
-    --line: #383b42;
-    --accent: #c97e94;
-    --accent-bg: #3a2530;
-    --warn-bg: #2a1c10;
-  }
-}
-html, body { transition: background-color .25s ease, color .25s ease; }
-* { transition: background-color .2s ease, border-color .2s ease, color .2s ease; }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-size: 14px; line-height: 1.7; position: relative; }
-body::before {
-  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
-  background:
-    radial-gradient(640px 420px at 6% -8%, rgba(161,92,116,.10), transparent 60%),
-    radial-gradient(600px 460px at 100% 105%, rgba(161,92,116,.07), transparent 62%);
-}
-html[data-theme="dark"] body::before {
-  background:
-    radial-gradient(640px 420px at 6% -8%, rgba(201,126,148,.14), transparent 60%),
-    radial-gradient(600px 460px at 100% 105%, rgba(201,126,148,.09), transparent 62%);
-}
 
-#bar { position: fixed; top: 0; left: 0; right: 0; height: 2px; background: var(--line); z-index: 200; }
-#bar-fill { height: 100%; background: var(--accent); transition: width .4s; }
+#bar { position: sticky; top: 56px; left: 0; right: 0; height: 3px; background: var(--line); z-index: 20; }
+#bar-fill { height: 100%; background: var(--domain-psychosis); transition: width .4s; }
 
-nav {
-  position: sticky; top: 2px; z-index: 100;
-  background: var(--surface); border-bottom: 1px solid var(--line);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 40px; height: 52px;
+/* Vertical stepper - lives as the first card in the left sidebar on
+   every page, not a separate horizontal bar. Multiple copies of this
+   markup exist in the DOM at once (one per page's sidebar); tick()
+   updates all of them together via [data-step] rather than unique ids. */
+.v-stepper-card { padding: 8px 4px; }
+.v-step { position: relative; display: flex; align-items: center; gap: 12px; padding: 9px 0; cursor: not-allowed; }
+.v-step.done, .v-step.current { cursor: pointer; }
+.v-step-line { position: absolute; left: 12px; top: 35px; width: 2px; height: 18px; background: var(--line); z-index: 0; transition: background .3s; }
+.v-step:last-child .v-step-line { display: none; }
+.v-step.done .v-step-line { background: var(--domain-psychosis); }
+.v-step-dot {
+  width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--surface);
+  display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px;
+  color: var(--ink3); flex-shrink: 0; z-index: 1; transition: all .2s;
 }
-.nav-brand { font-family: var(--serif); font-size: 1rem; font-weight: 400; color: var(--ink2); }
-.nav-steps { display: flex; gap: 4px; }
-.nav-steps .s {
-  width: 28px; height: 28px; border-radius: 50%;
-  border: 1px solid var(--line);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 500; color: var(--ink3);
-  font-family: var(--mono); transition: all .3s;
-}
-.nav-steps .s.active { border-color: var(--accent); color: var(--accent); }
-.nav-steps .s.done { background: var(--accent); border-color: var(--accent); color: #fff; }
+.v-step.done .v-step-dot { border: none; background: var(--domain-psychosis); color: #fff; font-size: 13px; }
+.v-step.current .v-step-dot { border-width: 2px; border-color: var(--domain-psychosis); background: var(--accent-bg); color: var(--domain-psychosis); font-weight: 600; }
+.v-step-label { font-size: 14.5px; color: var(--ink3); transition: color .2s; }
+.v-step.current .v-step-label { color: var(--domain-psychosis); font-weight: 600; }
+.v-step.done .v-step-label { color: var(--ink2); }
+.v-step:hover:not(.v-step.current):not([style*="cursor: not-allowed"]) .v-step-label { color: var(--ink); }
 
 .page { display: none; }
 .page.on { display: block; animation: up .35s ease; }
@@ -99,22 +78,139 @@ nav {
 
 .wrap { max-width: var(--max); margin: 0 auto; padding: 56px 24px 100px; }
 
-.eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink3); margin-bottom: 10px; }
+/* ============================================================
+   THREE-ZONE EVALUATION LAYOUT (steps with active rating: ICD-11,
+   HiTOP-SR, MATRICS). Overview/Vignette/Report keep the simple
+   centered .wrap - there's nothing to reference alongside them yet
+   (or, for Report, that's its own separate redesign pass).
+   ============================================================ */
+
+/* Widen this page's content region beyond the shell's shared 1440px
+   cap - safer than escaping via 100vw, which ignored the persistent
+   sidebar's width and caused content to render partly underneath it. */
+.shell-content-inner { max-width: 1900px; }
+
+.eval-layout {
+  max-width: 1900px; margin: 0 auto; padding: 32px 32px 100px;
+  display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 28px; align-items: start;
+  justify-content: center;
+}
+.eval-context {
+  display: flex; flex-direction: column; gap: 16px;
+  position: sticky; top: 75px;
+}
+.ctx-sticky-top { flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; }
+.ctx-scroll-area { display: flex; flex-direction: column; gap: 16px; }
+.eval-work { min-width: 0; max-width: 1100px; }
+@media (max-width: 1100px) {
+  .eval-layout { grid-template-columns: 1fr; }
+}
+
+.ctx-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-xs); padding: 0; overflow: hidden; flex-shrink: 0; }
+.ctx-card > .ctx-card-body { padding: 16px 18px; }
+.ctx-card h4 { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink3); font-weight: 600; margin-bottom: 12px; }
+.ctx-card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 18px; border-bottom: 1px solid var(--line);
+}
+.ctx-card-header h4 { margin: 0; }
+.ctx-toggle-btn {
+  background: none; border: none; cursor: pointer; padding: 4px; margin: -4px; color: var(--ink3);
+  display: flex; align-items: center; border-radius: var(--radius-sm); transition: all .15s;
+}
+.ctx-toggle-btn:hover { color: var(--ink); background: var(--bg-surface-alt); }
+.ctx-toggle-btn .chev { transition: transform .2s; display: block; }
+.ctx-card.open .ctx-toggle-btn .chev { transform: rotate(180deg); }
+.ctx-patient-name { font-family: var(--serif); font-size: 1.15rem; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.ctx-patient-meta { font-size: 14px; color: var(--ink3); margin-bottom: 12px; }
+.ctx-patient-complaint { font-size: 13px; color: var(--ink2); line-height: 1.6; padding-top: 12px; border-top: 1px solid var(--line); }
+
+.ctx-body { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+.ctx-body > .ctx-card-body { padding: 14px 18px 18px; }
+.ctx-vignette-text { font-family: var(--font-sans); font-size: 15px; line-height: 1.65; color: var(--ink2); max-height: 280px; overflow-y: auto; }
+.ctx-vignette-text p { margin-bottom: 1em; }
+.ctx-vignette-text p:last-child { margin-bottom: 0; }
+
+.ctx-chat { display: flex; flex-direction: column; gap: 10px; max-height: 280px; overflow-y: auto; }
+.ctx-chat .chat-row { max-width: 92%; }
+.ctx-chat .chat-bubble { padding: 8px 12px; font-size: 15px; line-height: 1.65; }
+.ctx-chat-empty { font-size: 14px; color: var(--ink3); font-style: italic; }
+
+.ctx-guide-row { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ink2); margin-bottom: 8px; }
+.ctx-guide-row:last-child { margin-bottom: 0; }
+.ctx-guide-mark {
+  display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px;
+  border-radius: var(--radius-sm); font-family: var(--mono); font-size: 11px; font-weight: 600; flex-shrink: 0;
+}
+.ctx-guide-mark.p { background: var(--success-soft, var(--accent-bg)); color: var(--success, var(--domain-psychosis)); }
+.ctx-guide-mark.n { background: var(--bg-surface-alt); color: var(--ink3); }
+.ctx-guide-mark.u { background: var(--warning-soft, #fff3e0); color: var(--warning, #a05a00); }
+
+.scoring-card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow-xs); padding: 12px 14px; }
+.scoring-card h4 { font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink3); font-weight: 600; margin-bottom: 3px; }
+.scoring-count { font-family: var(--serif); font-size: 1.35rem; font-weight: 600; color: var(--ink); line-height: 1.1; margin-bottom: 1px; transition: color .2s; }
+.scoring-count .of { font-size: .78rem; color: var(--ink3); font-weight: 400; }
+.scoring-sub { font-size: 11.5px; color: var(--ink3); margin-bottom: 8px; line-height: 1.4; }
+.scoring-dots { display: flex; flex-wrap: wrap; gap: 4px; }
+.scoring-dot {
+  width: 18px; height: 18px; border-radius: 5px; display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 9px; font-weight: 600; background: var(--bg-surface-alt); color: var(--ink3);
+  transition: all .2s;
+}
+.scoring-dot.p { background: var(--accent-bg); color: var(--domain-psychosis); }
+.scoring-dot.n { background: var(--bg-surface-alt); color: var(--ink2); }
+.scoring-dot.u { background: #fff3e0; color: #a05a00; }
+
+/* mini stat tiles - small squares in a row, right under the stepper,
+   showing just a number and a tiny label (e.g. "3/7" / "symptoms") */
+.mini-stats { display: flex; gap: 8px; }
+.mini-stat { flex: 1; min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 4px; text-align: center; }
+.mini-stat-num { font-family: var(--serif); font-size: 17px; font-weight: 700; color: var(--ink); line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mini-stat-lbl { font-size: 8.5px; color: var(--ink3); text-transform: uppercase; letter-spacing: .02em; margin-top: 3px; line-height: 1.2; }
+
+.eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink3); margin-bottom: 10px; }
+
+/* ---- vignette page, matching Jordan's reference design exactly:
+   big page title + subtitle, then a single white card holding the
+   patient line, a divider, and content broken into labeled sections
+   with one vivid detail pulled into a highlighted callout ---- */
+.vignette-page-title { font-size: 37.6px; font-weight: 700; color: var(--ink); margin: 0 0 16px; line-height: 1.15; }
+.vignette-page-sub { font-size: 16px; color: var(--ink2); margin-bottom: 24px; }
+.vignette-card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 24px; box-shadow: var(--shadow-xs); margin-bottom: 24px; }
+.vignette-card-name { font-size: 18px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.vignette-card-meta { font-size: 16px; color: var(--ink2); margin-bottom: 16px; }
+.vignette-card-divider { border-top: 1px solid var(--line); margin-bottom: 20px; }
+.vignette-section { margin-bottom: 16px; }
+.vignette-section:last-child { margin-bottom: 0; }
+.vignette-section-title { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--ink3); margin-bottom: 8px; }
+.vignette-section p { font-size: 16px; line-height: 1.75; color: var(--ink); margin: 0; }
+.vignette-highlight { background: var(--accent-bg); border-left: 3px solid var(--domain-psychosis); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 16px; line-height: 1.6; color: var(--ink); }
 h1 { font-family: var(--serif); font-size: 2.35rem; font-weight: 700; line-height: 1.15; letter-spacing: -0.01em; color: var(--ink); margin-bottom: 16px; }
-h1 em { font-style: normal; color: var(--accent); }
+h1 em { font-style: normal; color: var(--domain-psychosis); }
 h2 { font-family: var(--serif); font-size: 1.8rem; font-weight: 400; color: var(--ink); margin-bottom: 10px; }
 h3 { font-size: .75rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); margin-bottom: 12px; }
 p.lead { font-size: 1rem; color: var(--ink2); line-height: 1.75; }
 hr { border: none; border-top: 1px solid var(--line); margin: 36px 0; }
 
-.callout { border-left: 2px solid var(--accent); padding: 10px 16px; background: var(--accent-bg); font-size: .85rem; color: var(--ink2); margin: 16px 0; }
+.callout { border-radius: var(--radius-md); border-left: 3px solid var(--domain-psychosis); padding: 14px 18px; background: var(--accent-bg); font-size: .85rem; color: var(--ink2); margin: 16px 0; }
 .callout.warn { border-color: var(--warn); background: var(--warn-bg); color: var(--warn); }
 
-.layers { margin: 28px 0 48px; border-top: 1px solid var(--line); }
-.layer-row { display: flex; align-items: baseline; gap: 20px; padding: 20px 0; border-top: none; border-bottom: 1px solid var(--line); }
-.layer-num { font-family: var(--mono); font-size: 11px; color: var(--accent); padding: 2px 6px; border: 1px solid var(--accent); border-radius: 4px; flex-shrink: 0; letter-spacing: .03em; }
-.layer-text .lt { display: block; font-size: 16px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
-.layer-text .ls { font-size: 14px; color: var(--ink3); }
+.layers { margin: 32px 0 40px; display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-4, 16px); border-top: none; }
+@media (max-width: 800px) { .layers { grid-template-columns: 1fr; } }
+.layer-row {
+  display: block; padding: 22px; border: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow-sm);
+  transition: transform .15s, box-shadow .15s;
+}
+.layer-row:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.layer-num {
+  display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px;
+  font-family: var(--mono); font-size: 12px; color: var(--domain-psychosis); background: var(--accent-bg);
+  border: none; border-radius: var(--radius-md); margin-bottom: 14px; letter-spacing: 0;
+}
+.layer-text { display: block; }
+.layer-text .lt { display: block; font-size: 16px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+.layer-text .ls { font-size: 13px; color: var(--ink3); line-height: 1.5; }
 
 .vignette { font-family: var(--serif); font-size: 1.1rem; line-height: 1.9; color: var(--ink); }
 .vignette p { margin-bottom: 1.3em; }
@@ -123,55 +219,71 @@ hr { border: none; border-top: 1px solid var(--line); margin: 36px 0; }
 .patient-line h2 { margin: 0; }
 .patient-line span { color: var(--ink3); font-size: .85rem; }
 
-.scid-q { padding: 20px 0; border-bottom: 1px solid var(--line); }
-.scid-q:first-child { border-top: 1px solid var(--line); }
-.scid-q-top { display: flex; gap: 14px; margin-bottom: 12px; }
-.scid-code { font-family: var(--mono); font-size: 11px; color: var(--accent); min-width: 30px; padding-top: 2px; }
-.scid-q-text { font-size: .9rem; color: var(--ink); line-height: 1.6; }
+.scid-q {
+  padding: 20px 22px; margin-bottom: 12px; border: 1px solid var(--line); border-radius: var(--radius-md);
+  background: var(--surface); transition: border-color .15s;
+}
+.scid-q:has(.radio-row label.p:has(input:checked)) { border-color: var(--domain-psychosis); }
+.scid-q-top { display: flex; gap: 14px; margin-bottom: 14px; }
+.scid-code {
+  font-family: var(--mono); font-size: 12px; color: var(--domain-psychosis); min-width: 26px; padding-top: 2px;
+  font-weight: 600;
+}
+.scid-q-text { font-size: .92rem; color: var(--ink); line-height: 1.6; }
 .scid-q-text .ev { font-size: .78rem; color: var(--ink3); margin-top: 4px; font-style: italic; }
-.radio-row { display: flex; gap: 8px; padding-left: 44px; flex-wrap: wrap; }
+.radio-row { display: flex; gap: 8px; padding-left: 40px; flex-wrap: wrap; }
 .radio-row label {
   display: flex; align-items: center; gap: 6px;
-  padding: 5px 12px; border: 1px solid var(--line);
+  padding: 7px 16px; border: 1px solid var(--line); border-radius: var(--radius-pill);
   cursor: pointer; font-size: .82rem; font-weight: 500;
-  transition: all .15s; color: var(--ink2); user-select: none;
+  transition: all .15s; color: var(--ink2); user-select: none; background: var(--bg-surface-alt, var(--surface));
 }
 .radio-row label:hover { border-color: var(--ink3); color: var(--ink); }
 .radio-row input { display: none; }
-.radio-row label:has(input:checked).p { background: var(--accent); border-color: var(--accent); color: #fff; }
-.radio-row label:has(input:checked).n { background: #900; border-color: #900; color: #fff; }
+.radio-row label:has(input:checked).p { background: var(--domain-psychosis); border-color: var(--domain-psychosis); color: #fff; }
+.radio-row label:has(input:checked).n { background: var(--ink2); border-color: var(--ink2); color: #fff; }
 .radio-row label:has(input:checked).u { background: var(--ink); border-color: var(--ink); color: #fff; }
 
-.a10-strip { margin: 24px 0; padding: 20px 24px; border: 1px solid var(--line); display: flex; align-items: flex-start; gap: 32px; flex-wrap: wrap; }
+.a10-strip {
+  margin: 24px 0; padding: 24px 28px; border: 1px solid var(--line); border-radius: var(--radius-lg);
+  background: var(--surface); box-shadow: var(--shadow-sm); display: flex; align-items: flex-start; gap: 32px; flex-wrap: wrap;
+}
 .a10-count .n { font-family: var(--serif); font-size: 3rem; font-weight: 300; line-height: 1; }
 .a10-count .l { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink3); }
 .a10-status { font-size: .82rem; color: var(--ink3); margin-top: 4px; }
-.a10-status.ok { color: var(--accent); }
+.a10-status.ok { color: var(--domain-psychosis); font-weight: 500; }
 
-.sec-label { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); padding: 22px 0 4px; }
+.sec-label { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); padding: 26px 0 8px; }
 
-.dx-options { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
-.dx-options label { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid var(--line); cursor: pointer; font-size: .88rem; transition: border-color .15s; }
+.dx-options { margin-top: 8px; display: flex; flex-direction: column; gap: 8px; }
+.dx-options label { display: flex; align-items: center; gap: 10px; padding: 13px 16px; border: 1px solid var(--line); border-radius: var(--radius-md); cursor: pointer; font-size: .9rem; transition: all .15s; background: var(--surface); }
 .dx-options label:hover { border-color: var(--ink3); }
-.dx-options input { accent-color: var(--accent); }
-.dx-options label:has(input:checked) { border-color: var(--accent); background: var(--accent-bg); }
+.dx-options input { accent-color: var(--domain-psychosis); width: 16px; height: 16px; }
+.dx-options label:has(input:checked) { border-color: var(--domain-psychosis); background: var(--accent-bg); }
 
-.yn-row { display: flex; gap: 8px; padding-left: 44px; }
-.yn-row label { display: flex; align-items: center; gap: 6px; padding: 5px 14px; border: 1px solid var(--line); cursor: pointer; font-size: .82rem; font-weight: 500; color: var(--ink2); }
+.yn-row { display: flex; gap: 8px; padding-left: 40px; }
+.yn-row label { display: flex; align-items: center; gap: 6px; padding: 7px 16px; border: 1px solid var(--line); border-radius: var(--radius-pill); cursor: pointer; font-size: .82rem; font-weight: 500; color: var(--ink2); background: var(--bg-surface-alt, var(--surface)); transition: all .15s; }
+.yn-row label:hover { border-color: var(--ink3); color: var(--ink); }
 .yn-row input { display: none; }
-.yn-row label:has(input:checked) { background: var(--accent); border-color: var(--accent); color: #fff; }
+.yn-row label:has(input:checked) { background: var(--domain-psychosis); border-color: var(--domain-psychosis); color: #fff; }
 
-.hitop-block { padding: 18px 0; border-bottom: 1px solid var(--line); }
-.hitop-block:first-of-type { border-top: 1px solid var(--line); }
-.hitop-scale-name { font-size: .8rem; font-weight: 500; color: var(--ink); margin-bottom: 12px; }
-.hitop-pair { display: flex; flex-direction: column; gap: 10px; }
-.hitop-item { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-.hitop-item-text { flex: 1; min-width: 200px; font-size: .85rem; color: var(--ink2); }
-.likert { display: flex; gap: 4px; }
+.hitop-block { padding: 20px 22px; margin-bottom: 16px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); }
+.hitop-scale-name { font-size: .8rem; font-weight: 600; color: var(--ink); margin-bottom: 14px; }
+.hitop-pair { display: flex; flex-direction: column; gap: 0; }
+.hitop-item { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 14px 0; border-top: 1px solid var(--line); }
+.hitop-item:first-child { border-top: none; padding-top: 0; }
+.hitop-item-text { flex: 1; min-width: 200px; font-size: var(--text-sm); color: var(--ink); }
+.likert-legend { display: flex; gap: 8px; margin-bottom: 20px; background: var(--bg-surface-alt); border-radius: 12px; padding: 16px 18px; }
+.likert-legend-item { flex: 1; text-align: center; }
+.likert-legend-num { font-size: 22px; font-weight: 700; color: var(--domain-psychosis); }
+.likert-legend-label { font-size: 11px; color: var(--ink2); line-height: 1.3; margin-top: 2px; }
+.sec-label.hitop-scale { font-family: var(--sans); font-size: var(--text-xs); font-weight: 700; color: var(--domain-psychosis); border-bottom: 1px solid var(--accent-bg); padding: 8px 0; margin-top: 18px; }
+.likert { display: flex; gap: 6px; }
 .likert label { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
-.likert label .num { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: var(--ink3); transition: all .15s; }
+.likert label .num { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: var(--ink3); transition: all .15s; background: var(--bg-surface-alt, var(--surface)); }
+.likert label:hover .num { border-color: var(--domain-psychosis); }
 .likert input { display: none; }
-.likert label:has(input:checked) .num { background: var(--accent); border-color: var(--accent); color: #fff; }
+.likert label:has(input:checked) .num { background: var(--domain-psychosis); border-color: var(--domain-psychosis); color: #fff; }
 
 .ctab-wrap { overflow-x: auto; margin: 20px 0; }
 .ctab { width: 100%; border-collapse: collapse; font-size: .8rem; font-family: var(--sans); border: 1px solid #c4d4dc; }
@@ -195,100 +307,120 @@ hr { border: none; border-top: 1px solid var(--line); margin: 36px 0; }
 .ss-mid { position: absolute; left: 50%; top: -2px; width: 2px; height: 12px; background: #1a4a7a; }
 
 textarea.interp { width: 100%; border: 1px solid var(--line); padding: 10px 14px; font-family: var(--sans); font-size: .88rem; color: var(--ink); background: var(--surface); resize: vertical; min-height: 88px; line-height: 1.6; transition: border-color .2s; }
-textarea.interp:focus { outline: none; border-color: var(--accent); }
+textarea.interp:focus { outline: none; border-color: var(--domain-psychosis); }
 
-.btn { display: inline-flex; align-items: center; gap: 6px; padding: 12px 24px; border-radius: 999px; font-family: var(--sans); font-size: .85rem; font-weight: 600; cursor: pointer; border: 0; transition: all .15s; }
-.btn-p { background: var(--accent); color: #fff; box-shadow: none; }
-.btn-p:hover { filter: brightness(1.08); }
-.btn-s { background: transparent; color: var(--ink2); border: 1px solid var(--line); }
-.btn-s:hover { border-color: var(--ink3); color: var(--ink); }
 .nav-row { display: flex; gap: 10px; margin-top: 40px; }
 
 .alert { display: none; padding: 10px 14px; border-left: 3px solid #c00; background: #fff5f5; font-size: .83rem; color: #900; margin-top: 14px; }
 .alert.on { display: block; }
 
-.report-sec { border-top: 1px solid var(--line); padding: 28px 0; }
-.reflect-block { background: var(--accent-bg); border-radius: 14px; padding: 26px 28px; margin-top: 28px; }
+.report-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin: 0 -24px; }
+.report-sec { padding: 8px 24px; border-top: none; }
+.report-sec + .report-sec { border-left: 1px solid var(--line); }
+.report-sec-sub { font-size: .72em; font-weight: 400; color: var(--ink3); text-transform: none; }
+@media (max-width: 1200px) {
+  .report-cols { grid-template-columns: 1fr; margin: 0; }
+  .report-sec + .report-sec { border-left: none; border-top: 1px solid var(--line); margin-top: 8px; padding-top: 24px; }
+}
+.reflect-block { background: var(--accent-bg); border-radius: var(--radius-lg); padding: 26px 28px; margin-top: 28px; }
 .reflect-block h3 { font-family: var(--serif); font-size: 1.2rem; margin-bottom: 8px; text-transform: none; letter-spacing: 0; }
 .reflect-block .reflect-note { font-size: .88rem; color: var(--ink2); line-height: 1.6; margin-bottom: 16px; max-width: 60ch; }
 .reflect-block textarea { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-family: var(--sans); font-size: .88rem; color: var(--ink); background: var(--surface); resize: vertical; min-height: 88px; line-height: 1.6; margin-bottom: 14px; }
-.reflect-done-msg { display: flex; align-items: center; gap: 8px; font-size: .88rem; font-weight: 600; color: var(--accent); margin-bottom: 4px; }
-.report-sec h3 { margin-bottom: 18px; }
+.reflect-done-msg { display: flex; align-items: center; gap: 8px; font-size: .88rem; font-weight: 600; color: var(--domain-psychosis); margin-bottom: 4px; }
+.report-sec h3 { margin-bottom: 14px; font-size: 1.05rem; line-height: 1.4; }
 
-.dx-badge { display: inline-flex; align-items: center; gap: 12px; padding: 12px 20px; border: 1px solid var(--line); margin-bottom: 16px; }
+.dx-badge { display: inline-flex; align-items: center; gap: 12px; padding: 14px 22px; border-radius: var(--radius-lg); margin-bottom: 16px; }
 .dx-badge .dx-icon { font-size: 1.4rem; }
-.dx-badge .dx-name { font-size: 1rem; font-weight: 500; color: var(--ink); }
+.dx-badge .dx-name { font-size: 1rem; font-weight: 600; color: var(--ink); }
 .dx-badge .dx-sub { font-size: .78rem; color: var(--ink3); }
-.dx-badge.pos { border-color: var(--accent); background: var(--accent-bg); }
-.dx-badge.neg { border-color: #900; background: #fff5f5; }
+.dx-badge.pos { background: var(--accent-bg); }
+.dx-badge.neg { background: var(--bg-surface-alt, #f3f4f6); }
 
-.count-row { display: flex; border: 1px solid var(--line); margin-bottom: 14px; flex-wrap: wrap; }
-.count-cell { flex: 1; min-width: 110px; padding: 12px 16px; border-right: 1px solid var(--line); text-align: center; }
+.count-row { display: flex; border: 1px solid var(--line); border-radius: var(--radius-md); margin-bottom: 14px; flex-wrap: wrap; overflow: hidden; }
+.count-cell { flex: 1; min-width: 110px; padding: 16px; border-right: 1px solid var(--line); text-align: center; }
 .count-cell:last-child { border-right: none; }
 .count-cell .cn { font-family: var(--serif); font-size: 2rem; font-weight: 300; }
 .count-cell .cl { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink3); }
 
 .cpills { display: flex; gap: 6px; flex-wrap: wrap; }
-.cpill { font-size: .75rem; padding: 3px 10px; border: 1px solid var(--line); }
-.cpill.met { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
-.cpill.unm { border-color: #900; color: #900; background: #fff5f5; }
-.cpill.unk { color: var(--ink3); }
+.cpill { font-size: .75rem; padding: 5px 12px; border-radius: var(--radius-pill); font-weight: 500; }
+.cpill.met { color: var(--domain-psychosis); background: var(--accent-bg); }
+.cpill.unm { color: var(--ink2); background: var(--bg-surface-alt, #f3f4f6); }
+.cpill.unk { color: var(--ink3); background: var(--bg-surface-alt, #f3f4f6); }
 
 .ht-table { width: 100%; border-collapse: collapse; font-size: .84rem; margin-top: 8px; }
 .ht-table th { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .07em; color: var(--ink3); font-weight: 400; padding: 0 12px 8px; text-align: left; border-bottom: 1px solid var(--line); }
-.ht-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); color: var(--ink2); }
+.ht-table td { padding: 12px; border-bottom: 1px solid var(--line); color: var(--ink2); }
 .ht-table tbody tr:last-child td { border-bottom: none; }
 .ht-table .ht-n { font-family: var(--mono); font-size: .8rem; }
-.mini-bar { height: 6px; background: var(--line); width: 120px; overflow: hidden; display: inline-block; vertical-align: middle; }
-.mini-fill { height: 100%; transition: width .7s; background: var(--accent); }
+.mini-bar { height: 6px; background: var(--line); width: 120px; overflow: hidden; display: inline-block; vertical-align: middle; border-radius: var(--radius-pill); }
+.mini-fill { height: 100%; transition: width .7s; background: var(--domain-psychosis); border-radius: var(--radius-pill); }
 
-.interp-block { padding: 14px 0; border-top: 1px solid var(--line); }
+.interp-block { padding: 16px 0; border-top: 1px solid var(--line); }
 .interp-block .q { font-size: .78rem; color: var(--ink3); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .06em; }
 .interp-block p { font-size: .88rem; color: var(--ink2); line-height: 1.6; }
 
 @media (max-width: 600px) {
-  nav { padding: 0 16px; }
+  .eval-topbar { padding: 0 16px; }
   .wrap { padding: 36px 16px 80px; }
   h1 { font-size: 2rem; }
 }
 @media print {
-  nav, #bar, .nav-row { display: none !important; }
+  .eval-topbar, #bar, .nav-row { display: none !important; }
   .page { display: block !important; }
 }
 
-#ccg-viewport { transition: max-width .3s ease, min-width .3s ease, box-shadow .3s ease; }
-html[data-force-layout="phone"] #ccg-viewport {
-  max-width: 400px; margin: 18px auto; border-radius: 28px;
-  box-shadow: 0 0 0 1px var(--line), 0 24px 60px rgba(20,25,40,.18); overflow: hidden;
+
+
+/* ============================================================
+   JORDAN-STYLE QUESTIONNAIRE THEME - ported to match the flat,
+   list-divider look (no per-item card/shadow, italic prompts,
+   bordered+tinted selected state instead of filled pills).
+   ============================================================ */
+.scid-q { border: none; border-radius: 0; box-shadow: none; background: transparent; padding: 20px 0; border-top: 1px solid var(--line); margin: 0; }
+.scid-q:first-child { border-top: none; }
+.scid-q:has(.radio-row label.p:has(input:checked)) { border-color: var(--line); }
+.scid-code {
+  font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--ink3); background: none; border: none; border-radius: 0; width: auto; height: auto;
+  display: inline; padding: 0; margin-bottom: 6px;
 }
-html[data-force-layout="desktop"] { overflow-x: auto; }
-html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
+.scid-q-top { display: block; margin-bottom: 10px; }
+.scid-q-text { font-size: var(--text-base); font-style: italic; color: var(--ink); line-height: 1.6; margin-top: 4px; }
+.question-followup { font-size: var(--text-xs); color: var(--ink3); margin-top: 6px; font-style: italic; }
+.radio-row { padding-left: 0; gap: 12px; margin-top: 12px; }
+.radio-row label {
+  border-radius: 8px; border: 1px solid var(--line); background: var(--bg-surface-alt);
+  padding: 8px 20px; font-weight: 500; font-size: var(--text-sm); transition: all .15s;
+}
+.radio-row label:hover { border-color: var(--domain-psychosis); background: var(--accent-bg); }
+.radio-row label:has(input:checked).p,
+.radio-row label:has(input:checked).n,
+.radio-row label:has(input:checked).u {
+  background: var(--accent-bg); border-color: var(--domain-psychosis); color: var(--domain-psychosis); font-weight: 600;
+}
+
+.hitop-block { border: none; border-radius: 0; background: transparent; padding: 20px 0; border-top: 1px solid var(--line); margin-bottom: 0; }
+.instrument-card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px; box-shadow: var(--shadow-xs); }
+.instrument-card .scid-q:first-child, .instrument-card .hitop-block:first-child { border-top: none; }
+.hitop-block:first-child { border-top: none; }
+.likert label .num { border-radius: var(--radius-md); width: 40px; height: 40px; border-width: 1.5px; font-size: var(--text-sm); font-weight: 600; }
+.likert label:has(input:checked) .num { background: var(--domain-psychosis); border-color: var(--domain-psychosis); color: #fff; }
 
 </style>
 </head>
 <body>
-<div id="ccg-nav-root"></div>
-<script src="/nav.js" data-subtitle="Schizophrenia Seminar"></script>
-<script src="/storage.js"></script>
-<script src="/sidebar.js"></script>
+<script>
+  if (!localStorage.getItem("clincog_name")) { location.replace("/"); }
+</script>
 
-<div id="ccg-viewport">
+<div id="shell-content">
 <div id="bar"><div id="bar-fill" style="width:0%"></div></div>
 
-<nav>
-  <div class="nav-brand">Schizophrenia Module</div>
-  <div class="nav-steps">
-    <div class="s active" id="s0">1</div>
-    <div class="s" id="s1">2</div>
-    <div class="s" id="s2">3</div>
-    <div class="s" id="s3">4</div>
-    <div class="s" id="s4">5</div>
-    <div class="s" id="s5">6</div>
-  </div>
-</nav>
-
 <div class="page on" id="pg0">
-  <div class="wrap">
+  <div class="eval-layout two-col">
+    <aside class="eval-context" id="ctx-pg0"></aside>
+    <div class="eval-work" style="max-width:900px;">
     <div class="eyebrow">Seminar Activity · Schizophrenia Module</div>
     <h1>Three Ways to<br><em>Evaluate</em> Schizophrenia</h1>
     <p class="lead" style="max-width:540px;">You will read a clinical vignette and evaluate the same patient through three different conceptual frameworks. The lens shapes what you see.</p>
@@ -297,74 +429,91 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
       <div class="layer-row"><span class="layer-num">02</span><div class="layer-text"><span class="lt">Dimensional–Psychological — HiTOP-SR</span><span class="ls">Quantified severity · spectrum position</span></div></div>
       <div class="layer-row"><span class="layer-num">03</span><div class="layer-text"><span class="lt">Dimensional–Cognitive — MATRICS</span><span class="ls">Neuropsychological profile · mechanistic interpretation</span></div></div>
     </div>
-    <div class="nav-row" style="margin-top:12px;"><button class="btn btn-p" onclick="go(1)">Begin →</button></div>
+    <div class="nav-row" style="margin-top:12px;"><button class="btn btn-primary" onclick="go(1)">Begin →</button></div>
+    </div>
   </div>
 </div>
 
 <div class="page" id="pg1">
-  <div class="wrap">
-    <div class="eyebrow">Clinical Vignette</div>
-    <div class="patient-line"><h2>Dennis, 25</h2><span>College student · First psychiatric contact</span></div>
-    <div class="vignette">
-      <p>Dennis, a 25-year-old college student, had always been known for his academic excellence and enthusiasm for learning. Over the past year, his friends and family began noticing subtle but concerning changes. He became increasingly withdrawn, spending long hours alone in his room, barely engaging in conversations, and showing little interest in activities he once enjoyed. His once vibrant personality dulled, and his academic performance declined significantly &mdash; his professors noted he struggled to concentrate, and his work became disorganized, often incomplete or lacking coherence when submitted at all. His hygiene deteriorated, with unwashed clothes and an unkempt appearance becoming the norm. His family initially attributed these changes to academic stress.</p>
-      <p>In recent weeks, Dennis&rsquo;s condition escalated dramatically. One evening, his parents found him pacing frantically around the house, muttering to himself and casting nervous glances at the windows. When asked what was wrong, he responded cryptically, insisting that government agents had planted cameras in their home to monitor him. He became increasingly agitated, accusing his family of conspiring against him, and refused to eat food prepared by his mother, convinced it was poisoned. At times he would burst into laughter for no apparent reason or engage in heated arguments with unseen entities, spending hours responding to voices no one else could hear.</p>
-      <p>His speech became erratic, often shifting from one topic to another without any logical connection &mdash; he would start a sentence but lose his train of thought midway, jumping to unrelated subjects. His family grew deeply concerned when he began wandering the streets at night, dressed in mismatched clothes, gesturing wildly at invisible figures. On one occasion, he was found standing motionless in the backyard, staring at the sky, whispering about secret messages hidden in the stars.</p>
-      <p>Dennis&rsquo;s deteriorating condition reached a critical point when he attempted to barricade himself in his room, convinced that shadowy figures were coming to take him away. This is his first psychiatric contact.</p>
+  <div class="eval-layout two-col">
+    <aside class="eval-context" id="ctx-pg1"></aside>
+    <div class="eval-work" style="max-width:820px;">
+    <h1 class="vignette-page-title">Clinical Vignette</h1>
+    <p class="vignette-page-sub">Read the case carefully before administering the assessment tools.</p>
+    <div class="vignette-card">
+      <div class="vignette-card-name">Dennis, 25</div>
+      <div class="vignette-card-meta">College student · First psychiatric contact</div>
+      <div class="vignette-card-divider"></div>
+      <div class="vignette-section">
+        <div class="vignette-section-title">Presentation</div>
+        <p>Dennis, a 25-year-old college student, had always been known for his academic excellence and enthusiasm for learning. Over the past year, his friends and family began noticing subtle but concerning changes. He became increasingly withdrawn, spending long hours alone in his room, barely engaging in conversations, and showing little interest in activities he once enjoyed. His once vibrant personality dulled, and his academic performance declined significantly &mdash; his professors noted he struggled to concentrate, and his work became disorganized, often incomplete or lacking coherence when submitted at all. His hygiene deteriorated, with unwashed clothes and an unkempt appearance becoming the norm. His family initially attributed these changes to academic stress.</p>
+      </div>
+      <div class="vignette-section">
+        <div class="vignette-section-title">Acute Psychotic Symptoms</div>
+        <p>In recent weeks, Dennis&rsquo;s condition escalated dramatically. One evening, his parents found him pacing frantically around the house, muttering to himself and casting nervous glances at the windows. When asked what was wrong, he responded cryptically, insisting that government agents had planted cameras in their home to monitor him. At times he would burst into laughter for no apparent reason or engage in heated arguments with unseen entities, spending hours responding to voices no one else could hear.</p>
+        <div class="vignette-highlight">He became increasingly agitated, accusing his family of conspiring against him, and refused to eat food prepared by his mother, convinced it was poisoned.</div>
+      </div>
+      <div class="vignette-section">
+        <div class="vignette-section-title">Behavioral &amp; Speech Changes</div>
+        <p>His speech became erratic, often shifting from one topic to another without any logical connection &mdash; he would start a sentence but lose his train of thought midway, jumping to unrelated subjects. His family grew deeply concerned when he began wandering the streets at night, dressed in mismatched clothes, gesturing wildly at invisible figures. On one occasion, he was found standing motionless in the backyard, staring at the sky, whispering about secret messages hidden in the stars.</p>
+      </div>
+      <div class="vignette-section">
+        <div class="vignette-section-title">Presenting Crisis</div>
+        <p>Dennis&rsquo;s deteriorating condition reached a critical point when he attempted to barricade himself in his room, convinced that shadowy figures were coming to take him away. This is his first psychiatric contact.</p>
+      </div>
     </div>
     <div class="nav-row">
-      <button class="btn btn-s" onclick="go(0)">← Back</button>
-      <button class="btn btn-p" onclick="go(2)">Proceed to ICD-11 →</button>
+      <button class="btn btn-secondary" onclick="go(0)">← Back</button>
+      <button class="btn btn-primary" onclick="go(2)">Proceed to ICD-11 →</button>
+    </div>
     </div>
   </div>
 </div>
 
 <div class="page" id="pg2">
-  <div class="wrap">
+  <div class="eval-layout">
+    <aside class="eval-context" id="ctx-pg2"></aside>
+    <div class="eval-work">
     <div class="eyebrow">Layer 1 · Categorical · ICD-11</div>
     <h2>Let's confirm this by rating the clinical symptoms described by the character through structured questions.</h2>
     <p class="lead" style="margin-bottom:6px;">Rate each symptom domain from the ICD-11 Clinical Descriptions and Diagnostic Requirements (CDDR) for Schizophrenia (6A20), reproduced verbatim below.</p>
-    <div class="callout"><strong>Rating guide:</strong>&ensp; <strong>+</strong> = Present &ensp;|&ensp; <strong>&minus;</strong> = Absent &ensp;|&ensp; <strong>?</strong> = Inadequate information</div>
 
     <div class="sec-label">Essential (Required) Features</div>
     <p style="font-size:.85rem;color:var(--ink2);margin-bottom:14px;">At least two of the following symptoms must be present (by the individual's report or through observation by the clinician or other informants) most of the time for a period of 1 month or more. At least one of the qualifying symptoms should be from item a) through d) below.</p>
 
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">a)</span><div class="scid-q-text">Persistent delusions (e.g., grandiose delusions, delusions of reference, persecutory delusions).</div></div>
+    <div class="instrument-card">
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">a)</span><div class="scid-q-text">Persistent delusions (e.g., grandiose delusions, delusions of reference, persecutory delusions).</div><div class="question-followup">↳ One of the two most robust indicators of psychotic disorder, especially when bizarre or mood-incongruent.</div></div>
       <div class="radio-row"><label class="p"><input type="radio" name="cddr_a" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_a" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_a" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
 
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">b)</span><div class="scid-q-text">Persistent hallucinations (most commonly auditory, although they may be in any sensory modality).</div></div>
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">b)</span><div class="scid-q-text">Persistent hallucinations (most commonly auditory, although they may be in any sensory modality).</div><div class="question-followup">↳ Auditory hallucinations are the most common presentation in schizophrenia; note modality and content when documenting.</div></div>
       <div class="radio-row"><label class="p"><input type="radio" name="cddr_b" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_b" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_b" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
 
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">c)</span><div class="scid-q-text">Disorganized thinking (formal thought disorder) (e.g., tangentiality and loose associations, irrelevant speech, neologisms). When severe, the person's speech may be so incoherent as to be incomprehensible ('word salad').</div></div>
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">c)</span><div class="scid-q-text">Disorganized thinking (formal thought disorder) (e.g., tangentiality and loose associations, irrelevant speech, neologisms). When severe, the person's speech may be so incoherent as to be incomprehensible ('word salad').</div><div class="question-followup">↳ A disturbance in the form of thought, not just its content — often directly observable in speech during interview.</div></div>
       <div class="radio-row"><label class="p"><input type="radio" name="cddr_c" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_c" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_c" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
 
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">d)</span><div class="scid-q-text">Experiences of influence, passivity or control (i.e., the experience that one's feelings, impulses, actions or thoughts are not generated by oneself, are being placed in one's mind or withdrawn from one's mind by others, or that one's thoughts are being broadcast to others).</div></div>
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">d)</span><div class="scid-q-text">Experiences of influence, passivity or control (i.e., the experience that one's feelings, impulses, actions or thoughts are not generated by oneself, are being placed in one's mind or withdrawn from one's mind by others, or that one's thoughts are being broadcast to others).</div><div class="question-followup">↳ Historically considered a first-rank symptom highly specific to schizophrenia, though ICD-11 no longer weights it above other domains.</div></div>
       <div class="radio-row"><label class="p"><input type="radio" name="cddr_d" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_d" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_d" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
 
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">e)</span><div class="scid-q-text">Negative symptoms such as affective flattening, alogia or paucity of speech, avolition, asociality and anhedonia.</div></div>
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">e)</span><div class="scid-q-text">Negative symptoms such as affective flattening, alogia or paucity of speech, avolition, asociality and anhedonia.</div><div class="question-followup">↳ Often the most functionally impairing domain over time, yet easily under-recognized against more visible positive symptoms.</div></div>
       <div class="radio-row"><label class="p"><input type="radio" name="cddr_e" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_e" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_e" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
 
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">f)</span><div class="scid-q-text">Grossly disorganized behaviour that impedes goal-directed activity (e.g., behaviour that appears bizarre or purposeless, unpredictable or inappropriate emotional responses that interferes with the ability to organize behaviour).</div></div>
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">f)</span><div class="scid-q-text">Grossly disorganized behaviour that impedes goal-directed activity (e.g., behaviour that appears bizarre or purposeless, unpredictable or inappropriate emotional responses that interferes with the ability to organize behaviour).</div><div class="question-followup">↳ Distinct from the exclusion criterion below — this refers to behavioural disorganization itself, not a medical or substance cause.</div></div>
       <div class="radio-row"><label class="p"><input type="radio" name="cddr_f" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_f" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_f" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
 
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">g)</span><div class="scid-q-text">Psychomotor disturbances such as catatonic restlessness or agitation, posturing, waxy flexibility, negativism, mutism, or stupor.</div></div>
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">g)</span><div class="scid-q-text">Psychomotor disturbances such as catatonic restlessness or agitation, posturing, waxy flexibility, negativism, mutism, or stupor.</div><div class="question-followup">↳ Includes catatonic presentations; ICD-11 folds these directly into the core symptom list rather than treating them as a separate specifier.</div></div>
       <div class="radio-row"><label class="p"><input type="radio" name="cddr_g" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_g" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_g" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
-
-    <div class="a10-strip">
-      <div class="a10-count"><div class="n" id="cddrCount">0</div><div class="l">Symptom domains present (of 7)</div></div>
-      <div>
-        <div class="a10-status" id="cddrStatus">Rate each item to update the count.</div>
-        <div class="a10-status" id="cddrCoreStatus"></div>
-      </div>
     </div>
 
     <div class="sec-label">Exclusion Criterion</div>
+    <div class="instrument-card">
     <div class="scid-q"><div class="scid-q-top"><span class="scid-code">&#10005;</span><div class="scid-q-text">The symptoms are not a manifestation of another medical condition (e.g., a brain tumour) and are not due to the effects of a substance or medication (e.g., corticosteroids) on the central nervous system, including withdrawal effects (e.g., from alcohol).</div></div>
       <div class="yn-row"><label><input type="radio" name="cddr_exclusion" value="yes" onchange="countCddr()"> Confirmed</label><label><input type="radio" name="cddr_exclusion" value="no" onchange="countCddr()"> Not confirmed</label></div></div>
+    </div>
 
     <div class="sec-label">Conclusion</div>
     <div class="dx-options">
-      <label><input type="radio" name="sdx" value="with"> Meets diagnostic requirements for Schizophrenia (6A20)</label>
-      <label><input type="radio" name="sdx" value="without"> Does not meet diagnostic requirements for Schizophrenia (6A20)</label>
+      <label><input type="radio" name="sdx" value="with" onchange="countCddr()"> Meets diagnostic requirements for Schizophrenia (6A20)</label>
+      <label><input type="radio" name="sdx" value="without" onchange="countCddr()"> Does not meet diagnostic requirements for Schizophrenia (6A20)</label>
     </div>
 
     <div class="callout" style="font-size:.76rem;margin-top:26px;line-height:1.6;">
@@ -373,20 +522,30 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
 
     <div class="alert" id="scidAl">Please rate all 7 symptom domains, the exclusion criterion, and record a conclusion before continuing.</div>
     <div class="nav-row">
-      <button class="btn btn-s" onclick="go(1)">← Vignette</button>
-      <button class="btn btn-p" onclick="valSCID()">Proceed to HiTOP-SR →</button>
+      <button class="btn btn-secondary" onclick="go(1)">← Vignette</button>
+      <button class="btn btn-primary" onclick="valSCID()">Proceed to HiTOP-SR →</button>
+    </div>
     </div>
   </div>
 </div>
 
 <div class="page" id="pg3">
-  <div class="wrap">
+  <div class="eval-layout">
+    <aside class="eval-context" id="ctx-pg3"></aside>
+    <div class="eval-work">
     <div class="eyebrow">Layer 2 · Dimensional–Psychological</div>
     <h2>HiTOP-SR — Detachment &amp; Thought Disorder Spectra</h2>
     <p class="lead" style="margin-bottom:6px;">Rate each statement as if Dennis had completed this self-report himself, based on the vignette.</p>
-    <div class="callout">Please consider whether there have been significant times during the last 12 months during which the following statements applied.<br><strong>1 = Not at all &nbsp; 2 = A little &nbsp; 3 = Moderately &nbsp; 4 = A lot</strong></div>
+    <div class="callout">Please consider whether there have been significant times during the last 12 months during which the following statements applied.</div>
 
-    <div class="sec-label">Detachment — Restricted Affectivity</div>
+    <div class="instrument-card">
+    <div class="likert-legend">
+      <div class="likert-legend-item"><div class="likert-legend-num">1</div><div class="likert-legend-label">Not at all</div></div>
+      <div class="likert-legend-item"><div class="likert-legend-num">2</div><div class="likert-legend-label">A little</div></div>
+      <div class="likert-legend-item"><div class="likert-legend-num">3</div><div class="likert-legend-label">Moderately</div></div>
+      <div class="likert-legend-item"><div class="likert-legend-num">4</div><div class="likert-legend-label">A lot</div></div>
+    </div>
+    <div class="sec-label hitop-scale">Detachment — Restricted Affectivity</div>
     <div class="hitop-block">
       <div class="hitop-pair">
         <div class="hitop-item"><span class="hitop-item-text">I hid my emotions.</span><div class="likert"><label><input type="radio" name="ra1" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="ra1" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="ra1" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="ra1" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
@@ -397,7 +556,7 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
       </div>
     </div>
 
-    <div class="sec-label">Detachment — Social Aloofness</div>
+    <div class="sec-label hitop-scale">Detachment — Social Aloofness</div>
     <div class="hitop-block">
       <div class="hitop-pair">
         <div class="hitop-item"><span class="hitop-item-text">When I had the chance, I chose to be alone rather than with other people.</span><div class="likert"><label><input type="radio" name="sa1" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="sa1" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="sa1" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="sa1" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
@@ -408,7 +567,7 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
       </div>
     </div>
 
-    <div class="sec-label">Thought Disorder — Dissociation</div>
+    <div class="sec-label hitop-scale">Thought Disorder — Dissociation</div>
     <div class="hitop-block">
       <div class="hitop-pair">
         <div class="hitop-item"><span class="hitop-item-text">I had the experience that everything suddenly seemed unfamiliar and I forgot where I was.</span><div class="likert"><label><input type="radio" name="ds1" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="ds1" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="ds1" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="ds1" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
@@ -420,7 +579,7 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
       </div>
     </div>
 
-    <div class="sec-label">Thought Disorder — Fantasy Proneness</div>
+    <div class="sec-label hitop-scale">Thought Disorder — Fantasy Proneness</div>
     <div class="hitop-block">
       <div class="hitop-pair">
         <div class="hitop-item"><span class="hitop-item-text">I was prone to daydreaming.</span><div class="likert"><label><input type="radio" name="fp1" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="fp1" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="fp1" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="fp1" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
@@ -431,17 +590,21 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
         <div class="hitop-item"><span class="hitop-item-text">I lost myself in a fictional character.</span><div class="likert"><label><input type="radio" name="fp6" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="fp6" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="fp6" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="fp6" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
       </div>
     </div>
+    </div>
 
     <div class="alert" id="htAl">Please complete all 22 HiTOP-SR items before continuing.</div>
     <div class="nav-row">
-      <button class="btn btn-s" onclick="go(2)">← ICD-11</button>
-      <button class="btn btn-p" onclick="valHiTOP()">Proceed to MATRICS →</button>
+      <button class="btn btn-secondary" onclick="go(2)">← ICD-11</button>
+      <button class="btn btn-primary" onclick="valHiTOP()">Proceed to MATRICS →</button>
+    </div>
     </div>
   </div>
 </div>
 
 <div class="page" id="pg4">
-  <div class="wrap">
+  <div class="eval-layout">
+    <aside class="eval-context" id="ctx-pg4"></aside>
+    <div class="eval-work">
     <div class="eyebrow">Layer 3 · Dimensional–Cognitive</div>
     <h2>MATRICS Consensus Cognitive Battery</h2>
     <p class="lead" style="margin-bottom:20px;">Read Dennis's automated MATRICS results, then answer the interpretation questions.</p>
@@ -484,28 +647,32 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
 
     <h3 style="margin-bottom:16px;">Interpretation Questions</h3>
     <div style="display:flex;flex-direction:column;gap:18px;">
-      <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">1. Describe the pattern shown here. Which measure falls further below the norm, and what cognitive domain does it reflect?</label><textarea class="interp" id="cog1" placeholder="Discuss processing speed and working memory findings…"></textarea></div>
-      <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">2. How do these deficits connect to the vignette? Which of Dennis's difficulties — academic decline, disorganized speech, losing his train of thought — can now be explained neuropsychologically?</label><textarea class="interp" id="cog2" placeholder="Link test data to Dennis's academic and functional decline…"></textarea></div>
-      <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">3. What does the cognitive layer add that ICD-11 categories or the HiTOP-SR alone could not reveal?</label><textarea class="interp" id="cog3" placeholder="Mechanisms, functional prognosis, treatment implications…"></textarea></div>
+      <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">1. Describe the pattern shown here. Which measure falls further below the norm, and what cognitive domain does it reflect?</label><textarea class="interp" id="cog1" oninput="tick()" placeholder="Discuss processing speed and working memory findings…"></textarea></div>
+      <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">2. How do these deficits connect to the vignette? Which of Dennis's difficulties — academic decline, disorganized speech, losing his train of thought — can now be explained neuropsychologically?</label><textarea class="interp" id="cog2" oninput="tick()" placeholder="Link test data to Dennis's academic and functional decline…"></textarea></div>
+      <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">3. What does the cognitive layer add that ICD-11 categories or the HiTOP-SR alone could not reveal?</label><textarea class="interp" id="cog3" oninput="tick()" placeholder="Mechanisms, functional prognosis, treatment implications…"></textarea></div>
     </div>
 
     <div class="alert" id="matAl">Please answer at least the first two questions before generating the report.</div>
     <div class="nav-row">
-      <button class="btn btn-s" onclick="go(3)">← HiTOP-SR</button>
-      <button class="btn btn-p" onclick="valMATRICS()">Generate Report →</button>
+      <button class="btn btn-secondary" onclick="go(3)">← HiTOP-SR</button>
+      <button class="btn btn-primary" onclick="valMATRICS()">Generate Report →</button>
+    </div>
     </div>
   </div>
 </div>
 
 <div class="page" id="pg5">
-  <div class="wrap">
+  <div class="eval-layout two-col">
+    <aside class="eval-context" id="ctx-pg5"></aside>
+    <div class="eval-work" style="max-width:1700px;">
     <div class="eyebrow">Comparative Evaluation Report</div>
     <h2 style="margin-bottom:4px;">Dennis, 25</h2>
     <p style="color:var(--ink3);font-size:.85rem;margin-bottom:8px;">College student · Generated from your responses</p>
     <hr />
 
+    <div class="report-cols">
     <div class="report-sec">
-      <h3>Layer 1 — Categorical (ICD-11 / CDDR)</h3>
+      <h3>Layer 1 — Categorical<br><span class="report-sec-sub">ICD-11 / CDDR</span></h3>
       <div id="r-dx"></div>
       <div class="count-row" id="r-counts" style="margin-top:12px;"></div>
       <div class="cpills" id="r-pills" style="margin-top:10px;"></div>
@@ -513,22 +680,22 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
     </div>
 
     <div class="report-sec">
-      <h3>Layer 2 — Dimensional (HiTOP-SR)</h3>
+      <h3>Layer 2 — Dimensional<br><span class="report-sec-sub">HiTOP-SR</span></h3>
       <table class="ht-table">
-        <thead><tr><th>Subscale</th><th>Spectrum</th><th>Raw total</th><th>Range</th><th>Profile</th></tr></thead>
+        <thead><tr><th>Subscale</th><th>Spectrum</th><th>Raw</th><th>Range</th><th>Profile</th></tr></thead>
         <tbody id="r-ht-body"></tbody>
       </table>
-      <p style="font-size:.74rem;color:var(--ink3);margin-top:10px;">Raw totals shown — each subscale's item count sets its possible range on a 1 (not at all) – 4 (a lot) scale. No population norms are attached here; use the raw totals to compare Dennis's relative elevation across subscales, not against a normed population.</p>
+      <p style="font-size:.7rem;color:var(--ink3);margin-top:10px;">Raw totals shown — each subscale's item count sets its possible range (1–4 scale). No population norms attached; compare relative elevation across subscales, not against a normed population.</p>
     </div>
 
     <div class="report-sec">
-      <h3>Layer 3 — Dimensional–Cognitive (MATRICS)</h3>
+      <h3>Layer 3 — Dimensional–Cognitive<br><span class="report-sec-sub">MATRICS</span></h3>
       <div class="ctab-wrap">
-        <table class="ctab" style="font-size:.78rem;">
-          <thead><tr><th>Test / Measure</th><th>Raw</th><th>Std Score</th><th>Standard Score Chart</th><th>Percentile</th></tr></thead>
+        <table class="ctab" style="font-size:.72rem;">
+          <thead><tr><th>Measure</th><th>Raw</th><th>Std</th><th>Chart</th><th>%ile</th></tr></thead>
           <tbody>
             <tr class="tr-head"><td colspan="5">Speed of Processing</td></tr>
-            <tr><td class="mn">Trail Making Test — Part A</td><td>96 sec</td><td class="imp">−1.85</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill imp" style="width:20%"></div><div class="ss-mid"></div></div></div></td><td>3%</td></tr>
+            <tr><td class="mn">TMT — Part A</td><td>96s</td><td class="imp">−1.85</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill imp" style="width:20%"></div><div class="ss-mid"></div></div></div></td><td>3%</td></tr>
             <tr class="tr-head"><td colspan="5">Working Memory</td></tr>
             <tr><td class="mn">Letter–Number Span</td><td>7</td><td class="brd">−1.30</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill brd" style="width:29%"></div><div class="ss-mid"></div></div></div></td><td>9%</td></tr>
           </tbody>
@@ -537,6 +704,7 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
       <div class="interp-block"><div class="q">Pattern of impairment</div><p id="r-cog1" style="white-space:pre-wrap;"></p></div>
       <div class="interp-block"><div class="q">Connection to vignette</div><p id="r-cog2" style="white-space:pre-wrap;"></p></div>
     </div>
+    </div>
 
     <hr />
     <div class="reflect-block" id="reflect-block">
@@ -544,20 +712,135 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
       <p class="reflect-note">You approached Dennis from three perspectives — a categorical diagnosis, a dimensional profile, and a cognitive task. Write a few sentences on what exploring the case this way taught you, then mark it complete.</p>
       <textarea id="reflect-text" placeholder="What did looking at Dennis's case from three angles add to your understanding?"></textarea>
       <div id="reflect-done" style="display:none;"></div>
-      <button class="btn btn-p" id="reflect-btn" onclick="completeCase()">Complete case →</button>
+      <button class="btn btn-primary" id="reflect-btn" onclick="completeCase()">Complete case →</button>
     </div>
     <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;padding-top:20px;">
-      <button class="btn btn-s" onclick="window.print()">Print</button>
-      <button class="btn btn-s" onclick="go(1)">← Vignette</button>
-      <button class="btn btn-s" onclick="go(0)">↺ Start over</button>
+      <button class="btn btn-secondary" onclick="window.print()">Print</button>
+      <button class="btn btn-secondary" onclick="go(1)">← Vignette</button>
+      <button class="btn btn-secondary" onclick="go(0)">↺ Start over</button>
+    </div>
     </div>
   </div>
 </div>
 </div>
 
+<script>window.CLINCOG_SHELL = { autoCollapse: true, activeCaseId: "schizophrenia", breadcrumb: [{ label: "Dashboard", href: "/dashboard.html" }, { label: "Cases", href: "/dashboard.html" }, { label: "Dennis", href: "/schizophrenia-chat.html" }, { label: "Evaluation" }] };</script>
+<script src="/storage.js"></script>
+<script src="/icons.js"></script>
+<script src="/shell.js?v=2"></script>
 <script src="/reveal.js"></script>
 <script src="/a11y.js"></script>
 <script>
+const STEP_LABELS = ["Overview", "Vignette", "ICD-11", "HiTOP-SR", "MATRICS", "Report"];
+
+function verticalStepperHtml() {
+  const rows = STEP_LABELS.map((label, i) => `
+    <div class="v-step" data-step="${i}" onclick="stepClick(${i})">
+      <div class="v-step-line"></div>
+      <div class="v-step-dot">${i + 1}</div>
+      <div class="v-step-label">${label}</div>
+    </div>`).join('');
+  return `<div class="ctx-card"><div class="ctx-card-body v-stepper-card"><div class="v-stepper">${rows}</div></div></div>`;
+}
+
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function buildConceptHistoryHtml() {
+  const history = (typeof ClinCog !== "undefined") ? ClinCog.getHistory("schizophrenia") : [];
+  if (!history || history.length === 0) {
+    return '<div class="ctx-chat-empty">You haven\'t started this conversation yet.</div>';
+  }
+  return '<div class="ctx-chat">' + history.map(m => {
+    const who = m.role === "user" ? "from-student" : "from-patient";
+    return `<div class="chat-row ${who}"><div class="chat-bubble">${escapeHtml(m.content)}</div></div>`;
+  }).join('') + '</div>';
+}
+
+function toggleCtxCard(btn) {
+  const card = btn.closest('.ctx-card');
+  const body = card.querySelector('.ctx-body');
+  if (card.classList.contains('open')) {
+    body.style.maxHeight = '0px';
+    card.classList.remove('open');
+  } else {
+    card.classList.add('open');
+    body.style.maxHeight = body.scrollHeight + 'px';
+  }
+}
+
+function fullContextExtrasHtml() {
+  return `
+    <div class="ctx-card"><div class="ctx-card-body">
+      <div class="ctx-patient-name">Dennis, 25</div>
+      <div class="ctx-patient-meta">College student · First psychiatric contact</div>
+      <div class="ctx-patient-complaint">Brought in by family after attempting to barricade himself in his room, convinced shadowy figures were coming to take him away.</div>
+    </div></div>
+    <div class="ctx-card" data-role="vignette">
+      <div class="ctx-card-header">
+        <h4 style="margin:0;">Clinical vignette</h4>
+        <button type="button" class="ctx-toggle-btn" onclick="toggleCtxCard(this)" aria-label="Expand"><span class="chev">▾</span></button>
+      </div>
+      <div class="ctx-body"><div class="ctx-card-body"><div class="ctx-vignette-text">${VIGNETTE_HTML}</div></div></div>
+    </div>
+    <div class="ctx-card" data-role="chat">
+      <div class="ctx-card-header">
+        <h4 style="margin:0;">Your conversation with Dennis</h4>
+        <button type="button" class="ctx-toggle-btn" onclick="toggleCtxCard(this)" aria-label="Expand"><span class="chev">▾</span></button>
+      </div>
+      <div class="ctx-body"><div class="ctx-card-body">${buildConceptHistoryHtml()}</div></div>
+    </div>
+    <div class="ctx-card"><div class="ctx-card-body">
+      <h4>Rating guide</h4>
+      <div class="ctx-guide-row"><span class="ctx-guide-mark p">+</span> Present</div>
+      <div class="ctx-guide-row"><span class="ctx-guide-mark n">&minus;</span> Absent</div>
+      <div class="ctx-guide-row"><span class="ctx-guide-mark u">?</span> Inadequate information</div>
+    </div></div>`;
+}
+
+const VIGNETTE_HTML = `
+  <p>Dennis, a 25-year-old college student, had always been known for his academic excellence and enthusiasm for learning. Over the past year, his friends and family began noticing subtle but concerning changes. He became increasingly withdrawn, spending long hours alone in his room, barely engaging in conversations, and showing little interest in activities he once enjoyed. His once vibrant personality dulled, and his academic performance declined significantly &mdash; his professors noted he struggled to concentrate, and his work became disorganized, often incomplete or lacking coherence when submitted at all. His hygiene deteriorated, with unwashed clothes and an unkempt appearance becoming the norm. His family initially attributed these changes to academic stress.</p>
+  <p>In recent weeks, Dennis&rsquo;s condition escalated dramatically. One evening, his parents found him pacing frantically around the house, muttering to himself and casting nervous glances at the windows. When asked what was wrong, he responded cryptically, insisting that government agents had planted cameras in their home to monitor him. He became increasingly agitated, accusing his family of conspiring against him, and refused to eat food prepared by his mother, convinced it was poisoned. At times he would burst into laughter for no apparent reason or engage in heated arguments with unseen entities, spending hours responding to voices no one else could hear.</p>
+  <p>His speech became erratic, often shifting from one topic to another without any logical connection &mdash; he would start a sentence but lose his train of thought midway, jumping to unrelated subjects. His family grew deeply concerned when he began wandering the streets at night, dressed in mismatched clothes, gesturing wildly at invisible figures. On one occasion, he was found standing motionless in the backyard, staring at the sky, whispering about secret messages hidden in the stars.</p>
+  <p>Dennis&rsquo;s deteriorating condition reached a critical point when he attempted to barricade himself in his room, convinced that shadowy figures were coming to take him away. This is his first psychiatric contact.</p>`;
+
+const FULL_CONTEXT_IDS = ["ctx-pg2", "ctx-pg3", "ctx-pg4"];
+
+function scoringMiniHtml(pageId) {
+  if (pageId === "ctx-pg2") {
+    return `<div class="mini-stats">
+      <div class="mini-stat"><div class="mini-stat-num"><span id="cddrCount">0</span>/7</div><div class="mini-stat-lbl">symptoms</div></div>
+    </div>
+    <span id="cddrStatus" style="display:none;"></span><span id="cddrCoreStatus" style="display:none;"></span>
+    <span id="dot-a" style="display:none;"></span><span id="dot-b" style="display:none;"></span><span id="dot-c" style="display:none;"></span>
+    <span id="dot-d" style="display:none;"></span><span id="dot-e" style="display:none;"></span><span id="dot-f" style="display:none;"></span><span id="dot-g" style="display:none;"></span>`;
+  }
+  if (pageId === "ctx-pg3") {
+    return `<div class="mini-stats">
+      <div class="mini-stat"><div class="mini-stat-num"><span id="hitopCount">0</span>/22</div><div class="mini-stat-lbl">items</div></div>
+    </div>`;
+  }
+  if (pageId === "ctx-pg4") {
+    return `<div class="mini-stats">
+      <div class="mini-stat"><div class="mini-stat-num" id="matCount">0/2</div><div class="mini-stat-lbl">answered</div></div>
+    </div>`;
+  }
+  return '';
+}
+
+function paintContextPanels() {
+  document.querySelectorAll('.eval-context').forEach(el => {
+    const isFull = FULL_CONTEXT_IDS.includes(el.id);
+    const extras = isFull ? fullContextExtrasHtml() : '';
+    const mini = isFull ? scoringMiniHtml(el.id) : '';
+    el.innerHTML = `<div class="ctx-sticky-top">${verticalStepperHtml()}${mini}</div>`
+      + (extras ? `<div class="ctx-scroll-area">${extras}</div>` : '');
+  });
+}
+
 function completeCase() {
   const text = document.getElementById('reflect-text').value;
   ClinCog.markCaseComplete('schizophrenia', text);
@@ -577,21 +860,68 @@ function paintReflectState() {
 }
 
 let cur = 0;
+let maxStepReached = 0;
+function stepClick(n) {
+  // Any step already reached before (regardless of current position after
+  // navigating back) stays clickable - only genuinely unvisited steps ahead
+  // are gated behind validation.
+  if (n <= maxStepReached) go(n);
+}
 function go(n) {
   document.getElementById('pg'+cur).classList.remove('on');
   cur = n;
+  if (n > maxStepReached) maxStepReached = n;
   document.getElementById('pg'+cur).classList.add('on');
   window.scrollTo({top:0, behavior:'smooth'});
   tick();
+  expandContextCardsByDefault();
   if (n === 5) { ClinCog.markEvalReached('schizophrenia'); buildReport(); paintReflectState(); }
 }
+function stepFraction() {
+  if (cur === 2) {
+    let done = 0;
+    ['a','b','c','d','e','f','g'].forEach(it => { if (document.querySelector('input[name="cddr_'+it+'"]:checked')) done++; });
+    if (document.querySelector('input[name="cddr_exclusion"]:checked')) done++;
+    if (document.querySelector('input[name="sdx"]:checked')) done++;
+    return done / 9;
+  }
+  if (cur === 3) {
+    const names = ['ra1','ra2','ra3','ra4','ra5','sa1','sa2','sa3','sa4','sa5','ds1','ds2','ds3','ds4','ds5','ds6','fp1','fp2','fp3','fp4','fp5','fp6'];
+    let done = 0;
+    names.forEach(n => { if (document.querySelector('input[name="'+n+'"]:checked')) done++; });
+    return done / names.length;
+  }
+  if (cur === 4) {
+    let done = 0;
+    if (document.getElementById('cog1')?.value.trim()) done++;
+    if (document.getElementById('cog2')?.value.trim()) done++;
+    return done / 2;
+  }
+  return 0;
+}
 function tick() {
-  document.getElementById('bar-fill').style.width = (cur/5*100) + '%';
+  const frac = stepFraction();
+  document.getElementById('bar-fill').style.width = ((cur + frac) / 5 * 100) + '%';
+  if (cur === 4) {
+    const done = (document.getElementById('cog1')?.value.trim() ? 1 : 0) + (document.getElementById('cog2')?.value.trim() ? 1 : 0);
+    const el = document.getElementById('matCount');
+    if (el) el.textContent = done + '/2';
+  }
+  if (cur === 3) {
+    const names = ['ra1','ra2','ra3','ra4','ra5','sa1','sa2','sa3','sa4','sa5','ds1','ds2','ds3','ds4','ds5','ds6','fp1','fp2','fp3','fp4','fp5','fp6'];
+    let done = 0;
+    names.forEach(n => { if (document.querySelector('input[name="'+n+'"]:checked')) done++; });
+    const el = document.getElementById('hitopCount');
+    if (el) el.textContent = done;
+  }
   for (let i=0; i<=5; i++) {
-    const d = document.getElementById('s'+i);
-    d.className = 's';
-    if (i < cur) d.classList.add('done');
-    else if (i === cur) d.classList.add('active');
+    document.querySelectorAll('[data-step="'+i+'"]').forEach(d => {
+      d.className = 'v-step';
+      const dot = d.querySelector('.v-step-dot');
+      if (i === cur) { d.classList.add('current'); dot.textContent = i + 1; }
+      else if (i <= maxStepReached) { d.classList.add('done'); dot.innerHTML = '✓'; }
+      else { dot.textContent = i + 1; }
+    });
   }
 }
 
@@ -601,18 +931,22 @@ function countCddr() {
   let count = 0, coreMet = false;
   for (const it of items) {
     const v = document.querySelector('input[name="cddr_' + it + '"]:checked');
+    const dot = document.getElementById('dot-' + it);
+    if (dot) dot.className = 'scoring-dot' + (v ? (v.value === 'present' ? ' p' : v.value === 'absent' ? ' n' : ' u') : '');
     if (v && v.value === 'present') { count++; if (core.includes(it)) coreMet = true; }
   }
   const symptomCriterionMet = count >= 2 && coreMet;
   document.getElementById('cddrCount').textContent = count;
-  document.getElementById('cddrStatus').textContent = count > 0 ? (count + ' of 7 symptom domains endorsed') : 'None endorsed yet.';
-  document.getElementById('cddrStatus').className = 'a10-status' + (count > 0 ? ' ok' : '');
+  document.getElementById('cddrStatus').textContent = count > 0 ? (count + ' of 7 symptom domains endorsed') : 'Rate each item to update the count.';
   document.getElementById('cddrCoreStatus').textContent = symptomCriterionMet
     ? '✓ Symptom criterion met (≥ 2 domains, including ≥ 1 from a–d)'
-    : (count > 0 ? '✗ Symptom criterion not yet met' : '');
-  document.getElementById('cddrCoreStatus').className = 'a10-status' + (symptomCriterionMet ? ' ok' : '');
+    : 'Needs ≥ 2 domains, including ≥ 1 from a–d.';
+  document.getElementById('cddrCoreStatus').className = 'scoring-sub' + (symptomCriterionMet ? '' : '') + ' ';
+  document.getElementById('cddrCoreStatus').style.color = symptomCriterionMet ? 'var(--domain-psychosis)' : '';
+  document.getElementById('cddrCoreStatus').style.fontWeight = symptomCriterionMet ? '600' : '400';
+  tick();
 }
-function calcHiTOP() { }
+function calcHiTOP() { tick(); }
 
 function valSCID() {
   const items = ['a','b','c','d','e','f','g'];
@@ -709,6 +1043,18 @@ function buildReport() {
   document.getElementById('r-cog1').textContent = document.getElementById('cog1').value.trim() || 'Not answered.';
   document.getElementById('r-cog2').textContent = document.getElementById('cog2').value.trim() || 'Not answered.';
 }
+
+function expandContextCardsByDefault() {
+  document.querySelectorAll('.ctx-card[data-role="vignette"], .ctx-card[data-role="chat"]').forEach(card => {
+    const body = card.querySelector('.ctx-body');
+    if (!body) return;
+    card.classList.add('open');
+    body.style.maxHeight = body.scrollHeight + 'px';
+  });
+}
+paintContextPanels();
+expandContextCardsByDefault();
+tick();
 </script>
 </body>
 </html>

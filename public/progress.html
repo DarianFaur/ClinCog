@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="color-scheme" content="light dark">
+<script src="/theme-init.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClinCog · My Progress</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
+<script>
+  if (!localStorage.getItem("clincog_name")) { location.replace("/"); }
+</script>
+<style>
+  .prog-header { margin-bottom: var(--sp-6); }
+  .prog-header .text-secondary { margin-top: 4px; display: block; max-width: 60ch; }
+
+  .prog-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; padding: 0; margin-bottom: var(--sp-6); overflow: hidden; }
+  @media (max-width: 768px) { .prog-stats { grid-template-columns: repeat(2, 1fr); } }
+  .prog-stats .stat-card { border-right: 1px solid var(--border); }
+  .prog-stats .stat-card:last-child, .prog-stats .stat-card:nth-child(2n) { border-right: none; }
+  @media (min-width: 769px) { .prog-stats .stat-card:nth-child(2n) { border-right: 1px solid var(--border); } .prog-stats .stat-card:last-child { border-right: none; } }
+
+  .case-detail-row { display: grid; grid-template-columns: 40px 1fr auto; gap: var(--sp-4); align-items: flex-start; padding: var(--sp-4) 0; border-bottom: 1px solid var(--border); }
+  .case-detail-row:last-child { border-bottom: none; }
+  .case-detail-icon { width: 40px; height: 40px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; }
+  .case-detail-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .case-detail-meta { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
+  .case-detail-timeline { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-top: var(--sp-2); }
+  .case-detail-timeline .badge { font-weight: 500; }
+  .case-reflection {
+    margin-top: var(--sp-3); padding: var(--sp-3) var(--sp-4); background: var(--bg-surface-alt);
+    border-radius: var(--radius-md); font-size: 13px; color: var(--text-secondary); font-style: italic; line-height: 1.6;
+  }
+  .case-reflection::before { content: "“"; font-style: normal; font-weight: 700; color: var(--text-tertiary); margin-right: 2px; }
+
+  .timeline-full { display: flex; flex-direction: column; }
+  .timeline-full .activity-row { padding: var(--sp-3) 0; }
+</style>
+</head>
+<body>
+
+<div id="shell-content">
+
+  <div class="prog-header">
+    <h1 class="text-page-title" style="font-size:24px;">My progress</h1>
+    <span class="text-secondary">A full record of what you've actually done across all four cases — including your own end-of-case reflections. Nothing here is graded; it's for your own reference.</span>
+  </div>
+
+  <div class="card prog-stats" id="prog-stats"></div>
+
+  <div class="grid-2-col">
+    <div class="card">
+      <div class="card-header"><span class="text-card-title">Case by case</span></div>
+      <div class="card-body" id="case-details"></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="text-card-title">Full activity history</span></div>
+      <div class="card-body timeline-full" id="full-timeline"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>window.CLINCOG_SHELL = { activeNav: "progress", breadcrumb: [{ label: "Dashboard", href: "/dashboard.html" }, { label: "My progress" }] };</script>
+<script src="/storage.js"></script>
+<script src="/icons.js"></script>
+<script src="/shell.js"></script>
+<script src="/a11y.js"></script>
+<script>
+  const DOMAIN_CLASS = { schizophrenia: "psychosis", depression: "mood", anxiety: "anxiety", addiction: "substance" };
+  const DOMAIN_LABEL = { schizophrenia: "Psychosis", depression: "Mood", anxiety: "Anxiety", addiction: "Substance use" };
+
+  const metrics = ClinCog.getMetrics();
+  const avgExchanges = metrics.casesExplored > 0 ? Math.round(metrics.totalExchanges / metrics.casesExplored) : 0;
+
+  document.getElementById("prog-stats").innerHTML = `
+    <div class="stat-card"><span class="text-label">CASES EXPLORED</span><span class="text-metric stat-value">${metrics.casesExplored}/${metrics.totalCases}</span></div>
+    <div class="stat-card"><span class="text-label">CASES COMPLETE</span><span class="text-metric stat-value">${metrics.casesCompleted}/${metrics.totalCases}</span></div>
+    <div class="stat-card"><span class="text-label">TOTAL EXCHANGES</span><span class="text-metric stat-value">${metrics.totalExchanges}</span></div>
+    <div class="stat-card"><span class="text-label">AVG. PER EXPLORED CASE</span><span class="text-metric stat-value">${avgExchanges}</span></div>`;
+
+  // ---- case-by-case detail, with real reflections where they exist ----
+  const detailsEl = document.getElementById("case-details");
+  detailsEl.innerHTML = ClinCog.MODULES.map((m) => {
+    const s = ClinCog.getCaseStatus(m.id);
+    const domain = DOMAIN_CLASS[m.id];
+    const evalStatus = ClinCog.getEvalStatus(m.id);
+    const complete = ClinCog.getCaseComplete(m.id);
+    const dateFmt = (t) => new Date(t).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+
+    let badges = `<span class="badge badge-neutral">${s.exchanges} exchange${s.exchanges === 1 ? "" : "s"}</span>`;
+    if (evalStatus) badges += `<span class="badge badge-info">Reached evaluation · ${dateFmt(evalStatus.reachedAt)}</span>`;
+    if (complete) badges += `<span class="badge badge-success">Completed · ${dateFmt(complete.completedAt)}</span>`;
+
+    return `
+      <div class="case-detail-row">
+        <div class="case-detail-icon" style="background:var(--domain-${domain}-soft);color:var(--domain-${domain});" data-icon-slot="brain"></div>
+        <div>
+          <div class="case-detail-name">${m.patient}, ${m.age}</div>
+          <div class="case-detail-meta">Week ${m.week} · ${DOMAIN_LABEL[m.id]}</div>
+          <div class="case-detail-timeline">${badges}</div>
+          ${complete && complete.reflection ? `<div class="case-reflection">${complete.reflection}</div>` : ""}
+        </div>
+        <div></div>
+      </div>`;
+  }).join("");
+
+  // ---- full activity history, not capped at 8 like the dashboard ----
+  const events = [];
+  ClinCog.MODULES.forEach((m) => {
+    const lastActivity = ClinCog.getLastActivity(m.id);
+    const ev = ClinCog.getEvalStatus(m.id);
+    const cp = ClinCog.getCaseComplete(m.id);
+    if (lastActivity) events.push({ time: lastActivity, text: `Talked with ${m.patient}`, domain: DOMAIN_CLASS[m.id] });
+    if (ev) events.push({ time: ev.reachedAt, text: `Reached evaluation for ${m.patient}`, domain: DOMAIN_CLASS[m.id] });
+    if (cp) events.push({ time: cp.completedAt, text: `Completed ${m.patient}'s case`, domain: DOMAIN_CLASS[m.id] });
+  });
+  events.sort((a, b) => b.time - a.time);
+  const timelineEl = document.getElementById("full-timeline");
+  if (events.length === 0) {
+    timelineEl.innerHTML = `<div class="empty-state" id="timeline-empty" style="padding:var(--sp-5) 0;"></div>`;
+  } else {
+    timelineEl.innerHTML = events.map((e) => `
+      <div class="activity-row">
+        <span class="activity-dot" style="background:var(--domain-${e.domain})"></span>
+        <div>
+          <div class="activity-text">${e.text}</div>
+          <div class="activity-time">${new Date(e.time).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}</div>
+        </div>
+      </div>`).join("");
+  }
+
+  document.querySelectorAll('[data-icon-slot="brain"]').forEach(el => el.innerHTML = ClinIcons.get("brain", 20));
+  const timelineEmpty = document.getElementById("timeline-empty");
+  if (timelineEmpty) {
+    timelineEmpty.innerHTML = ClinIcons.get("inbox", 32) +
+      '<div class="empty-title">Nothing recorded yet</div><div class="empty-note">Reach an evaluation or complete a case and it will show up here.</div>';
+  }
+</script>
+
+</body>
+</html>

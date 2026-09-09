@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="color-scheme" content="light dark">
+<script src="/theme-init.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClinCog · Styleguide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<!-- Temporary CDN fallback: real self-hosted Inter woff2 files still
+     need to be added at /public/fonts/ (see tokens.css header comment).
+     Remove this link once those files exist. -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<style>
+  .sg-header { position: sticky; top: 0; z-index: 50; background: var(--bg-surface); border-bottom: 1px solid var(--border);
+    padding: var(--sp-4) var(--sp-6); display: flex; align-items: center; justify-content: space-between; }
+  .sg-header h1 { font-size: 16px; font-weight: 600; margin: 0; }
+  .sg-wrap { max-width: 1160px; margin: 0 auto; padding: var(--sp-7) var(--sp-6) var(--sp-8); }
+  .sg-section { margin-bottom: var(--sp-8); }
+  .sg-section > .text-page-title { margin-bottom: var(--sp-2); }
+  .sg-section > .text-secondary { margin-bottom: var(--sp-5); display: block; }
+  .sg-row { display: flex; flex-wrap: wrap; gap: var(--sp-4); align-items: flex-start; }
+  .sg-grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--sp-4); }
+  .sg-swatch { width: 96px; }
+  .sg-swatch .chip { height: 56px; border-radius: var(--radius-md); border: 1px solid var(--border); margin-bottom: 6px; }
+  .sg-swatch .name { font-size: 11px; font-family: var(--font-mono); color: var(--text-secondary); }
+  .sg-swatch .hex { font-size: 10px; font-family: var(--font-mono); color: var(--text-tertiary); }
+  .sg-space-demo { display: flex; align-items: flex-end; gap: var(--sp-3); }
+  .sg-space-demo .bar { background: var(--accent); width: 24px; }
+  .sg-space-demo .lbl { font-size: 11px; font-family: var(--font-mono); color: var(--text-secondary); margin-top: 4px; text-align: center; }
+  .sg-radius-demo, .sg-shadow-demo { width: 88px; height: 64px; background: var(--bg-surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 10px; font-family: var(--font-mono); color: var(--text-secondary); }
+  body { background: var(--bg-app); }
+</style>
+</head>
+<body>
+
+<div class="sg-header">
+  <h1>ClinCog · Styleguide <span class="text-tertiary" style="font-weight:400;font-size:12px;margin-left:8px;">not linked from navigation — internal reference only</span></h1>
+  <button class="btn btn-secondary btn-sm" id="theme-toggle">Toggle theme</button>
+</div>
+
+<div class="sg-wrap">
+
+  <!-- ============ TOKENS ============ -->
+  <section class="sg-section">
+    <div class="text-page-title">Tokens — Color</div>
+    <span class="text-secondary">Every value below is a CSS custom property from tokens.css. Nothing here is a one-off hex.</span>
+
+    <div class="text-eyebrow" style="margin-bottom:8px;">Neutrals</div>
+    <div class="sg-row" style="margin-bottom:24px;">
+      <div class="sg-swatch"><div class="chip" style="background:var(--bg-app)"></div><div class="name">--bg-app</div></div>
+      <div class="sg-swatch"><div class="chip" style="background:var(--bg-surface)"></div><div class="name">--bg-surface</div></div>
+      <div class="sg-swatch"><div class="chip" style="background:var(--bg-surface-alt)"></div><div class="name">--bg-surface-alt</div></div>
+      <div class="sg-swatch"><div class="chip" style="background:var(--border)"></div><div class="name">--border</div></div>
+      <div class="sg-swatch"><div class="chip" style="background:var(--text-primary)"></div><div class="name">--text-primary</div></div>
+      <div class="sg-swatch"><div class="chip" style="background:var(--text-secondary)"></div><div class="name">--text-secondary</div></div>
+      <div class="sg-swatch"><div class="chip" style="background:var(--text-tertiary)"></div><div class="name">--text-tertiary</div></div>
+    </div>
+
+    <div class="text-eyebrow" style="margin-bottom:8px;">Clinical domains (base / soft / ink)</div>
+    <div class="sg-row" style="margin-bottom:24px;">
+      <div class="sg-swatch"><div class="chip" style="background:var(--domain-psychosis)"></div><div class="name">psychosis</div></div>
+      <div class="sg-swatch"><div class="chip" style="background:var(--domain-psychosis-soft)"></div><div class="name">soft</div></div>
+      <div class="sg-swatch"><div class="chip" style="background:var(--bg-surface);display:flex;align-items:center;justify-content:center;color:var(--domain-psychosis-ink);font-weight:600;">Aa</div><div class="name">ink</div></div>
+      <div class="sg-swatch"><div class="chip" style="background:var(--domain-mood)"></div><div class="name">mood</div></div>
+      <div class="sg-swatch"><div class="chip" style="background:var(--domain-mood-soft)"></div><div class="name">soft</div></div>
+      <div class="sg-swatch"><div class="chip" style="background:var(--bg-surface);display:flex;align-items:center;justify-content:center;color:var(--domain-mood-ink);font-weight:600;">Aa</div><div class="name">ink</div></div>
+      <div class="sg-swatch"><div class="chip" style="background:var(--domain-anxiety)"></div><div class="name">anxiety</div></div>
+      <div class="sg-swatch"><div class="chip" style="background:var(--domain-anxiety-soft)"></div><div class="name">soft</div></div>
+      <div class="sg-swatch"><div class="chip" style="background:var(--bg-surface);display:flex;align-items:center;justify-content:center;color:var(--domain-anxiety-ink);font-weight:600;">Aa</div><div class="name">ink</div></div>
+      <div class="sg-swatch"><div class="chip" style="background:var(--domain-substance)"></div><div class="name">substance</div></div>
+      <div class="sg-swatch"><div class="chip" style="background:var(--domain-substance-soft)"></div><div class="name">soft</div></div>
+      <div class="sg-swatch"><div class="chip" style="background:var(--bg-surface);display:flex;align-items:center;justify-content:center;color:var(--domain-substance-ink);font-weight:600;">Aa</div><div class="name">ink</div></div>
+    </div>
+
+    <div class="text-eyebrow" style="margin-bottom:8px;">Semantic (system states only)</div>
+    <div class="sg-row">
+      <div class="sg-swatch"><div class="chip" style="background:var(--success)"></div><div class="name">success</div></div>
+      <div class="sg-swatch"><div class="chip" style="background:var(--warning)"></div><div class="name">warning</div></div>
+      <div class="sg-swatch"><div class="chip" style="background:var(--danger)"></div><div class="name">danger</div></div>
+      <div class="sg-swatch"><div class="chip" style="background:var(--info)"></div><div class="name">info</div></div>
+    </div>
+  </section>
+
+  <section class="sg-section">
+    <div class="text-page-title">Tokens — Spacing, Radius, Shadow</div>
+    <div class="sg-row" style="margin-bottom:28px;align-items:flex-end;">
+      <div class="sg-space-demo">
+        <div class="bar" style="height:var(--sp-1)"></div><div class="bar" style="height:var(--sp-2)"></div>
+        <div class="bar" style="height:var(--sp-3)"></div><div class="bar" style="height:var(--sp-4)"></div>
+        <div class="bar" style="height:var(--sp-5)"></div><div class="bar" style="height:var(--sp-6)"></div>
+        <div class="bar" style="height:var(--sp-7)"></div><div class="bar" style="height:var(--sp-8)"></div>
+      </div>
+    </div>
+    <div class="sg-row" style="margin-bottom:24px;">
+      <div class="sg-radius-demo" style="border-radius:var(--radius-sm)">sm 6px</div>
+      <div class="sg-radius-demo" style="border-radius:var(--radius-md)">md 10px</div>
+      <div class="sg-radius-demo" style="border-radius:var(--radius-lg)">lg 14px</div>
+      <div class="sg-radius-demo" style="border-radius:var(--radius-pill)">pill</div>
+    </div>
+    <div class="sg-row">
+      <div class="sg-shadow-demo" style="box-shadow:var(--shadow-xs)">xs</div>
+      <div class="sg-shadow-demo" style="box-shadow:var(--shadow-sm)">sm</div>
+      <div class="sg-shadow-demo" style="box-shadow:var(--shadow-md)">md</div>
+      <div class="sg-shadow-demo" style="box-shadow:var(--shadow-lg)">lg</div>
+    </div>
+  </section>
+
+  <section class="sg-section">
+    <div class="text-page-title">Tokens — Typography</div>
+    <div class="card"><div class="card-body" style="display:flex;flex-direction:column;gap:14px;">
+      <div><div class="text-metric">28 / Metric number</div></div>
+      <div><div class="text-page-title">20 / Page title</div></div>
+      <div><div class="text-card-title">15 / Card title</div></div>
+      <div><div class="text-body">14 / Body text — the base size across the app, not 16px. Density is intentional.</div></div>
+      <div><div class="text-label">12 / LABEL & META</div></div>
+      <div><div class="text-eyebrow">11 / EYEBROW SIDEBAR</div></div>
+    </div></div>
+  </section>
+
+  <!-- ============ CARD ============ -->
+  <section class="sg-section">
+    <div class="text-page-title">Card</div>
+    <div class="sg-grid-2">
+      <div class="card"><div class="card-body">
+        <div class="text-card-title" style="margin-bottom:6px;">Plain card</div>
+        <div class="text-secondary">Just background, border, radius and a soft shadow.</div>
+      </div></div>
+      <div class="card">
+        <div class="card-header">
+          <div class="text-card-title">With header</div>
+          <div class="card-header-actions"><button class="btn btn-ghost btn-sm">Action</button></div>
+        </div>
+        <div class="card-body text-secondary">Header is separated by a thin border-bottom.</div>
+      </div>
+      <div class="card card-hoverable"><div class="card-body">
+        <div class="text-card-title" style="margin-bottom:6px;">Hoverable</div>
+        <div class="text-secondary">Hover me — lifts 1px, shadow deepens.</div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ============ STAT CARD ============ -->
+  <section class="sg-section">
+    <div class="text-page-title">Stat card</div>
+    <div class="sg-grid-2">
+      <div class="card stat-card">
+        <div class="stat-icon" style="background:var(--domain-anxiety-soft);color:var(--domain-anxiety);" id="icon-layers"></div>
+        <span class="text-label">CASES COMPLETE</span>
+        <span class="text-metric stat-value">2/4</span>
+        <span class="stat-delta up" id="icon-up">50% of term done</span>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-icon" style="background:var(--info-soft);color:var(--info);" id="icon-grid"></div>
+        <span class="text-label">INSTRUMENTS SCORED</span>
+        <span class="text-metric stat-value">7/12</span>
+        <span class="stat-delta up">+2 <span class="stat-delta-note">this week</span></span>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-icon" style="background:var(--domain-mood-soft);color:var(--domain-mood);" id="icon-msg"></div>
+        <span class="text-label">MESSAGES EXCHANGED</span>
+        <span class="text-metric stat-value">184</span>
+        <span class="stat-delta down">-12% <span class="stat-delta-note">vs last week</span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PROGRESS ============ -->
+  <section class="sg-section">
+    <div class="text-page-title">Progress bar</div>
+    <div class="card"><div class="card-body" style="display:flex;flex-direction:column;gap:16px;">
+      <div class="progress-row"><div class="progress-track"><div class="progress-fill" style="width:20%;background:var(--domain-psychosis)"></div></div><span class="progress-pct">20%</span></div>
+      <div class="progress-row"><div class="progress-track"><div class="progress-fill" style="width:55%;background:var(--domain-mood)"></div></div><span class="progress-pct">55%</span></div>
+      <div class="progress-row"><div class="progress-track"><div class="progress-fill" style="width:80%;background:var(--domain-anxiety)"></div></div><span class="progress-pct">80%</span></div>
+      <div class="progress-row"><div class="progress-track"><div class="progress-fill" style="width:100%;background:var(--domain-substance)"></div></div><span class="progress-pct">100%</span></div>
+    </div></div>
+  </section>
+
+  <!-- ============ BADGE ============ -->
+  <section class="sg-section">
+    <div class="text-page-title">Badge</div>
+    <div class="sg-row" style="margin-bottom:12px;">
+      <span class="badge badge-neutral">Not started</span>
+      <span class="badge badge-info">In progress</span>
+      <span class="badge badge-success">Complete</span>
+      <span class="badge badge-warning">Warning</span>
+      <span class="badge badge-danger">Danger</span>
+    </div>
+    <div class="sg-row">
+      <span class="badge badge-domain-psychosis"><span class="dot"></span>Psychosis</span>
+      <span class="badge badge-domain-mood"><span class="dot"></span>Mood</span>
+      <span class="badge badge-domain-anxiety"><span class="dot"></span>Anxiety</span>
+      <span class="badge badge-domain-substance"><span class="dot"></span>Substance</span>
+    </div>
+  </section>
+
+  <!-- ============ BUTTON ============ -->
+  <section class="sg-section">
+    <div class="text-page-title">Button</div>
+    <div class="sg-row" style="margin-bottom:12px;">
+      <button class="btn btn-primary">Primary</button>
+      <button class="btn btn-secondary">Secondary</button>
+      <button class="btn btn-ghost">Ghost</button>
+      <button class="btn btn-primary" disabled>Disabled</button>
+    </div>
+    <div class="sg-row">
+      <button class="btn btn-primary btn-sm">Small primary</button>
+      <button class="btn btn-secondary btn-sm">Small secondary</button>
+    </div>
+  </section>
+
+  <!-- ============ CASE CARD ============ -->
+  <section class="sg-section">
+    <div class="text-page-title">Case card</div>
+    <div class="sg-grid-2">
+      <div class="card case-card">
+        <div class="case-card-top">
+          <div class="case-card-icon domain-psychosis" id="icon-brain-1"></div>
+          <div class="case-card-identity">
+            <div class="case-card-name">Dennis, 25</div>
+            <div class="case-card-meta">Week 1 · Psychosis</div>
+          </div>
+          <span class="badge badge-neutral">Not started</span>
+        </div>
+        <div class="case-card-grid">
+          <div class="case-card-grid-item"><span class="val">0</span><span class="lbl">Messages exchanged</span></div>
+          <div class="case-card-grid-item"><span class="val">—</span><span class="lbl">Last session</span></div>
+          <div class="case-card-grid-item"><span class="val">0/3</span><span class="lbl">Instruments complete</span></div>
+          <div class="case-card-grid-item"><span class="val">~25 min</span><span class="lbl">Estimated time</span></div>
+        </div>
+        <div class="progress-row"><div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--domain-psychosis)"></div></div><span class="progress-pct">0%</span></div>
+        <div class="case-card-footer">
+          <button class="btn btn-primary">Conceptualize</button>
+          <button class="btn btn-secondary" disabled>Evaluate</button>
+        </div>
+      </div>
+      <div class="card case-card">
+        <div class="case-card-top">
+          <div class="case-card-icon domain-mood" id="icon-brain-2"></div>
+          <div class="case-card-identity">
+            <div class="case-card-name">Darren, 34</div>
+            <div class="case-card-meta">Week 2 · Mood</div>
+          </div>
+          <span class="badge badge-info">In progress</span>
+        </div>
+        <div class="case-card-grid">
+          <div class="case-card-grid-item"><span class="val">12</span><span class="lbl">Messages exchanged</span></div>
+          <div class="case-card-grid-item"><span class="val">2 days ago</span><span class="lbl">Last session</span></div>
+          <div class="case-card-grid-item"><span class="val">1/3</span><span class="lbl">Instruments complete</span></div>
+          <div class="case-card-grid-item"><span class="val">~10 min left</span><span class="lbl">Estimated time</span></div>
+        </div>
+        <div class="progress-row"><div class="progress-track"><div class="progress-fill" style="width:55%;background:var(--domain-mood)"></div></div><span class="progress-pct">55%</span></div>
+        <div class="case-card-footer">
+          <button class="btn btn-secondary">Conceptualize</button>
+          <button class="btn btn-primary">Evaluate</button>
+        </div>
+      </div>
+      <div class="card case-card">
+        <div class="case-card-top">
+          <div class="case-card-icon domain-anxiety" id="icon-brain-3"></div>
+          <div class="case-card-identity">
+            <div class="case-card-name">Alex, 24</div>
+            <div class="case-card-meta">Week 3 · Anxiety</div>
+          </div>
+          <span class="badge badge-success">Complete</span>
+        </div>
+        <div class="case-card-grid">
+          <div class="case-card-grid-item"><span class="val">18</span><span class="lbl">Messages exchanged</span></div>
+          <div class="case-card-grid-item"><span class="val">1 week ago</span><span class="lbl">Last session</span></div>
+          <div class="case-card-grid-item"><span class="val">3/3</span><span class="lbl">Instruments complete</span></div>
+          <div class="case-card-grid-item"><span class="val">Done</span><span class="lbl">Estimated time</span></div>
+        </div>
+        <div class="progress-row"><div class="progress-track"><div class="progress-fill" style="width:100%;background:var(--domain-anxiety)"></div></div><span class="progress-pct">100%</span></div>
+        <div class="case-card-footer">
+          <button class="btn btn-secondary">Conceptualize</button>
+          <button class="btn btn-secondary">Evaluate</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TABLE ============ -->
+  <section class="sg-section">
+    <div class="text-page-title">Table</div>
+    <span class="text-secondary">Resize below 768px to see it collapse into stacked cards.</span>
+    <div class="card">
+      <div class="table-wrap collapse-mobile">
+        <table class="table">
+          <thead><tr><th class="sortable">Case ▾</th><th>Domain</th><th>Status</th><th>Progress</th></tr></thead>
+          <tbody>
+            <tr><td data-label="Case">Dennis</td><td data-label="Domain">Psychosis</td><td data-label="Status"><span class="badge badge-neutral">Not started</span></td><td data-label="Progress">0%</td></tr>
+            <tr><td data-label="Case">Darren</td><td data-label="Domain">Mood</td><td data-label="Status"><span class="badge badge-info">In progress</span></td><td data-label="Progress">55%</td></tr>
+            <tr><td data-label="Case">Alex</td><td data-label="Domain">Anxiety</td><td data-label="Status"><span class="badge badge-success">Complete</span></td><td data-label="Progress">100%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHAT ============ -->
+  <section class="sg-section">
+    <div class="text-page-title">Chat</div>
+    <div class="card" style="display:flex;flex-direction:column;height:420px;overflow:hidden;">
+      <div class="chat-scroll" style="flex:1;">
+        <div class="chat-row from-patient">
+          <div class="chat-bubble">Hello. I don't really know why my family made this appointment.</div>
+          <span class="chat-timestamp">09:41</span>
+        </div>
+        <div class="chat-row from-student">
+          <div class="chat-bubble">Can you tell me a bit about what's been going on lately?</div>
+          <span class="chat-timestamp">09:42</span>
+        </div>
+        <div class="chat-row from-patient">
+          <div class="chat-typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        </div>
+      </div>
+      <div class="chat-composer">
+        <textarea rows="1" placeholder="e.g. Can you tell me what's been happening lately?"></textarea>
+        <button class="btn btn-primary" id="icon-send-btn">Ask</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ EMPTY STATE ============ -->
+  <section class="sg-section">
+    <div class="text-page-title">Empty state</div>
+    <div class="card"><div class="empty-state" id="empty-state-demo">
+      <div class="empty-title">No activity yet</div>
+      <div class="empty-note">Once you start a conversation with a patient, it'll show up here.</div>
+      <button class="btn btn-secondary btn-sm">Go to dashboard</button>
+    </div></div>
+  </section>
+
+  <!-- ============ SKELETON ============ -->
+  <section class="sg-section">
+    <div class="text-page-title">Skeleton</div>
+    <div class="card"><div class="card-body" style="display:flex;flex-direction:column;gap:10px;">
+      <div class="skeleton" style="height:16px;width:40%;"></div>
+      <div class="skeleton" style="height:12px;width:90%;"></div>
+      <div class="skeleton" style="height:12px;width:75%;"></div>
+    </div></div>
+  </section>
+
+</div>
+
+<script src="/icons.js"></script>
+<script>
+  // Fill in the icon-bearing elements declared above via ClinIcons.
+  const iconMap = {
+    "icon-layers": "layers", "icon-grid": "grid", "icon-msg": "message-circle",
+    "icon-brain-1": "brain", "icon-brain-2": "brain", "icon-brain-3": "brain",
+  };
+  for (const [id, name] of Object.entries(iconMap)) {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = ClinIcons.get(name, id.startsWith("icon-brain") ? 22 : 20);
+  }
+  document.querySelectorAll("#icon-up").forEach(el => {
+    el.innerHTML = ClinIcons.get("arrow-up", 12) + el.innerHTML;
+  });
+  document.getElementById("icon-send-btn").innerHTML = ClinIcons.get("send", 14) + " Ask";
+  document.getElementById("empty-state-demo").insertAdjacentHTML("afterbegin", ClinIcons.get("inbox", 40));
+
+  // Simple theme toggle for previewing both palettes, consistent with
+  // the rest of the site's storage key.
+  document.getElementById("theme-toggle").addEventListener("click", () => {
+    const html = document.documentElement;
+    const next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    html.style.colorScheme = next;
+    localStorage.setItem("clincog_theme", next);
+  });
+</script>
+</body>
+</html>

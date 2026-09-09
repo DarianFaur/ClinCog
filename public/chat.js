@@ -14,8 +14,11 @@
 (function () {
   const scriptTag = document.currentScript;
   const moduleId = scriptTag.dataset.module;
+  const patientName = scriptTag.dataset.patientName || "Patient";
   const URL_PROXY = `/api/chat/${moduleId}`;
   const MAX_EXCHANGES = 20;
+
+  const HEAD_ICON = '<svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="5" r="3"/><path d="M2 13c0-3 2-4.5 5-4.5s5 1.5 5 4.5"/></svg>';
 
   // Replace with the real Turnstile site key once you've created a
   // Turnstile widget (Invisible type) in the Cloudflare dashboard - this
@@ -109,19 +112,48 @@
   }
 
   function renderMessage(text, who) {
-    const wrap = document.createElement("div");
-    wrap.className = "msg " + who;
+    const row = document.createElement("div");
+    row.className = "chat-row " + (who === "student" ? "from-student" : "from-patient");
+    const speaker = document.createElement("div");
+    speaker.className = "chat-speaker";
+    speaker.innerHTML = HEAD_ICON + "<span>" + (who === "student" ? "You" : patientName) + "</span>";
     const label = document.createElement("span");
-    label.className = "who";
-    label.textContent = who === "student" ? "You" : "Patient";
-    const body = document.createElement("span");
-    body.className = "msg-text";
-    body.textContent = text;
-    wrap.appendChild(label);
-    wrap.appendChild(body);
-    chatDiv.appendChild(wrap);
+    label.className = "sr-only";
+    label.textContent = who === "student" ? "You: " : patientName + ": ";
+    const textSpan = document.createElement("span");
+    textSpan.className = "chat-bubble-text";
+    textSpan.textContent = text;
+    const bubble = document.createElement("div");
+    bubble.className = "chat-bubble";
+    bubble.appendChild(label);
+    bubble.appendChild(textSpan);
+    row.appendChild(speaker);
+    row.appendChild(bubble);
+    chatDiv.appendChild(row);
     chatDiv.scrollTop = chatDiv.scrollHeight;
-    return body; // caller can keep this to update the text progressively
+    return textSpan; // caller updates just this span's text progressively - the sr-only label is a sibling, untouched
+  }
+
+  function showTypingIndicator() {
+    const row = document.createElement("div");
+    row.className = "chat-row from-patient";
+    row.id = "chat-typing-row";
+    const speaker = document.createElement("div");
+    speaker.className = "chat-speaker";
+    speaker.innerHTML = HEAD_ICON + "<span>" + patientName + "</span>";
+    const bubble = document.createElement("div");
+    bubble.className = "chat-typing";
+    bubble.innerHTML = '<span style="margin-right:2px;">' + patientName + ' is typing</span>'
+      + '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+    row.appendChild(speaker);
+    row.appendChild(bubble);
+    chatDiv.appendChild(row);
+    chatDiv.scrollTop = chatDiv.scrollHeight;
+  }
+
+  function hideTypingIndicator() {
+    const row = document.getElementById("chat-typing-row");
+    if (row) row.remove();
   }
 
   function updateStatus() {
@@ -171,7 +203,7 @@
 
     try {
       const turnstileToken = await getTurnstileToken();
-      statusDiv.textContent = "Waiting for a response...";
+      showTypingIndicator();
 
       const response = await fetch(URL_PROXY, {
         method: "POST",
@@ -195,6 +227,7 @@
       // reply is ready. Works the same regardless of which provider or
       // tier answered - the worker already normalized the stream shape.
       statusDiv.textContent = "";
+      hideTypingIndicator();
       const patientBubble = renderMessage("", "patient");
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
@@ -216,6 +249,7 @@
       statusDiv.textContent = "Something went wrong — that question wasn't counted. Try again.";
       console.error(err);
     } finally {
+      hideTypingIndicator();
       sendBtn.disabled = false;
       input.focus();
     }

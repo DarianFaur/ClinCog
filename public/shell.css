@@ -1,0 +1,150 @@
+/* ============================================================
+   shell.css — the application shell: sidebar + topbar + breadcrumb.
+   Built entirely from tokens.css. Injected by shell.js; a page only
+   needs a #shell-content wrapper around its real markup.
+   ============================================================ */
+
+html, body { height: 100%; }
+body { overflow-x: clip; overflow-y: visible; }
+
+.shell-frame { display: flex; min-height: 100vh; background: var(--bg-app); }
+
+/* ---------------------------------------------------------------
+   Sidebar
+--------------------------------------------------------------- */
+.shell-sidebar {
+  width: 260px; flex-shrink: 0; background: var(--sidebar-bg);
+  display: flex; flex-direction: column;
+  position: sticky; top: 0; height: 100vh; overflow: hidden;
+  transition: width var(--duration-layout) var(--ease-standard),
+              transform var(--duration-layout) var(--ease-standard);
+  z-index: 40;
+}
+.shell-sidebar-top { height: 56px; flex-shrink: 0; display: flex; align-items: center; padding: 0 var(--sp-5); border-bottom: 1px solid var(--sidebar-border); }
+.shell-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--sidebar-text-active); font-family: var(--font-sans); font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; }
+.shell-brand img { width: 24px; height: 24px; flex-shrink: 0; }
+
+/* The nav list is the ONLY scrollable region inside the sidebar - top
+   brand and bottom badge stay pinned. A slim, unobtrusive scrollbar
+   (rather than each browser/OS's own default, which on some systems
+   renders as a bulky classic scrollbar with up/down arrow buttons)
+   keeps this from looking like a rendering glitch when it does appear. */
+.shell-nav {
+  flex: 1; padding: var(--sp-4) var(--sp-3); overflow-y: auto;
+  scrollbar-width: thin; scrollbar-color: var(--sidebar-border) transparent;
+}
+.shell-nav::-webkit-scrollbar { width: 6px; }
+.shell-nav::-webkit-scrollbar-track { background: transparent; }
+.shell-nav::-webkit-scrollbar-thumb { background: var(--sidebar-border); border-radius: 3px; }
+.shell-nav-group { margin-bottom: var(--sp-5); }
+.shell-nav-eyebrow {
+  font-size: var(--text-eyebrow-size); font-weight: var(--text-eyebrow-weight);
+  letter-spacing: var(--text-eyebrow-spacing); text-transform: uppercase;
+  color: rgba(255,255,255,.4); padding: 0 var(--sp-3); margin-bottom: 6px;
+  white-space: nowrap; overflow: hidden;
+}
+.shell-nav-item {
+  display: flex; align-items: center; gap: 12px; padding: 9px var(--sp-3);
+  border-radius: var(--radius-md); color: var(--sidebar-text); text-decoration: none;
+  font-size: 13.5px; font-weight: 500; cursor: pointer; position: relative;
+  border-left: 3px solid transparent; margin-bottom: 2px;
+  transition: background var(--duration-hover) var(--ease-standard), color var(--duration-hover) var(--ease-standard);
+  white-space: nowrap; overflow: hidden;
+}
+.shell-nav-item:hover { background: var(--sidebar-bg-hover); color: var(--sidebar-text-active); }
+.shell-nav-item.active { background: var(--sidebar-bg-active); color: var(--sidebar-text-active); border-left-color: var(--accent); }
+.shell-nav-icon { width: 18px; height: 18px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.shell-nav-label { overflow: hidden; text-overflow: ellipsis; }
+.shell-nav-expandable { justify-content: space-between; }
+.shell-nav-chevron { width: 14px; height: 14px; flex-shrink: 0; transition: transform var(--duration-hover); margin-left: auto; }
+.shell-nav-expandable:has(+ .shell-case-list.open) .shell-nav-chevron { transform: rotate(180deg); }
+
+.shell-case-list { max-height: 0; overflow: hidden; transition: max-height var(--duration-layout) var(--ease-standard); }
+.shell-case-list.open { max-height: 240px; }
+.shell-case-row {
+  display: flex; align-items: center; gap: 12px; padding: 8px var(--sp-3) 8px calc(var(--sp-3) + 18px + 12px);
+  color: var(--sidebar-text); text-decoration: none; font-size: 13px;
+  border-radius: var(--radius-md); white-space: nowrap; overflow: hidden;
+}
+.shell-case-row:hover { background: var(--sidebar-bg-hover); color: var(--sidebar-text-active); }
+.shell-case-row.active { color: var(--sidebar-text-active); font-weight: 600; }
+.shell-case-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.shell-case-dot.domain-psychosis { background: var(--domain-psychosis); }
+.shell-case-dot.domain-mood { background: var(--domain-mood); }
+.shell-case-dot.domain-anxiety { background: var(--domain-anxiety); }
+.shell-case-dot.domain-substance { background: var(--domain-substance); }
+
+.shell-sidebar-bottom { flex-shrink: 0; padding: var(--sp-4) var(--sp-4); border-top: 1px solid var(--sidebar-border); display: flex; align-items: center; gap: var(--sp-3); }
+.shell-term-badge { flex: 1; min-width: 0; }
+.shell-term-badge-text { display: block; font-size: 11px; color: var(--sidebar-text); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.shell-term-badge .progress-track { background: rgba(255,255,255,.15); }
+.shell-term-badge .progress-fill { background: var(--accent); }
+
+/* ---- Collapsed (desktop only) ---- */
+.shell-collapsed .shell-sidebar { width: 68px; }
+.shell-collapsed .shell-brand-word,
+.shell-collapsed .shell-nav-eyebrow,
+.shell-collapsed .shell-nav-label,
+.shell-collapsed .shell-nav-chevron,
+.shell-collapsed .shell-case-list,
+.shell-collapsed .shell-term-badge-text,
+.shell-collapsed .shell-term-badge .progress-track { display: none; }
+.shell-collapsed .shell-nav-item { justify-content: center; padding: 9px; }
+.shell-collapsed .shell-case-list.open { max-height: 0; }
+.shell-collapsed .shell-nav-item { position: relative; }
+.shell-collapsed .shell-nav-item:hover::after {
+  content: attr(data-tooltip); position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%);
+  background: var(--text-primary); color: var(--bg-surface); font-size: 12px; font-weight: 500;
+  padding: 5px 10px; border-radius: var(--radius-sm); white-space: nowrap; z-index: 100; pointer-events: none;
+}
+
+/* ---------------------------------------------------------------
+   Topbar
+--------------------------------------------------------------- */
+.shell-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.shell-topbar {
+  height: 56px; flex-shrink: 0; position: sticky; top: 0; z-index: 30;
+  background: var(--bg-surface); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: var(--sp-4); padding: 0 var(--sp-6);
+}
+.shell-hamburger {
+  width: 32px; height: 32px; border-radius: var(--radius-md); border: none; background: transparent;
+  color: var(--text-secondary); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+}
+.shell-hamburger:hover { background: var(--bg-surface-alt); color: var(--text-primary); }
+.shell-breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 14.5px; overflow: hidden; white-space: nowrap; }
+.shell-crumb { color: var(--text-secondary); text-decoration: none; }
+.shell-crumb:hover { color: var(--text-primary); }
+.shell-crumb.current { color: var(--text-primary); font-weight: 600; }
+.shell-crumb-sep { color: var(--text-tertiary); }
+.shell-topbar-right { margin-left: auto; display: flex; align-items: center; gap: var(--sp-2); flex-shrink: 0; }
+
+.shell-body { flex: 1; }
+.shell-content-inner { max-width: 1440px; margin: 0 auto; padding: var(--sp-6); }
+
+/* ---------------------------------------------------------------
+   Mobile backdrop (drawer overlay)
+--------------------------------------------------------------- */
+.shell-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 39; opacity: 0; transition: opacity var(--duration-layout); }
+.shell-backdrop.open { display: block; opacity: 1; }
+
+/* ---------------------------------------------------------------
+   Responsive
+--------------------------------------------------------------- */
+@media (max-width: 1023px) {
+  .shell-sidebar {
+    position: fixed; left: 0; top: 0; transform: translateX(-100%);
+    box-shadow: var(--shadow-lg);
+  }
+  .shell-sidebar.open { transform: translateX(0); }
+  .shell-collapsed .shell-sidebar { width: 260px; } /* collapse is desktop-only; mobile always uses the drawer at full width */
+  .shell-collapsed .shell-brand-word, .shell-collapsed .shell-nav-eyebrow, .shell-collapsed .shell-nav-label,
+  .shell-collapsed .shell-nav-chevron, .shell-collapsed .shell-term-badge-text, .shell-collapsed .shell-term-badge .progress-track { display: revert; }
+  .shell-collapsed .shell-nav-item { justify-content: flex-start; padding: 9px var(--sp-3); }
+  .shell-content-inner { padding: var(--sp-4); }
+  .shell-topbar { padding: 0 var(--sp-4); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shell-sidebar, .shell-nav-item, .shell-case-list, .shell-backdrop { transition: none; }
+}

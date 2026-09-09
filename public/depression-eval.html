@@ -10,88 +10,64 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/favicon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=DM+Mono:wght@400&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
 <style>
-:root { color-scheme: light; }
-html[data-theme="dark"] { color-scheme: dark; }
+/* Colors now alias the shared tokens.css system (loaded via <link>
+   below) instead of defining their own - every var(--ink)/var(--surface)
+   reference below the fold still works unchanged, but now resolves to
+   the same palette as the dashboard/chat pages. This page's own
+   content-specific styles (CDDR checklist rows, HiTOP likert scales,
+   the MATRICS table) are kept as-is - only the shared color layer and
+   chrome (nav/sidebar) changed. */
 :root {
-  --bg: #ffffff;
-  --surface: #ffffff;
-  --ink: #1a1a1a;
-  --ink2: #6b7280;
-  --ink3: #9ca3af;
-  --line: #e5e5e5;
-  --accent: #4d4e8e;
-  --accent-bg: #ececf6;
+  --bg: var(--bg-app);
+  --surface: var(--bg-surface);
+  --ink: var(--text-primary);
+  --ink2: var(--text-secondary);
+  --ink3: var(--text-tertiary);
+  --line: var(--border);
+  --accent-bg: var(--domain-mood-soft);
   --warn: #8b3a00;
   --warn-bg: #fff7f2;
   --serif: 'Poppins', 'Inter', sans-serif;
-  --sans: 'Inter', system-ui, sans-serif;
-  --mono: 'DM Mono', monospace;
-  --max: 720px;
+  --sans: var(--font-sans);
+  --mono: var(--font-mono);
+  --max: 980px;
+  --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+  --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+  --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
 }
-
-html[data-theme="dark"] {
-  --bg: #1c1e22;
-  --surface: #262930;
-  --ink: #f2f2f2;
-  --ink2: #a8acaf;
-  --ink3: #9ca3af;
-  --line: #383b42;
-  --accent: #7677c9;
-  --accent-bg: #2c2d42;
-  --warn-bg: #2a1c10;
-}
-@media (prefers-color-scheme: dark) {
-  html:not([data-theme="light"]) {
-    color-scheme: dark;
-    --bg: #1c1e22;
-    --surface: #262930;
-    --ink: #f2f2f2;
-    --ink2: #a8acaf;
-    --ink3: #9ca3af;
-    --line: #383b42;
-    --accent: #7677c9;
-    --accent-bg: #2c2d42;
-    --warn-bg: #2a1c10;
-  }
-}
-html, body { transition: background-color .25s ease, color .25s ease; }
-* { transition: background-color .2s ease, border-color .2s ease, color .2s ease; }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-size: 14px; line-height: 1.7; position: relative; }
-body::before {
-  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
-  background:
-    radial-gradient(640px 420px at 6% -8%, rgba(91,79,232,.10), transparent 60%),
-    radial-gradient(600px 460px at 100% 105%, rgba(91,79,232,.07), transparent 62%);
-}
-html[data-theme="dark"] body::before {
-  background:
-    radial-gradient(640px 420px at 6% -8%, rgba(77,78,142,.14), transparent 60%),
-    radial-gradient(600px 460px at 100% 105%, rgba(77,78,142,.09), transparent 62%);
-}
 
-#bar { position: fixed; top: 0; left: 0; right: 0; height: 2px; background: var(--line); z-index: 200; }
-#bar-fill { height: 100%; background: var(--accent); transition: width .4s; }
+#bar { position: sticky; top: 56px; left: 0; right: 0; height: 3px; background: var(--line); z-index: 20; }
+#bar-fill { height: 100%; background: var(--domain-mood); transition: width .4s; }
 
-nav {
-  position: sticky; top: 2px; z-index: 100;
-  background: var(--surface); border-bottom: 1px solid var(--line);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 40px; height: 52px;
+/* Vertical stepper - lives as the first card in the left sidebar on
+   every page, not a separate horizontal bar. Multiple copies of this
+   markup exist in the DOM at once (one per page's sidebar); tick()
+   updates all of them together via [data-step] rather than unique ids. */
+.v-stepper-card { padding: 8px 4px; }
+.v-step { position: relative; display: flex; align-items: center; gap: 12px; padding: 9px 0; cursor: not-allowed; }
+.v-step.done, .v-step.current { cursor: pointer; }
+.v-step-line { position: absolute; left: 12px; top: 35px; width: 2px; height: 18px; background: var(--line); z-index: 0; transition: background .3s; }
+.v-step:last-child .v-step-line { display: none; }
+.v-step.done .v-step-line { background: var(--domain-mood); }
+.v-step-dot {
+  width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--surface);
+  display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px;
+  color: var(--ink3); flex-shrink: 0; z-index: 1; transition: all .2s;
 }
-.nav-brand { font-family: var(--serif); font-size: 1rem; font-weight: 400; color: var(--ink2); }
-.nav-steps { display: flex; gap: 4px; }
-.nav-steps .s {
-  width: 28px; height: 28px; border-radius: 50%;
-  border: 1px solid var(--line);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 500; color: var(--ink3);
-  font-family: var(--mono); transition: all .3s;
-}
-.nav-steps .s.active { border-color: var(--accent); color: var(--accent); }
-.nav-steps .s.done { background: var(--accent); border-color: var(--accent); color: #fff; }
+.v-step.done .v-step-dot { border: none; background: var(--domain-mood); color: #fff; font-size: 13px; }
+.v-step.current .v-step-dot { border-width: 2px; border-color: var(--domain-mood); background: var(--accent-bg); color: var(--domain-mood); font-weight: 600; }
+.v-step-label { font-size: 14.5px; color: var(--ink3); transition: color .2s; }
+.v-step.current .v-step-label { color: var(--domain-mood); font-weight: 600; }
+.v-step.done .v-step-label { color: var(--ink2); }
+.v-step:hover:not(.v-step.current):not([style*="cursor: not-allowed"]) .v-step-label { color: var(--ink); }
 
 .page { display: none; }
 .page.on { display: block; animation: up .35s ease; }
@@ -99,22 +75,133 @@ nav {
 
 .wrap { max-width: var(--max); margin: 0 auto; padding: 56px 24px 100px; }
 
-.eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink3); margin-bottom: 10px; }
+/* ============================================================
+   THREE-ZONE EVALUATION LAYOUT (steps with active rating: ICD-11,
+   HiTOP-SR, MATRICS). Overview/Vignette/Report keep the simple
+   centered .wrap - there's nothing to reference alongside them yet
+   (or, for Report, that's its own separate redesign pass).
+   ============================================================ */
+
+/* Widen this page's content region beyond the shell's shared 1440px
+   cap - safer than escaping via 100vw, which ignored the persistent
+   sidebar's width and caused content to render partly underneath it. */
+.shell-content-inner { max-width: 1900px; }
+
+.eval-layout {
+  max-width: 1900px; margin: 0 auto; padding: 32px 32px 100px;
+  display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 28px; align-items: start;
+  justify-content: center;
+}
+.eval-context {
+  display: flex; flex-direction: column; gap: 16px;
+  position: sticky; top: 75px;
+}
+.ctx-sticky-top { flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; }
+.ctx-scroll-area { display: flex; flex-direction: column; gap: 16px; }
+.eval-work { min-width: 0; max-width: 1100px; }
+@media (max-width: 1100px) {
+  .eval-layout { grid-template-columns: 1fr; }
+}
+
+.ctx-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-xs); padding: 0; overflow: hidden; flex-shrink: 0; }
+.ctx-card > .ctx-card-body { padding: 16px 18px; }
+.ctx-card h4 { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink3); font-weight: 600; margin-bottom: 12px; }
+.ctx-card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 18px; border-bottom: 1px solid var(--line);
+}
+.ctx-card-header h4 { margin: 0; }
+.ctx-toggle-btn {
+  background: none; border: none; cursor: pointer; padding: 4px; margin: -4px; color: var(--ink3);
+  display: flex; align-items: center; border-radius: var(--radius-sm); transition: all .15s;
+}
+.ctx-toggle-btn:hover { color: var(--ink); background: var(--bg-surface-alt); }
+.ctx-toggle-btn .chev { transition: transform .2s; display: block; }
+.ctx-card.open .ctx-toggle-btn .chev { transform: rotate(180deg); }
+.ctx-patient-name { font-family: var(--serif); font-size: 1.15rem; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.ctx-patient-meta { font-size: 14px; color: var(--ink3); margin-bottom: 12px; }
+.ctx-patient-complaint { font-size: 13px; color: var(--ink2); line-height: 1.6; padding-top: 12px; border-top: 1px solid var(--line); }
+
+.ctx-body { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+.ctx-body > .ctx-card-body { padding: 14px 18px 18px; }
+.ctx-vignette-text { font-family: var(--font-sans); font-size: 15px; line-height: 1.65; color: var(--ink2); max-height: 280px; overflow-y: auto; }
+.ctx-vignette-text p { margin-bottom: 1em; }
+.ctx-vignette-text p:last-child { margin-bottom: 0; }
+
+.ctx-chat { display: flex; flex-direction: column; gap: 10px; max-height: 280px; overflow-y: auto; }
+.ctx-chat .chat-row { max-width: 92%; }
+.ctx-chat .chat-bubble { padding: 8px 12px; font-size: 15px; line-height: 1.65; }
+.ctx-chat-empty { font-size: 14px; color: var(--ink3); font-style: italic; }
+
+.ctx-guide-row { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ink2); margin-bottom: 8px; }
+.ctx-guide-row:last-child { margin-bottom: 0; }
+.ctx-guide-mark {
+  display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px;
+  border-radius: var(--radius-sm); font-family: var(--mono); font-size: 11px; font-weight: 600; flex-shrink: 0;
+}
+.ctx-guide-mark.p { background: var(--success-soft, var(--accent-bg)); color: var(--success, var(--domain-mood)); }
+.ctx-guide-mark.n { background: var(--bg-surface-alt); color: var(--ink3); }
+.ctx-guide-mark.u { background: var(--warning-soft, #fff3e0); color: var(--warning, #a05a00); }
+
+.scoring-card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow-xs); padding: 12px 14px; }
+.scoring-card h4 { font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink3); font-weight: 600; margin-bottom: 3px; }
+.scoring-count { font-family: var(--serif); font-size: 1.35rem; font-weight: 600; color: var(--ink); line-height: 1.1; margin-bottom: 1px; transition: color .2s; }
+.scoring-count .of { font-size: .78rem; color: var(--ink3); font-weight: 400; }
+.scoring-sub { font-size: 11.5px; color: var(--ink3); margin-bottom: 8px; line-height: 1.4; }
+.scoring-dots { display: flex; flex-wrap: wrap; gap: 4px; }
+.scoring-dot {
+  width: 18px; height: 18px; border-radius: 5px; display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 9px; font-weight: 600; background: var(--bg-surface-alt); color: var(--ink3);
+  transition: all .2s;
+}
+.scoring-dot.p { background: var(--accent-bg); color: var(--domain-mood); }
+.scoring-dot.n { background: var(--bg-surface-alt); color: var(--ink2); }
+.scoring-dot.u { background: #fff3e0; color: #a05a00; }
+
+.mini-stats { display: flex; gap: 8px; }
+.mini-stat { flex: 1; min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 4px; text-align: center; }
+.mini-stat-num { font-family: var(--serif); font-size: 17px; font-weight: 700; color: var(--ink); line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mini-stat-lbl { font-size: 8.5px; color: var(--ink3); text-transform: uppercase; letter-spacing: .02em; margin-top: 3px; line-height: 1.2; }
+
+.eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink3); margin-bottom: 10px; }
+
+.vignette-page-title { font-size: 37.6px; font-weight: 700; color: var(--ink); margin: 0 0 16px; line-height: 1.15; }
+.vignette-page-sub { font-size: 16px; color: var(--ink2); margin-bottom: 24px; }
+.vignette-card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 24px; box-shadow: var(--shadow-xs); margin-bottom: 24px; }
+.vignette-card-name { font-size: 18px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.vignette-card-meta { font-size: 16px; color: var(--ink2); margin-bottom: 16px; }
+.vignette-card-divider { border-top: 1px solid var(--line); margin-bottom: 20px; }
+.vignette-section { margin-bottom: 16px; }
+.vignette-section:last-child { margin-bottom: 0; }
+.vignette-section-title { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--ink3); margin-bottom: 8px; }
+.vignette-section p { font-size: 16px; line-height: 1.75; color: var(--ink); margin: 0; }
+.vignette-highlight { background: var(--accent-bg); border-left: 3px solid var(--domain-mood); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 16px; line-height: 1.6; color: var(--ink); }
 h1 { font-family: var(--serif); font-size: 2.35rem; font-weight: 700; line-height: 1.15; letter-spacing: -0.01em; color: var(--ink); margin-bottom: 16px; }
-h1 em { font-style: normal; color: var(--accent); }
+h1 em { font-style: normal; color: var(--domain-mood); }
 h2 { font-family: var(--serif); font-size: 1.8rem; font-weight: 400; color: var(--ink); margin-bottom: 10px; }
 h3 { font-size: .75rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); margin-bottom: 12px; }
 p.lead { font-size: 1rem; color: var(--ink2); line-height: 1.75; }
 hr { border: none; border-top: 1px solid var(--line); margin: 36px 0; }
 
-.callout { border-left: 2px solid var(--accent); padding: 10px 16px; background: var(--accent-bg); font-size: .85rem; color: var(--ink2); margin: 16px 0; }
+.callout { border-radius: var(--radius-md); border-left: 3px solid var(--domain-mood); padding: 14px 18px; background: var(--accent-bg); font-size: .85rem; color: var(--ink2); margin: 16px 0; }
 .callout.warn { border-color: var(--warn); background: var(--warn-bg); color: var(--warn); }
 
-.layers { margin: 28px 0 48px; border-top: 1px solid var(--line); }
-.layer-row { display: flex; align-items: baseline; gap: 20px; padding: 20px 0; border-top: none; border-bottom: 1px solid var(--line); }
-.layer-num { font-family: var(--mono); font-size: 11px; color: var(--accent); padding: 2px 6px; border: 1px solid var(--accent); border-radius: 4px; flex-shrink: 0; letter-spacing: .03em; }
-.layer-text .lt { display: block; font-size: 16px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
-.layer-text .ls { font-size: 14px; color: var(--ink3); }
+.layers { margin: 32px 0 40px; display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-4, 16px); border-top: none; }
+@media (max-width: 800px) { .layers { grid-template-columns: 1fr; } }
+.layer-row {
+  display: block; padding: 22px; border: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow-sm);
+  transition: transform .15s, box-shadow .15s;
+}
+.layer-row:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.layer-num {
+  display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px;
+  font-family: var(--mono); font-size: 12px; color: var(--domain-mood); background: var(--accent-bg);
+  border: none; border-radius: var(--radius-md); margin-bottom: 14px; letter-spacing: 0;
+}
+.layer-text { display: block; }
+.layer-text .lt { display: block; font-size: 16px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+.layer-text .ls { font-size: 13px; color: var(--ink3); line-height: 1.5; }
 
 .vignette { font-family: var(--serif); font-size: 1.1rem; line-height: 1.9; color: var(--ink); }
 .vignette p { margin-bottom: 1.3em; }
@@ -123,80 +210,72 @@ hr { border: none; border-top: 1px solid var(--line); margin: 36px 0; }
 .patient-line h2 { margin: 0; }
 .patient-line span { color: var(--ink3); font-size: .85rem; }
 
-.scid-q { padding: 20px 0; border-bottom: 1px solid var(--line); }
-.scid-q:first-child { border-top: 1px solid var(--line); }
-.scid-q-top { display: flex; gap: 14px; margin-bottom: 12px; }
-.scid-code { font-family: var(--mono); font-size: 11px; color: var(--accent); min-width: 28px; padding-top: 2px; }
-.scid-q-text { font-size: .9rem; color: var(--ink); line-height: 1.6; }
+.scid-q {
+  padding: 20px 22px; margin-bottom: 12px; border: 1px solid var(--line); border-radius: var(--radius-md);
+  background: var(--surface); transition: border-color .15s;
+}
+.scid-q:has(.radio-row label.p:has(input:checked)) { border-color: var(--domain-mood); }
+.scid-q-top { display: flex; gap: 14px; margin-bottom: 14px; }
+.scid-code {
+  font-family: var(--mono); font-size: 12px; color: var(--domain-mood); min-width: 26px; padding-top: 2px;
+  font-weight: 600;
+}
+.scid-q-text { font-size: .92rem; color: var(--ink); line-height: 1.6; }
 .scid-q-text .ev { font-size: .78rem; color: var(--ink3); margin-top: 4px; font-style: italic; }
-.radio-row { display: flex; gap: 8px; padding-left: 42px; flex-wrap: wrap; }
+.radio-row { display: flex; gap: 8px; padding-left: 40px; flex-wrap: wrap; }
 .radio-row label {
   display: flex; align-items: center; gap: 6px;
-  padding: 5px 12px; border: 1px solid var(--line);
+  padding: 7px 16px; border: 1px solid var(--line); border-radius: var(--radius-pill);
   cursor: pointer; font-size: .82rem; font-weight: 500;
-  transition: all .15s; color: var(--ink2); user-select: none;
+  transition: all .15s; color: var(--ink2); user-select: none; background: var(--bg-surface-alt, var(--surface));
 }
 .radio-row label:hover { border-color: var(--ink3); color: var(--ink); }
 .radio-row input { display: none; }
-.radio-row label:has(input:checked).p { background: var(--accent); border-color: var(--accent); color: #fff; }
-.radio-row label:has(input:checked).n { background: #900; border-color: #900; color: #fff; }
+.radio-row label:has(input:checked).p { background: var(--domain-mood); border-color: var(--domain-mood); color: #fff; }
+.radio-row label:has(input:checked).n { background: var(--ink2); border-color: var(--ink2); color: #fff; }
 .radio-row label:has(input:checked).u { background: var(--ink); border-color: var(--ink); color: #fff; }
-.text-field { width: 100%; border: 1px solid var(--line); padding: 8px 12px; font-family: var(--sans); font-size: .88rem; color: var(--ink); background: var(--surface); margin-top: 8px; transition: border-color .2s; }
-.text-field:focus { outline: none; border-color: var(--accent); }
 
-.a10-strip { margin: 24px 0; padding: 20px 24px; border: 1px solid var(--line); display: flex; align-items: flex-start; gap: 32px; flex-wrap: wrap; }
+.a10-strip {
+  margin: 24px 0; padding: 24px 28px; border: 1px solid var(--line); border-radius: var(--radius-lg);
+  background: var(--surface); box-shadow: var(--shadow-sm); display: flex; align-items: flex-start; gap: 32px; flex-wrap: wrap;
+}
 .a10-count .n { font-family: var(--serif); font-size: 3rem; font-weight: 300; line-height: 1; }
 .a10-count .l { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink3); }
 .a10-status { font-size: .82rem; color: var(--ink3); margin-top: 4px; }
-.a10-status.ok { color: var(--accent); }
-.a10-status.wc { color: #a05000; }
-.a10-dec label { font-size: .8rem; color: var(--ink3); display: block; margin-bottom: 8px; }
+.a10-status.ok { color: var(--domain-mood); font-weight: 500; }
 
-.sec-label { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); padding: 18px 0 4px; }
+.sec-label { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); padding: 26px 0 8px; }
 
-.dx-options { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
-.dx-options label { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid var(--line); cursor: pointer; font-size: .88rem; transition: border-color .15s; }
+.dx-options { margin-top: 8px; display: flex; flex-direction: column; gap: 8px; }
+.dx-options label { display: flex; align-items: center; gap: 10px; padding: 13px 16px; border: 1px solid var(--line); border-radius: var(--radius-md); cursor: pointer; font-size: .9rem; transition: all .15s; background: var(--surface); }
 .dx-options label:hover { border-color: var(--ink3); }
-.dx-options input { accent-color: var(--accent); }
-.dx-options label:has(input:checked) { border-color: var(--accent); background: var(--accent-bg); }
+.dx-options input { accent-color: var(--domain-mood); width: 16px; height: 16px; }
+.dx-options label:has(input:checked) { border-color: var(--domain-mood); background: var(--accent-bg); }
 
-.score-bar {
-  position: sticky; top: 54px; z-index: 90;
-  background: var(--surface); border-bottom: 1px solid var(--line);
-  padding: 10px 40px; display: flex; align-items: center; gap: 20px;
-}
-.score-bar .sc { font-family: var(--mono); font-size: 1.3rem; color: var(--ink); }
-.score-bar .sl { color: var(--ink3); font-size: .75rem; }
-.score-bar .band { padding: 2px 8px; font-size: .75rem; font-weight: 500; }
-.b-min { background: #e8f4f4; color: var(--accent); }
-.b-mild { background: #fef9e7; color: #8a6800; }
-.b-mod { background: #fdebd0; color: #9a4000; }
-.b-sev { background: #fde0de; color: #800; }
-.score-bar .hint { margin-left: auto; color: var(--ink3); font-size: .72rem; }
+.yn-row { display: flex; gap: 8px; padding-left: 40px; }
+.yn-row label { display: flex; align-items: center; gap: 6px; padding: 7px 16px; border: 1px solid var(--line); border-radius: var(--radius-pill); cursor: pointer; font-size: .82rem; font-weight: 500; color: var(--ink2); background: var(--bg-surface-alt, var(--surface)); transition: all .15s; }
+.yn-row label:hover { border-color: var(--ink3); color: var(--ink); }
+.yn-row input { display: none; }
+.yn-row label:has(input:checked) { background: var(--domain-mood); border-color: var(--domain-mood); color: #fff; }
 
-.bdi-q { padding: 18px 0; border-bottom: 1px solid var(--line); }
-.bdi-q:first-of-type { border-top: 1px solid var(--line); }
-.bdi-q-label { font-size: .82rem; font-weight: 500; color: var(--ink); margin-bottom: 10px; display: flex; gap: 10px; }
-.bdi-q-label span { font-family: var(--mono); font-size: 10px; color: var(--ink3); font-weight: 400; }
-.bdi-opts { display: flex; flex-direction: column; gap: 5px; }
-.bdi-opts label { display: flex; gap: 10px; align-items: flex-start; padding: 7px 10px; border: 1px solid var(--line); cursor: pointer; font-size: .84rem; line-height: 1.45; transition: all .15s; }
-.bdi-opts label:hover { border-color: var(--ink3); }
-.bdi-opts input { display: none; }
-.bdi-opts label:has(input:checked) { border-color: var(--accent); background: var(--accent-bg); }
-.opt-n { font-family: var(--mono); font-size: 11px; color: var(--ink3); min-width: 12px; margin-top: 1px; }
-
-.hitop-block { padding: 18px 0; border-bottom: 1px solid var(--line); }
-.hitop-block:first-of-type { border-top: 1px solid var(--line); }
-.hitop-scale-name { font-size: .8rem; font-weight: 500; color: var(--ink); margin-bottom: 12px; }
-.hitop-pair { display: flex; flex-direction: column; gap: 10px; }
-.hitop-item { display: flex; align-items: center; gap: 16px; }
-.hitop-item-text { flex: 1; font-size: .85rem; color: var(--ink2); }
-.likert { display: flex; gap: 4px; }
+.hitop-block { padding: 20px 22px; margin-bottom: 16px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); }
+.hitop-scale-name { font-family: var(--sans); font-size: var(--text-xs); font-weight: 700; color: var(--domain-mood); text-transform: uppercase; letter-spacing: .06em; border-bottom: 1px solid var(--accent-bg); padding-bottom: 8px; margin-bottom: 14px; }
+.hitop-pair { display: flex; flex-direction: column; gap: 0; }
+.hitop-item { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 14px 0; border-top: 1px solid var(--line); }
+.hitop-item:first-child { border-top: none; padding-top: 0; }
+.hitop-item-text { flex: 1; min-width: 200px; font-size: var(--text-sm); color: var(--ink); }
+.likert-legend { display: flex; gap: 8px; margin-bottom: 20px; background: var(--bg-surface-alt); border-radius: 12px; padding: 16px 18px; }
+.likert-legend-item { flex: 1; text-align: center; }
+.likert-legend-num { font-size: 22px; font-weight: 700; color: var(--domain-mood); }
+.likert-legend-label { font-size: 11px; color: var(--ink2); line-height: 1.3; margin-top: 2px; }
+.sec-label.hitop-scale { font-family: var(--sans); font-size: 13px; font-weight: 700; color: var(--domain-mood); border-bottom: 1px solid var(--accent-bg); padding: 8px 0; margin-top: 18px; }
+.likert { display: flex; gap: 6px; }
 .likert label { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
-.likert label .num { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: var(--ink3); transition: all .15s; }
-.likert label .lbl { font-size: 9px; color: var(--ink3); text-align: center; max-width: 34px; line-height: 1.2; }
+.likert label .lbl { display: none; }
+.likert label .num { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: var(--ink3); transition: all .15s; background: var(--bg-surface-alt, var(--surface)); }
+.likert label:hover .num { border-color: var(--domain-mood); }
 .likert input { display: none; }
-.likert label:has(input:checked) .num { background: var(--accent); border-color: var(--accent); color: #fff; }
+.likert label:has(input:checked) .num { background: var(--domain-mood); border-color: var(--domain-mood); color: #fff; }
 
 .ctab-wrap { overflow-x: auto; margin: 20px 0; }
 .ctab { width: 100%; border-collapse: collapse; font-size: .8rem; font-family: var(--sans); border: 1px solid #c4d4dc; }
@@ -205,7 +284,6 @@ hr { border: none; border-top: 1px solid var(--line); margin: 36px 0; }
 .ctab thead th:last-child { border-right: none; }
 .ctab .tr-head td { background: #dce8f2; font-weight: 700; font-size: .78rem; color: #1a4a7a; padding: 7px 10px; border-top: 1px solid #c4d4dc; border-left: 3px solid #1a4a7a; }
 .ctab tbody tr { border-bottom: 1px solid #e4eef4; }
-.ctab tbody tr:hover { background: #f8fbff; }
 .ctab td { padding: 7px 10px; color: #1a2a3a; vertical-align: middle; border-right: 1px solid #e4eef4; }
 .ctab td:last-child { border-right: none; }
 .ctab .mn { font-style: italic; color: #2a4a6a; padding-left: 14px !important; }
@@ -220,129 +298,141 @@ hr { border: none; border-top: 1px solid var(--line); margin: 36px 0; }
 .ss-fill.brd { background: #c06000; }
 .ss-mid { position: absolute; left: 50%; top: -2px; width: 2px; height: 12px; background: #1a4a7a; }
 
-.pop-diag { display: flex; gap: 1px; align-items: flex-end; height: 14px; }
-.pop-diag .pb { background: #b0c8d0; border-radius: 1px 1px 0 0; }
-.pop-diag .pb.f { background: #5a9aa0; }
-
 textarea.interp { width: 100%; border: 1px solid var(--line); padding: 10px 14px; font-family: var(--sans); font-size: .88rem; color: var(--ink); background: var(--surface); resize: vertical; min-height: 88px; line-height: 1.6; transition: border-color .2s; }
-textarea.interp:focus { outline: none; border-color: var(--accent); }
+textarea.interp:focus { outline: none; border-color: var(--domain-mood); }
 
-.btn { display: inline-flex; align-items: center; gap: 6px; padding: 12px 24px; border-radius: 999px; font-family: var(--sans); font-size: .85rem; font-weight: 600; cursor: pointer; border: 0; transition: all .15s; }
-.btn-p { background: var(--accent); color: #fff; box-shadow: none; }
-.btn-p:hover { filter: brightness(1.08); }
-.btn-s { background: transparent; color: var(--ink2); border: 1px solid var(--line); }
-.btn-s:hover { border-color: var(--ink3); color: var(--ink); }
 .nav-row { display: flex; gap: 10px; margin-top: 40px; }
 
 .alert { display: none; padding: 10px 14px; border-left: 3px solid #c00; background: #fff5f5; font-size: .83rem; color: #900; margin-top: 14px; }
 .alert.on { display: block; }
 
-/* Report */
-.report-sec { border-top: 1px solid var(--line); padding: 28px 0; }
-.reflect-block { background: var(--accent-bg); border-radius: 14px; padding: 26px 28px; margin-top: 28px; }
-.reflect-block h3 { font-family: var(--serif); font-size: 1.2rem; margin-bottom: 8px; }
+.report-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin: 0 -24px; }
+.report-col-stack { display: flex; flex-direction: column; }
+.report-sec { padding: 8px 24px; border-top: none; }
+.report-col-stack .report-sec:nth-child(2) { border-top: 1px dashed var(--line); margin-top: 20px; padding-top: 28px; }
+.report-cols > .report-sec + .report-sec, .report-cols > .report-col-stack + .report-sec, .report-cols > .report-sec + .report-col-stack { border-left: 1px solid var(--line); }
+.report-sec-sub { font-size: .72em; font-weight: 400; color: var(--ink3); text-transform: none; }
+@media (max-width: 1300px) {
+  .report-cols { grid-template-columns: 1fr; margin: 0; }
+  .report-cols > .report-sec, .report-cols > .report-col-stack { border-left: none !important; border-top: 1px solid var(--line); margin-top: 8px; padding-top: 24px; }
+}
+.reflect-block { background: var(--accent-bg); border-radius: var(--radius-lg); padding: 26px 28px; margin-top: 28px; }
+.reflect-block h3 { font-family: var(--serif); font-size: 1.2rem; margin-bottom: 8px; text-transform: none; letter-spacing: 0; }
 .reflect-block .reflect-note { font-size: .88rem; color: var(--ink2); line-height: 1.6; margin-bottom: 16px; max-width: 60ch; }
 .reflect-block textarea { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-family: var(--sans); font-size: .88rem; color: var(--ink); background: var(--surface); resize: vertical; min-height: 88px; line-height: 1.6; margin-bottom: 14px; }
-.reflect-done-msg { display: flex; align-items: center; gap: 8px; font-size: .88rem; font-weight: 600; color: var(--accent); margin-bottom: 4px; }
-.report-sec h3 { margin-bottom: 18px; }
+.reflect-done-msg { display: flex; align-items: center; gap: 8px; font-size: .88rem; font-weight: 600; color: var(--domain-mood); margin-bottom: 4px; }
+.report-sec h3 { margin-bottom: 14px; font-size: 1.05rem; line-height: 1.4; }
+.t-labels { display: flex; justify-content: space-between; font-size: .68rem; color: var(--ink3); font-family: var(--mono); margin-top: 4px; }
 
-.dx-badge { display: inline-flex; align-items: center; gap: 12px; padding: 12px 20px; border: 1px solid var(--line); margin-bottom: 16px; }
+.dx-badge { display: inline-flex; align-items: center; gap: 12px; padding: 14px 22px; border-radius: var(--radius-lg); margin-bottom: 16px; }
 .dx-badge .dx-icon { font-size: 1.4rem; }
-.dx-badge .dx-name { font-size: 1rem; font-weight: 500; color: var(--ink); }
+.dx-badge .dx-name { font-size: 1rem; font-weight: 600; color: var(--ink); }
 .dx-badge .dx-sub { font-size: .78rem; color: var(--ink3); }
-.dx-badge.pos { border-color: var(--accent); background: var(--accent-bg); }
-.dx-badge.neg { border-color: #900; background: #fff5f5; }
+.dx-badge.pos { background: var(--accent-bg); }
+.dx-badge.neg { background: var(--bg-surface-alt, #f3f4f6); }
 
-.count-row { display: flex; border: 1px solid var(--line); margin-bottom: 14px; }
-.count-cell { flex: 1; padding: 12px 16px; border-right: 1px solid var(--line); text-align: center; }
+.count-row { display: flex; border: 1px solid var(--line); border-radius: var(--radius-md); margin-bottom: 14px; flex-wrap: wrap; overflow: hidden; }
+.count-cell { flex: 1; min-width: 110px; padding: 16px; border-right: 1px solid var(--line); text-align: center; }
 .count-cell:last-child { border-right: none; }
 .count-cell .cn { font-family: var(--serif); font-size: 2rem; font-weight: 300; }
 .count-cell .cl { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink3); }
 
 .cpills { display: flex; gap: 6px; flex-wrap: wrap; }
-.cpill { font-size: .75rem; padding: 3px 10px; border: 1px solid var(--line); }
-.cpill.met { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
-.cpill.unm { border-color: #900; color: #900; background: #fff5f5; }
-.cpill.unk { color: var(--ink3); }
-
-.t-row { display: flex; align-items: baseline; gap: 24px; margin-bottom: 12px; flex-wrap: wrap; }
-.t-big { font-family: var(--serif); font-size: 3.2rem; font-weight: 300; color: var(--ink); line-height: 1; }
-.t-meta { display: flex; flex-direction: column; gap: 4px; }
-.t-meta-r { display: flex; gap: 8px; font-size: .82rem; }
-.t-meta-r .k { color: var(--ink3); min-width: 70px; }
-.t-meta-r .v { font-weight: 500; }
-.sev-pill { display: inline-block; padding: 2px 10px; font-size: .75rem; font-weight: 500; }
-.sp-min { background: #e8f4f4; color: var(--accent); }
-.sp-mild { background: #fef9e7; color: #8a6800; }
-.sp-mod { background: #fdebd0; color: #9a4000; }
-.sp-sev { background: #fde0de; color: #800; }
-
-.t-track { height: 6px; border-radius: 3px; background: linear-gradient(to right, #2d9e9e 0%, #b8c840 35%, #e0c030 55%, #e06820 75%, #c02820 100%); position: relative; margin: 10px 0 4px; }
-.t-marker { position: absolute; top: -5px; width: 3px; height: 16px; background: var(--ink); border-radius: 2px; transform: translateX(-50%); transition: left .8s; }
-.t-labels { display: flex; justify-content: space-between; }
-.t-labels span { font-family: var(--mono); font-size: 9px; color: var(--ink3); }
+.cpill { font-size: .75rem; padding: 5px 12px; border-radius: var(--radius-pill); font-weight: 500; }
+.cpill.met { color: var(--domain-mood); background: var(--accent-bg); }
+.cpill.unm { color: var(--ink2); background: var(--bg-surface-alt, #f3f4f6); }
+.cpill.unk { color: var(--ink3); background: var(--bg-surface-alt, #f3f4f6); }
 
 .ht-table { width: 100%; border-collapse: collapse; font-size: .84rem; margin-top: 8px; }
 .ht-table th { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .07em; color: var(--ink3); font-weight: 400; padding: 0 12px 8px; text-align: left; border-bottom: 1px solid var(--line); }
-.ht-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); color: var(--ink2); }
+.ht-table td { padding: 12px; border-bottom: 1px solid var(--line); color: var(--ink2); }
 .ht-table tbody tr:last-child td { border-bottom: none; }
 .ht-table .ht-n { font-family: var(--mono); font-size: .8rem; }
-.ht-table .ht-t { font-weight: 500; }
-.ht-table .ht-t.hi { color: #900; }
-.mini-bar { height: 6px; background: var(--line); width: 120px; overflow: hidden; }
-.mini-fill { height: 100%; transition: width .7s; }
+.mini-bar { height: 6px; background: var(--line); width: 120px; overflow: hidden; display: inline-block; vertical-align: middle; border-radius: var(--radius-pill); }
+.mini-fill { height: 100%; transition: width .7s; background: var(--domain-mood); border-radius: var(--radius-pill); }
 
-.interp-block { padding: 14px 0; border-top: 1px solid var(--line); }
+.interp-block { padding: 16px 0; border-top: 1px solid var(--line); }
 .interp-block .q { font-size: .78rem; color: var(--ink3); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .06em; }
 .interp-block p { font-size: .88rem; color: var(--ink2); line-height: 1.6; }
 
 @media (max-width: 600px) {
-  nav { padding: 0 16px; }
+  .eval-topbar { padding: 0 16px; }
   .wrap { padding: 36px 16px 80px; }
-  .score-bar { padding: 10px 16px; }
   h1 { font-size: 2rem; }
 }
 @media print {
-  nav, #bar, .score-bar, .nav-row { display: none !important; }
+  .eval-topbar, #bar, .nav-row { display: none !important; }
   .page { display: block !important; }
 }
 
-/* ---- forced layout preview, driven by the floating a11y button ---- */
-#ccg-viewport { transition: max-width .3s ease, min-width .3s ease, box-shadow .3s ease; }
-html[data-force-layout="phone"] #ccg-viewport {
-  max-width: 400px; margin: 18px auto; border-radius: 28px;
-  box-shadow: 0 0 0 1px var(--line), 0 24px 60px rgba(20,25,40,.18); overflow: hidden;
+
+
+/* ============================================================
+   JORDAN-STYLE QUESTIONNAIRE THEME - ported to match the flat,
+   list-divider look (no per-item card/shadow, italic prompts,
+   bordered+tinted selected state instead of filled pills).
+   ============================================================ */
+.scid-q { border: none; border-radius: 0; box-shadow: none; background: transparent; padding: 20px 0; border-top: 1px solid var(--line); margin: 0; }
+.scid-q:first-child { border-top: none; }
+.scid-q:has(.radio-row label.p:has(input:checked)) { border-color: var(--line); }
+.scid-code {
+  font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--ink3); background: none; border: none; border-radius: 0; width: auto; height: auto;
+  display: inline; padding: 0; margin-bottom: 6px;
 }
-html[data-force-layout="desktop"] { overflow-x: auto; }
-html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
+.scid-q-top { display: block; margin-bottom: 10px; }
+.scid-q-text { font-size: var(--text-base); font-style: italic; color: var(--ink); line-height: 1.6; margin-top: 4px; }
+.question-followup { font-size: var(--text-xs); color: var(--ink3); margin-top: 6px; font-style: italic; }
+.radio-row { padding-left: 0; gap: 12px; margin-top: 12px; }
+.radio-row label {
+  border-radius: 8px; border: 1px solid var(--line); background: var(--bg-surface-alt);
+  padding: 8px 20px; font-weight: 500; font-size: var(--text-sm); transition: all .15s;
+}
+.radio-row label:hover { border-color: var(--domain-mood); background: var(--accent-bg); }
+.radio-row label:has(input:checked).p,
+.radio-row label:has(input:checked).n,
+.radio-row label:has(input:checked).u {
+  background: var(--accent-bg); border-color: var(--domain-mood); color: var(--domain-mood); font-weight: 600;
+}
+
+.hitop-block { border: none; border-radius: 0; background: transparent; padding: 20px 0; border-top: 1px solid var(--line); margin-bottom: 0; }
+.instrument-card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px; box-shadow: var(--shadow-xs); }
+.instrument-card .scid-q:first-child, .instrument-card .hitop-block:first-child, .instrument-card .bdi-q:first-child { border-top: none; }
+.bdi-q { padding: 18px 0; border-top: 1px solid var(--line); }
+.bdi-q-label { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--ink3); margin-bottom: 12px; display: flex; gap: 8px; }
+.bdi-opts { display: flex; flex-direction: column; gap: 8px; }
+.bdi-opts label {
+  display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--bg-surface-alt); cursor: pointer; font-size: .92rem;
+  color: var(--ink2); line-height: 1.5; transition: all .15s;
+}
+.bdi-opts label:hover { border-color: var(--domain-mood); background: var(--accent-bg); }
+.bdi-opts label:has(input:checked) { border-color: var(--domain-mood); background: var(--accent-bg); color: var(--ink); font-weight: 500; }
+.opt-n {
+  flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--line);
+  display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--ink3);
+}
+.bdi-opts label:has(input:checked) .opt-n { background: var(--domain-mood); border-color: var(--domain-mood); color: #fff; }
+.bdi-opts input { display: none; }
+.hitop-block:first-child { border-top: none; }
+.likert label .num { border-radius: var(--radius-md); width: 40px; height: 40px; border-width: 1.5px; font-size: var(--text-sm); font-weight: 600; }
+.likert label:has(input:checked) .num { background: var(--domain-mood); border-color: var(--domain-mood); color: #fff; }
 
 </style>
 </head>
 <body>
-<div id="ccg-nav-root"></div>
-<script src="/nav.js" data-subtitle="Depression Seminar"></script>
-<script src="/storage.js"></script>
-<script src="/sidebar.js"></script>
+<script>
+  if (!localStorage.getItem("clincog_name")) { location.replace("/"); }
+</script>
 
-
-<div id="ccg-viewport">
+<div id="shell-content">
 <div id="bar"><div id="bar-fill" style="width:0%"></div></div>
-
-<nav>
-  <div class="nav-brand">Depression Module</div>
-  <div class="nav-steps">
-    <div class="s active" id="s0">1</div>
-    <div class="s" id="s1">2</div>
-    <div class="s" id="s2">3</div>
-    <div class="s" id="s3">4</div>
-    <div class="s" id="s4">5</div>
-    <div class="s" id="s5">6</div>
-  </div>
-</nav>
 
 <!-- PAGE 0 -->
 <div class="page on" id="pg0">
-  <div class="wrap">
+  <div class="eval-layout two-col">
+    <aside class="eval-context" id="ctx-pg0"></aside>
+    <div class="eval-work" style="max-width:900px;">
     <div class="eyebrow">Seminar Activity · Depression Module</div>
     <h1>Three Ways to<br><em>Evaluate</em> Depression</h1>
     <p class="lead" style="max-width:540px;">You will read a clinical vignette and evaluate the same patient through three different conceptual frameworks. The lens shapes what you see.</p>
@@ -351,32 +441,57 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
       <div class="layer-row"><span class="layer-num">02</span><div class="layer-text"><span class="lt">Dimensional–Psychological — BDI-II &amp; HiTOP</span><span class="ls">Quantified severity · spectrum position</span></div></div>
       <div class="layer-row"><span class="layer-num">03</span><div class="layer-text"><span class="lt">Dimensional–Cognitive — CANTAB</span><span class="ls">Neuropsychological profile · mechanistic interpretation</span></div></div>
     </div>
-    <div class="nav-row" style="margin-top:12px;"><button class="btn btn-p" onclick="go(1)">Begin →</button></div>
+    <div class="nav-row" style="margin-top:12px;"><button class="btn btn-primary" onclick="go(1)">Begin →</button></div>
+    </div>
   </div>
 </div>
 
 <!-- PAGE 1: VIGNETTE -->
 <div class="page" id="pg1">
-  <div class="wrap">
-    <div class="eyebrow">Clinical Vignette</div>
-    <div class="patient-line"><h2>Darren, 34</h2><span>High school English teacher · First psychiatric contact</span></div>
-    <div class="vignette">
-      <p>Darren, a 34-year-old high school English teacher, has been struggling to get out of bed most mornings. Over the past few weeks, he stares at the ceiling after the alarm rings — numb — often lying there for hours before dragging himself to the couch. Once known for his energetic lectures and quick wit, he now dreads the thought of facing his students. "What's the point?" he mutters. "They're not learning anything from me anyway. Nothing I do matters."</p>
-      <p>His colleagues have grown concerned, though he rarely responds to their messages anymore. He tells them he's overwhelmed with grading, but even small interactions feel like too much. Some days, a colleague's offhand comment in the hallway is enough to make his chest tighten with irritation — a reaction that surprises even him, since he'd never been quick to anger before. Other times, he feels nothing at all. His moods shift without warning: some mornings there is a fleeting hour of restless agitation before the flatness returns.</p>
-      <p>He's stopped cooking, skipping meals entirely or eating whatever requires no decision. His clothes hang looser now, though he hasn't noticed. When he tries to plan even a simple task — what to eat, what to say to his department head — his mind goes blank, the thoughts sliding away before he can hold onto them. He described it recently as trying to think through fog.</p>
-      <p>When Darren does sleep, it's restless, full of strange half-waking dreams. On other nights he lies awake for hours, his mind circling through failures both real and imagined, unable to find a way out of the loop. He wakes unrefreshed every morning. Lately he's been thinking more and more about how everyone around him would simply be better off if he disappeared. The thoughts come and go, but they are starting to stay longer. Last week, for the first time, he found himself considering how he might act on them — a thought that frightened him enough to stop, but not enough to tell anyone. On one occasion, he pressed his nails hard into his forearm, not quite understanding why, only that the sharpness made the internal noise quieter for a moment.</p>
-      <p>At school, he has missed several grading deadlines and once walked out of class mid-lesson, overwhelmed and on the verge of tears. His department head tried to check in afterward, but Darren could only apologize quietly, his gaze fixed on the floor. Since then he has been calling in sick, unable to face another day.</p>
+  <div class="eval-layout two-col">
+    <aside class="eval-context" id="ctx-pg1"></aside>
+    <div class="eval-work" style="max-width:820px;">
+    <h1 class="vignette-page-title">Clinical Vignette</h1>
+    <p class="vignette-page-sub">Read the case carefully before administering the assessment tools.</p>
+    <div class="vignette-card">
+      <div class="vignette-card-name">Darren, 34</div>
+      <div class="vignette-card-meta">High school English teacher · First psychiatric contact</div>
+      <div class="vignette-card-divider"></div>
+      <div class="vignette-section">
+        <div class="vignette-section-title">Presentation</div>
+        <p>Darren, a 34-year-old high school English teacher, has been struggling to get out of bed most mornings. Over the past few weeks, he stares at the ceiling after the alarm rings &mdash; numb &mdash; often lying there for hours before dragging himself to the couch. Once known for his energetic lectures and quick wit, he now dreads the thought of facing his students. "What's the point?" he mutters. "They're not learning anything from me anyway. Nothing I do matters."</p>
+      </div>
+      <div class="vignette-section">
+        <div class="vignette-section-title">Mood &amp; Affective Symptoms</div>
+        <p>His colleagues have grown concerned, though he rarely responds to their messages anymore. He tells them he's overwhelmed with grading, but even small interactions feel like too much. Some days, a colleague's offhand comment in the hallway is enough to make his chest tighten with irritation &mdash; a reaction that surprises even him, since he'd never been quick to anger before. Other times, he feels nothing at all. His moods shift without warning: some mornings there is a fleeting hour of restless agitation before the flatness returns.</p>
+      </div>
+      <div class="vignette-section">
+        <div class="vignette-section-title">Cognitive &amp; Functional Changes</div>
+        <p>He's stopped cooking, skipping meals entirely or eating whatever requires no decision. His clothes hang looser now, though he hasn't noticed. When he tries to plan even a simple task &mdash; what to eat, what to say to his department head &mdash; his mind goes blank, the thoughts sliding away before he can hold onto them. He described it recently as trying to think through fog.</p>
+      </div>
+      <div class="vignette-section">
+        <div class="vignette-section-title">Sleep &amp; Risk History</div>
+        <p>When Darren does sleep, it's restless, full of strange half-waking dreams. On other nights he lies awake for hours, his mind circling through failures both real and imagined, unable to find a way out of the loop. He wakes unrefreshed every morning. Lately he's been thinking more and more about how everyone around him would simply be better off if he disappeared. The thoughts come and go, but they are starting to stay longer. Last week, for the first time, he found himself considering how he might act on them &mdash; a thought that frightened him enough to stop, but not enough to tell anyone. On one occasion, he pressed his nails hard into his forearm, not quite understanding why, only that the sharpness made the internal noise quieter for a moment.</p>
+      </div>
+      <div class="vignette-section">
+        <div class="vignette-section-title">Presenting Crisis</div>
+        <p>At school, he has missed several grading deadlines and once walked out of class mid-lesson, overwhelmed and on the verge of tears. Since then he has been calling in sick, unable to face another day.</p>
+        <div class="vignette-highlight">His department head tried to check in afterward, but Darren could only apologize quietly, his gaze fixed on the floor.</div>
+      </div>
     </div>
     <div class="nav-row">
-      <button class="btn btn-s" onclick="go(0)">← Back</button>
-      <button class="btn btn-p" onclick="go(2)">Proceed to ICD-11 →</button>
+      <button class="btn btn-secondary" onclick="go(0)">← Back</button>
+      <button class="btn btn-primary" onclick="go(2)">Proceed to ICD-11 →</button>
+    </div>
     </div>
   </div>
 </div>
 
 <!-- PAGE 2: SCID-5 -->
 <div class="page" id="pg2">
-  <div class="wrap">
+  <div class="eval-layout">
+    <aside class="eval-context" id="ctx-pg2"></aside>
+    <div class="eval-work">
     <div class="eyebrow">Layer 1 · Categorical · ICD-11</div>
     <h2>Let's confirm this by rating the clinical symptoms described by the character through structured questions.</h2>
     <p class="lead" style="margin-bottom:6px;">Rate each item from the ICD-11 Clinical Descriptions and Diagnostic Requirements (CDDR) for a Depressive Episode, reproduced verbatim below.</p>
@@ -385,44 +500,40 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
 
     <div class="sec-label">Depressive Episode &mdash; Core and Associated Symptoms</div>
 
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">a)</span><div class="scid-q-text">Depressed mood, occurring most of the day, nearly every day, for a period of at least two weeks.<div class="ev">Core symptom</div></div></div>
+    <div class="instrument-card">
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">a)</span><div class="scid-q-text">Depressed mood, occurring most of the day, nearly every day, for a period of at least two weeks.<div class="ev">Core symptom</div></div><div class="question-followup">↳ One of the two core symptoms — at least one of items a) or b) is required for diagnosis.</div></div>
       <div class="radio-row"><label class="p"><input type="radio" name="cddr_a" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_a" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_a" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
 
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">b)</span><div class="scid-q-text">Diminished interest in activities, occurring most of the day, nearly every day, for a period of at least two weeks.<div class="ev">Core symptom</div></div></div>
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">b)</span><div class="scid-q-text">Diminished interest in activities, occurring most of the day, nearly every day, for a period of at least two weeks.<div class="ev">Core symptom</div></div><div class="question-followup">↳ The second core symptom; anhedonia can be present even when mood itself feels flat rather than overtly sad.</div></div>
       <div class="radio-row"><label class="p"><input type="radio" name="cddr_b" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_b" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_b" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
 
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">c)</span><div class="scid-q-text">Difficulty concentrating.</div></div>
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">c)</span><div class="scid-q-text">Difficulty concentrating.</div><div class="question-followup">↳ A cognitive symptom patients often describe as a memory problem rather than a concentration one.</div></div>
       <div class="radio-row"><label class="p"><input type="radio" name="cddr_c" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_c" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_c" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
 
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">d)</span><div class="scid-q-text">Feelings of worthlessness or excessive or inappropriate guilt.</div></div>
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">d)</span><div class="scid-q-text">Feelings of worthlessness or excessive or inappropriate guilt.</div><div class="question-followup">↳ Distinguish reality-based regret from guilt that is disproportionate to the situation.</div></div>
       <div class="radio-row"><label class="p"><input type="radio" name="cddr_d" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_d" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_d" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
 
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">e)</span><div class="scid-q-text">Hopelessness.</div></div>
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">e)</span><div class="scid-q-text">Hopelessness.</div><div class="question-followup">↳ Closely associated with suicidal ideation when present alongside other symptoms — a key risk marker.</div></div>
       <div class="radio-row"><label class="p"><input type="radio" name="cddr_e" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_e" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_e" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
 
-    <div class="scid-q" style="border-left:2px solid var(--warn);padding-left:12px;margin-left:-14px;"><div class="scid-q-top"><span class="scid-code">f)</span><div class="scid-q-text">Recurrent thoughts of death or suicide.<div class="ev">&#9888;</div></div></div>
+    <div class="scid-q" style="border-left:2px solid var(--warn);padding-left:12px;margin-left:-14px;"><div class="scid-q-top"><span class="scid-code">f)</span><div class="scid-q-text">Recurrent thoughts of death or suicide.<div class="ev">&#9888;</div></div><div class="question-followup">↳ Requires direct, careful inquiry; presence at any level warrants explicit risk assessment.</div></div>
       <div class="radio-row"><label class="p"><input type="radio" name="cddr_f" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_f" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_f" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
 
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">g)</span><div class="scid-q-text">Changes in appetite or sleep.</div></div>
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">g)</span><div class="scid-q-text">Changes in appetite or sleep.</div><div class="question-followup">↳ Either direction (increase or decrease) satisfies this criterion — rate based on deviation from baseline.</div></div>
       <div class="radio-row"><label class="p"><input type="radio" name="cddr_g" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_g" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_g" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
 
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">h)</span><div class="scid-q-text">Psychomotor agitation or retardation.</div></div>
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">h)</span><div class="scid-q-text">Psychomotor agitation or retardation.</div><div class="question-followup">↳ Either direction counts; must be observable by others, not merely a subjective feeling.</div></div>
       <div class="radio-row"><label class="p"><input type="radio" name="cddr_h" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_h" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_h" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
 
-    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">i)</span><div class="scid-q-text">Reduced energy or fatigue.</div></div>
+    <div class="scid-q"><div class="scid-q-top"><span class="scid-code">i)</span><div class="scid-q-text">Reduced energy or fatigue.</div><div class="question-followup">↳ Common but non-specific; only counts when it represents a clear change from baseline.</div></div>
       <div class="radio-row"><label class="p"><input type="radio" name="cddr_i" value="present" onchange="countCddr()"> + Present</label><label class="n"><input type="radio" name="cddr_i" value="absent" onchange="countCddr()"> &minus; Absent</label><label class="u"><input type="radio" name="cddr_i" value="unknown" onchange="countCddr()"> ? Info lacking</label></div></div>
-
-    <div class="a10-strip">
-      <div class="a10-count"><div class="n" id="cddrCount">0</div><div class="l">Symptoms present (of 9)</div></div>
-      <div>
-        <div class="a10-status" id="cddrStatus">Rate each item to update the count.</div>
-        <div class="a10-status" id="cddrCoreStatus"></div>
-      </div>
     </div>
 
     <div class="sec-label">Exclusion Criterion</div>
+    <div class="instrument-card">
     <div class="scid-q"><div class="scid-q-top"><span class="scid-code">&#10005;</span><div class="scid-q-text">There have never been any prior manic, hypomanic, or mixed episodes, which would indicate the presence of a bipolar disorder.</div></div>
       <div class="yn-row"><label><input type="radio" name="cddr_exclusion" value="yes" onchange="countCddr()"> Confirmed</label><label><input type="radio" name="cddr_exclusion" value="no" onchange="countCddr()"> Not confirmed</label></div></div>
+    </div>
 
     <div class="sec-label">Conclusion</div>
     <div class="dx-options">
@@ -436,19 +547,22 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
 
     <div class="alert" id="sal">Please rate all 9 symptom items, the exclusion criterion, and record a conclusion before continuing.</div>
     <div class="nav-row">
-      <button class="btn btn-s" onclick="go(1)">← Vignette</button>
-      <button class="btn btn-p" onclick="valSCID()">Proceed →</button>
+      <button class="btn btn-secondary" onclick="go(1)">← Vignette</button>
+      <button class="btn btn-primary" onclick="valSCID()">Proceed →</button>
+    </div>
     </div>
   </div>
 </div>
 
 <div class="page" id="pg3">
+  <div class="eval-layout">
+    <aside class="eval-context" id="ctx-pg3"></aside>
+    <div class="eval-work">
   <div class="score-bar">
     <div><div class="sc" id="bdi-raw">0</div><div class="sl">BDI-II raw</div></div>
     <div><span class="band b-min" id="bdi-band">—</span></div>
     <div class="hint">0–13 minimal · 14–19 mild · 20–28 moderate · 29–63 severe</div>
   </div>
-  <div class="wrap">
     <div class="eyebrow">Layer 2 · Dimensional–Psychological</div>
     <h2>BDI-II &amp; HiTOP Evaluation</h2>
     <p class="lead" style="margin-bottom:6px;">Select the statement that best describes Darren based on the vignette.</p>
@@ -456,6 +570,7 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
 
     <h3>Beck Depression Inventory – II</h3>
 
+    <div class="instrument-card">
     <div class="bdi-q"><div class="bdi-q-label"><span>01</span>Sadness</div><div class="bdi-opts">
       <label><input type="radio" name="b1" value="0" onchange="calcBDI()"><span class="opt-n">0</span>I do not feel sad.</label>
       <label><input type="radio" name="b1" value="1" onchange="calcBDI()"><span class="opt-n">1</span>I feel sad much of the time.</label>
@@ -582,67 +697,79 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
       <label><input type="radio" name="b21" value="2" onchange="calcBDI()"><span class="opt-n">2</span>I have much less interest in sex now.</label>
       <label><input type="radio" name="b21" value="3" onchange="calcBDI()"><span class="opt-n">3</span>I have lost interest in sex completely.</label>
     </div></div>
+    </div>
 
     <hr />
 
     <h3>HiTOP — Distress Subfactor</h3>
-    <div class="callout" style="margin-bottom:20px;">Rate each statement based on Darren's experience as described in the vignette.<br><strong>1 = Not at all &nbsp; 2 = A little &nbsp; 3 = Moderately &nbsp; 4 = A lot</strong></div>
+    <div class="callout" style="margin-bottom:20px;">Rate each statement based on Darren's experience as described in the vignette.</div>
     <div class="callout warn" style="margin-bottom:24px;">⚠ The NSSI and Suicidality items below contain sensitive content. Rate based on vignette evidence only.</div>
 
+    <div class="instrument-card">
+    <div class="likert-legend">
+      <div class="likert-legend-item"><div class="likert-legend-num">1</div><div class="likert-legend-label">Not at all</div></div>
+      <div class="likert-legend-item"><div class="likert-legend-num">2</div><div class="likert-legend-label">A little</div></div>
+      <div class="likert-legend-item"><div class="likert-legend-num">3</div><div class="likert-legend-label">Moderately</div></div>
+      <div class="likert-legend-item"><div class="likert-legend-num">4</div><div class="likert-legend-label">A lot</div></div>
+    </div>
     <div class="hitop-block">
       <div class="hitop-scale-name">Cognitive Problems</div>
       <div class="hitop-pair">
-        <div class="hitop-item"><span class="hitop-item-text">I struggled to think clearly.</span><div class="likert"><label><input type="radio" name="hcp1" value="1"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hcp1" value="2"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hcp1" value="3"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hcp1" value="4"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
-        <div class="hitop-item"><span class="hitop-item-text">My mind felt mixed up.</span><div class="likert"><label><input type="radio" name="hcp2" value="1"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hcp2" value="2"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hcp2" value="3"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hcp2" value="4"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I struggled to think clearly.</span><div class="likert"><label><input type="radio" name="hcp1" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hcp1" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hcp1" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hcp1" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">My mind felt mixed up.</span><div class="likert"><label><input type="radio" name="hcp2" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hcp2" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hcp2" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hcp2" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
       </div>
     </div>
     <div class="hitop-block">
       <div class="hitop-scale-name">Distress–Dysphoria</div>
       <div class="hitop-pair">
-        <div class="hitop-item"><span class="hitop-item-text">Nothing seemed interesting to me.</span><div class="likert"><label><input type="radio" name="hdd1" value="1"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hdd1" value="2"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hdd1" value="3"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hdd1" value="4"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
-        <div class="hitop-item"><span class="hitop-item-text">I felt hopeless about the future.</span><div class="likert"><label><input type="radio" name="hdd2" value="1"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hdd2" value="2"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hdd2" value="3"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hdd2" value="4"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">Nothing seemed interesting to me.</span><div class="likert"><label><input type="radio" name="hdd1" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hdd1" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hdd1" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hdd1" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I felt hopeless about the future.</span><div class="likert"><label><input type="radio" name="hdd2" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hdd2" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hdd2" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hdd2" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
       </div>
     </div>
     <div class="hitop-block">
       <div class="hitop-scale-name">Emotionality</div>
       <div class="hitop-pair">
-        <div class="hitop-item"><span class="hitop-item-text">My moods were intense and unpredictable.</span><div class="likert"><label><input type="radio" name="hem1" value="1"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hem1" value="2"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hem1" value="3"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hem1" value="4"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
-        <div class="hitop-item"><span class="hitop-item-text">I was easily annoyed.</span><div class="likert"><label><input type="radio" name="hem2" value="1"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hem2" value="2"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hem2" value="3"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hem2" value="4"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">My moods were intense and unpredictable.</span><div class="likert"><label><input type="radio" name="hem1" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hem1" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hem1" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hem1" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I was easily annoyed.</span><div class="likert"><label><input type="radio" name="hem2" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hem2" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hem2" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hem2" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
       </div>
     </div>
     <div class="hitop-block">
       <div class="hitop-scale-name">Insomnia</div>
       <div class="hitop-pair">
-        <div class="hitop-item"><span class="hitop-item-text">I slept very poorly.</span><div class="likert"><label><input type="radio" name="hin1" value="1"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hin1" value="2"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hin1" value="3"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hin1" value="4"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
-        <div class="hitop-item"><span class="hitop-item-text">I had trouble staying asleep.</span><div class="likert"><label><input type="radio" name="hin2" value="1"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hin2" value="2"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hin2" value="3"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hin2" value="4"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I slept very poorly.</span><div class="likert"><label><input type="radio" name="hin1" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hin1" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hin1" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hin1" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I had trouble staying asleep.</span><div class="likert"><label><input type="radio" name="hin2" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hin2" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hin2" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hin2" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
       </div>
     </div>
     <div class="hitop-block" style="border-left:2px solid var(--warn);padding-left:12px;margin-left:-14px;">
       <div class="hitop-scale-name">Non-Suicidal Self-Injury (NSSI) ⚠</div>
       <div class="hitop-pair">
-        <div class="hitop-item"><span class="hitop-item-text">I cut myself on purpose.</span><div class="likert"><label><input type="radio" name="hns1" value="1"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hns1" value="2"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hns1" value="3"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hns1" value="4"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
-        <div class="hitop-item"><span class="hitop-item-text">I hurt myself on purpose.</span><div class="likert"><label><input type="radio" name="hns2" value="1"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hns2" value="2"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hns2" value="3"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hns2" value="4"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I cut myself on purpose.</span><div class="likert"><label><input type="radio" name="hns1" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hns1" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hns1" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hns1" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I hurt myself on purpose.</span><div class="likert"><label><input type="radio" name="hns2" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hns2" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hns2" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hns2" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
       </div>
     </div>
     <div class="hitop-block" style="border-left:2px solid var(--warn);padding-left:12px;margin-left:-14px;">
       <div class="hitop-scale-name">Suicidality ⚠</div>
       <div class="hitop-pair">
-        <div class="hitop-item"><span class="hitop-item-text">I thought a lot about death.</span><div class="likert"><label><input type="radio" name="hsu1" value="1"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hsu1" value="2"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hsu1" value="3"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hsu1" value="4"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
-        <div class="hitop-item"><span class="hitop-item-text">I worked on a plan to kill myself.</span><div class="likert"><label><input type="radio" name="hsu2" value="1"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hsu2" value="2"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hsu2" value="3"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hsu2" value="4"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I thought a lot about death.</span><div class="likert"><label><input type="radio" name="hsu1" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hsu1" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hsu1" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hsu1" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I worked on a plan to kill myself.</span><div class="likert"><label><input type="radio" name="hsu2" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hsu2" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hsu2" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hsu2" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
       </div>
+    </div>
     </div>
 
     <div class="alert" id="bal">Please complete all 21 BDI-II items and all 6 HiTOP subscales before continuing.</div>
     <div class="nav-row">
-      <button class="btn btn-s" onclick="go(2)">← ICD-11</button>
-      <button class="btn btn-p" onclick="valBDI()">Proceed to CANTAB →</button>
+      <button class="btn btn-secondary" onclick="go(2)">← ICD-11</button>
+      <button class="btn btn-primary" onclick="valBDI()">Proceed to CANTAB →</button>
+    </div>
     </div>
   </div>
 </div>
 
 <!-- PAGE 4: CANTAB -->
 <div class="page" id="pg4">
-  <div class="wrap">
+  <div class="eval-layout">
+    <aside class="eval-context" id="ctx-pg4"></aside>
+    <div class="eval-work">
     <div class="eyebrow">Layer 3 · Dimensional–Cognitive</div>
     <h2>CANTAB Report</h2>
     <p class="lead" style="margin-bottom:20px;">Read Darren's automated CANTAB results, then answer the interpretation questions.</p>
@@ -689,36 +816,41 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
 
     <h3 style="margin-bottom:16px;">Interpretation Questions</h3>
     <div style="display:flex;flex-direction:column;gap:18px;">
-      <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">1. Describe the pattern of impairment. Which measures fall furthest below the norm, and what cognitive domains do they reflect?</label><textarea class="interp" id="cog1" placeholder="Discuss SWM and OTS findings…"></textarea></div>
-      <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">2. How do these deficits connect to the vignette? Which of Darren's behaviours can now be explained neuropsychologically?</label><textarea class="interp" id="cog2" placeholder="Link test data to Darren's difficulties at work, indecisiveness, inability to plan…"></textarea></div>
-      <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">3. What does the cognitive layer add that ICD-11 categories or the BDI-II alone could not reveal?</label><textarea class="interp" id="cog3" placeholder="Mechanisms, treatment implications, prognosis…"></textarea></div>
+      <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">1. Describe the pattern of impairment. Which measures fall furthest below the norm, and what cognitive domains do they reflect?</label><textarea class="interp" id="cog1" oninput="tick()" placeholder="Discuss SWM and OTS findings…"></textarea></div>
+      <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">2. How do these deficits connect to the vignette? Which of Darren's behaviours can now be explained neuropsychologically?</label><textarea class="interp" id="cog2" oninput="tick()" placeholder="Link test data to Darren's difficulties at work, indecisiveness, inability to plan…"></textarea></div>
+      <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">3. What does the cognitive layer add that ICD-11 categories or the BDI-II alone could not reveal?</label><textarea class="interp" id="cog3" oninput="tick()" placeholder="Mechanisms, treatment implications, prognosis…"></textarea></div>
     </div>
 
     <div class="alert" id="cal">Please answer at least the first two questions before generating the report.</div>
     <div class="nav-row">
-      <button class="btn btn-s" onclick="go(3)">← BDI-II &amp; HiTOP</button>
-      <button class="btn btn-p" onclick="valCANTAB()">Generate Report →</button>
+      <button class="btn btn-secondary" onclick="go(3)">← BDI-II &amp; HiTOP</button>
+      <button class="btn btn-primary" onclick="valCANTAB()">Generate Report →</button>
+    </div>
     </div>
   </div>
 </div>
 
 <!-- PAGE 5: REPORT -->
 <div class="page" id="pg5">
-  <div class="wrap">
+  <div class="eval-layout two-col">
+    <aside class="eval-context" id="ctx-pg5"></aside>
+    <div class="eval-work" style="max-width:1700px;">
     <div class="eyebrow">Comparative Evaluation Report</div>
     <h2 style="margin-bottom:4px;">Darren, 34</h2>
     <p style="color:var(--ink3);font-size:.85rem;margin-bottom:8px;">High school English teacher · Generated from your responses</p>
     <hr />
 
+    <div class="report-cols">
     <div class="report-sec">
-      <h3>Layer 1 — Categorical (ICD-11 / CDDR)</h3>
+      <h3>Layer 1 — Categorical<br><span class="report-sec-sub">ICD-11 / CDDR</span></h3>
       <div id="r-dx"></div>
       <div class="count-row" id="r-counts" style="margin-top:12px;"></div>
       <div class="cpills" id="r-pills" style="margin-top:10px;"></div>
     </div>
 
+    <div class="report-col-stack">
     <div class="report-sec">
-      <h3>Layer 2a — Dimensional (BDI-II)</h3>
+      <h3>Layer 2a — Dimensional<br><span class="report-sec-sub">BDI-II</span></h3>
       <div class="t-row">
         <div class="t-big" id="r-bdi-t">—</div>
         <div class="t-meta">
@@ -729,40 +861,44 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
       </div>
       <div class="t-track"><div class="t-marker" id="r-bdi-mk" style="left:0%"></div></div>
       <div class="t-labels"><span>T=30</span><span>40</span><span>50</span><span>60</span><span>70</span><span>80+</span></div>
-      <p style="font-size:.74rem;color:var(--ink3);margin-top:6px;">Community norms (M=10, SD=7) · T≥63 = clinically elevated</p>
-      <canvas id="plot-bdi" style="width:100%;height:180px;margin-top:20px;display:block;"></canvas>
+      <p id="bdi-norm-text" style="font-size:.72rem;color:var(--ink3);margin-top:6px;">Community norms (M=10, SD=7) · T≥63 = clinically elevated</p>
+      <p id="bdi-citation-text" style="font-size:.68rem;color:var(--ink3);margin-top:2px;font-style:italic;"></p>
+      <canvas id="plot-bdi" style="width:100%;height:140px;margin-top:16px;display:block;"></canvas>
     </div>
 
     <div class="report-sec">
-      <h3>Layer 2b — Dimensional (HiTOP Distress Subfactor)</h3>
+      <h3>Layer 2b — Dimensional<br><span class="report-sec-sub">HiTOP Distress Subfactor</span></h3>
       <table class="ht-table">
-        <thead><tr><th>Subscale</th><th>Raw (2–8)</th><th>T Score</th><th>Percentile</th><th>Profile</th></tr></thead>
+        <thead><tr><th>Subscale</th><th>Raw</th><th>T</th><th>%ile</th><th>Profile</th></tr></thead>
         <tbody id="r-ht-body"></tbody>
       </table>
-      <p style="font-size:.74rem;color:var(--ink3);margin-top:6px;">Community norms (M=3.0, SD=1.5 per 2-item subscale, 1–4 scale) · T≥65 = clinically elevated</p>
-      <canvas id="plot-ht" style="width:100%;height:180px;margin-top:20px;display:block;"></canvas>
-      <p style="font-size:.74rem;color:var(--ink3);margin-top:4px;">Distress total = sum of 6 subscale scores (range 12–48) · M<sub>total</sub>=18, SD<sub>total</sub>≈3.67 (pooled)</p>
+      <p id="ht-norm-text" style="font-size:.72rem;color:var(--ink3);margin-top:6px;">Community norms (M=3.0, SD=1.5 per 2-item subscale) · T≥65 = clinically elevated</p>
+      <canvas id="plot-ht" style="width:100%;height:140px;margin-top:16px;display:block;"></canvas>
+      <p id="ht-total-norm-text" style="font-size:.72rem;color:var(--ink3);margin-top:4px;">Distress total = sum of 6 subscales (range 12–48) · M<sub>total</sub>=18, SD<sub>total</sub>≈3.67</p>
+      <p id="ht-citation-text" style="font-size:.68rem;color:var(--ink3);margin-top:2px;font-style:italic;"></p>
+    </div>
     </div>
 
     <div class="report-sec">
-      <h3>Layer 3 — Dimensional–Cognitive (CANTAB)</h3>
+      <h3>Layer 3 — Dimensional–Cognitive<br><span class="report-sec-sub">CANTAB</span></h3>
       <div class="ctab-wrap">
-        <table class="ctab" style="font-size:.78rem;">
-          <thead><tr><th>Test / Measure</th><th>Std Score</th><th>Standard Score Chart</th><th>Better than</th><th>G/B than</th></tr></thead>
+        <table class="ctab" style="font-size:.7rem;">
+          <thead><tr><th>Measure</th><th>Std</th><th>Chart</th><th>Better</th><th>G/B</th></tr></thead>
           <tbody>
-            <tr class="tr-head"><td colspan="5">SWM — Spatial Working Memory</td></tr>
+            <tr class="tr-head"><td colspan="5">SWM</td></tr>
             <tr><td class="mn">Between errors</td><td class="imp">−1.78</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill imp" style="width:21%"></div><div class="ss-mid"></div></div></div></td><td>4%</td><td>4%</td></tr>
             <tr><td class="mn">Strategy score</td><td class="brd">−1.42</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill brd" style="width:28%"></div><div class="ss-mid"></div></div></div></td><td>8%</td><td>8%</td></tr>
             <tr><td class="mn">Total errors (adj.)</td><td class="imp">−2.01</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill imp" style="width:17%"></div><div class="ss-mid"></div></div></div></td><td>2%</td><td>2%</td></tr>
-            <tr class="tr-head"><td colspan="5">OTS — One Touch Stockings of Cambridge</td></tr>
-            <tr><td class="mn">Problems solved on first choice (%)</td><td class="imp">−2.24</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill imp" style="width:13%"></div><div class="ss-mid"></div></div></div></td><td>1%</td><td>1%</td></tr>
-            <tr><td class="mn">Mean initial thinking time (ms)</td><td class="imp">−1.62</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill imp" style="width:24%"></div><div class="ss-mid"></div></div></div></td><td>5%</td><td>5%</td></tr>
-            <tr><td class="mn">Mean subsequent thinking time (ms)</td><td class="brd">−0.71</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill brd" style="width:39%"></div><div class="ss-mid"></div></div></div></td><td>24%</td><td>24%</td></tr>
+            <tr class="tr-head"><td colspan="5">OTS</td></tr>
+            <tr><td class="mn">First-choice solved (%)</td><td class="imp">−2.24</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill imp" style="width:13%"></div><div class="ss-mid"></div></div></div></td><td>1%</td><td>1%</td></tr>
+            <tr><td class="mn">Initial thinking (ms)</td><td class="imp">−1.62</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill imp" style="width:24%"></div><div class="ss-mid"></div></div></div></td><td>5%</td><td>5%</td></tr>
+            <tr><td class="mn">Subsequent thinking (ms)</td><td class="brd">−0.71</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill brd" style="width:39%"></div><div class="ss-mid"></div></div></div></td><td>24%</td><td>24%</td></tr>
           </tbody>
         </table>
       </div>
       <div class="interp-block"><div class="q">Pattern of impairment</div><p id="r-cog1" style="white-space:pre-wrap;"></p></div>
       <div class="interp-block"><div class="q">Connection to vignette</div><p id="r-cog2" style="white-space:pre-wrap;"></p></div>
+    </div>
     </div>
 
     <hr />
@@ -771,17 +907,22 @@ html[data-force-layout="desktop"] #ccg-viewport { min-width: 900px; }
       <p class="reflect-note">You approached Darren from three perspectives — a categorical diagnosis, a dimensional profile, and a cognitive task you completed yourself. Write a few sentences on what exploring the case this way taught you, then mark it complete.</p>
       <textarea id="reflect-text" placeholder="What did looking at Darren's case from three angles add to your understanding?"></textarea>
       <div id="reflect-done" style="display:none;"></div>
-      <button class="btn btn-p" id="reflect-btn" onclick="completeCase()">Complete case →</button>
+      <button class="btn btn-primary" id="reflect-btn" onclick="completeCase()">Complete case →</button>
     </div>
     <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;padding-top:20px;">
-      <button class="btn btn-s" onclick="window.print()">Print</button>
-      <button class="btn btn-s" onclick="go(1)">← Vignette</button>
-      <button class="btn btn-s" onclick="go(0)">↺ Start over</button>
+      <button class="btn btn-secondary" onclick="window.print()">Print</button>
+      <button class="btn btn-secondary" onclick="go(1)">← Vignette</button>
+      <button class="btn btn-secondary" onclick="go(0)">↺ Start over</button>
+    </div>
     </div>
   </div>
 </div>
 </div>
 
+<script>window.CLINCOG_SHELL = { autoCollapse: true, activeCaseId: "depression", breadcrumb: [{ label: "Dashboard", href: "/dashboard.html" }, { label: "Cases", href: "/dashboard.html" }, { label: "Darren", href: "/depression-chat.html" }, { label: "Evaluation" }] };</script>
+<script src="/storage.js"></script>
+<script src="/icons.js"></script>
+<script src="/shell.js?v=2"></script>
 <script src="/a11y.js"></script>
 <script>
 function completeCase() {
@@ -801,20 +942,198 @@ function paintReflectState() {
     btn.textContent = 'Update reflection';
   }
 }
+const STEP_LABELS = ["Overview", "Vignette", "ICD-11", "BDI-II & HiTOP", "CANTAB", "Report"];
+
+function verticalStepperHtml() {
+  const rows = STEP_LABELS.map((label, i) => `
+    <div class="v-step" data-step="${i}" onclick="stepClick(${i})">
+      <div class="v-step-line"></div>
+      <div class="v-step-dot">${i + 1}</div>
+      <div class="v-step-label">${label}</div>
+    </div>`).join('');
+  return `<div class="ctx-card"><div class="ctx-card-body v-stepper-card"><div class="v-stepper">${rows}</div></div></div>`;
+}
+
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function buildConceptHistoryHtml() {
+  const history = (typeof ClinCog !== "undefined") ? ClinCog.getHistory("depression") : [];
+  if (!history || history.length === 0) {
+    return '<div class="ctx-chat-empty">You haven\'t started this conversation yet.</div>';
+  }
+  return '<div class="ctx-chat">' + history.map(m => {
+    const who = m.role === "user" ? "from-student" : "from-patient";
+    return `<div class="chat-row ${who}"><div class="chat-bubble">${escapeHtml(m.content)}</div></div>`;
+  }).join('') + '</div>';
+}
+
+function toggleCtxCard(btn) {
+  const card = btn.closest('.ctx-card');
+  const body = card.querySelector('.ctx-body');
+  if (card.classList.contains('open')) {
+    body.style.maxHeight = '0px';
+    card.classList.remove('open');
+  } else {
+    card.classList.add('open');
+    body.style.maxHeight = body.scrollHeight + 'px';
+  }
+}
+
+const VIGNETTE_HTML = `
+  <p>Darren, a 34-year-old high school English teacher, has been struggling to get out of bed most mornings. Over the past few weeks, he stares at the ceiling after the alarm rings &mdash; numb &mdash; often lying there for hours before dragging himself to the couch. Once known for his energetic lectures and quick wit, he now dreads the thought of facing his students. "What's the point?" he mutters. "They're not learning anything from me anyway. Nothing I do matters."</p>
+  <p>His colleagues have grown concerned, though he rarely responds to their messages anymore. He tells them he's overwhelmed with grading, but even small interactions feel like too much. Some days, a colleague's offhand comment in the hallway is enough to make his chest tighten with irritation &mdash; a reaction that surprises even him, since he'd never been quick to anger before. Other times, he feels nothing at all. His moods shift without warning: some mornings there is a fleeting hour of restless agitation before the flatness returns.</p>
+  <p>He's stopped cooking, skipping meals entirely or eating whatever requires no decision. His clothes hang looser now, though he hasn't noticed. When he tries to plan even a simple task &mdash; what to eat, what to say to his department head &mdash; his mind goes blank, the thoughts sliding away before he can hold onto them. He described it recently as trying to think through fog.</p>
+  <p>When Darren does sleep, it's restless, full of strange half-waking dreams. On other nights he lies awake for hours, his mind circling through failures both real and imagined, unable to find a way out of the loop. He wakes unrefreshed every morning. Lately he's been thinking more and more about how everyone around him would simply be better off if he disappeared. The thoughts come and go, but they are starting to stay longer. Last week, for the first time, he found himself considering how he might act on them &mdash; a thought that frightened him enough to stop, but not enough to tell anyone. On one occasion, he pressed his nails hard into his forearm, not quite understanding why, only that the sharpness made the internal noise quieter for a moment.</p>
+  <p>At school, he has missed several grading deadlines and once walked out of class mid-lesson, overwhelmed and on the verge of tears. His department head tried to check in afterward, but Darren could only apologize quietly, his gaze fixed on the floor. Since then he has been calling in sick, unable to face another day.</p>`;
+
+function fullContextExtrasHtml() {
+  return `
+    <div class="ctx-card"><div class="ctx-card-body">
+      <div class="ctx-patient-name">Darren, 34</div>
+      <div class="ctx-patient-meta">High school English teacher · First psychiatric contact</div>
+      <div class="ctx-patient-complaint">Missed grading deadlines, walked out of class mid-lesson, colleagues increasingly concerned.</div>
+    </div></div>
+    <div class="ctx-card" data-role="vignette">
+      <div class="ctx-card-header">
+        <h4 style="margin:0;">Clinical vignette</h4>
+        <button type="button" class="ctx-toggle-btn" onclick="toggleCtxCard(this)" aria-label="Expand"><span class="chev">▾</span></button>
+      </div>
+      <div class="ctx-body"><div class="ctx-card-body"><div class="ctx-vignette-text">${VIGNETTE_HTML}</div></div></div>
+    </div>
+    <div class="ctx-card" data-role="chat">
+      <div class="ctx-card-header">
+        <h4 style="margin:0;">Your conversation with Darren</h4>
+        <button type="button" class="ctx-toggle-btn" onclick="toggleCtxCard(this)" aria-label="Expand"><span class="chev">▾</span></button>
+      </div>
+      <div class="ctx-body"><div class="ctx-card-body">${buildConceptHistoryHtml()}</div></div>
+    </div>
+    <div class="ctx-card"><div class="ctx-card-body">
+      <h4>Rating guide</h4>
+      <div class="ctx-guide-row"><span class="ctx-guide-mark p">+</span> Present</div>
+      <div class="ctx-guide-row"><span class="ctx-guide-mark n">&minus;</span> Absent</div>
+      <div class="ctx-guide-row"><span class="ctx-guide-mark u">?</span> Inadequate information</div>
+    </div></div>`;
+}
+
+const FULL_CONTEXT_IDS = ["ctx-pg2", "ctx-pg3", "ctx-pg4"];
+
+function scoringMiniHtml(pageId) {
+  if (pageId === "ctx-pg2") {
+    return `<div class="mini-stats">
+      <div class="mini-stat"><div class="mini-stat-num"><span id="cddrCount">0</span>/9</div><div class="mini-stat-lbl">symptoms</div></div>
+    </div>
+    <span id="cddrStatus" style="display:none;"></span><span id="cddrCoreStatus" style="display:none;"></span>
+    <span id="dot-a" style="display:none;"></span><span id="dot-b" style="display:none;"></span><span id="dot-c" style="display:none;"></span>
+    <span id="dot-d" style="display:none;"></span><span id="dot-e" style="display:none;"></span><span id="dot-f" style="display:none;"></span>
+    <span id="dot-g" style="display:none;"></span><span id="dot-h" style="display:none;"></span><span id="dot-i" style="display:none;"></span>`;
+  }
+  if (pageId === "ctx-pg3") {
+    return `<div class="mini-stats">
+      <div class="mini-stat"><div class="mini-stat-num" id="bdiScoreMini">0</div><div class="mini-stat-lbl">BDI score</div></div>
+      <div class="mini-stat"><div class="mini-stat-num"><span id="hitopCount">0</span>/6</div><div class="mini-stat-lbl">HiTOP</div></div>
+    </div>
+    <span id="bdiItemCount" style="display:none;"></span>`;
+  }
+  if (pageId === "ctx-pg4") {
+    return `<div class="mini-stats">
+      <div class="mini-stat"><div class="mini-stat-num" id="matCount">0/2</div><div class="mini-stat-lbl">answered</div></div>
+    </div>`;
+  }
+  return '';
+}
+
+function paintContextPanels() {
+  document.querySelectorAll('.eval-context').forEach(el => {
+    const isFull = FULL_CONTEXT_IDS.includes(el.id);
+    const extras = isFull ? fullContextExtrasHtml() : '';
+    const mini = isFull ? scoringMiniHtml(el.id) : '';
+    el.innerHTML = `<div class="ctx-sticky-top">${verticalStepperHtml()}${mini}</div>`
+      + (extras ? `<div class="ctx-scroll-area">${extras}</div>` : '');
+  });
+}
+
 let cur=0;
-function go(n){document.getElementById('pg'+cur).classList.remove('on');cur=n;document.getElementById('pg'+cur).classList.add('on');window.scrollTo({top:0,behavior:'smooth'});tick();if(n===5){ClinCog.markEvalReached('depression');paintReflectState();}}
-function tick(){document.getElementById('bar-fill').style.width=(cur/5*100)+'%';for(let i=0;i<=5;i++){const d=document.getElementById('s'+i);d.className='s';if(i<cur)d.classList.add('done');else if(i===cur)d.classList.add('active');}}
+let maxStepReached=0;
+function stepClick(n) { if (n <= maxStepReached) go(n); }
+function go(n){document.getElementById('pg'+cur).classList.remove('on');cur=n;if(n>maxStepReached)maxStepReached=n;document.getElementById('pg'+cur).classList.add('on');window.scrollTo({top:0,behavior:'smooth'});tick();expandContextCardsByDefault();if(n===5){ClinCog.markEvalReached('depression');paintReflectState();}}
+
+function stepFraction() {
+  if (cur === 2) {
+    const items = ['a','b','c','d','e','f','g','h','i'];
+    let done = 0;
+    items.forEach(it => { if (document.querySelector(`input[name="cddr_${it}"]:checked`)) done++; });
+    if (document.querySelector('input[name="cddr_exclusion"]:checked')) done++;
+    if (document.querySelector('input[name="sdx"]:checked')) done++;
+    return done / 11;
+  }
+  if (cur === 3) {
+    let bdiDone = 0;
+    for (let i=1;i<=21;i++) { if (document.querySelector(`input[name="b${i}"]:checked`)) bdiDone++; }
+    const subs=[['hcp1','hcp2'],['hdd1','hdd2'],['hem1','hem2'],['hin1','hin2'],['hns1','hns2'],['hsu1','hsu2']];
+    let hitopDone = 0;
+    subs.forEach(p => { if (document.querySelector(`input[name="${p[0]}"]:checked`) && document.querySelector(`input[name="${p[1]}"]:checked`)) hitopDone++; });
+    return (bdiDone + hitopDone) / 27;
+  }
+  if (cur === 4) {
+    let done = 0;
+    if (document.getElementById('cog1')?.value.trim()) done++;
+    if (document.getElementById('cog2')?.value.trim()) done++;
+    return done / 2;
+  }
+  return 0;
+}
+
+function tick(){
+  const frac = stepFraction();
+  document.getElementById('bar-fill').style.width=((cur+frac)/5*100)+'%';
+  if (cur === 3) {
+    let bdiDone = 0;
+    for (let i=1;i<=21;i++) { if (document.querySelector(`input[name="b${i}"]:checked`)) bdiDone++; }
+    const subs=[['hcp1','hcp2'],['hdd1','hdd2'],['hem1','hem2'],['hin1','hin2'],['hns1','hns2'],['hsu1','hsu2']];
+    let hitopDone = 0;
+    subs.forEach(p => { if (document.querySelector(`input[name="${p[0]}"]:checked`) && document.querySelector(`input[name="${p[1]}"]:checked`)) hitopDone++; });
+    const bdiEl = document.getElementById('bdiItemCount');
+    if (bdiEl) bdiEl.innerHTML = bdiDone + '<span class="of"> / 21</span>';
+    const htEl = document.getElementById('hitopCount');
+    if (htEl) htEl.textContent = hitopDone;
+  }
+  if (cur === 4) {
+    const done = (document.getElementById('cog1')?.value.trim() ? 1 : 0) + (document.getElementById('cog2')?.value.trim() ? 1 : 0);
+    const el = document.getElementById('matCount');
+    if (el) el.textContent = done + '/2';
+  }
+  for(let i=0;i<=5;i++){
+    document.querySelectorAll('[data-step="'+i+'"]').forEach(d => {
+      d.className='v-step';
+      const dot=d.querySelector('.v-step-dot');
+      if(i===cur){d.classList.add('current');dot.textContent=i+1;}
+      else if(i<=maxStepReached){d.classList.add('done');dot.innerHTML='✓';}
+      else{dot.textContent=i+1;}
+    });
+  }
+}
 
 function countCddr(){
   const items=['a','b','c','d','e','f','g','h','i'];
   const core=['a','b'];
   let n=0,coreMet=false;
-  for(const it of items){const v=document.querySelector(`input[name="cddr_${it}"]:checked`);if(v&&v.value==='present'){n++;if(core.includes(it))coreMet=true;}}
+  for(const it of items){
+    const v=document.querySelector(`input[name="cddr_${it}"]:checked`);
+    const dot=document.getElementById('dot-'+it);
+    if (dot) dot.className = 'scoring-dot' + (v ? (v.value === 'present' ? ' p' : v.value === 'absent' ? ' n' : ' u') : '');
+    if(v&&v.value==='present'){n++;if(core.includes(it))coreMet=true;}
+  }
   document.getElementById('cddrCount').textContent=n;
-  document.getElementById('cddrStatus').textContent=n>0?(n+' of 9 symptoms endorsed'):'None endorsed yet.';
-  document.getElementById('cddrStatus').className='a10-status'+(n>0?' ok':'');
-  document.getElementById('cddrCoreStatus').textContent=coreMet?'✓ At least one core symptom (depressed mood or diminished interest) present':(n>0?'✗ No core symptom endorsed yet':'');
-  document.getElementById('cddrCoreStatus').className='a10-status'+(coreMet?' ok':'');
+  document.getElementById('cddrStatus').textContent=n>0?(n+' of 9 symptoms endorsed'):'Rate each item to update the count.';
+  const coreEl = document.getElementById('cddrCoreStatus');
+  coreEl.textContent=coreMet?'✓ At least one core symptom (depressed mood or diminished interest) present':'Needs ≥ 1 of the two core symptoms (a–b).';
+  coreEl.style.color = coreMet ? 'var(--domain-mood)' : '';
+  coreEl.style.fontWeight = coreMet ? '600' : '400';
+  tick();
 }
 function valSCID(){
   let ok=true;
@@ -830,11 +1149,14 @@ function valSCID(){
 function calcBDI(){
   let t=0;for(let i=1;i<=21;i++){const v=document.querySelector(`input[name="b${i}"]:checked`);if(v)t+=+v.value;}
   document.getElementById('bdi-raw').textContent=t;
+  const miniEl=document.getElementById('bdiScoreMini');
+  if(miniEl) miniEl.textContent=t;
   const b=document.getElementById('bdi-band');
   if(t<=13){b.textContent='Minimal';b.className='band b-min';}
   else if(t<=19){b.textContent='Mild';b.className='band b-mild';}
   else if(t<=28){b.textContent='Moderate';b.className='band b-mod';}
   else{b.textContent='Severe';b.className='band b-sev';}
+  tick();
 }
 function valBDI(){
   let ok=true;
@@ -854,9 +1176,11 @@ function valCANTAB(){
 
 function erf(x){const a=[0.254829592,-0.284496736,1.421413741,-1.453152027,1.061405429],p=0.3275911,s=x<0?-1:1;x=Math.abs(x);const t=1/(1+p*x);return s*(1-(((((a[4]*t+a[3])*t)+a[2])*t+a[1])*t+a[0])*t*Math.exp(-x*x));}
 function tPct(t){return Math.max(1,Math.min(99,Math.round(0.5*(1+erf(((t-50)/10)/Math.sqrt(2)))*100)));}
-function rawToT_bdi(r){return Math.round(50+((r-10)/7)*10);}
-function rawToT_ht(r){return Math.round(50+((r-3.0)/1.5)*10);}
-function rawToT_htTotal(r){return Math.round(50+((r-18)/3.67)*10);}
+function getBenchmark_bdi(){ return ClinCog.getBenchmark('bdi', {mean:10, sd:7, threshold:63, citation:"Beck, A.T., Steer, R.A., & Brown, G.K. (1996). Manual for the Beck Depression Inventory-II. San Antonio, TX: Psychological Corporation."}); }
+function getBenchmark_hitopDep(){ return ClinCog.getBenchmark('hitopDepression', {subMean:3.0, subSD:1.5, totalMean:18, totalSD:3.67, threshold:65, citation:"Kotov, R., Krueger, R.F., Watson, D., et al. (2017). The Hierarchical Taxonomy of Psychopathology (HiTOP): A dimensional alternative to traditional nosologies. Journal of Abnormal Psychology, 126(4), 454–477."}); }
+function rawToT_bdi(r){const b=getBenchmark_bdi();return Math.round(50+((r-b.mean)/b.sd)*10);}
+function rawToT_ht(r){const b=getBenchmark_hitopDep();return Math.round(50+((r-b.subMean)/b.subSD)*10);}
+function rawToT_htTotal(r){const b=getBenchmark_hitopDep();return Math.round(50+((r-b.totalMean)/b.totalSD)*10);}
 function sevPill(t){
   if(t<50)return '<span class="sev-pill sp-min">Below average (T &lt; 50)</span>';
   if(t<57)return '<span class="sev-pill sp-mild">Mild (T 50–56)</span>';
@@ -1002,6 +1326,11 @@ function buildReport(){
   document.getElementById('r-bdi-raw').textContent=raw+' / 63';
   document.getElementById('r-bdi-sev').innerHTML=sevPill(bT);
   document.getElementById('r-bdi-mk').style.left=Math.max(0,Math.min(100,((bT-30)/50)*100))+'%';
+  {
+    const bmk=getBenchmark_bdi();
+    document.getElementById('bdi-norm-text').textContent=`Community norms (M=${bmk.mean}, SD=${bmk.sd}) · T≥${bmk.threshold} = clinically elevated`;
+    document.getElementById('bdi-citation-text').textContent=bmk.citation?('Source: '+bmk.citation):'';
+  }
 
   const scales=[{n:'Cognitive Problems',k:['hcp1','hcp2']},{n:'Distress–Dysphoria',k:['hdd1','hdd2']},{n:'Emotionality',k:['hem1','hem2']},{n:'Insomnia',k:['hin1','hin2']},{n:'NSSI',k:['hns1','hns2']},{n:'Suicidality',k:['hsu1','hsu2']}];
   let html='', htTotalRaw=0;
@@ -1015,6 +1344,12 @@ function buildReport(){
     html+=`<tr><td>${s.n}</td><td class="ht-n">${tot}</td><td class="ht-t" style="${tc}">${tsc}</td><td class="ht-n">${pct}th</td><td><div class="mini-bar"><div class="mini-fill" style="width:${w}%;background:${col};"></div></div></td></tr>`;
   }
   document.getElementById('r-ht-body').innerHTML=html;
+  {
+    const bmk=getBenchmark_hitopDep();
+    document.getElementById('ht-norm-text').textContent=`Community norms (M=${bmk.subMean}, SD=${bmk.subSD} per 2-item subscale, 1–4 scale) · T≥${bmk.threshold} = clinically elevated`;
+    document.getElementById('ht-total-norm-text').innerHTML=`Distress total = sum of 6 subscale scores (range 12–48) · M<sub>total</sub>=${bmk.totalMean}, SD<sub>total</sub>≈${bmk.totalSD} (pooled)`;
+    document.getElementById('ht-citation-text').textContent=bmk.citation?('Source: '+bmk.citation):'';
+  }
 
   document.getElementById('r-cog1').textContent=document.getElementById('cog1').value.trim()||'Not answered.';
   document.getElementById('r-cog2').textContent=document.getElementById('cog2').value.trim()||'Not answered.';
@@ -1034,9 +1369,19 @@ function popDiag(id,pct){
   el.innerHTML=h;
 }
 
+function expandContextCardsByDefault() {
+  document.querySelectorAll('.ctx-card[data-role="vignette"], .ctx-card[data-role="chat"]').forEach(card => {
+    const body = card.querySelector('.ctx-body');
+    if (!body) return;
+    card.classList.add('open');
+    body.style.maxHeight = body.scrollHeight + 'px';
+  });
+}
 document.addEventListener('DOMContentLoaded',()=>{
   popDiag('p1',4);popDiag('p2',8);popDiag('p3',2);
   popDiag('p4',1);popDiag('p5',5);popDiag('p6',24);
+  paintContextPanels();
+  expandContextCardsByDefault();
   tick();
 });
 </script>

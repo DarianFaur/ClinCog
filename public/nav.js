@@ -72,8 +72,8 @@
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div class="ccg-dropdown-panel">
-          <a href="#" class="ccg-soon">DSM-5 quick reference (soon)</a>
-          <a href="#" class="ccg-soon">SCID-5 interview guide (soon)</a>
+          <a href="#" class="ccg-soon">ICD-11 quick reference (soon)</a>
+          <a href="#" class="ccg-soon">CDDR criteria guide (soon)</a>
           <a href="#" class="ccg-soon">HiTOP overview (soon)</a>
         </div>
       </div>

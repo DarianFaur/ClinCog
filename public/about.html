@@ -10,50 +10,59 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/favicon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
+<style>
+  .about-meta { margin-top: var(--sp-5); padding-top: var(--sp-4); border-top: 1px solid var(--border); font-size: var(--text-xs); color: var(--text-tertiary); line-height: 1.8; }
+</style>
 </head>
-<body class="bg-mesh">
+<body>
 
-<div id="ccg-nav-root"></div>
-<script src="/nav.js"></script>
+<div id="shell-content">
 
-<main class="about-page" id="ccg-viewport">
-  <span class="eyebrow">About</span>
-  <div class="about-card reveal">
-  <h1>ClinCog</h1>
-  <p>
-    ClinCog is a teaching platform for <em>Introduction to Clinical Cognitive
-    Science</em>, built to walk students through the same clinical case from
-    three angles — categorical, dimensional, and cognitive — each week of
-    the seminar.
-  </p>
-  <p>
-    Conceptualization conversations are grounded strictly in each case's
-    written file; the model in the chat cannot invent symptoms, events, or
-    details beyond what's documented. Evaluations (ICD-11 diagnostic
-    criteria, dimensional questionnaires, self-administered cognitive
-    tasks) are static and identical for every student, so what's being
-    assessed is your understanding, not the luck of a conversation.
-  </p>
-  <p>
-    Nothing typed into ClinCog is stored on a server. Your name and your
-    conversations with each case live only in this browser, on this
-    device — see the <a href="/help.html">how to use</a> page for details.
-  </p>
-
-  <div class="about-meta">
-    Version 1.0.0<br>
-    Introduction to Clinical Cognitive Science · Seminar Practicum<br>
-    © 2026 ClinCog. Built for classroom use.<br><br>
-    Originally created at <a href="https://clincog.net">clincog.net</a> — this
-    instance may be a self-hosted deployment of the same open-source project.
+  <div style="margin-bottom:var(--sp-5);">
+    <span class="text-eyebrow">About</span>
+    <h1 class="text-page-title" style="font-size:var(--text-lg);margin-top:4px;">ClinCog</h1>
   </div>
-  </div>
-</main>
 
-<script src="/reveal.js"></script>
+  <div class="card"><div class="card-body">
+    <p class="text-secondary" style="margin:0 0 var(--sp-4);">
+      ClinCog is a teaching platform for <em>Introduction to Clinical Cognitive
+      Science</em>, built to walk students through the same clinical case from
+      three angles — categorical, dimensional, and cognitive — each week of
+      the seminar.
+    </p>
+    <p class="text-secondary" style="margin:0 0 var(--sp-4);">
+      Conceptualization conversations are grounded strictly in each case's
+      written file; the model in the chat cannot invent symptoms, events, or
+      details beyond what's documented. Evaluations (ICD-11 diagnostic
+      criteria, dimensional questionnaires, self-administered cognitive
+      tasks) are static and identical for every student, so what's being
+      assessed is your understanding, not the luck of a conversation.
+    </p>
+    <p class="text-secondary" style="margin:0;">
+      Nothing typed into ClinCog is stored on a server. Your name and your
+      conversations with each case live only in this browser, on this
+      device — see the <a href="/help.html">how to use</a> page for details.
+    </p>
+
+    <div class="about-meta">
+      Version 1.0.0<br>
+      Introduction to Clinical Cognitive Science · Seminar Practicum<br>
+      © 2026 ClinCog. Built for classroom use.<br><br>
+      Originally created at <a href="https://clincog.net">clincog.net</a> — this
+      instance may be a self-hosted deployment of the same open-source project.
+    </div>
+  </div></div>
+
+</div>
+
+<script>window.CLINCOG_SHELL = { activeNav: "about", breadcrumb: [{ label: "About the course" }] };</script>
+<script src="/storage.js"></script>
+<script src="/icons.js"></script>
+<script src="/shell.js"></script>
 <script src="/a11y.js"></script>
-
 </body>
 </html>

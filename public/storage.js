@@ -30,9 +30,38 @@ const ClinCog = {
   },
   setHistory(moduleId, history) {
     localStorage.setItem(this.historyKey(moduleId), JSON.stringify(history));
+    // Every real save of a conversation IS an activity event, by
+    // definition - tracked here, in one place, so nothing that calls
+    // setHistory ever has to remember to also log it separately.
+    if (history.length > 0) this.touchActivity(moduleId);
   },
   clearHistory(moduleId) {
     localStorage.removeItem(this.historyKey(moduleId));
+    localStorage.removeItem(this.activityKey(moduleId));
+  },
+
+  // ---- last time a student exchanged a message with this case's
+  // patient - the most common real activity on the whole platform,
+  // and previously the one thing missing from "Recent activity". ----
+  activityKey(moduleId) {
+    return `clincog_activity_${moduleId}`;
+  },
+  touchActivity(moduleId) {
+    localStorage.setItem(this.activityKey(moduleId), String(Date.now()));
+  },
+  getLastActivity(moduleId) {
+    const raw = localStorage.getItem(this.activityKey(moduleId));
+    if (raw) return Number(raw);
+    // Backfill for conversations that happened before this tracking
+    // existed: we genuinely don't know exactly when those messages were
+    // sent, so rather than inventing a false historical time, we record
+    // "now" the first time we notice real, untracked engagement - a
+    // one-time, honest catch-up rather than a fabricated date.
+    if (this.getHistory(moduleId).length > 0) {
+      this.touchActivity(moduleId);
+      return Date.now();
+    }
+    return null;
   },
 
   // ---- evaluation progress: written by each eval page the moment a
@@ -106,7 +135,7 @@ const ClinCog = {
     return {
       state,               // "not-started" | "in-progress" | "complete"
       exchanges,           // real count of chat exchanges (0-10)
-      conceptPct: Math.min(exchanges / 10, 1),
+      conceptPct: Math.min(exchanges / 20, 1),
       evalReached,
       complete: !!complete,
     };
@@ -222,5 +251,32 @@ const ClinCog = {
       totalExchanges += s.exchanges;
     }
     return { casesExplored, casesCompleted, totalExchanges, evalsReached, totalCases: this.MODULES.length };
+  },
+
+  // ---- Instructor/student-editable normative benchmarks (mean, SD,
+  // clinical cutoffs, citation) used to convert raw scores to T-scores
+  // and percentiles across the evaluation pages. Per-browser, same as
+  // everything else here - an instructor sets these once on their own
+  // device and their own report generation uses them from then on. ----
+  benchmarkKey(testId) {
+    return `clincog_benchmark_${testId}`;
+  },
+  getBenchmark(testId, defaults) {
+    try {
+      const raw = localStorage.getItem(this.benchmarkKey(testId));
+      if (!raw) return JSON.parse(JSON.stringify(defaults));
+      const saved = JSON.parse(raw);
+      // shallow-merge so a benchmark saved before a new field existed
+      // still falls back to that field's default rather than showing "undefined"
+      return { ...JSON.parse(JSON.stringify(defaults)), ...saved };
+    } catch {
+      return JSON.parse(JSON.stringify(defaults));
+    }
+  },
+  setBenchmark(testId, value) {
+    localStorage.setItem(this.benchmarkKey(testId), JSON.stringify(value));
+  },
+  resetBenchmark(testId) {
+    localStorage.removeItem(this.benchmarkKey(testId));
   },
 };

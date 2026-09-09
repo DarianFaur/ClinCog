@@ -11,8 +11,11 @@
 <link rel="apple-touch-icon" href="/favicon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300..700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
 <style>
 :root { color-scheme: light; }
 [data-theme="dark"] { color-scheme: dark; }
@@ -154,7 +157,7 @@ body.mobile-mode .sst-kbd-hint{display:none;}
 .sidebar-item.active .sidebar-badge{background:var(--color-primary);color:white;}
 
 /* MAIN */
-.main-content{padding:var(--space-8);max-width:880px;}
+.main-content{padding:0;max-width:1900px;margin:0 auto;}
 @media(max-width:900px){.main-content{padding:var(--space-6) var(--space-4);}}
 .view{display:none;}
 .view.active{display:block;}
@@ -221,7 +224,7 @@ body.mobile-mode .sst-kbd-hint{display:none;}
 .radio-option{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-5);border-radius:var(--radius-md);border:1px solid var(--color-border);background:var(--color-surface-2);cursor:pointer;font-size:var(--text-sm);font-weight:500;transition:all var(--transition-interactive);}
 .radio-option:hover{border-color:var(--color-primary);background:var(--color-primary-highlight);}
 .radio-option.selected{border-color:var(--color-primary);background:var(--color-primary-highlight);color:var(--color-primary);font-weight:600;}
-.radio-option.selected-yes{border-color:var(--color-error);background:var(--color-error-highlight);color:var(--color-error);}
+.radio-option.selected-yes{border-color:var(--color-primary);background:var(--color-primary-highlight);color:var(--color-primary);font-weight:600;}
 .radio-option input[type="radio"]{display:none;}
 
 /* LIKERT 1-4 */
@@ -260,6 +263,12 @@ body.mobile-mode .sst-kbd-hint{display:none;}
 
 /* REPORT */
 .report-section{margin-bottom:var(--space-8);}
+.report-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-6);margin-bottom:var(--space-8);}
+.report-cols .report-section{margin-bottom:0;}
+.report-col-stack{display:flex;flex-direction:column;gap:var(--space-6);}
+@media (max-width:1300px){
+  .report-cols{grid-template-columns:1fr;}
+}
 .report-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:var(--space-4);margin-bottom:var(--space-6);}
 .report-kpi{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);padding:var(--space-5);box-shadow:var(--shadow-sm);}
 .kpi-label{font-size:var(--text-xs);color:var(--color-text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:var(--space-2);}
@@ -327,143 +336,154 @@ body.mobile-mode .sst-kbd-hint{display:none;}
 .add-step-line{flex:1;height:1px;background:var(--color-border);margin:0 4px;min-width:12px;}
 @media(max-width:720px){.add-step-lbl{display:none;}}
 
-/* ---- hide the old sidebar/mobile-nav chrome, without removing it, so
-       every existing badge/progress script keeps a real element to write
-       to (zero risk of breaking working scoring logic) ---- */
-.app-body{display:block;}
-.app-header,.sidebar,.mobile-nav,#mobile-toggle,[data-theme-toggle]{display:none !important;}
-.main-content{margin:0 auto;}
+/* ---- bridge Jordan's own bespoke token names to the shared naming
+       convention used by the reusable eval-layout/context/scoring CSS
+       (ported from the other three cases) - --color-primary already
+       happens to equal --domain-substance exactly, so no visual
+       mismatch results from this. ---- */
+:root {
+  --domain-addiction: var(--color-primary);
+  --accent-bg: var(--color-primary-highlight);
+  --serif: var(--font-display);
+  --sans: var(--font-body);
+  --mono: 'DM Mono', ui-monospace, monospace;
+  --ink: var(--color-text);
+  --ink2: var(--color-text-muted);
+  --ink3: var(--color-text-faint);
+  --surface: var(--color-surface);
+  --line: var(--color-border);
+  --bg-surface-alt: var(--color-surface-2);
+  --radius-pill: var(--radius-full);
+  --shadow-xs: var(--shadow-sm);
+}
+
+.v-stepper-card { padding: 8px 4px; }
+.v-step { position: relative; display: flex; align-items: center; gap: 12px; padding: 9px 0; cursor: not-allowed; }
+.v-step.done, .v-step.current { cursor: pointer; }
+.v-step-line { position: absolute; left: 12px; top: 35px; width: 2px; height: 18px; background: var(--line); z-index: 0; transition: background .3s; }
+.v-step:last-child .v-step-line { display: none; }
+.v-step.done .v-step-line { background: var(--domain-addiction); }
+.v-step-dot {
+  width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--surface);
+  display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px;
+  color: var(--ink3); flex-shrink: 0; z-index: 1; transition: all .2s;
+}
+.v-step.done .v-step-dot { border: none; background: var(--domain-addiction); color: #fff; font-size: 13px; }
+.v-step.current .v-step-dot { border-width: 2px; border-color: var(--domain-addiction); background: var(--accent-bg); color: var(--domain-addiction); font-weight: 600; }
+.v-step-label { font-size: 14.5px; color: var(--ink3); transition: color .2s; }
+.v-step.current .v-step-label { color: var(--domain-addiction); font-weight: 600; }
+.v-step.done .v-step-label { color: var(--ink2); }
+.v-step:hover:not(.v-step.current):not([style*="cursor: not-allowed"]) .v-step-label { color: var(--ink); }
+
+/* ============================================================
+   THREE-ZONE EVALUATION LAYOUT (steps with active rating: ICD-11,
+   HiTOP-SR, MATRICS). Overview/Vignette/Report keep the simple
+   centered .wrap - there's nothing to reference alongside them yet
+   (or, for Report, that's its own separate redesign pass).
+   ============================================================ */
+
+/* Widen this page's content region beyond the shell's shared 1440px
+   cap - safer than escaping via 100vw, which ignored the persistent
+   sidebar's width and caused content to render partly underneath it. */
+.shell-content-inner { max-width: 1900px; }
+
+.eval-layout {
+  max-width: 1900px; margin: 0 auto; padding: 32px 32px 100px;
+  display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 28px; align-items: start;
+  justify-content: center;
+}
+.eval-context {
+  display: flex; flex-direction: column; gap: 16px;
+  position: sticky; top: 75px;
+}
+.ctx-sticky-top { flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; }
+.ctx-scroll-area { display: flex; flex-direction: column; gap: 16px; }
+.eval-work { min-width: 0; max-width: 1100px; }
+/* A "normal laptop" screen (1366-1536px wide) still has the app's own
+   260px sidebar eating into that width before our layout even starts -
+   three content columns plus gaps plus padding left almost nothing for
+   the actual reading column at those sizes. Drop to two columns much
+   earlier than the raw viewport width would suggest. */
+@media (max-width: 1100px) {
+  .eval-layout { grid-template-columns: 1fr; }
+}
+
+.ctx-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-xs); padding: 0; overflow: hidden; flex-shrink: 0; }
+.ctx-card > .ctx-card-body { padding: 16px 18px; }
+.ctx-card h4 { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink3); font-weight: 600; margin-bottom: 12px; }
+.ctx-card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 18px; border-bottom: 1px solid var(--line);
+}
+.ctx-card-header h4 { margin: 0; }
+.ctx-toggle-btn {
+  background: none; border: none; cursor: pointer; padding: 4px; margin: -4px; color: var(--ink3);
+  display: flex; align-items: center; border-radius: var(--radius-sm); transition: all .15s;
+}
+.ctx-toggle-btn:hover { color: var(--ink); background: var(--bg-surface-alt); }
+.ctx-toggle-btn .chev { transition: transform .2s; display: block; }
+.ctx-card.open .ctx-toggle-btn .chev { transform: rotate(180deg); }
+.ctx-patient-name { font-family: var(--serif); font-size: 1.15rem; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.ctx-patient-meta { font-size: 14px; color: var(--ink3); margin-bottom: 12px; }
+.ctx-patient-complaint { font-size: 13px; color: var(--ink2); line-height: 1.6; padding-top: 12px; border-top: 1px solid var(--line); }
+
+.ctx-body { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+.ctx-body > .ctx-card-body { padding: 14px 18px 18px; }
+.ctx-vignette-text { font-family: var(--font-sans); font-size: 15px; line-height: 1.65; color: var(--ink2); max-height: 280px; overflow-y: auto; }
+.ctx-vignette-text p { margin-bottom: 1em; }
+.ctx-vignette-text p:last-child { margin-bottom: 0; }
+
+.ctx-chat { display: flex; flex-direction: column; gap: 10px; max-height: 280px; overflow-y: auto; }
+.ctx-chat .chat-row { max-width: 92%; }
+.ctx-chat .chat-bubble { padding: 8px 12px; font-size: 15px; line-height: 1.65; }
+.ctx-chat-empty { font-size: 14px; color: var(--ink3); font-style: italic; }
+
+.ctx-guide-row { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ink2); margin-bottom: 8px; }
+.ctx-guide-row:last-child { margin-bottom: 0; }
+.ctx-guide-mark {
+  display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px;
+  border-radius: var(--radius-sm); font-family: var(--mono); font-size: 11px; font-weight: 600; flex-shrink: 0;
+}
+.ctx-guide-mark.p { background: var(--success-soft, var(--accent-bg)); color: var(--success, var(--domain-addiction)); }
+.ctx-guide-mark.n { background: var(--bg-surface-alt); color: var(--ink3); }
+.ctx-guide-mark.u { background: var(--warning-soft, #fff3e0); color: var(--warning, #a05a00); }
+
+.scoring-card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow-xs); padding: 12px 14px; }
+.scoring-card h4 { font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink3); font-weight: 600; margin-bottom: 3px; }
+.scoring-count { font-family: var(--serif); font-size: 1.35rem; font-weight: 600; color: var(--ink); line-height: 1.1; margin-bottom: 1px; transition: color .2s; }
+.scoring-count .of { font-size: .78rem; color: var(--ink3); font-weight: 400; }
+.scoring-sub { font-size: 11.5px; color: var(--ink3); margin-bottom: 8px; line-height: 1.4; }
+.scoring-dots { display: flex; flex-wrap: wrap; gap: 4px; }
+.scoring-dot {
+  width: 18px; height: 18px; border-radius: 5px; display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 9px; font-weight: 600; background: var(--bg-surface-alt); color: var(--ink3);
+  transition: all .2s;
+}
+.scoring-dot.p { background: var(--accent-bg); color: var(--domain-addiction); }
+.scoring-dot.n { background: var(--bg-surface-alt); color: var(--ink2); }
+.scoring-dot.u { background: #fff3e0; color: #a05a00; }
+
+.mini-stats { display: flex; gap: 8px; }
+.mini-stat { flex: 1; min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 4px; text-align: center; }
+.mini-stat-num { font-family: var(--serif); font-size: 17px; font-weight: 700; color: var(--ink); line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mini-stat-lbl { font-size: 8.5px; color: var(--ink3); text-transform: uppercase; letter-spacing: .02em; margin-top: 3px; line-height: 1.2; }
+
 </style>
 </head>
 <body>
-<div id="ccg-nav-root"></div>
-<script src="/nav.js" data-subtitle="Addiction Seminar"></script>
-<script src="/storage.js"></script>
-<script src="/sidebar.js"></script>
+<script>
+  if (!localStorage.getItem("clincog_name")) { location.replace("/"); }
+</script>
 
-<nav class="add-nav">
-  <div class="add-steps" id="add-steps">
-    <button class="add-step current" data-view="intro" onclick="showView('intro')"><span class="add-step-dot">1</span><span class="add-step-lbl">Overview</span></button>
-    <span class="add-step-line"></span>
-    <button class="add-step" data-view="vignette" onclick="showView('vignette')"><span class="add-step-dot">2</span><span class="add-step-lbl">Vignette</span></button>
-    <span class="add-step-line"></span>
-    <button class="add-step" data-view="crafft" onclick="showView('crafft')"><span class="add-step-dot">3</span><span class="add-step-lbl">CRAFFT</span></button>
-    <span class="add-step-line"></span>
-    <button class="add-step" data-view="scid" onclick="showView('scid')"><span class="add-step-dot">4</span><span class="add-step-lbl">ICD-11</span></button>
-    <span class="add-step-line"></span>
-    <button class="add-step" data-view="hitop" onclick="showView('hitop')"><span class="add-step-dot">5</span><span class="add-step-lbl">HiTOP</span></button>
-    <span class="add-step-line"></span>
-    <button class="add-step" data-view="ana" onclick="showView('ana')"><span class="add-step-dot">6</span><span class="add-step-lbl">Tasks</span></button>
-    <span class="add-step-line"></span>
-    <button class="add-step" data-view="report" onclick="showView('report')"><span class="add-step-dot">7</span><span class="add-step-lbl">Report</span></button>
-  </div>
-</nav>
-
-
-<header class="app-header">
-  <a href="/dashboard.html" style="text-decoration:none;color:inherit;">
-  <div class="header-logo">
-    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="32" height="32" rx="8" fill="currentColor" opacity="0.1"/>
-      <circle cx="16" cy="10" r="4" stroke="currentColor" stroke-width="1.8"/>
-      <path d="M8 28c0-4.418 3.582-8 8-8s8 3.582 8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-      <path d="M20 14.5c1.5.8 2.5 2.3 2.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-      <circle cx="22.5" cy="22" r="3.5" fill="currentColor" opacity="0.2" stroke="currentColor" stroke-width="1.6"/>
-      <path d="M21.5 22h2M22.5 21v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-    </svg>
-    <div>
-      <div class="header-title">Addiction Assessment</div>
-      <div class="header-subtitle">Seminar Console</div>
-    </div>
-  </div>
-</a>
-  <div class="header-actions">
-    <button class="btn-icon" id="mobile-toggle" onclick="toggleMobileMode()" aria-label="Toggle mobile layout" title="Switch to mobile layout">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="mobile-toggle-icon">
-        <rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/>
-      </svg>
-    </button>
-    <button class="btn-icon" data-theme-toggle aria-label="Toggle dark mode">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-      </svg>
-    </button>
-  </div>
-</header>
-
-<nav class="mobile-nav" id="mobile-nav" aria-label="Mobile navigation">
-  <button class="mobile-nav-btn active" id="mob-nav-vignette" onclick="showView('vignette')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 17.5h7M17.5 14v7"/></svg>
-    Vignette
-  </button>
-  <button class="mobile-nav-btn" id="mob-nav-crafft" onclick="showView('crafft')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-    CRAFFT
-  </button>
-  <button class="mobile-nav-btn" id="mob-nav-scid" onclick="showView('scid')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-    ICD-11
-  </button>
-  <button class="mobile-nav-btn" id="mob-nav-hitop" onclick="showView('hitop')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
-    HiTOP
-  </button>
-  <button class="mobile-nav-btn" id="mob-nav-ana" onclick="showView('ana')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.44l-1.44-7.2A2.5 2.5 0 0 1 8 9h4.5"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.44l1.44-7.2A2.5 2.5 0 0 0 16 9H11.5"/></svg>
-    Tasks
-  </button>
-</nav>
-
-<div class="app-body">
-<nav class="sidebar" aria-label="Navigation">
-  <div class="sidebar-section">
-    <div class="sidebar-section-label">Seminar</div>
-    <button class="sidebar-item" onclick="showView('vignette')" id="nav-vignette">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 17.5h7M17.5 14v7"/></svg>
-      Clinical Vignette
-    </button>
-    <button class="sidebar-item" onclick="showView('report')" id="nav-report">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-      Report
-    </button>
-  </div>
-  <div class="sidebar-section">
-    <div class="sidebar-section-label">Assessment Tools</div>
-    <button class="sidebar-item" onclick="showView('crafft')" id="nav-crafft">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-      CRAFFT
-      <span class="sidebar-badge" id="badge-crafft">0/6</span>
-    </button>
-    <button class="sidebar-item" onclick="showView('scid')" id="nav-scid">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      ICD-11
-      <span class="sidebar-badge" id="badge-scid">0/7</span>
-    </button>
-    <button class="sidebar-item" onclick="showView('hitop')" id="nav-hitop">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
-      HiTOP-SR
-      <span class="sidebar-badge" id="badge-hitop">0/28</span>
-    </button>
-    <button class="sidebar-item" onclick="showView('ana')" id="nav-ana">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.44l-1.44-7.2A2.5 2.5 0 0 1 8 9h4.5"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.44l1.44-7.2A2.5 2.5 0 0 0 16 9H11.5"/></svg>
-      ANA Tasks
-      <span class="sidebar-badge" id="badge-ana">Pending</span>
-    </button>
-  </div>
-  <div class="sidebar-section">
-    <div class="sidebar-section-label">Progress</div>
-    <div style="padding:0 var(--space-2)">
-      <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-2)" id="progress-text">0 of 4 tools completed</div>
-      <div class="progress-bar-track"><div class="progress-bar-fill" id="sidebar-progress" style="width:0%"></div></div>
-    </div>
-  </div>
-</nav>
+<div id="shell-content">
 
 <main class="main-content" id="ccg-viewport" role="main">
 
 <!-- ===================== INTRO / COVER VIEW ===================== -->
 <div class="view active" id="view-intro">
-  <div style="max-width:640px;">
+  <div class="eval-layout two-col">
+  <aside class="eval-context" data-for-view="intro"></aside>
+  <div class="eval-work" style="max-width:640px;">
     <p style="font-family:'DM Mono',monospace;font-size:11px;color:var(--color-primary);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px;">Seminar Activity · Addiction Module</p>
     <h1 style="font-size:2.35rem;font-weight:700;letter-spacing:-.01em;line-height:1.15;margin-bottom:16px;">Three Ways to Evaluate<br>Substance Use</h1>
     <p style="font-size:16px;line-height:1.7;color:var(--color-text-muted);max-width:560px;margin-bottom:32px;">You will read a clinical vignette and evaluate the same patient through three different conceptual frameworks. The lens shapes what you see.</p>
@@ -483,10 +503,14 @@ body.mobile-mode .sst-kbd-hint{display:none;}
     </div>
     <button class="btn-primary" style="border-radius:999px;padding:12px 24px;" onclick="showView('vignette')">Begin →</button>
   </div>
-</div>
+  </div>
+  </div>
 
 <!-- ===================== VIGNETTE VIEW ===================== -->
 <div class="view" id="view-vignette">
+  <div class="eval-layout two-col">
+  <aside class="eval-context" data-for-view="vignette"></aside>
+  <div class="eval-work" style="max-width:820px;">
   <div class="page-header">
     <h1>Clinical Vignette</h1>
     <p>Read the case carefully before administering the assessment tools.</p>
@@ -526,10 +550,15 @@ body.mobile-mode .sst-kbd-hint{display:none;}
   <div style="display:flex;gap:var(--space-3);">
     <button class="btn-primary" onclick="showView('crafft')">Begin Assessment →</button>
   </div>
+  </div>
+  </div>
 </div>
 
 <!-- ===================== CRAFFT VIEW ===================== -->
 <div class="view" id="view-crafft">
+  <div class="eval-layout">
+  <aside class="eval-context" data-for-view="crafft"></aside>
+  <div class="eval-work">
   <div class="page-header">
     <h1>CRAFFT Screening Tool</h1>
     <p>Car, Relax, Alone, Forget, Friends, Trouble — 6-item substance use screener. Cut-off ≥ 2 indicates a positive screen.</p>
@@ -553,13 +582,18 @@ body.mobile-mode .sst-kbd-hint{display:none;}
     </div>
   </div>
   <div style="display:flex;gap:var(--space-3);margin-top:var(--space-4);">
-    <button class="btn-primary" onclick="showView('scid')">Next: ICD-11 →</button>
     <button class="btn-secondary" onclick="showView('vignette')">← Vignette</button>
+    <button class="btn-primary" onclick="showView('scid')">Next: ICD-11 →</button>
   </div>
+  </div>
+</div>
 </div>
 
 <!-- ===================== SCID-5 VIEW ===================== -->
 <div class="view" id="view-scid">
+  <div class="eval-layout">
+  <aside class="eval-context" data-for-view="scid"></aside>
+  <div class="eval-work">
   <div class="page-header">
     <h1>ICD-11 — Alcohol Dependence</h1>
     <p>Clinical Descriptions and Diagnostic Requirements (CDDR), reproduced verbatim. Rate each feature based on the past 12 months.</p>
@@ -602,13 +636,18 @@ body.mobile-mode .sst-kbd-hint{display:none;}
     </div>
   </div>
   <div style="display:flex;gap:var(--space-3);margin-top:var(--space-4);">
-    <button class="btn-primary" onclick="showView('hitop')">Next: HiTOP-SR →</button>
     <button class="btn-secondary" onclick="showView('crafft')">← CRAFFT</button>
+    <button class="btn-primary" onclick="showView('hitop')">Next: HiTOP-SR →</button>
   </div>
+  </div>
+</div>
 </div>
 
 <!-- ===================== HiTOP VIEW ===================== -->
 <div class="view" id="view-hitop">
+  <div class="eval-layout">
+  <aside class="eval-context" data-for-view="hitop"></aside>
+  <div class="eval-work">
   <div class="page-header">
     <h1>HiTOP-SR — Dimensional Profile</h1>
     <p>Rate each item on the 1–4 scale for the past 12 months. Two spectra are assessed: Disinhibited Externalizing (8 subscales) and Harmful Substance Use (6 subscales).</p>
@@ -642,13 +681,18 @@ body.mobile-mode .sst-kbd-hint{display:none;}
     </div>
   </div>
   <div style="display:flex;gap:var(--space-3);margin-top:var(--space-4);">
-    <button class="btn-primary" onclick="showView('ana')">Next: ANA Tasks →</button>
     <button class="btn-secondary" onclick="showView('scid')">← ICD-11</button>
+    <button class="btn-primary" onclick="showView('ana')">Next: ANA Tasks →</button>
   </div>
+  </div>
+</div>
 </div>
 
 <!-- ===================== ANA TASKS VIEW ===================== -->
 <div class="view" id="view-ana">
+  <div class="eval-layout">
+  <aside class="eval-context" data-for-view="ana"></aside>
+  <div class="eval-work">
   <div class="page-header">
     <h1>ANA Neuroscience Tasks</h1>
     <p>Two neurocognitive/behavioural economics tasks: Stop-Signal (inhibitory control) and Hypothetical Purchase Task (alcohol demand curve).</p>
@@ -768,13 +812,18 @@ body.mobile-mode .sst-kbd-hint{display:none;}
   </div>
 
   <div style="display:flex;gap:var(--space-3);margin-top:var(--space-4);">
-    <button class="btn-primary" id="generate-report-btn" onclick="showView('report')" disabled>Generate Report →</button>
     <button class="btn-secondary" onclick="showView('hitop')">← HiTOP-SR</button>
+    <button class="btn-primary" id="generate-report-btn" onclick="showView('report')" disabled>Generate Report →</button>
   </div>
+  </div>
+</div>
 </div>
 
 <!-- ===================== REPORT VIEW ===================== -->
 <div class="view" id="view-report">
+  <div class="eval-layout two-col">
+  <aside class="eval-context" data-for-view="report"></aside>
+  <div class="eval-work" style="max-width:1700px;">
   <div class="page-header">
     <h1>Assessment Report</h1>
     <p>Integrated multi-method profile — for educational use only. All data are session-only and not stored.</p>
@@ -787,10 +836,17 @@ body.mobile-mode .sst-kbd-hint{display:none;}
     <div id="reflect-done" style="display:none;"></div>
     <button class="btn-primary" id="reflect-btn" onclick="completeCase()" style="border-radius:999px;padding:12px 24px;">Complete case →</button>
   </div>
+  </div>
+  </div>
 </div>
 
 </main>
 </div>
+
+<script>window.CLINCOG_SHELL = { autoCollapse: true, activeCaseId: "addiction", breadcrumb: [{ label: "Dashboard", href: "/dashboard.html" }, { label: "Cases", href: "/dashboard.html" }, { label: "Jordan", href: "/addiction-chat.html" }, { label: "Evaluation" }] };</script>
+<script src="/storage.js"></script>
+<script src="/icons.js"></script>
+<script src="/shell.js?v=2"></script>
 <script src="/a11y.js"></script>
 <script>
 function completeCase() {
@@ -903,6 +959,7 @@ function syncMobileNav(viewId){
   });
 }
 
+let maxViewIndexReached = 0;
 function showView(id) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-' + id).classList.add('active');
@@ -910,22 +967,143 @@ function showView(id) {
   const nb = document.getElementById('nav-' + id);
   if (nb) nb.classList.add('active');
   syncMobileNav(id);
+  const idx = ADD_STEP_ORDER.indexOf(id);
+  if (idx > maxViewIndexReached) maxViewIndexReached = idx;
   updateAddSteps(id);
+  expandContextCardsByDefault();
   if (id === 'report') buildReport();
   window.scrollTo(0, 0);
+}
+
+const STEP_LABELS_JORDAN = { intro: "Overview", vignette: "Vignette", crafft: "CRAFFT", scid: "ICD-11", hitop: "HiTOP", ana: "Tasks", report: "Report" };
+
+function verticalStepperHtml() {
+  const rows = ADD_STEP_ORDER.map((id, i) => `
+    <div class="v-step" data-step="${i}" onclick="stepClick(${i})">
+      <div class="v-step-line"></div>
+      <div class="v-step-dot">${i + 1}</div>
+      <div class="v-step-label">${STEP_LABELS_JORDAN[id]}</div>
+    </div>`).join('');
+  return `<div class="ctx-card"><div class="ctx-card-body v-stepper-card"><div class="v-stepper">${rows}</div></div></div>`;
+}
+
+function stepClick(i) {
+  if (i <= maxViewIndexReached) showView(ADD_STEP_ORDER[i]);
+}
+
+function currentViewId() {
+  const active = document.querySelector('.view.active');
+  return active ? active.id.replace('view-', '') : 'intro';
+}
+
+function escapeHtmlJ(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function buildConceptHistoryHtmlJ() {
+  const history = (typeof ClinCog !== "undefined") ? ClinCog.getHistory("addiction") : [];
+  if (!history || history.length === 0) {
+    return '<div class="ctx-chat-empty">You haven\'t started this conversation yet.</div>';
+  }
+  return '<div class="ctx-chat">' + history.map(m => {
+    const who = m.role === "user" ? "from-student" : "from-patient";
+    return `<div class="chat-row ${who}"><div class="chat-bubble">${escapeHtmlJ(m.content)}</div></div>`;
+  }).join('') + '</div>';
+}
+
+function toggleCtxCard(btn) {
+  const card = btn.closest('.ctx-card');
+  const body = card.querySelector('.ctx-body');
+  if (card.classList.contains('open')) {
+    body.style.maxHeight = '0px';
+    card.classList.remove('open');
+  } else {
+    card.classList.add('open');
+    body.style.maxHeight = body.scrollHeight + 'px';
+  }
+}
+
+const VIGNETTE_HTML_JORDAN = `
+  <p><strong>Presentation.</strong> Jordan is a 25-year-old software engineer at a mid-size tech firm. He was referred following a formal performance review in which his manager noted missed sprint deadlines, late arrivals, and a visible decline in code quality over the past six months. Jordan presents as intelligent and self-aware but minimises clinical concern: &ldquo;I work in a high-stress environment, everyone on my team drinks at hackathons and after deploys. I just need to dial it back a little.&rdquo; He rates his motivation to change at 5/10.</p>
+  <p><strong>Alcohol use history.</strong> Jordan began drinking at university (age 18). Use escalated during his first engineering job (age 20&ndash;22) when he drank to manage social anxiety at networking events. Over the past 14 months use has become daily. He currently drinks 4&ndash;5 cans of beer or equivalent on weeknights and 10&ndash;14 standard drinks on weekend days, starting within an hour of finishing work from home. He has attempted to stop three times in the past year, none lasting beyond five days.</p>
+  <p><strong>Withdrawal &amp; physical symptoms.</strong> On abstinent days Jordan reports fine hand tremor, sweating, and severe insomnia, all resolving within 20&ndash;30 minutes of his first drink. He opens a beer before his first standup call on approximately 3&ndash;4 mornings per week. It now takes roughly twice as many drinks to achieve the relaxation effect he experienced 18 months ago.</p>
+  <p><strong>Occupational &amp; social functioning.</strong> Jordan has missed four sprint deadlines in the past quarter. He has withdrawn from his climbing gym and declined team social events. His partner of three years has issued an ultimatum and is currently sleeping in the spare room. Jordan has driven to the supermarket to restock alcohol while over the legal limit on several occasions.</p>
+  <p><strong>Psychiatric &amp; risk history.</strong> Jordan endorses frequent, intrusive urges to drink throughout the workday. He denies a primary mood disorder when not drinking. No prior psychiatric treatment. His father was a heavy drinker (never formally assessed).</p>`;
+
+function fullContextExtrasHtml() {
+  return `
+    <div class="ctx-card"><div class="ctx-card-body">
+      <div class="ctx-patient-name">Jordan M., 25</div>
+      <div class="ctx-patient-meta">Software engineer · Self-referred after performance warning</div>
+      <div class="ctx-patient-complaint">Missed sprint deadlines, visible decline in code quality, partner's ultimatum, motivation to change rated 5/10.</div>
+    </div></div>
+    <div class="ctx-card" data-role="vignette">
+      <div class="ctx-card-header">
+        <h4 style="margin:0;">Clinical vignette</h4>
+        <button type="button" class="ctx-toggle-btn" onclick="toggleCtxCard(this)" aria-label="Expand"><span class="chev">▾</span></button>
+      </div>
+      <div class="ctx-body"><div class="ctx-card-body"><div class="ctx-vignette-text">${VIGNETTE_HTML_JORDAN}</div></div></div>
+    </div>
+    <div class="ctx-card" data-role="chat">
+      <div class="ctx-card-header">
+        <h4 style="margin:0;">Your conversation with Jordan</h4>
+        <button type="button" class="ctx-toggle-btn" onclick="toggleCtxCard(this)" aria-label="Expand"><span class="chev">▾</span></button>
+      </div>
+      <div class="ctx-body"><div class="ctx-card-body">${buildConceptHistoryHtmlJ()}</div></div>
+    </div>`;
+}
+
+const FULL_CONTEXT_VIEWS = ["crafft", "scid", "hitop", "ana"];
+
+function scoringMiniHtml(viewId) {
+  if (viewId === "crafft") {
+    return `<div class="mini-stats">
+      <div class="mini-stat"><div class="mini-stat-num" id="crafft-score-val-2">0/6</div><div class="mini-stat-lbl">CRAFFT</div></div>
+    </div>`;
+  }
+  if (viewId === "scid") {
+    return `<div class="mini-stats">
+      <div class="mini-stat"><div class="mini-stat-num" id="scid-score-val-2">0/7</div><div class="mini-stat-lbl">ICD-11 items</div></div>
+    </div>`;
+  }
+  if (viewId === "hitop") {
+    return `<div class="mini-stats">
+      <div class="mini-stat"><div class="mini-stat-num" id="hitop-score-val-2">0/28</div><div class="mini-stat-lbl">HiTOP items</div></div>
+    </div>`;
+  }
+  if (viewId === "ana") {
+    return `<div class="mini-stats">
+      <div class="mini-stat"><div class="mini-stat-num" id="purchase-val-2">0/10</div><div class="mini-stat-lbl">ANA tasks</div></div>
+    </div>`;
+  }
+  return '';
+}
+
+function paintContextPanels() {
+  document.querySelectorAll('.eval-context').forEach(el => {
+    const viewId = el.dataset.forView;
+    const isFull = FULL_CONTEXT_VIEWS.includes(viewId);
+    const extras = isFull ? fullContextExtrasHtml() : '';
+    const mini = isFull ? scoringMiniHtml(viewId) : '';
+    el.innerHTML = `<div class="ctx-sticky-top">${verticalStepperHtml()}${mini}</div>`
+      + (extras ? `<div class="ctx-scroll-area">${extras}</div>` : '');
+  });
 }
 
 const ADD_STEP_ORDER = ['intro','vignette','crafft','scid','hitop','ana','report'];
 function updateAddSteps(id) {
   const currentIndex = ADD_STEP_ORDER.indexOf(id);
-  document.querySelectorAll('.add-step').forEach((el) => {
-    const i = ADD_STEP_ORDER.indexOf(el.dataset.view);
-    el.classList.remove('done', 'current');
-    const dot = el.querySelector('.add-step-dot');
-    if (i < currentIndex) { el.classList.add('done'); dot.innerHTML = '✓'; }
-    else if (i === currentIndex) { el.classList.add('current'); dot.textContent = i + 1; }
-    else { dot.textContent = i + 1; }
-  });
+  for (let i = 0; i < ADD_STEP_ORDER.length; i++) {
+    document.querySelectorAll('[data-step="'+i+'"]').forEach(el => {
+      el.className = 'v-step';
+      const dot = el.querySelector('.v-step-dot');
+      if (i === currentIndex) { el.classList.add('current'); dot.textContent = i + 1; }
+      else if (i <= maxViewIndexReached) { el.classList.add('done'); dot.innerHTML = '✓'; }
+      else { dot.textContent = i + 1; }
+    });
+  }
 }
 
 // ===================== BUILD CRAFFT =====================
@@ -1073,12 +1251,37 @@ function hitopScaleMean(scale, nItems) {
   return sum / nItems;
 }
 
+const HITOP_SUBSCALE_KEY_MAP = {
+  'Disorganization': 'disorganization', 'Risk Taking': 'riskTaking', 'Non-planfulness': 'nonplanfulness',
+  'Non-persistence': 'nonpersistence', 'Restlessness': 'restlessness', 'Gambling': 'gambling',
+  'Gaming': 'gaming', 'Problematic Shopping': 'problematicShopping', 'Craving': 'craving',
+  'Hazardous Use': 'hazardousUse', 'Impaired Control': 'impairedControl', 'Role Interference': 'roleInterference',
+  'Tolerance': 'tolerance', 'Withdrawal': 'withdrawal',
+};
+function getHitopNorms() {
+  const defaults = { citation: "Kotov, R., Krueger, R.F., Watson, D., et al. (2017). The Hierarchical Taxonomy of Psychopathology (HiTOP): A dimensional alternative to traditional nosologies. Journal of Abnormal Psychology, 126(4), 454–477.", subscales: {
+    disorganization:{mean:1.85,sd:0.72}, riskTaking:{mean:2.05,sd:0.82}, nonplanfulness:{mean:1.92,sd:0.78},
+    nonpersistence:{mean:1.78,sd:0.74}, restlessness:{mean:1.68,sd:0.70}, gambling:{mean:1.32,sd:0.58},
+    gaming:{mean:1.38,sd:0.63}, problematicShopping:{mean:1.52,sd:0.64}, craving:{mean:1.28,sd:0.52},
+    hazardousUse:{mean:1.38,sd:0.58}, impairedControl:{mean:1.42,sd:0.60}, roleInterference:{mean:1.30,sd:0.54},
+    tolerance:{mean:1.48,sd:0.62}, withdrawal:{mean:1.28,sd:0.52},
+  }};
+  const saved = ClinCog.getBenchmark('hitopSubstance', defaults);
+  const norms = {};
+  for (const displayName in HITOP_SUBSCALE_KEY_MAP) {
+    const key = HITOP_SUBSCALE_KEY_MAP[displayName];
+    const sub = (saved.subscales && saved.subscales[key]) || defaults.subscales[key];
+    norms[displayName] = [sub.mean, sub.sd];
+  }
+  return { norms, citation: saved.citation };
+}
 function toTScore(raw, mean, sd) {
   if (sd === 0) return 50;
   return Math.round(50 + 10 * (raw - mean) / sd);
 }
 
 function hitopTScores() {
+  const { norms: HITOP_NORMS } = getHitopNorms();
   const all = [...HITOP_DIS, ...HITOP_HSU];
   return all.map(({scale, items}) => {
     const mean = hitopScaleMean(scale, items.length);
@@ -1118,7 +1321,9 @@ function updateAll() {
   // CRAFFT
   const cs = crafftScore();
   document.getElementById('crafft-score-val').textContent = cs + ' / 6';
-  document.getElementById('badge-crafft').textContent = state.crafft.filter(v=>v!==null).length + '/6';
+  const craffted = document.getElementById('crafft-score-val-2');
+  if (craffted) craffted.textContent = state.crafft.filter(v=>v!==null).length + '/6';
+  if(document.getElementById('badge-crafft')) document.getElementById('badge-crafft').textContent = state.crafft.filter(v=>v!==null).length + '/6';
   if (crafftDone()) {
     document.getElementById('crafft-interp').textContent = cs >= 2 ? 'Positive screen (≥ 2)' : 'Negative screen (< 2)';
     document.getElementById('crafft-badge').className = 'instrument-badge badge-completed';
@@ -1128,7 +1333,9 @@ function updateAll() {
   // SCID
   const ss = scidScore();
   document.getElementById('scid-score-val').textContent = ss + ' / 7';
-  document.getElementById('badge-scid').textContent = state.scid.filter(v=>v!==null).length + '/7';
+  const scided = document.getElementById('scid-score-val-2');
+  if (scided) scided.textContent = state.scid.filter(v=>v!==null).length + '/7';
+  if(document.getElementById('badge-scid')) document.getElementById('badge-scid').textContent = state.scid.filter(v=>v!==null).length + '/7';
   if (scidDone()) {
     const unknowns = state.scid.filter(v => v === 2).length;
     document.getElementById('scid-interp').textContent = scidDiagnosis(ss) + (unknowns ? ' · ' + unknowns + ' uncertain' : '');
@@ -1140,7 +1347,9 @@ function updateAll() {
   // HiTOP
   const ha = hitopAnswered();
   document.getElementById('hitop-score-val').textContent = ha + ' / 28';
-  document.getElementById('badge-hitop').textContent = ha + '/28';
+  const hitoped = document.getElementById('hitop-score-val-2');
+  if (hitoped) hitoped.textContent = ha + '/28';
+  if(document.getElementById('badge-hitop')) document.getElementById('badge-hitop').textContent = ha + '/28';
   if (hitopDone()) {
     document.getElementById('hitop-interp').textContent = 'All items rated';
     document.getElementById('hitop-badge').className = 'instrument-badge badge-completed';
@@ -1150,7 +1359,9 @@ function updateAll() {
   // Purchase
   const pa = purchaseAnswered();
   document.getElementById('purchase-val').textContent = pa + ' / 10';
-  document.getElementById('badge-ana').textContent = pa + '/10 prices';
+  const purchased = document.getElementById('purchase-val-2');
+  if (purchased) purchased.textContent = pa + '/10';
+  if(document.getElementById('badge-ana')) document.getElementById('badge-ana').textContent = pa + '/10 prices';
   if (purchaseDone()) {
     document.getElementById('purchase-interp').textContent = 'All prices entered';
     document.getElementById('purchase-badge').className = 'instrument-badge badge-completed';
@@ -1159,8 +1370,8 @@ function updateAll() {
 
   // Progress
   const done = [crafftDone(), scidDone(), hitopDone(), purchaseDone()].filter(Boolean).length;
-  document.getElementById('progress-text').textContent = done + ' of 4 tools completed';
-  document.getElementById('sidebar-progress').style.width = (done/4*100) + '%';
+  if(document.getElementById('progress-text')) document.getElementById('progress-text').textContent = done + ' of 4 tools completed';
+  if(document.getElementById('sidebar-progress')) document.getElementById('sidebar-progress').style.width = (done/4*100) + '%';
 
   // Report button
   document.getElementById('generate-report-btn').disabled = !(crafftDone() && scidDone() && hitopDone());
@@ -1435,7 +1646,7 @@ const SST = {
     setTimeout(()=>{
       document.getElementById('sst-task').style.display='none';
       document.getElementById('sst-done').style.display='block';
-      document.getElementById('badge-ana').textContent='SST \u2713 \xb7 '+purchaseAnswered()+'/10';
+      if(document.getElementById('badge-ana')) document.getElementById('badge-ana').textContent = 'SST \u2713 \xb7 '+purchaseAnswered()+'/10';
       sstRenderResults(r);
     },900);
   }
@@ -1466,13 +1677,11 @@ function toggleMobileMode(){
   const btn  = document.getElementById('mobile-toggle');
   if(_mobileMode){
     // Switch to laptop icon when in mobile mode
-    icon.innerHTML = '<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>';
-    btn.title = 'Switch to desktop layout';
-    btn.style.color = 'var(--color-primary)';
+    if (icon) icon.innerHTML = '<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>';
+    if (btn) { btn.title = 'Switch to desktop layout'; btn.style.color = 'var(--color-primary)'; }
   } else {
-    icon.innerHTML = '<rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/>';
-    btn.title = 'Switch to mobile layout';
-    btn.style.color = '';
+    if (icon) icon.innerHTML = '<rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/>';
+    if (btn) { btn.title = 'Switch to mobile layout'; btn.style.color = ''; }
   }
   syncMobileNav(document.querySelector('.view.active')?.id?.replace('view-','') || 'vignette');
 }
@@ -1602,7 +1811,7 @@ function sstLoadPasted(){
     sstRenderResults(r);
     document.getElementById('sst-paste-area').style.display='none';
     errEl.style.display='none';
-    document.getElementById('badge-ana').textContent='SST ✓ (pasted) · '+purchaseAnswered()+'/10';
+    if(document.getElementById('badge-ana')) document.getElementById('badge-ana').textContent = 'SST ✓ (pasted) · '+purchaseAnswered()+'/10';
     updateAll();
   }catch(e){
     errEl.textContent='Could not parse results. Make sure you pasted the copied text exactly.';
@@ -1704,6 +1913,7 @@ function buildReport() {
   </div>
 
   <!-- CATEGORICAL TOOLS -->
+  <div class="report-cols">
   <div class="report-section">
     <h2 style="font-size:var(--text-lg);font-weight:600;margin-bottom:var(--space-4)">Categorical Assessment</h2>
     <div class="report-tool-card">
@@ -1747,6 +1957,7 @@ function buildReport() {
       <div class="chart-title">T-Score Profile — All 14 Subscales</div>
       <div class="chart-sub">Standardized T-scores (M=50, SD=10). Dashed lines mark T=60 (elevated) and T=70 (clinically elevated).</div>
       <div id="chart-hitop-bar" style="height:420px"></div>
+      ${getHitopNorms().citation ? `<p style="font-size:var(--text-xs);color:var(--color-text-muted);font-style:italic;margin-top:var(--space-2);">Source: ${getHitopNorms().citation}</p>` : ''}
     </div>
 
     <div class="chart-container">
@@ -1756,6 +1967,7 @@ function buildReport() {
     </div>
   </div>
 
+  <div class="report-col-stack">
   <!-- STOP SIGNAL -->
   ${state.stopResult ? `
   <div class="report-section">
@@ -1796,6 +2008,8 @@ function buildReport() {
       </table>
       <div style="margin-top:var(--space-3);font-size:var(--text-xs);color:var(--color-text-muted)">Higher Q0, Omax, and later breakpoint indicate stronger reinforcing value of alcohol.</div>
     </div>
+  </div>
+  </div>
   </div>
 
   <!-- INTEGRATIVE FORMULATION -->
@@ -2185,6 +2399,17 @@ buildHitop();
 buildPurchase();
 loadStopSignal();
 updateAll();
+paintContextPanels();
+function expandContextCardsByDefault() {
+  document.querySelectorAll('.ctx-card[data-role="vignette"], .ctx-card[data-role="chat"]').forEach(card => {
+    const body = card.querySelector('.ctx-body');
+    if (!body) return;
+    card.classList.add('open');
+    body.style.maxHeight = body.scrollHeight + 'px';
+  });
+}
+expandContextCardsByDefault();
+updateAddSteps('intro');
 
 // Auto-detect mobile device and apply layout
 (function detectDevice(){

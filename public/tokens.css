@@ -1,0 +1,232 @@
+/* ============================================================
+   tokens.css — the single source of truth for every design value
+   used across ClinCog. No hex, no px shadow value, no font stack
+   should ever be hardcoded outside this file - everything else
+   references these custom properties.
+
+   Inter is self-hosted from public/fonts/ (via @fontsource/inter,
+   latin subset, WOFF2) - no Google Fonts CDN dependency for the
+   app's primary typeface.
+   ============================================================ */
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* ---- Neutrals (light) ---- */
+  --bg-app: #f4f6f8;
+  --bg-surface: #ffffff;
+  --bg-surface-alt: #fafbfc;
+  --border: #e8ecef;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-tertiary: #9ca3af;
+
+  /* ---- Brand ---- */
+  --accent: #8bb6a2;
+  --accent-hover: #729b87;
+  --slate: #636d79;
+
+  /* ---- Clinical domains: base / soft (badge bg) / ink (text on soft) ----
+     Values carried over unchanged from the existing platform palette -
+     formalized into a consistent three-token pattern, not reinvented. */
+  --domain-psychosis: #a15c74;
+  --domain-psychosis-soft: rgba(161,92,116,.12);
+  --domain-psychosis-ink: #a15c74;
+
+  --domain-mood: #4d4e8e;
+  --domain-mood-soft: rgba(77,78,142,.12);
+  --domain-mood-ink: #4d4e8e;
+
+  --domain-anxiety: #8bb6a2;
+  --domain-anxiety-soft: rgba(139,182,162,.12);
+  --domain-anxiety-ink: #4f7a64;
+
+  --domain-substance: #c99b4a;
+  --domain-substance-soft: rgba(201,155,74,.12);
+  --domain-substance-ink: #8a6423;
+
+  /* ---- Semantic: system states only, never clinical content ---- */
+  --success: #2e9e5b;
+  --success-soft: rgba(46,158,91,.12);
+  --warning: #b7791f;
+  --warning-soft: rgba(183,121,31,.12);
+  --danger: #d64545;
+  --danger-soft: rgba(214,69,69,.12);
+  --info: #3b82c4;
+  --info-soft: rgba(59,130,196,.12);
+
+  /* ---- Shape & depth ---- */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+
+  --shadow-xs: 0 1px 2px rgba(16,24,40,.04);
+  --shadow-sm: 0 1px 3px rgba(16,24,40,.06), 0 1px 2px rgba(16,24,40,.04);
+  --shadow-md: 0 4px 12px rgba(16,24,40,.07);
+  --shadow-lg: 0 12px 28px rgba(16,24,40,.10);
+
+  /* ---- Spacing: 4px scale ---- */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px; --sp-7: 32px; --sp-8: 48px;
+
+  /* ---- Typography ---- */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'DM Mono', ui-monospace, monospace;
+
+  --text-metric-size: 28px; --text-metric-weight: 600; --text-metric-lh: 1.2;
+  --text-page-title-size: 20px; --text-page-title-weight: 600; --text-page-title-lh: 1.3;
+  --text-card-title-size: 15px; --text-card-title-weight: 600; --text-card-title-lh: 1.4;
+  --text-body-size: 14px; --text-body-weight: 400; --text-body-lh: 1.6;
+  --text-label-size: 12px; --text-label-weight: 500; --text-label-lh: 1.4; --text-label-spacing: .01em;
+  --text-eyebrow-size: 11px; --text-eyebrow-weight: 600; --text-eyebrow-spacing: .08em;
+
+  /* ---- Fluid type scale (matches Jordan/addiction-eval.html's own
+     scale exactly, now shared app-wide so every page scales together
+     at any viewport width instead of jumping between fixed sizes) ---- */
+  --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+  --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+  --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+
+  /* ---- Sidebar: fixed identity, deliberately independent of the
+     light/dark toggle - a dark sidebar is a brand choice, not a theme
+     one, matching the existing platform's sidebar treatment. ---- */
+  --sidebar-bg: #4b525c;
+  --sidebar-bg-active: rgba(255,255,255,.10);
+  --sidebar-bg-hover: rgba(255,255,255,.06);
+  --sidebar-text: rgba(255,255,255,.72);
+  --sidebar-text-active: #ffffff;
+  --sidebar-border: rgba(255,255,255,.08);
+
+  /* ---- Motion ---- */
+  --ease-standard: cubic-bezier(.4,0,.2,1);
+  --duration-hover: 150ms;
+  --duration-layout: 250ms;
+  --duration-progress: 400ms;
+}
+
+html[data-theme="dark"] {
+  --bg-app: #16181d;
+  --bg-surface: #1e2128;
+  --bg-surface-alt: #23262e;
+  --border: #2d313a;
+  --text-primary: #e8eaed;
+  --text-secondary: #9aa3ae;
+  --text-tertiary: #6b7280;
+
+  --accent: #8bb6a2;
+  --accent-hover: #a3c9b6;
+  --slate: #a8acaf;
+
+  --domain-psychosis: #c97e94;
+  --domain-psychosis-soft: rgba(201,126,148,.16);
+  --domain-psychosis-ink: #e0a3b5;
+
+  --domain-mood: #7677c9;
+  --domain-mood-soft: rgba(118,119,201,.16);
+  --domain-mood-ink: #a3a4dc;
+
+  --domain-anxiety: #8bb6a2;
+  --domain-anxiety-soft: rgba(139,182,162,.16);
+  --domain-anxiety-ink: #a3c9b6;
+
+  --domain-substance: #d9a441;
+  --domain-substance-soft: rgba(217,164,65,.16);
+  --domain-substance-ink: #e8bd6f;
+
+  --success: #4cb87a;
+  --success-soft: rgba(76,184,122,.16);
+  --warning: #d9a441;
+  --warning-soft: rgba(217,164,65,.16);
+  --danger: #e8706f;
+  --danger-soft: rgba(232,112,111,.16);
+  --info: #6badde;
+  --info-soft: rgba(107,173,222,.16);
+
+  --shadow-xs: 0 1px 2px rgba(0,0,0,.3);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.35), 0 1px 2px rgba(0,0,0,.25);
+  --shadow-md: 0 4px 14px rgba(0,0,0,.4);
+  --shadow-lg: 0 14px 32px rgba(0,0,0,.5);
+}
+
+/* prefers-color-scheme fallback for visitors who haven't explicitly
+   picked a theme yet - mirrors html[data-theme="dark"] exactly, gated
+   so an explicit "light" choice always wins (see theme-init.js). */
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) {
+    --bg-app: #16181d;
+    --bg-surface: #1e2128;
+    --bg-surface-alt: #23262e;
+    --border: #2d313a;
+    --text-primary: #e8eaed;
+    --text-secondary: #9aa3ae;
+    --text-tertiary: #6b7280;
+    --accent: #8bb6a2;
+    --accent-hover: #a3c9b6;
+    --slate: #a8acaf;
+    --domain-psychosis: #c97e94;
+    --domain-psychosis-soft: rgba(201,126,148,.16);
+    --domain-psychosis-ink: #e0a3b5;
+    --domain-mood: #7677c9;
+    --domain-mood-soft: rgba(118,119,201,.16);
+    --domain-mood-ink: #a3a4dc;
+    --domain-anxiety: #8bb6a2;
+    --domain-anxiety-soft: rgba(139,182,162,.16);
+    --domain-anxiety-ink: #a3c9b6;
+    --domain-substance: #d9a441;
+    --domain-substance-soft: rgba(217,164,65,.16);
+    --domain-substance-ink: #e8bd6f;
+    --success: #4cb87a; --success-soft: rgba(76,184,122,.16);
+    --warning: #d9a441; --warning-soft: rgba(217,164,65,.16);
+    --danger: #e8706f; --danger-soft: rgba(232,112,111,.16);
+    --info: #6badde; --info-soft: rgba(107,173,222,.16);
+    --shadow-xs: 0 1px 2px rgba(0,0,0,.3);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.35), 0 1px 2px rgba(0,0,0,.25);
+    --shadow-md: 0 4px 14px rgba(0,0,0,.4);
+    --shadow-lg: 0 14px 32px rgba(0,0,0,.5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-hover: 1ms;
+    --duration-layout: 1ms;
+    --duration-progress: 1ms;
+  }
+}

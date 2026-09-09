@@ -36,21 +36,32 @@
 
   // ---- our own styling for the surrounding card ----
   const css = `
-  .icd-picker { background:var(--surface); border:1px solid var(--line); border-radius:16px;
+  .icd-picker { background:var(--bg-surface); border:1px solid var(--border); border-radius:16px;
     padding:24px 26px; margin:28px 0; }
   .icd-picker .eyebrow { margin-bottom:8px; }
   .icd-picker h3 { font-family:var(--head); font-size:18px; margin-bottom:6px; }
-  .icd-picker .no-wrong-answer { font-size:13px; color:var(--ink-muted); background:var(--surface-sunken);
+  .icd-picker .no-wrong-answer { font-size:13px; color:var(--text-secondary); background:var(--bg-surface-alt);
     border-radius:8px; padding:8px 12px; margin-bottom:16px; display:inline-block; }
-  .icd-picker .ctw-input { width:100%; padding:11px 14px; border:1px solid var(--line); border-radius:10px;
-    font-family:var(--sans); font-size:14px; color:var(--ink); background:var(--surface); margin-bottom:4px; }
-  .icd-picker .ctw-window { position:relative; z-index:5; }
+  .icd-picker .ctw-input { width:100%; padding:11px 14px; border:1px solid var(--border); border-radius:10px;
+    font-family:var(--font-sans); font-size:14px; color:var(--text-primary); background:var(--bg-surface); margin-bottom:4px; }
+  .icd-picker .ctw-window { position:relative; z-index:1000; width:100%; max-width:100%;
+    border:1px solid var(--border); border-radius:10px; overflow:auto; resize:none;
+    box-shadow:0 12px 32px rgba(20,20,20,.15); background:var(--bg-surface); }
+  /* The tree + details panels inside the widget are laid out side by
+     side and don't appear to adapt to narrow screens on their own -
+     giving them the card's full width (instead of the card's usual
+     padding) is the safest lever available without knowing the
+     widget's internal class names. Content that still doesn't fit
+     scrolls (see overflow:auto above) rather than being clipped. */
+  @media (max-width: 480px) {
+    .icd-picker { padding-left:8px; padding-right:8px; }
+  }
   .icd-picker .icd-confirmed { display:none; align-items:center; gap:10px; flex-wrap:wrap;
-    background:var(--brand-pale); border-radius:10px; padding:12px 14px; margin-top:14px; }
+    background:var(--accent-soft, var(--domain-anxiety-soft)); border-radius:10px; padding:12px 14px; margin-top:14px; }
   .icd-picker .icd-confirmed.on { display:flex; }
-  .icd-picker .icd-confirmed .label { font-weight:600; color:var(--ink); font-size:14px; }
+  .icd-picker .icd-confirmed .label { font-weight:600; color:var(--text-primary); font-size:14px; }
   .icd-picker .icd-confirmed button { background:none; border:none; text-decoration:underline;
-    color:var(--ink-muted); font-size:13px; cursor:pointer; padding:0; }
+    color:var(--text-secondary); font-size:13px; cursor:pointer; padding:0; }
   .icd-picker .icd-error { display:none; color:#900; font-size:13px; margin-top:10px; }
   .icd-picker .icd-error.on { display:block; }
   .icd-continue-row { display:none; margin-top:18px; }
@@ -62,7 +73,7 @@
   const wrap = document.createElement("div");
   wrap.className = "icd-picker";
   wrap.innerHTML = `
-    <span class="eyebrow">Before the evaluation</span>
+    <span class="text-eyebrow">Before the evaluation</span>
     <h3>What do you think is the most likely diagnosis?</h3>
     <span class="no-wrong-answer">There's no wrong answer here — this is just your working hypothesis, for comparison later.</span>
     <input type="text" class="ctw-input" autocomplete="off" data-ctw-ino="${INO}" placeholder="Start typing a diagnosis (ICD-11 search)…" />
@@ -83,7 +94,7 @@
   if (oldLink) {
     oldLink.replaceWith(wrap);
   } else {
-    document.querySelector("#ccg-viewport, main")?.appendChild(wrap);
+    document.querySelector("#ccg-viewport, .shell-content-inner, main")?.appendChild(wrap);
   }
 
   const confirmedBox = document.getElementById(`icd-confirmed-${INO}`);
@@ -128,6 +139,22 @@
         apiServerUrl: "https://id.who.int",
         apiSecured: true,
         popupMode: false,
+        // Undocumented-by-default gotcha: leave "height" unset and the
+        // tool renders with no bound at all, expanding to whatever
+        // content it has - exactly the runaway, full-page tree seen in
+        // testing. Explicit height is the officially documented fix.
+        // Taller on narrow screens since the tree + details panels can't
+        // sit side by side there and end up needing more vertical room.
+        height: window.innerWidth <= 480 ? "70vh" : "420px",
+        // Also on by default: dragging to resize the hierarchy panel's
+        // width, which without matching CSS support just looks like a
+        // stray native resize handle. Off, since our own layout already
+        // controls the widget's width.
+        hierarchyResizable: false,
+        // Drops a fourth panel (the alphabetical word index) - not a
+        // documented mobile fix specifically, just the only other
+        // "simplify the layout" lever the official settings expose.
+        wordsAvailable: false,
       },
       {
         getNewTokenFunction: async () => {
