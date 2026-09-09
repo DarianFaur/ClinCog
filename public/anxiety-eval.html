@@ -42,6 +42,8 @@
   --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
 }
 body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:15px;line-height:1.75;position:relative}
+#bar { position: fixed; top: 56px; left: 0; right: 0; height: 3px; background: var(--border); z-index: 20; pointer-events: none; }
+#bar-fill { height: 100%; background: var(--teal); transition: width .4s; }
 h1,h2,h3,h4,h5{font-family:var(--serif)}
 
 /* NAV */
@@ -279,7 +281,6 @@ canvas{width:100%;height:auto;display:block}
 .eval-context {
   display: flex; flex-direction: column; gap: 16px;
   position: sticky; top: 75px;
-  max-height: calc(100vh - 95px); overflow-y: auto; scrollbar-width: thin;
 }
 .ctx-sticky-top { flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; }
 .ctx-scroll-area { display: flex; flex-direction: column; gap: 16px; }
@@ -312,7 +313,7 @@ canvas{width:100%;height:auto;display:block}
 }
 .ctx-pin-btn:hover { color: var(--ink); background: var(--bg-surface-alt); }
 .ctx-card.pinned {
-  position: fixed; top: 0; z-index: 60; display: flex; flex-direction: column;
+  position: fixed; top: 0; z-index: 500; display: flex; flex-direction: column;
   box-shadow: var(--shadow-lg); border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
   margin: 0 !important; visibility: visible !important; background: var(--surface);
 }
@@ -425,7 +426,6 @@ canvas{width:100%;height:auto;display:block}
 .eval-context {
   display: flex; flex-direction: column; gap: 16px;
   position: sticky; top: 75px;
-  max-height: calc(100vh - 95px); overflow-y: auto; scrollbar-width: thin;
 }
 .ctx-sticky-top { flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; }
 .ctx-scroll-area { display: flex; flex-direction: column; gap: 16px; }
@@ -458,7 +458,7 @@ canvas{width:100%;height:auto;display:block}
 }
 .ctx-pin-btn:hover { color: var(--ink); background: var(--bg-surface-alt); }
 .ctx-card.pinned {
-  position: fixed; top: 0; z-index: 60; display: flex; flex-direction: column;
+  position: fixed; top: 0; z-index: 500; display: flex; flex-direction: column;
   box-shadow: var(--shadow-lg); border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
   margin: 0 !important; visibility: visible !important; background: var(--surface);
 }
@@ -556,6 +556,7 @@ canvas{width:100%;height:auto;display:block}
 </script>
 
 <div id="shell-content">
+<div id="bar"><div id="bar-fill" style="width:0%"></div></div>
 
 <!-- ══════════════════════════════════════════════
      PAGE 1 — WELCOME
@@ -1443,6 +1444,7 @@ document.addEventListener('DOMContentLoaded', () => {
   paintContextPanels();
   expandContextCardsByDefault();
   updateNav();
+  updateBar();
 });
 
 function buildStaiItems(containerId, items, prefix, opts, changeFn) {
@@ -1605,8 +1607,38 @@ function goTo(n) {
   toggleScoreBar();
   window.scrollTo(0, 0);
   expandContextCardsByDefault();
+  reapplyPin();
+  updateBar();
   if (n === 6) { ClinCog.markEvalReached('anxiety'); paintReflectState(); }
 }
+// Generic completion fraction for the current page - counts unique
+// checked radio groups vs all radio groups present; falls back to
+// filled text/number fields on pages with no radios (dot-probe).
+// Avoids hardcoding every item name per page.
+function pageFraction(pageId) {
+  const container = document.getElementById(pageId);
+  if (!container) return 0;
+  const allNames = new Set();
+  container.querySelectorAll('input[type=radio]').forEach(r => allNames.add(r.name));
+  if (allNames.size > 0) {
+    const checkedNames = new Set();
+    container.querySelectorAll('input[type=radio]:checked').forEach(r => checkedNames.add(r.name));
+    return checkedNames.size / allNames.size;
+  }
+  const fields = container.querySelectorAll('input[type=number], textarea');
+  if (fields.length === 0) return 0;
+  let filled = 0;
+  fields.forEach(f => { if (f.value.trim()) filled++; });
+  return filled / fields.length;
+}
+function updateBar() {
+  const fill = document.getElementById('bar-fill');
+  if (!fill) return;
+  const frac = pageFraction('p' + S.page);
+  fill.style.width = (((S.page - 1) + frac) / 6 * 100) + '%';
+}
+document.addEventListener('change', updateBar, true);
+document.addEventListener('input', updateBar, true);
 
 function completeCase() {
   const text = document.getElementById('reflect-text').value;
@@ -1673,17 +1705,30 @@ function toggleCtxCard(btn) {
     body.style.maxHeight = body.scrollHeight + 'px';
   }
 }
+let activePinRole = null; // 'vignette' | 'chat' | null - remembered across test pages for this patient, reset on any full page load (new patient, or back to dashboard and in again)
 function togglePinCard(btn) {
   const card = btn.closest('.ctx-card');
-  const ctx = card.closest('.eval-context');
   const isPinned = card.classList.contains('pinned');
-  ctx.querySelectorAll('.ctx-card.pinned').forEach(c => { if (c !== card) unpinCard(c); });
-  if (isPinned) { unpinCard(card); return; }
-  const rect = ctx.getBoundingClientRect();
+  if (isPinned) { unpinCard(card); activePinRole = null; return; }
+  pinCard(card);
+}
+function pinCard(card) {
+  const ctx = card.closest('.eval-context');
+  const layout = ctx.closest('.eval-layout');
+  const work = layout ? layout.querySelector('.eval-work') : null;
+  document.querySelectorAll('.ctx-card.pinned').forEach(c => { if (c !== card) unpinCard(c); });
+  const sidebar = document.querySelector('.shell-sidebar');
+  const leftPos = (sidebar ? sidebar.getBoundingClientRect().right : 0) + 16;
   const topbar = document.querySelector('.shell-topbar');
   const topOffset = topbar ? topbar.getBoundingClientRect().bottom : 0;
-  card.style.left = rect.left + 'px';
-  card.style.width = rect.width + 'px';
+  const normalWidth = ctx.getBoundingClientRect().width;
+  const pinnedWidth = Math.min(Math.max(normalWidth, window.innerWidth * 0.28), 640);
+  if (work) {
+    const overlap = (leftPos + pinnedWidth + 16) - work.getBoundingClientRect().left;
+    if (overlap > 0) { work.style.marginLeft = overlap + 'px'; work.dataset.pinPushed = '1'; }
+  }
+  card.style.left = leftPos + 'px';
+  card.style.width = pinnedWidth + 'px';
   card.style.top = topOffset + 'px';
   card.style.height = `calc(100vh - ${topOffset}px)`;
   card.classList.add('pinned');
@@ -1691,11 +1736,16 @@ function togglePinCard(btn) {
   const body = card.querySelector('.ctx-body');
   body.style.maxHeight = 'none';
   card.classList.add('open');
+  const btn = card.querySelector('.ctx-pin-btn');
   btn.setAttribute('aria-label', 'Return to normal size');
   btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6V3h3M13 6V3h-3M3 10v3h3M13 10v3h-3"/></svg>';
+  activePinRole = card.dataset.role;
 }
 function unpinCard(card) {
   const ctx = card.closest('.eval-context');
+  const layout = ctx.closest('.eval-layout');
+  const work = layout ? layout.querySelector('.eval-work') : null;
+  if (work && work.dataset.pinPushed) { work.style.marginLeft = ''; delete work.dataset.pinPushed; }
   card.classList.remove('pinned');
   card.style.left = ''; card.style.top = ''; card.style.width = ''; card.style.height = '';
   ctx.classList.remove('has-pinned');
@@ -1703,12 +1753,29 @@ function unpinCard(card) {
   btn.setAttribute('aria-label', 'Expand to full height');
   btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2H2v4M10 2h4v4M2 10v4h4M14 10v4h-4"/></svg>';
 }
+function reapplyPin() {
+  if (!activePinRole) return;
+  const activeCtx = document.querySelector('.page.active .eval-context');
+  if (!activeCtx) return;
+  const card = activeCtx.querySelector(`.ctx-card[data-role="${activePinRole}"]`);
+  if (card && !card.classList.contains('pinned')) pinCard(card);
+}
 window.addEventListener('resize', () => {
   document.querySelectorAll('.ctx-card.pinned').forEach(card => {
     const ctx = card.closest('.eval-context');
-    const rect = ctx.getBoundingClientRect();
-    card.style.left = rect.left + 'px';
-    card.style.width = rect.width + 'px';
+    const layout = ctx.closest('.eval-layout');
+    const work = layout ? layout.querySelector('.eval-work') : null;
+    if (work && work.dataset.pinPushed) { work.style.marginLeft = ''; delete work.dataset.pinPushed; }
+    const sidebar = document.querySelector('.shell-sidebar');
+    const leftPos = (sidebar ? sidebar.getBoundingClientRect().right : 0) + 16;
+    const normalWidth = ctx.getBoundingClientRect().width;
+    const pinnedWidth = Math.min(Math.max(normalWidth, window.innerWidth * 0.28), 640);
+    if (work) {
+      const overlap = (leftPos + pinnedWidth + 16) - work.getBoundingClientRect().left;
+      if (overlap > 0) { work.style.marginLeft = overlap + 'px'; work.dataset.pinPushed = '1'; }
+    }
+    card.style.left = leftPos + 'px';
+    card.style.width = pinnedWidth + 'px';
   });
 });
 

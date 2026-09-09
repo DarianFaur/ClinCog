@@ -4,6 +4,20 @@
    needs a #shell-content wrapper around its real markup.
    ============================================================ */
 
+/* Smooth cross-document transitions (dashboard <-> eval/chat pages,
+   logo click back to dashboard, etc). Native browser feature - the
+   whole page crossfades instead of a hard flash-to-white reload.
+   Silently ignored in browsers that don't support it yet, so this
+   is a pure enhancement with no fallback code needed. */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.18s;
+  animation-timing-function: ease-out;
+}
+
 html, body { height: 100%; }
 body { overflow-x: clip; overflow-y: visible; }
 
@@ -15,7 +29,7 @@ body { overflow-x: clip; overflow-y: visible; }
 .shell-sidebar {
   width: 260px; flex-shrink: 0; background: var(--sidebar-bg);
   display: flex; flex-direction: column;
-  position: sticky; top: 0; height: 100vh; overflow: hidden;
+  position: fixed; left: 0; top: 0; height: 100vh; overflow: hidden;
   transition: width var(--duration-layout) var(--ease-standard),
               transform var(--duration-layout) var(--ease-standard);
   z-index: 40;
@@ -101,7 +115,12 @@ body { overflow-x: clip; overflow-y: visible; }
 /* ---------------------------------------------------------------
    Topbar
 --------------------------------------------------------------- */
-.shell-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.shell-main {
+  flex: 1; min-width: 0; display: flex; flex-direction: column;
+  margin-left: 260px;
+  transition: margin-left var(--duration-layout) var(--ease-standard);
+}
+.shell-collapsed .shell-main { margin-left: 68px; }
 .shell-topbar {
   height: 56px; flex-shrink: 0; position: sticky; top: 0; z-index: 30;
   background: var(--bg-surface); border-bottom: 1px solid var(--border);
@@ -143,6 +162,7 @@ body { overflow-x: clip; overflow-y: visible; }
   .shell-collapsed .shell-nav-item { justify-content: flex-start; padding: 9px var(--sp-3); }
   .shell-content-inner { padding: var(--sp-4); }
   .shell-topbar { padding: 0 var(--sp-4); }
+  .shell-main, .shell-collapsed .shell-main { margin-left: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

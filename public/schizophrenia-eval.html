@@ -47,7 +47,7 @@
 }
 body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-size: 14px; line-height: 1.7; position: relative; }
 
-#bar { position: sticky; top: 56px; left: 0; right: 0; height: 3px; background: var(--line); z-index: 20; pointer-events: none; }
+#bar { position: fixed; top: 56px; left: 0; right: 0; height: 3px; background: var(--line); z-index: 20; pointer-events: none; }
 #bar-fill { height: 100%; background: var(--domain-psychosis); transition: width .4s; }
 
 /* Vertical stepper - lives as the first card in the left sidebar on
@@ -98,15 +98,6 @@ body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-
 .eval-context {
   display: flex; flex-direction: column; gap: 16px;
   position: sticky; top: 75px;
-  /* CSS sticky can only hold position for as long as the element's
-     own height fits the remaining viewport space below the top
-     offset - if the sidebar's natural content is taller than that,
-     it detaches early and scrolls away while the (taller) main
-     content still has more to show, leaving a visible gap. Capping
-     height + a thin auto-scrollbar keeps it sticking for the full
-     page, and the scrollbar stays invisible whenever content
-     already fits (the common case). */
-  max-height: calc(100vh - 95px); overflow-y: auto; scrollbar-width: thin;
 }
 .ctx-sticky-top { flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; }
 .ctx-scroll-area { display: flex; flex-direction: column; gap: 16px; }
@@ -135,7 +126,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-
 }
 .ctx-pin-btn:hover { color: var(--ink); background: var(--bg-surface-alt); }
 .ctx-card.pinned {
-  position: fixed; top: 0; z-index: 60; display: flex; flex-direction: column;
+  position: fixed; top: 0; z-index: 500; display: flex; flex-direction: column;
   box-shadow: var(--shadow-lg); border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
   margin: 0 !important; visibility: visible !important; background: var(--surface);
 }
@@ -802,22 +793,40 @@ function toggleCtxCard(btn) {
 // the pin survives scrolling and clicking through test items. Position
 // is measured live from .eval-context rather than hardcoded, since the
 // column can sit anywhere depending on sidebar/viewport width.
+let activePinRole = null; // 'vignette' | 'chat' | null - remembered across test pages for this patient, reset on any full page load (new patient, or back to dashboard and in again)
+
 function togglePinCard(btn) {
   const card = btn.closest('.ctx-card');
-  const ctx = card.closest('.eval-context');
   const isPinned = card.classList.contains('pinned');
-  ctx.querySelectorAll('.ctx-card.pinned').forEach(c => { if (c !== card) unpinCard(c); });
-  if (isPinned) { unpinCard(card); return; }
+  if (isPinned) { unpinCard(card); activePinRole = null; return; }
+  pinCard(card);
+}
+function pinCard(card) {
+  const ctx = card.closest('.eval-context');
+  const layout = ctx.closest('.eval-layout');
+  const work = layout ? layout.querySelector('.eval-work') : null;
+  document.querySelectorAll('.ctx-card.pinned').forEach(c => { if (c !== card) unpinCard(c); });
 
-  const rect = ctx.getBoundingClientRect();
+  // Start right after the collapsed taskbar's own edge (not the
+  // padded column position), with a small deliberate gap.
+  const sidebar = document.querySelector('.shell-sidebar');
+  const leftPos = (sidebar ? sidebar.getBoundingClientRect().right : 0) + 16;
   const topbar = document.querySelector('.shell-topbar');
-  const topOffset = topbar ? topbar.getBoundingClientRect().bottom : 0;
-  // Semi-fullscreen, not full: scales with viewport (28vw) so bigger
-  // monitors get a genuinely wider reading pane, but never narrower
-  // than the column's own normal width, and capped so it doesn't
-  // swallow the whole screen on ultrawide displays.
-  const pinnedWidth = Math.min(Math.max(rect.width, window.innerWidth * 0.28), 640);
-  card.style.left = rect.left + 'px';
+  const bar = document.getElementById('bar');
+  const barClearance = bar ? bar.getBoundingClientRect().height + 10 : 0;
+  const topOffset = (topbar ? topbar.getBoundingClientRect().bottom : 0) + barClearance;
+  const normalWidth = ctx.getBoundingClientRect().width;
+  const pinnedWidth = Math.min(Math.max(normalWidth, window.innerWidth * 0.28), 640);
+
+  // A wider pinned card can reach past where the assessment column
+  // normally starts and cut into its text; push that column right by
+  // exactly the overlap so nothing underneath gets covered or clipped.
+  if (work) {
+    const overlap = (leftPos + pinnedWidth + 16) - work.getBoundingClientRect().left;
+    if (overlap > 0) { work.style.marginLeft = overlap + 'px'; work.dataset.pinPushed = '1'; }
+  }
+
+  card.style.left = leftPos + 'px';
   card.style.width = pinnedWidth + 'px';
   card.style.top = topOffset + 'px';
   card.style.height = `calc(100vh - ${topOffset}px)`;
@@ -826,11 +835,16 @@ function togglePinCard(btn) {
   const body = card.querySelector('.ctx-body');
   body.style.maxHeight = 'none';
   card.classList.add('open');
+  const btn = card.querySelector('.ctx-pin-btn');
   btn.setAttribute('aria-label', 'Return to normal size');
   btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6V3h3M13 6V3h-3M3 10v3h3M13 10v3h-3"/></svg>';
+  activePinRole = card.dataset.role;
 }
 function unpinCard(card) {
   const ctx = card.closest('.eval-context');
+  const layout = ctx.closest('.eval-layout');
+  const work = layout ? layout.querySelector('.eval-work') : null;
+  if (work && work.dataset.pinPushed) { work.style.marginLeft = ''; delete work.dataset.pinPushed; }
   card.classList.remove('pinned');
   card.style.left = ''; card.style.top = ''; card.style.width = ''; card.style.height = '';
   ctx.classList.remove('has-pinned');
@@ -838,12 +852,32 @@ function unpinCard(card) {
   btn.setAttribute('aria-label', 'Expand to full height');
   btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2H2v4M10 2h4v4M2 10v4h4M14 10v4h-4"/></svg>';
 }
+// Re-apply the remembered pin (if any) to the page that's now visible -
+// each test page has its own vignette/chat DOM nodes, so switching
+// steps needs to re-pin the matching card on the new page, not just
+// leave the old (now-hidden) one pinned.
+function reapplyPin() {
+  if (!activePinRole) return;
+  const activeCtx = document.querySelector('.page.on .eval-context');
+  if (!activeCtx) return;
+  const card = activeCtx.querySelector(`.ctx-card[data-role="${activePinRole}"]`);
+  if (card && !card.classList.contains('pinned')) pinCard(card);
+}
 window.addEventListener('resize', () => {
   document.querySelectorAll('.ctx-card.pinned').forEach(card => {
     const ctx = card.closest('.eval-context');
-    const rect = ctx.getBoundingClientRect();
-    const pinnedWidth = Math.min(Math.max(rect.width, window.innerWidth * 0.28), 640);
-    card.style.left = rect.left + 'px';
+    const layout = ctx.closest('.eval-layout');
+    const work = layout ? layout.querySelector('.eval-work') : null;
+    if (work && work.dataset.pinPushed) { work.style.marginLeft = ''; delete work.dataset.pinPushed; }
+    const sidebar = document.querySelector('.shell-sidebar');
+    const leftPos = (sidebar ? sidebar.getBoundingClientRect().right : 0) + 16;
+    const normalWidth = ctx.getBoundingClientRect().width;
+    const pinnedWidth = Math.min(Math.max(normalWidth, window.innerWidth * 0.28), 640);
+    if (work) {
+      const overlap = (leftPos + pinnedWidth + 16) - work.getBoundingClientRect().left;
+      if (overlap > 0) { work.style.marginLeft = overlap + 'px'; work.dataset.pinPushed = '1'; }
+    }
+    card.style.left = leftPos + 'px';
     card.style.width = pinnedWidth + 'px';
   });
 });
@@ -957,6 +991,7 @@ function go(n) {
   window.scrollTo({top:0, behavior:'smooth'});
   tick();
   expandContextCardsByDefault();
+  reapplyPin();
   if (n === 5) { ClinCog.markEvalReached('schizophrenia'); buildReport(); paintReflectState(); }
 }
 function stepFraction() {

@@ -176,7 +176,13 @@
       sidebar.classList.contains("open") ? closeDrawer() : openDrawer();
     } else {
       const collapsed = frame.classList.toggle("shell-collapsed");
-      localStorage.setItem(SIDEBAR_KEY, collapsed ? "collapsed" : "open");
+      // On conceptualization/evaluation pages, the collapse is enforced
+      // per-page, not a real preference - toggling there for the current
+      // session shouldn't overwrite what the user actually wants on
+      // every other page (like the dashboard).
+      if (!cfg.autoCollapse) {
+        localStorage.setItem(SIDEBAR_KEY, collapsed ? "collapsed" : "open");
+      }
     }
   });
   backdrop.addEventListener("click", closeDrawer);
