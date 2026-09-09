@@ -67,7 +67,7 @@
       </div>
       <div class="shell-nav-group">
         <div class="shell-nav-eyebrow">Seminar</div>
-        ${navItem("help", "About the course", "/about.html", "about")}
+        ${navItem("info", "About the course", "/about.html", "about")}
         ${navItem("help", "Help", "/help.html", "help")}
         ${navItem("target", "Assessment benchmarks", "/benchmarks.html", "benchmarks")}
         ${navItem("sparkle", "Adopt with your own keys", "/adopt.html", "adopt")}

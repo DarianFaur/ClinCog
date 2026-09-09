@@ -44,7 +44,7 @@
 }
 body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-size: 14px; line-height: 1.7; position: relative; }
 
-#bar { position: sticky; top: 56px; left: 0; right: 0; height: 3px; background: var(--line); z-index: 20; }
+#bar { position: sticky; top: 56px; left: 0; right: 0; height: 3px; background: var(--line); z-index: 20; pointer-events: none; }
 #bar-fill { height: 100%; background: var(--domain-mood); transition: width .4s; }
 
 /* Vertical stepper - lives as the first card in the left sidebar on
@@ -88,13 +88,22 @@ body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-
 .shell-content-inner { max-width: 1900px; }
 
 .eval-layout {
-  max-width: 1900px; margin: 0 auto; padding: 32px 32px 100px;
+  max-width: 1900px; margin: 0 auto; padding: 32px 32px 40px;
   display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 28px; align-items: start;
   justify-content: center;
 }
 .eval-context {
   display: flex; flex-direction: column; gap: 16px;
   position: sticky; top: 75px;
+  /* CSS sticky can only hold position for as long as the element's
+     own height fits the remaining viewport space below the top
+     offset - if the sidebar's natural content is taller than that,
+     it detaches early and scrolls away while the (taller) main
+     content still has more to show, leaving a visible gap. Capping
+     height + a thin auto-scrollbar keeps it sticking for the full
+     page, and the scrollbar stays invisible whenever content
+     already fits (the common case). */
+  max-height: calc(100vh - 95px); overflow-y: auto; scrollbar-width: thin;
 }
 .ctx-sticky-top { flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; }
 .ctx-scroll-area { display: flex; flex-direction: column; gap: 16px; }
@@ -118,6 +127,20 @@ body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-
 .ctx-toggle-btn:hover { color: var(--ink); background: var(--bg-surface-alt); }
 .ctx-toggle-btn .chev { transition: transform .2s; display: block; }
 .ctx-card.open .ctx-toggle-btn .chev { transform: rotate(180deg); }
+.ctx-pin-btn {
+  background: none; border: none; cursor: pointer; padding: 4px; margin: -4px; color: var(--ink3);
+  display: flex; align-items: center; border-radius: var(--radius-sm); transition: all .15s;
+}
+.ctx-pin-btn:hover { color: var(--ink); background: var(--bg-surface-alt); }
+.ctx-card.pinned {
+  position: fixed; top: 0; z-index: 60; display: flex; flex-direction: column;
+  box-shadow: var(--shadow-lg); border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  margin: 0 !important; visibility: visible !important; background: var(--surface);
+}
+.ctx-card.pinned .ctx-body { max-height: none !important; flex: 1; overflow-y: auto; }
+.ctx-card.pinned .ctx-vignette-text, .ctx-card.pinned .ctx-chat { max-height: none; overflow-y: visible; }
+.ctx-card.pinned .ctx-pin-btn { color: var(--accent); }
+.eval-context.has-pinned > *:not(.pinned) { visibility: hidden; }
 .ctx-patient-name { font-family: var(--serif); font-size: 1.15rem; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
 .ctx-patient-meta { font-size: 14px; color: var(--ink3); margin-bottom: 12px; }
 .ctx-patient-complaint { font-size: 13px; color: var(--ink2); line-height: 1.6; padding-top: 12px; border-top: 1px solid var(--line); }
@@ -982,6 +1005,44 @@ function toggleCtxCard(btn) {
     body.style.maxHeight = body.scrollHeight + 'px';
   }
 }
+function togglePinCard(btn) {
+  const card = btn.closest('.ctx-card');
+  const ctx = card.closest('.eval-context');
+  const isPinned = card.classList.contains('pinned');
+  ctx.querySelectorAll('.ctx-card.pinned').forEach(c => { if (c !== card) unpinCard(c); });
+  if (isPinned) { unpinCard(card); return; }
+  const rect = ctx.getBoundingClientRect();
+  const topbar = document.querySelector('.shell-topbar');
+  const topOffset = topbar ? topbar.getBoundingClientRect().bottom : 0;
+  card.style.left = rect.left + 'px';
+  card.style.width = rect.width + 'px';
+  card.style.top = topOffset + 'px';
+  card.style.height = `calc(100vh - ${topOffset}px)`;
+  card.classList.add('pinned');
+  ctx.classList.add('has-pinned');
+  const body = card.querySelector('.ctx-body');
+  body.style.maxHeight = 'none';
+  card.classList.add('open');
+  btn.setAttribute('aria-label', 'Return to normal size');
+  btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6V3h3M13 6V3h-3M3 10v3h3M13 10v3h-3"/></svg>';
+}
+function unpinCard(card) {
+  const ctx = card.closest('.eval-context');
+  card.classList.remove('pinned');
+  card.style.left = ''; card.style.top = ''; card.style.width = ''; card.style.height = '';
+  ctx.classList.remove('has-pinned');
+  const btn = card.querySelector('.ctx-pin-btn');
+  btn.setAttribute('aria-label', 'Expand to full height');
+  btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2H2v4M10 2h4v4M2 10v4h4M14 10v4h-4"/></svg>';
+}
+window.addEventListener('resize', () => {
+  document.querySelectorAll('.ctx-card.pinned').forEach(card => {
+    const ctx = card.closest('.eval-context');
+    const rect = ctx.getBoundingClientRect();
+    card.style.left = rect.left + 'px';
+    card.style.width = rect.width + 'px';
+  });
+});
 
 const VIGNETTE_HTML = `
   <p>Darren, a 34-year-old high school English teacher, has been struggling to get out of bed most mornings. Over the past few weeks, he stares at the ceiling after the alarm rings &mdash; numb &mdash; often lying there for hours before dragging himself to the couch. Once known for his energetic lectures and quick wit, he now dreads the thought of facing his students. "What's the point?" he mutters. "They're not learning anything from me anyway. Nothing I do matters."</p>
@@ -1000,14 +1061,20 @@ function fullContextExtrasHtml() {
     <div class="ctx-card" data-role="vignette">
       <div class="ctx-card-header">
         <h4 style="margin:0;">Clinical vignette</h4>
-        <button type="button" class="ctx-toggle-btn" onclick="toggleCtxCard(this)" aria-label="Expand"><span class="chev">▾</span></button>
+        <div style="display:flex;gap:2px;">
+          <button type="button" class="ctx-pin-btn" onclick="togglePinCard(this)" aria-label="Expand to full height"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2H2v4M10 2h4v4M2 10v4h4M14 10v4h-4"/></svg></button>
+          <button type="button" class="ctx-toggle-btn" onclick="toggleCtxCard(this)" aria-label="Expand"><span class="chev">▾</span></button>
+        </div>
       </div>
       <div class="ctx-body"><div class="ctx-card-body"><div class="ctx-vignette-text">${VIGNETTE_HTML}</div></div></div>
     </div>
     <div class="ctx-card" data-role="chat">
       <div class="ctx-card-header">
         <h4 style="margin:0;">Your conversation with Darren</h4>
-        <button type="button" class="ctx-toggle-btn" onclick="toggleCtxCard(this)" aria-label="Expand"><span class="chev">▾</span></button>
+        <div style="display:flex;gap:2px;">
+          <button type="button" class="ctx-pin-btn" onclick="togglePinCard(this)" aria-label="Expand to full height"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2H2v4M10 2h4v4M2 10v4h4M14 10v4h-4"/></svg></button>
+          <button type="button" class="ctx-toggle-btn" onclick="toggleCtxCard(this)" aria-label="Expand"><span class="chev">▾</span></button>
+        </div>
       </div>
       <div class="ctx-body"><div class="ctx-card-body">${buildConceptHistoryHtml()}</div></div>
     </div>

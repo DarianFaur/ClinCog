@@ -272,13 +272,14 @@ canvas{width:100%;height:auto;display:block}
 .shell-content-inner { max-width: 1900px; }
 
 .eval-layout {
-  max-width: 1900px; margin: 0 auto; padding: 32px 32px 100px;
+  max-width: 1900px; margin: 0 auto; padding: 32px 32px 40px;
   display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 28px; align-items: start;
   justify-content: center;
 }
 .eval-context {
   display: flex; flex-direction: column; gap: 16px;
   position: sticky; top: 75px;
+  max-height: calc(100vh - 95px); overflow-y: auto; scrollbar-width: thin;
 }
 .ctx-sticky-top { flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; }
 .ctx-scroll-area { display: flex; flex-direction: column; gap: 16px; }
@@ -305,6 +306,20 @@ canvas{width:100%;height:auto;display:block}
   display: flex; align-items: center; border-radius: var(--radius-sm); transition: all .15s;
 }
 .ctx-toggle-btn:hover { color: var(--ink); background: var(--bg-surface-alt); }
+.ctx-pin-btn {
+  background: none; border: none; cursor: pointer; padding: 4px; margin: -4px; color: var(--ink3);
+  display: flex; align-items: center; border-radius: var(--radius-sm); transition: all .15s;
+}
+.ctx-pin-btn:hover { color: var(--ink); background: var(--bg-surface-alt); }
+.ctx-card.pinned {
+  position: fixed; top: 0; z-index: 60; display: flex; flex-direction: column;
+  box-shadow: var(--shadow-lg); border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  margin: 0 !important; visibility: visible !important; background: var(--surface);
+}
+.ctx-card.pinned .ctx-body { max-height: none !important; flex: 1; overflow-y: auto; }
+.ctx-card.pinned .ctx-vignette-text, .ctx-card.pinned .ctx-chat { max-height: none; overflow-y: visible; }
+.ctx-card.pinned .ctx-pin-btn { color: var(--accent); }
+.eval-context.has-pinned > *:not(.pinned) { visibility: hidden; }
 .ctx-toggle-btn .chev { transition: transform .2s; display: block; }
 .ctx-card.open .ctx-toggle-btn .chev { transform: rotate(180deg); }
 .ctx-patient-name { font-family: var(--serif); font-size: 1.15rem; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
@@ -403,13 +418,14 @@ canvas{width:100%;height:auto;display:block}
 .shell-content-inner { max-width: 1900px; }
 
 .eval-layout {
-  max-width: 1900px; margin: 0 auto; padding: 32px 32px 100px;
+  max-width: 1900px; margin: 0 auto; padding: 32px 32px 40px;
   display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 28px; align-items: start;
   justify-content: center;
 }
 .eval-context {
   display: flex; flex-direction: column; gap: 16px;
   position: sticky; top: 75px;
+  max-height: calc(100vh - 95px); overflow-y: auto; scrollbar-width: thin;
 }
 .ctx-sticky-top { flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; }
 .ctx-scroll-area { display: flex; flex-direction: column; gap: 16px; }
@@ -436,6 +452,20 @@ canvas{width:100%;height:auto;display:block}
   display: flex; align-items: center; border-radius: var(--radius-sm); transition: all .15s;
 }
 .ctx-toggle-btn:hover { color: var(--ink); background: var(--bg-surface-alt); }
+.ctx-pin-btn {
+  background: none; border: none; cursor: pointer; padding: 4px; margin: -4px; color: var(--ink3);
+  display: flex; align-items: center; border-radius: var(--radius-sm); transition: all .15s;
+}
+.ctx-pin-btn:hover { color: var(--ink); background: var(--bg-surface-alt); }
+.ctx-card.pinned {
+  position: fixed; top: 0; z-index: 60; display: flex; flex-direction: column;
+  box-shadow: var(--shadow-lg); border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  margin: 0 !important; visibility: visible !important; background: var(--surface);
+}
+.ctx-card.pinned .ctx-body { max-height: none !important; flex: 1; overflow-y: auto; }
+.ctx-card.pinned .ctx-vignette-text, .ctx-card.pinned .ctx-chat { max-height: none; overflow-y: visible; }
+.ctx-card.pinned .ctx-pin-btn { color: var(--accent); }
+.eval-context.has-pinned > *:not(.pinned) { visibility: hidden; }
 .ctx-toggle-btn .chev { transition: transform .2s; display: block; }
 .ctx-card.open .ctx-toggle-btn .chev { transform: rotate(180deg); }
 .ctx-patient-name { font-family: var(--serif); font-size: 1.15rem; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
@@ -1643,6 +1673,44 @@ function toggleCtxCard(btn) {
     body.style.maxHeight = body.scrollHeight + 'px';
   }
 }
+function togglePinCard(btn) {
+  const card = btn.closest('.ctx-card');
+  const ctx = card.closest('.eval-context');
+  const isPinned = card.classList.contains('pinned');
+  ctx.querySelectorAll('.ctx-card.pinned').forEach(c => { if (c !== card) unpinCard(c); });
+  if (isPinned) { unpinCard(card); return; }
+  const rect = ctx.getBoundingClientRect();
+  const topbar = document.querySelector('.shell-topbar');
+  const topOffset = topbar ? topbar.getBoundingClientRect().bottom : 0;
+  card.style.left = rect.left + 'px';
+  card.style.width = rect.width + 'px';
+  card.style.top = topOffset + 'px';
+  card.style.height = `calc(100vh - ${topOffset}px)`;
+  card.classList.add('pinned');
+  ctx.classList.add('has-pinned');
+  const body = card.querySelector('.ctx-body');
+  body.style.maxHeight = 'none';
+  card.classList.add('open');
+  btn.setAttribute('aria-label', 'Return to normal size');
+  btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6V3h3M13 6V3h-3M3 10v3h3M13 10v3h-3"/></svg>';
+}
+function unpinCard(card) {
+  const ctx = card.closest('.eval-context');
+  card.classList.remove('pinned');
+  card.style.left = ''; card.style.top = ''; card.style.width = ''; card.style.height = '';
+  ctx.classList.remove('has-pinned');
+  const btn = card.querySelector('.ctx-pin-btn');
+  btn.setAttribute('aria-label', 'Expand to full height');
+  btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2H2v4M10 2h4v4M2 10v4h4M14 10v4h-4"/></svg>';
+}
+window.addEventListener('resize', () => {
+  document.querySelectorAll('.ctx-card.pinned').forEach(card => {
+    const ctx = card.closest('.eval-context');
+    const rect = ctx.getBoundingClientRect();
+    card.style.left = rect.left + 'px';
+    card.style.width = rect.width + 'px';
+  });
+});
 
 const VIGNETTE_HTML_ALEX = `
   <p>Alex is a 24-year-old undergraduate student referred by their general practitioner following persistent difficulties with academic performance and social engagement. Alex describes a longstanding pattern &mdash; dating back to early adolescence &mdash; of intense fear in situations where they might be observed or evaluated by others. In seminar settings, Alex sits near the door and rarely contributes to discussion, convinced that any comment they make will sound foolish. When called upon unexpectedly, Alex reports immediate physical symptoms: rapid heartbeat, flushed cheeks, and a sensation of the throat closing up. Following such episodes, Alex ruminates for several hours, replaying what was said and cataloguing perceived failures in tone, word choice, and facial expression.</p>
@@ -1660,14 +1728,20 @@ function fullContextExtrasHtml() {
     <div class="ctx-card" data-role="vignette">
       <div class="ctx-card-header">
         <h4 style="margin:0;">Clinical vignette</h4>
-        <button type="button" class="ctx-toggle-btn" onclick="toggleCtxCard(this)" aria-label="Expand"><span class="chev">▾</span></button>
+        <div style="display:flex;gap:2px;">
+          <button type="button" class="ctx-pin-btn" onclick="togglePinCard(this)" aria-label="Expand to full height"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2H2v4M10 2h4v4M2 10v4h4M14 10v4h-4"/></svg></button>
+          <button type="button" class="ctx-toggle-btn" onclick="toggleCtxCard(this)" aria-label="Expand"><span class="chev">▾</span></button>
+        </div>
       </div>
       <div class="ctx-body"><div class="ctx-card-body"><div class="ctx-vignette-text">${VIGNETTE_HTML_ALEX}</div></div></div>
     </div>
     <div class="ctx-card" data-role="chat">
       <div class="ctx-card-header">
         <h4 style="margin:0;">Your conversation with Alex</h4>
-        <button type="button" class="ctx-toggle-btn" onclick="toggleCtxCard(this)" aria-label="Expand"><span class="chev">▾</span></button>
+        <div style="display:flex;gap:2px;">
+          <button type="button" class="ctx-pin-btn" onclick="togglePinCard(this)" aria-label="Expand to full height"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2H2v4M10 2h4v4M2 10v4h4M14 10v4h-4"/></svg></button>
+          <button type="button" class="ctx-toggle-btn" onclick="toggleCtxCard(this)" aria-label="Expand"><span class="chev">▾</span></button>
+        </div>
       </div>
       <div class="ctx-body"><div class="ctx-card-body">${buildConceptHistoryHtmlA()}</div></div>
     </div>
