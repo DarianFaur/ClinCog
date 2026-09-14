@@ -132,6 +132,10 @@ body { overflow-x: clip; overflow-y: visible; }
 }
 .shell-hamburger:hover { background: var(--bg-surface-alt); color: var(--text-primary); }
 .shell-breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 14.5px; overflow: hidden; white-space: nowrap; }
+@media (max-width: 767px) {
+  .shell-crumb:not(.current), .shell-crumb-sep { display: none; }
+  .shell-crumb.current { font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
+}
 .shell-crumb { color: var(--text-secondary); text-decoration: none; }
 .shell-crumb:hover { color: var(--text-primary); }
 .shell-crumb.current { color: var(--text-primary); font-weight: 600; }

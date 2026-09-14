@@ -101,6 +101,10 @@ body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-
 .eval-work { min-width: 0; max-width: 1100px; }
 @media (max-width: 1100px) {
   .eval-layout { grid-template-columns: 1fr; }
+  .eval-context { position: static; }
+}
+@media (max-width: 767px) {
+  .eval-layout { padding: 24px 0; }
 }
 
 .ctx-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-xs); padding: 0; overflow: hidden; flex-shrink: 0; }
@@ -127,6 +131,35 @@ body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-
   position: fixed; top: 0; z-index: 500; display: flex; flex-direction: column;
   box-shadow: var(--shadow-lg); border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
   margin: 0 !important; visibility: visible !important; background: var(--surface);
+}
+.pin-backdrop { display: none; }
+.helper-fab, .helper-fab-menu { display: none; }
+.pin-backdrop.on { display: block; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 550; }
+@media (max-width: 767px) {
+  .ctx-card.pinned.pinned-mobile {
+    left: 4vw !important; right: 4vw !important; top: 6vh !important; width: 92vw !important;
+    height: 88vh !important; max-height: 88vh !important; border-radius: var(--radius-lg) !important; z-index: 600;
+  }
+  .helper-fab {
+    display: flex; position: fixed; bottom: 82px; right: 20px; z-index: 580;
+    width: 48px; height: 48px; border-radius: 50%; align-items: center; justify-content: center;
+    background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-md);
+    color: var(--ink2); cursor: pointer; padding: 0;
+  }
+  .helper-fab.helper-fab-hidden { display: none; }
+  .helper-fab-menu {
+    display: none; position: fixed; bottom: 138px; right: 20px; z-index: 580;
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg); overflow: hidden; min-width: 220px;
+  }
+  .helper-fab-menu.open { display: block; }
+  .helper-fab-menu button {
+    display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
+    padding: 13px 16px; background: none; border: none; border-bottom: 1px solid var(--line);
+    font-family: var(--sans); font-size: 14px; color: var(--ink); cursor: pointer;
+  }
+  .helper-fab-menu button:last-child { border-bottom: none; }
+  .helper-fab-menu button:active { background: var(--bg-surface-alt); }
 }
 .ctx-card.pinned .ctx-body { max-height: none !important; flex: 1; overflow-y: auto; }
 .ctx-card.pinned .ctx-vignette-text, .ctx-card.pinned .ctx-chat { max-height: none; overflow-y: visible; }
@@ -1008,6 +1041,36 @@ function pinCard(card) {
   const layout = ctx.closest('.eval-layout');
   const work = layout ? layout.querySelector('.eval-work') : null;
   document.querySelectorAll('.ctx-card.pinned').forEach(c => { if (c !== card) unpinCard(c); });
+
+  if (window.innerWidth < 768) {
+    if (!card.dataset.pinHome) {
+      card.dataset.pinHome = '1';
+      card._pinOriginalParent = card.parentNode;
+      card._pinOriginalNext = card.nextSibling;
+    }
+    let backdrop = document.getElementById('pin-backdrop');
+    if (!backdrop) {
+      backdrop = document.createElement('div');
+      backdrop.id = 'pin-backdrop';
+      backdrop.className = 'pin-backdrop';
+      document.body.appendChild(backdrop);
+    }
+    backdrop.onclick = () => unpinCard(card);
+    document.body.appendChild(card);
+    document.body.appendChild(backdrop);
+    document.body.appendChild(card);
+    backdrop.classList.add('on');
+    document.body.style.overflow = 'hidden';
+    card.classList.add('pinned', 'pinned-mobile', 'open');
+    const mBody = card.querySelector('.ctx-body');
+    mBody.style.maxHeight = 'none';
+    const mBtn = card.querySelector('.ctx-pin-btn');
+    mBtn.setAttribute('aria-label', 'Close');
+    mBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l8 8M12 4l-8 8"/></svg>';
+    activePinRole = card.dataset.role;
+    return;
+  }
+
   const sidebar = document.querySelector('.shell-sidebar');
   const leftPos = (sidebar ? sidebar.getBoundingClientRect().right : 0) + 16;
   const topbar = document.querySelector('.shell-topbar');
@@ -1035,11 +1098,21 @@ function pinCard(card) {
   activePinRole = card.dataset.role;
 }
 function unpinCard(card) {
+  if (card._pinOriginalParent) {
+    if (card._pinOriginalNext) card._pinOriginalParent.insertBefore(card, card._pinOriginalNext);
+    else card._pinOriginalParent.appendChild(card);
+    card._pinOriginalParent = null;
+    card._pinOriginalNext = null;
+    delete card.dataset.pinHome;
+  }
   const ctx = card.closest('.eval-context');
   const layout = ctx.closest('.eval-layout');
   const work = layout ? layout.querySelector('.eval-work') : null;
   if (work && work.dataset.pinPushed) { work.style.marginLeft = ''; delete work.dataset.pinPushed; }
-  card.classList.remove('pinned');
+  const backdrop = document.getElementById('pin-backdrop');
+  if (backdrop) backdrop.classList.remove('on');
+  document.body.style.overflow = '';
+  card.classList.remove('pinned', 'pinned-mobile');
   card.style.left = ''; card.style.top = ''; card.style.width = ''; card.style.height = '';
   ctx.classList.remove('has-pinned');
   const btn = card.querySelector('.ctx-pin-btn');
@@ -1154,7 +1227,7 @@ function paintContextPanels() {
 let cur=0;
 let maxStepReached=0;
 function stepClick(n) { if (n <= maxStepReached) go(n); }
-function go(n){document.getElementById('pg'+cur).classList.remove('on');cur=n;if(n>maxStepReached)maxStepReached=n;document.getElementById('pg'+cur).classList.add('on');window.scrollTo({top:0,behavior:'smooth'});tick();expandContextCardsByDefault();reapplyPin();if(n===5){ClinCog.markEvalReached('depression');paintReflectState();}}
+function go(n){document.getElementById('pg'+cur).classList.remove('on');cur=n;if(n>maxStepReached)maxStepReached=n;document.getElementById('pg'+cur).classList.add('on');window.scrollTo({top:0,behavior:'smooth'});tick();expandContextCardsByDefault();reapplyPin();updateHelperFabVisibility();if(n===5){ClinCog.markEvalReached('depression');paintReflectState();}}
 
 function stepFraction() {
   if (cur === 2) {
@@ -1465,6 +1538,7 @@ function popDiag(id,pct){
 }
 
 function expandContextCardsByDefault() {
+  if (window.innerWidth < 768) return;
   document.querySelectorAll('.ctx-card[data-role="vignette"], .ctx-card[data-role="chat"]').forEach(card => {
     const body = card.querySelector('.ctx-body');
     if (!body) return;
@@ -1478,7 +1552,48 @@ document.addEventListener('DOMContentLoaded',()=>{
   paintContextPanels();
   expandContextCardsByDefault();
   tick();
+  initHelperFab();
 });
+function initHelperFab() {
+  if (document.getElementById('helper-fab')) return;
+  const fab = document.createElement('button');
+  fab.type = 'button';
+  fab.id = 'helper-fab';
+  fab.className = 'helper-fab';
+  fab.setAttribute('aria-label', 'Open clinical vignette or conversation history');
+  fab.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3h9l3 3v11H4z"/><path d="M13 3v3h3"/><path d="M7 10h6M7 13h6"/></svg>';
+  document.body.appendChild(fab);
+  const menu = document.createElement('div');
+  menu.id = 'helper-fab-menu';
+  menu.className = 'helper-fab-menu';
+  menu.innerHTML = `
+    <button type="button" data-role="vignette">📄 Clinical vignette</button>
+    <button type="button" data-role="chat">💬 Conversation history</button>
+  `;
+  document.body.appendChild(menu);
+  fab.addEventListener('click', (e) => { e.stopPropagation(); menu.classList.toggle('open'); });
+  menu.querySelectorAll('button[data-role]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      menu.classList.remove('open');
+      const activeCtx = document.querySelector('.page.on .eval-context');
+      if (!activeCtx) return;
+      const card = activeCtx.querySelector(`.ctx-card[data-role="${btn.dataset.role}"]`);
+      if (card) pinCard(card);
+    });
+  });
+  document.addEventListener('click', (e) => {
+    if (!fab.contains(e.target) && !menu.contains(e.target)) menu.classList.remove('open');
+  });
+  updateHelperFabVisibility();
+}
+function updateHelperFabVisibility() {
+  const fab = document.getElementById('helper-fab');
+  if (!fab) return;
+  const activeCtx = document.querySelector('.page.on .eval-context');
+  const hasCards = !!(activeCtx && activeCtx.querySelector('.ctx-card[data-role="vignette"], .ctx-card[data-role="chat"]'));
+  fab.classList.toggle('helper-fab-hidden', !hasCards);
+  if (!hasCards) document.getElementById('helper-fab-menu')?.classList.remove('open');
+}
 </script>
 </body>
 </html>

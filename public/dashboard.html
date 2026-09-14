@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <!-- Temporary CDN fallback until real self-hosted Inter woff2 files
      are added at /public/fonts/ - see tokens.css header comment. -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/tokens.css">
 <link rel="stylesheet" href="/components.css">
 <link rel="stylesheet" href="/shell.css">
@@ -49,6 +49,9 @@
   .dash-grid-cases { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--sp-5); margin-bottom: var(--sp-6); }
   @media (max-width: 900px) { .dash-grid-cases { grid-template-columns: 1fr; } }
 
+  .stat-card-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; padding: 0; margin-bottom: var(--sp-6); overflow: hidden; }
+  @media (max-width: 560px) { .stat-card-row { grid-template-columns: 1fr; } .stat-card-row .stat-card { border-right: none !important; border-bottom: 1px solid var(--border); } .stat-card-row .stat-card:last-child { border-bottom: none; } }
+
   /* .grid-2-col now lives in components.css - shared with progress.html */
 
   /* .activity-row, .activity-dot, .activity-text, .activity-time now live in components.css - shared with progress.html */
@@ -74,7 +77,7 @@
 
   <div id="continue-slot"></div>
 
-  <div class="card stat-card-row" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;padding:0;margin-bottom:var(--sp-6);overflow:hidden;">
+  <div class="card stat-card-row">
     <div class="stat-card" style="border-right:1px solid var(--border);">
       <div class="stat-icon" id="stat-icon-1"></div>
       <span class="text-label">CASES COMPLETE</span>
@@ -134,7 +137,7 @@
 <script>window.CLINCOG_SHELL = { activeNav: "dashboard", breadcrumb: [{ label: "Dashboard" }] };</script>
 <script src="/storage.js"></script>
 <script src="/icons.js"></script>
-<script src="/shell.js"></script>
+<script src="/shell.js?v=2"></script>
 <script src="/reveal.js"></script>
 <script src="/a11y.js"></script>
 <script>
@@ -175,7 +178,7 @@
           <div class="text-eyebrow" style="margin-bottom:6px;">Continue your case · Week ${current.week} · ${DOMAIN_LABEL[current.id]}</div>
           <div class="text-page-title" style="margin-bottom:2px;">${current.patient}</div>
           <div class="text-secondary" style="font-size:var(--text-xs);">${current.age} · ${current.role}</div>
-          <div class="continue-hero-quote">"${current.quote.replace(/^"|"$/g, "")}"</div>
+          <div class="continue-hero-quote">${current.quote}</div>
           <div class="continue-hero-progress">
             <span class="text-label" style="white-space:nowrap;">Conceptualization</span>
             <div class="progress-track"><div class="progress-fill" style="width:${Math.round(s.conceptPct * 100)}%"></div></div>

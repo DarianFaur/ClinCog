@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="color-scheme" content="light dark">
+<script src="/theme-init.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClinCog · ICD-11 glossary</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
+<style>
+  .gl-section { margin-bottom: var(--sp-7, 40px); }
+  .gl-section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .gl-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; background: var(--accent); }
+  .gl-section-sub { font-size: var(--text-xs); color: var(--text-tertiary); margin: 2px 0 14px 20px; }
+  .gl-search-wrap { margin-bottom: var(--sp-6); position: relative; }
+  .gl-search-wrap input {
+    width: 100%; box-sizing: border-box; padding: 12px 14px 12px 40px; font-size: var(--text-sm);
+    border: 1.5px solid var(--border); border-radius: var(--radius-md); font-family: var(--font-sans);
+    background: var(--bg-surface); color: var(--text-primary);
+  }
+  .gl-search-wrap input:focus { outline: none; border-color: var(--accent); }
+  .gl-search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--text-tertiary); pointer-events: none; }
+  .gl-term { border-bottom: 1px solid var(--border); padding: 16px 0; }
+  .gl-term:last-child { border-bottom: none; }
+  .gl-term-name { font-weight: 600; color: var(--text-primary); font-size: var(--text-base); }
+  .gl-term-def { color: var(--text-secondary); margin-top: 4px; font-size: var(--text-sm); line-height: 1.65; }
+  .gl-term-example { margin-top: 8px; padding: 8px 12px; background: var(--bg-surface-alt); border-radius: var(--radius-sm); font-size: var(--text-xs); color: var(--text-secondary); }
+  .gl-term-example strong { color: var(--text-tertiary); text-transform: uppercase; font-size: 10.5px; letter-spacing: .04em; }
+  .gl-term.gl-hidden { display: none; }
+  .gl-no-results { display: none; padding: 24px 0; text-align: center; color: var(--text-tertiary); font-size: var(--text-sm); }
+  .gl-no-results.on { display: block; }
+  .gl-links { display: flex; flex-direction: column; gap: 6px; margin: 12px 0 0; }
+  .gl-links a { font-size: var(--text-sm); color: var(--accent); text-decoration: none; }
+  .gl-links a:hover { text-decoration: underline; }
+  .gl-refs { margin: 10px 0 0; padding-left: 18px; font-size: var(--text-xs); color: var(--text-secondary); line-height: 1.9; }
+  .gl-refs li { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+
+<div id="shell-content">
+
+  <div style="margin-bottom:var(--sp-6);">
+    <span class="text-eyebrow">Resources</span>
+    <h1 class="text-page-title" style="font-size:var(--text-lg);margin-top:4px;">ICD-11 glossary</h1>
+    <p class="text-secondary" style="margin-top:8px;">The vocabulary ICD-11 and its CDDR diagnostic manual use for their own structure — what a "linearization" is, what "essential features" means, why some categories don't have codes — collected in one place instead of scattered across documentation. Search or scroll; terms are grouped by what they describe.</p>
+  </div>
+
+  <div class="gl-search-wrap">
+    <span class="gl-search-icon">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="5.5"/><path d="M11.5 11.5L15 15" stroke-linecap="round"/></svg>
+    </span>
+    <input type="text" id="gl-search" autocomplete="off" placeholder="Search terms, e.g. &quot;linearization&quot; or &quot;threshold&quot;…">
+  </div>
+
+  <div id="gl-no-results" class="gl-no-results">No terms match that search.</div>
+
+  <!-- ============ HOW ICD-11 IS BUILT ============ -->
+  <div class="gl-section" id="structure">
+    <div class="gl-section-head"><span class="gl-dot"></span><span class="text-card-title" style="font-size:var(--text-base);">How ICD-11 is built</span></div>
+    <div class="gl-section-sub">The classification's own architecture — foundation, linearizations, and how codes are assembled</div>
+
+    <div class="card"><div class="card-body" style="padding:4px var(--sp-5);">
+
+      <div class="gl-term" data-term="foundation component">
+        <div class="gl-term-name">Foundation Component</div>
+        <div class="gl-term-def">The entire WHO-FIC universe: a single, multidimensional collection of every disease, disorder, injury, sign, symptom, and related entity WHO maintains, with each entity allowed to sit under more than one parent at once (e.g., a condition that is both an infection and a brain disease). Every linearization — including MMS, the one most people mean when they say "ICD-11" — is generated from this one shared foundation.</div>
+      </div>
+
+      <div class="gl-term" data-term="linearization mms">
+        <div class="gl-term-name">Linearization</div>
+        <div class="gl-term-def">A single-parent, tabular-list "cut" through the Foundation, built for a specific purpose — the kind of flat, printable hierarchy classic ICD volumes always were. <strong>MMS</strong> (Mortality and Morbidity Statistics) is the primary linearization: the main, general-purpose version used for coding and statistical reporting worldwide, and what the ICD-11 API in this course's CDDR guide searches by default. Other linearizations exist for primary care, dermatology, and other specialties.</div>
+      </div>
+
+      <div class="gl-term" data-term="stem code precoordination">
+        <div class="gl-term-name">Stem code / Precoordination</div>
+        <div class="gl-term-def">A stem code is a single, self-contained code that already bundles several pieces of clinical detail into one entity — e.g., a single code for "Adenocarcinoma of duodenum" that combines both the tissue type and the anatomical site. Building detail into one code like this is called precoordination.</div>
+      </div>
+
+      <div class="gl-term" data-term="extension code postcoordination">
+        <div class="gl-term-name">Extension code / Postcoordination</div>
+        <div class="gl-term-def">Postcoordination is combining two or more codes into one cluster to describe a case more precisely than a single stem code allows — e.g., adding laterality or severity onto a diagnosis. Extension codes are the add-on codes used to do this; ICD-11 is the first ICD revision built to support this natively.</div>
+      </div>
+
+      <div class="gl-term" data-term="grouping category residual other specified unspecified">
+        <div class="gl-term-name">Grouping category, and "other specified" / "unspecified"</div>
+        <div class="gl-term-def">Some entries in a linearization exist only to organize other entries underneath them (chapters and blocks) and cannot themselves be assigned as a diagnosis — these are grouping categories. Within most groupings, "other specified" and "unspecified" residual categories catch presentations that don't fit any named category, or where information is incomplete.</div>
+      </div>
+
+    </div></div>
+
+    <div class="gl-links" style="margin-top:14px;">
+      <a href="https://icd.who.int/en" target="_blank" rel="noopener">ICD-11 for Mortality and Morbidity Statistics — official browser</a>
+      <a href="https://icd.who.int/icdapi/docs/ContentModelGuide.pdf" target="_blank" rel="noopener">WHO-FIC Content Model Reference Guide (PDF)</a>
+    </div>
+  </div>
+
+  <!-- ============ CDDR WRITE-UP STRUCTURE ============ -->
+  <div class="gl-section" id="cddr-structure">
+    <div class="gl-section-head"><span class="gl-dot"></span><span class="text-card-title" style="font-size:var(--text-base);">The parts of a CDDR diagnostic write-up</span></div>
+    <div class="gl-section-sub">Every disorder in the CDDR manual is described using this same set of headings</div>
+
+    <div class="card"><div class="card-body" style="padding:4px var(--sp-5);">
+
+      <div class="gl-term" data-term="essential required features">
+        <div class="gl-term-name">Essential (Required) Features</div>
+        <div class="gl-term-def">The features a clinician should expect to see in every case of the disorder — the closest thing CDDR has to "criteria," though written as clinical description rather than a rigid checklist.</div>
+        <div class="gl-term-example"><strong>In this course</strong> — the "Diagnostic criteria reproduced verbatim from World Health Organization…" text on each case's ICD-11 step is the Essential Features section for that disorder.</div>
+      </div>
+
+      <div class="gl-term" data-term="additional clinical features">
+        <div class="gl-term-name">Additional Clinical Features</div>
+        <div class="gl-term-def">Features commonly seen in some, but not all, cases of the disorder — useful for recognition, but not required for the diagnosis to apply.</div>
+      </div>
+
+      <div class="gl-term" data-term="boundary with normality threshold">
+        <div class="gl-term-name">Boundary with Normality (Threshold)</div>
+        <div class="gl-term-def">Where CDDR draws the line between an ordinary human experience (sadness, worry, unusual belief) and the disorder — the severity, duration, or impairment threshold that has to be crossed before a diagnosis is appropriate.</div>
+      </div>
+
+      <div class="gl-term" data-term="differential diagnosis boundaries other disorders">
+        <div class="gl-term-name">Differential Diagnosis (Boundaries with Other Disorders and Conditions)</div>
+        <div class="gl-term-def">How to tell this disorder apart from others it's commonly confused with, including other mental disorders and relevant medical conditions — the section that matters most when two diagnoses both seem to fit.</div>
+      </div>
+
+      <div class="gl-term" data-term="course features">
+        <div class="gl-term-name">Course Features</div>
+        <div class="gl-term-def">How the disorder typically unfolds over time — onset pattern, typical duration, episodic vs. persistent course, and common trajectories.</div>
+      </div>
+
+      <div class="gl-term" data-term="developmental presentations">
+        <div class="gl-term-name">Developmental Presentations</div>
+        <div class="gl-term-def">How the disorder can look different at different ages — for instance, presentations more typical in children or adolescents versus adults.</div>
+      </div>
+
+      <div class="gl-term" data-term="culture related features">
+        <div class="gl-term-name">Culture-Related Features</div>
+        <div class="gl-term-def">How cultural context can shape how symptoms are expressed, interpreted, or reported, and what a clinician should account for across different cultural settings.</div>
+      </div>
+
+      <div class="gl-term" data-term="sex gender related features">
+        <div class="gl-term-name">Sex- and/or Gender-Related Features</div>
+        <div class="gl-term-def">Known differences in presentation, prevalence, or expression of the disorder associated with sex or gender.</div>
+      </div>
+
+    </div></div>
+
+    <div class="gl-links" style="margin-top:14px;">
+      <a href="/cddr-guide.html">This course's CDDR criteria guide — what CDDR is, and a live ICD-11 search tool</a>
+    </div>
+
+    <div style="margin-top:18px;">
+      <span class="text-card-title" style="font-size:var(--text-sm);">Selective bibliography</span>
+      <ul class="gl-refs">
+        <li>Pezzella, A. (2022). The ICD-11 is now officially in effect. <em>World Psychiatry, 21</em>(2), 331–332.</li>
+        <li>Kestel, D., et al. (2024). Global launch of the ICD-11 Clinical Descriptions and Diagnostic Requirements (CDDR). <em>World Psychiatry, 23</em>(3), 429–430.</li>
+        <li>Reed, G.M., First, M.B., Kogan, C.S., et al. (2019). Innovations and changes in the ICD-11 classification of mental, behavioural and neurodevelopmental disorders. <em>World Psychiatry, 18</em>(1), 3–19.</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<script src="/theme-init.js"></script>
+<script>window.CLINCOG_SHELL = { activeNav: "icd-glossary", breadcrumb: [{ label: "ICD-11 glossary" }] };</script>
+<script src="/shell.js?v=2"></script>
+<script src="/a11y.js"></script>
+<script>
+(function () {
+  const input = document.getElementById('gl-search');
+  const terms = Array.from(document.querySelectorAll('.gl-term'));
+  const noResults = document.getElementById('gl-no-results');
+  const sections = Array.from(document.querySelectorAll('.gl-section'));
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    let anyVisible = false;
+    terms.forEach(term => {
+      const haystack = (term.dataset.term + ' ' + term.textContent).toLowerCase();
+      const match = q === '' || haystack.includes(q);
+      term.classList.toggle('gl-hidden', !match);
+      if (match) anyVisible = true;
+    });
+    sections.forEach(section => {
+      const hasVisible = section.querySelectorAll('.gl-term:not(.gl-hidden)').length > 0;
+      section.style.display = (q === '' || hasVisible) ? '' : 'none';
+    });
+    noResults.classList.toggle('on', !anyVisible && q !== '');
+  });
+})();
+</script>
+</body>
+</html>

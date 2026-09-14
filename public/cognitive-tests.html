@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="color-scheme" content="light dark">
+<script src="/theme-init.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClinCog · Cognitive tests</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/favicon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
+<style>
+  .ct-section { margin-bottom: var(--sp-7, 40px); }
+  .ct-section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .ct-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .ct-section-sub { font-size: var(--text-xs); color: var(--text-tertiary); margin: 2px 0 14px 20px; }
+  .ct-table { width: 100%; border-collapse: collapse; font-size: var(--text-xs); margin: 14px 0; }
+  .ct-table th { text-align: left; padding: 8px 10px; border-bottom: 1.5px solid var(--border); color: var(--text-tertiary); text-transform: uppercase; letter-spacing: .03em; font-weight: 600; font-size: 10.5px; }
+  .ct-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .ct-table tr:last-child td { border-bottom: none; }
+  .ct-table .used { display: inline-block; margin-top: 3px; font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 999px; }
+  .ct-links { display: flex; flex-direction: column; gap: 6px; margin: 12px 0; }
+  .ct-links a { font-size: var(--text-sm); color: var(--accent); text-decoration: none; }
+  .ct-links a:hover { text-decoration: underline; }
+  .ct-refs { margin: 10px 0 0; padding-left: 18px; font-size: var(--text-xs); color: var(--text-secondary); line-height: 1.9; }
+  .ct-refs li { margin-bottom: 6px; }
+  .ct-note { margin-top: 10px; padding: 10px 14px; background: var(--bg-surface-alt); border-radius: var(--radius-md); font-size: var(--text-xs); color: var(--text-secondary); line-height: 1.7; }
+  .ct-subhead { font-size: var(--text-sm); font-weight: 600; color: var(--text-primary); margin: 18px 0 4px; }
+  .ct-toc { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: var(--sp-6); }
+  .ct-toc a { font-size: var(--text-xs); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border); color: var(--text-secondary); text-decoration: none; }
+  .ct-toc a:hover { border-color: var(--accent); color: var(--accent); }
+
+  .ct-chart { margin: 16px 0; }
+  .ct-chart svg { width: 100%; height: auto; display: block; }
+  .ct-chart-caption { font-size: var(--text-xs); color: var(--text-tertiary); margin-top: 8px; line-height: 1.6; }
+  .ct-chart-caption strong { color: var(--text-secondary); }
+</style>
+</head>
+<body>
+
+<div id="shell-content">
+
+  <div style="margin-bottom:var(--sp-6);">
+    <span class="text-eyebrow">Resources</span>
+    <h1 class="text-page-title" style="font-size:var(--text-lg);margin-top:4px;">Cognitive tests</h1>
+    <p class="text-secondary" style="margin-top:8px;">The four objective/self-administered tasks used in the MATRICS &amp; Cognitive-Dimensional layer of each case, with the official test descriptions, the empirical literature behind them, and the batteries they belong to. This page is a starting point for your own reading, not a substitute for the primary sources linked and cited below.</p>
+  </div>
+
+  <div class="ct-toc">
+    <a href="#matrics">MATRICS (Dennis · Psychosis)</a>
+    <a href="#cantab">CANTAB (Darren · Depression)</a>
+    <a href="#dotprobe">Dot-probe task (Alex · Anxiety)</a>
+    <a href="#stopsignal">Stop-signal task (Jordan · Substance use)</a>
+    <a href="#apt">Alcohol Purchase Task (Jordan · Substance use)</a>
+  </div>
+
+  <!-- ============ MATRICS ============ -->
+  <div class="ct-section" id="matrics">
+    <div class="ct-section-head"><span class="ct-dot" style="background:var(--domain-psychosis);"></span><span class="text-card-title" style="font-size:var(--text-base);">MATRICS Consensus Cognitive Battery (MCCB)</span></div>
+    <div class="ct-section-sub">Used in Dennis's case (psychosis) — Speed of Processing and Working Memory domains</div>
+
+    <div class="card"><div class="card-body">
+      <p class="text-secondary" style="margin:0 0 10px;">The MCCB was developed by the NIMH-funded <strong>Measurement and Treatment Research to Improve Cognition in Schizophrenia (MATRICS)</strong> initiative to give clinical trials a standard, psychometrically vetted way to measure cognitive change in schizophrenia. A committee evaluated more than 90 candidate tests across seven cognitive domains, narrowed these to a 20-test beta battery, and then selected the final 10 tests based on test–retest reliability, practicality, and tolerability data from 176 people with schizophrenia.</p>
+
+      <div class="ct-subhead">The seven domains and ten tests</div>
+      <table class="ct-table">
+        <thead><tr><th>Domain</th><th>Test</th><th></th></tr></thead>
+        <tbody>
+          <tr><td rowspan="3">Speed of Processing</td><td>Trail Making Test, Part A</td><td><span class="used" style="background:var(--domain-psychosis-soft);color:var(--domain-psychosis-ink);">used in Dennis</span></td></tr>
+          <tr><td>BACS Symbol Coding</td><td></td></tr>
+          <tr><td>Category Fluency (animal naming)</td><td></td></tr>
+          <tr><td>Attention/Vigilance</td><td>Continuous Performance Test – Identical Pairs</td><td></td></tr>
+          <tr><td rowspan="2">Working Memory</td><td>Letter–Number Span</td><td><span class="used" style="background:var(--domain-psychosis-soft);color:var(--domain-psychosis-ink);">used in Dennis</span></td></tr>
+          <tr><td>Wechsler Memory Scale–III, Spatial Span</td><td></td></tr>
+          <tr><td>Verbal Learning</td><td>Hopkins Verbal Learning Test–Revised</td><td></td></tr>
+          <tr><td>Visual Learning</td><td>Brief Visuospatial Memory Test–Revised</td><td></td></tr>
+          <tr><td>Reasoning &amp; Problem Solving</td><td>Neuropsychological Assessment Battery, Mazes</td><td></td></tr>
+          <tr><td>Social Cognition</td><td>MSCEIT, Managing Emotions branch</td><td></td></tr>
+        </tbody>
+      </table>
+
+      <div class="ct-subhead">Scoring</div>
+      <p class="text-secondary" style="margin:0;">Each test's raw score is converted to an age- and (where applicable) gender-corrected <strong>T-score (M = 50, SD = 10)</strong> against a community normative sample, then combined into the seven domain scores and an overall composite. There is no fixed minimum/maximum — T-scores are continuous.</p>
+
+      <div class="ct-subhead">What the two tests used in this case measure</div>
+      <p class="text-secondary" style="margin:0;"><strong>Trail Making Test, Part A</strong> — connect numbered circles in ascending order as fast as possible; a relatively pure visuomotor processing-speed measure, one of the domains most consistently and severely impaired in first-episode and chronic psychosis. <strong>Letter–Number Span</strong> — an examiner reads a mixed string of letters and numbers aloud; the respondent must reorder and repeat back numbers first (ascending) then letters (alphabetically), taxing working-memory storage and manipulation together.</p>
+
+      <div class="ct-note">Speed of Processing is consistently reported as one of the most impaired MCCB domains in schizophrenia, with effect sizes in the large range in meta-analytic comparisons against healthy controls — larger, on average, than most other MCCB domains.</div>
+
+      <div class="ct-subhead">MCCB composite T-score, schizophrenia vs. healthy controls</div>
+      <div class="ct-chart">
+        <svg viewBox="0 0 500 260" role="img" aria-label="Bar chart comparing MCCB composite T-scores">
+          <line x1="60" y1="220" x2="460" y2="220" stroke="var(--line)" stroke-width="1.5"/>
+          <line x1="60" y1="20" x2="60" y2="220" stroke="var(--line)" stroke-width="1.5"/>
+          <!-- normative mean reference line, T=50 -->
+          <line x1="60" y1="77" x2="460" y2="77" stroke="var(--text-tertiary)" stroke-width="1" stroke-dasharray="4 4"/>
+          <text x="64" y="72" font-size="11" fill="var(--text-tertiary)" font-family="var(--font-mono)">T=50 (norm)</text>
+          <!-- y-axis ticks -->
+          <text x="52" y="224" font-size="11" fill="var(--text-tertiary)" text-anchor="end" font-family="var(--font-mono)">0</text>
+          <text x="52" y="124" font-size="11" fill="var(--text-tertiary)" text-anchor="end" font-family="var(--font-mono)">50</text>
+          <text x="52" y="24" font-size="11" fill="var(--text-tertiary)" text-anchor="end" font-family="var(--font-mono)">70</text>
+          <!-- bar: schizophrenia, T=35.13, SD=15.18, N=24 -->
+          <rect x="140" y="119.6" width="90" height="100.4" fill="var(--domain-psychosis)" opacity="0.85" rx="3"/>
+          <line x1="185" y1="76.3" x2="185" y2="163" stroke="var(--domain-psychosis-ink)" stroke-width="2"/>
+          <line x1="172" y1="76.3" x2="198" y2="76.3" stroke="var(--domain-psychosis-ink)" stroke-width="2"/>
+          <line x1="172" y1="163" x2="198" y2="163" stroke="var(--domain-psychosis-ink)" stroke-width="2"/>
+          <text x="185" y="108" font-size="13" font-weight="600" fill="var(--text-primary)" text-anchor="middle">35.1</text>
+          <text x="185" y="240" font-size="12" fill="var(--text-secondary)" text-anchor="middle">Schizophrenia</text>
+          <text x="185" y="253" font-size="10.5" fill="var(--text-tertiary)" text-anchor="middle">n=24</text>
+          <!-- bar: healthy controls, T=46.29, SD=12.42, N=24 -->
+          <rect x="290" y="87.7" width="90" height="132.3" fill="#8a97a8" opacity="0.85" rx="3"/>
+          <line x1="335" y1="52.3" x2="335" y2="123.2" stroke="#5b6472" stroke-width="2"/>
+          <line x1="322" y1="52.3" x2="348" y2="52.3" stroke="#5b6472" stroke-width="2"/>
+          <line x1="322" y1="123.2" x2="348" y2="123.2" stroke="#5b6472" stroke-width="2"/>
+          <text x="335" y="76" font-size="13" font-weight="600" fill="var(--text-primary)" text-anchor="middle">46.3</text>
+          <text x="335" y="240" font-size="12" fill="var(--text-secondary)" text-anchor="middle">Healthy controls</text>
+          <text x="335" y="253" font-size="10.5" fill="var(--text-tertiary)" text-anchor="middle">n=24</text>
+        </svg>
+        <p class="ct-chart-caption">MCCB composite T-score (mean ± SD), people with schizophrenia vs. matched healthy controls in a registered neuroimaging trial comparing schizophrenia and traumatic brain injury (both groups scored below the normative mean of 50, but schizophrenia notably more so). <strong>Source:</strong> Neuroplasticity in TBI and Schizophrenia, ClinicalTrials.gov NCT03995368.</p>
+      </div>
+
+      <div class="ct-subhead">Official links</div>
+      <div class="ct-links">
+        <a href="https://www.matricsinc.org/mccb/" target="_blank" rel="noopener">MATRICS Assessment, Inc. — official MCCB page (licensing, kits, training)</a>
+        <a href="https://www.sralab.org/rehabilitation-measures/matrics-consensus-cognitive-battery" target="_blank" rel="noopener">MCCB — RehabMeasures Database (Shirley Ryan AbilityLab)</a>
+      </div>
+
+      <div class="ct-subhead">Selective bibliography</div>
+      <ul class="ct-refs">
+        <li>Nuechterlein, K.H., Green, M.F., Kern, R.S., Baade, L.E., Barch, D.M., Cohen, J.D., Essock, S., Fenton, W.S., Frese, F.J. III, Gold, J.M., Goldberg, T., Heaton, R.K., Keefe, R.S.E., Kraemer, H., Mesholam-Gately, R., Seidman, L.J., Stover, E., Weinberger, D.R., Young, A.S., Zalcman, S., &amp; Marder, S.R. (2008). The MATRICS Consensus Cognitive Battery, part 1: Test selection, reliability, and validity. <em>American Journal of Psychiatry, 165</em>(2), 203–213. https://doi.org/10.1176/appi.ajp.2007.07010042</li>
+        <li>Kern, R.S., Nuechterlein, K.H., Green, M.F., Baade, L.E., Fenton, W.S., Gold, J.M., Keefe, R.S.E., Mesholam-Gately, R., Mintz, J., Seidman, L.J., Stover, E., &amp; Marder, S.R. (2008). The MATRICS Consensus Cognitive Battery, part 2: Co-norming and standardization. <em>American Journal of Psychiatry, 165</em>(2), 214–220.</li>
+        <li>Green, M.F., Nuechterlein, K.H., Kern, R.S., Baade, L.E., Fenton, W.S., Gold, J.M., Keefe, R.S.E., Mesholam-Gately, R., Seidman, L.J., Stover, E., &amp; Marder, S.R. (2008). Functional co-primary measures for clinical trials in schizophrenia: Results from the MATRICS Psychometric and Standardization Study. <em>American Journal of Psychiatry, 165</em>(2), 221–228.</li>
+      </ul>
+    </div></div>
+  </div>
+
+  <!-- ============ CANTAB ============ -->
+  <div class="ct-section" id="cantab">
+    <div class="ct-section-head"><span class="ct-dot" style="background:var(--domain-mood);"></span><span class="text-card-title" style="font-size:var(--text-base);">CANTAB — Cambridge Neuropsychological Test Automated Battery</span></div>
+    <div class="ct-section-sub">Used in Darren's case (depression) — Spatial Working Memory and One Touch Stockings</div>
+
+    <div class="card"><div class="card-body">
+      <p class="text-secondary" style="margin:0 0 10px;">CANTAB is a computerised, touchscreen neuropsychological battery developed at the University of Cambridge and now maintained commercially by Cambridge Cognition. Its tasks are largely language- and culture-independent, which has made it a common choice across neurology, psychiatry, and pharmacology trials — dementia, schizophrenia, depression, Parkinson's disease, and others.</p>
+
+      <div class="ct-subhead">Spatial Working Memory (SWM)</div>
+      <p class="text-secondary" style="margin:0;">A number of coloured boxes are shown on screen. The participant searches them one at a time to find a hidden yellow token, using the rule that once a token has been found in a box, that box will not hide a token again for the rest of that trial — so returning to a box already emptied is an error. Box count increases across trials (up to 12). The key outcome, <strong>between errors</strong>, counts returns to boxes already shown to be empty; a separate <strong>strategy score</strong> captures how systematically the participant searches (e.g., always starting from the same box). It is described by Cambridge Cognition as sensitive to frontal-lobe / executive dysfunction.</p>
+
+      <div class="ct-subhead">One Touch Stockings of Cambridge (OTS)</div>
+      <p class="text-secondary" style="margin:0;">Based on the Tower of London / Tower of Hanoi paradigm. Two displays of three coloured balls, shown as if held in stockings hanging from a beam, are presented; the participant must work out — without moving anything — the minimum number of moves needed to turn the lower display into the upper one, then touch the number box showing that answer. It measures spatial planning and working memory together, and is treated as a marker of frontal/executive function.</p>
+
+      <div class="ct-note">In a study using an automated neuropsychological battery (CANTAB) with 30 patients with major depressive disorder (10 currently symptomatic, 10 remitted, 10 healthy controls), the symptomatic group showed significant dysfunction on almost every test administered except IED (set-shifting) and MTS (matching to sample); visual memory was the most impaired domain. The remitted group still showed significant dysfunction except on IED, RTI (reaction time), and SOC (Stockings of Cambridge) — consistent with the broader finding that some CANTAB-measured deficits in depression persist beyond the symptomatic episode (Egerházi et al., 2013).</div>
+
+      <div class="ct-subhead">The evidence base for SWM deficits in depression</div>
+      <div class="ct-chart">
+        <svg viewBox="0 0 500 150" role="img" aria-label="Bar chart showing the scale of evidence for SWM deficits in depression">
+          <text x="10" y="24" font-size="12" fill="var(--text-secondary)">Meta-analysis (Arnone et al., 2025) — 41 pooled studies</text>
+          <text x="10" y="50" font-size="12" fill="var(--text-primary)">MDD patients</text>
+          <rect x="140" y="38" width="269" height="18" fill="var(--domain-mood)" opacity="0.85" rx="3"/>
+          <text x="415" y="52" font-size="12" font-weight="600" fill="var(--text-primary)">n=1,793</text>
+          <text x="10" y="80" font-size="12" fill="var(--text-primary)">Healthy controls</text>
+          <rect x="140" y="68" width="217" height="18" fill="#8a97a8" opacity="0.85" rx="3"/>
+          <text x="363" y="82" font-size="12" font-weight="600" fill="var(--text-primary)">n=1,445</text>
+          <line x1="10" y1="102" x2="490" y2="102" stroke="var(--line)" stroke-width="1"/>
+          <text x="10" y="122" font-size="12" fill="var(--text-primary)">Finding: MDD patients scored significantly worse on SWM</text>
+          <text x="10" y="139" font-size="12" fill="var(--text-primary)">between-errors and strategy score, pooled across studies.</text>
+        </svg>
+        <p class="ct-chart-caption">Bar length here represents the <strong>size of the pooled evidence base</strong> (number of participants across all included studies), not a score comparison — the meta-analysis reports this deficit as a standardized effect size (SMD) rather than a single raw score, since it pools many different studies. In one representative individual study (35 MDD patients vs. 48 healthy controls), MDD patients made significantly more SWM between-errors than controls (<strong>p</strong> = .037). <strong>Sources:</strong> Arnone et al. (2025); Du et al. (2021).</p>
+      </div>
+
+      <div class="ct-subhead">Official links</div>
+      <div class="ct-links">
+        <a href="https://cambridgecognition.com/digital-cognitive-assessments/" target="_blank" rel="noopener">Cambridge Cognition — digital cognitive assessments overview</a>
+        <a href="https://cambridgecognition.com/spatial-working-memory-swm/" target="_blank" rel="noopener">Cambridge Cognition — Spatial Working Memory (SWM), official test page</a>
+        <a href="https://cambridgecognition.com/one-touch-stockings-of-cambridge-ots/" target="_blank" rel="noopener">Cambridge Cognition — One Touch Stockings of Cambridge (OTS), official test page</a>
+      </div>
+
+      <div class="ct-subhead">Selective bibliography</div>
+      <ul class="ct-refs">
+        <li>Égerházi, A., Balla, P., Ritzl, A., Varga, Z., Frecska, E., &amp; Berecz, R. (2013). Automated Neuropsychological Test Battery in depression — preliminary data. <em>Neuropsychopharmacologia Hungarica, 15</em>(1), 5–11.</li>
+        <li>Arnone, D., Ramaraj, R., Östlundh, L., et al. (2025). Assessment of cognitive domains in major depressive disorders using the Cambridge Neuropsychological Test Automated Battery (CANTAB): Systematic review and meta-analysis of cross-sectional and longitudinal studies. <em>Progress in Neuro-Psychopharmacology and Biological Psychiatry, 138</em>, 111301.</li>
+        <li>Rock, P.L., Roiser, J.P., Riedel, W.J., &amp; Blackwell, A.D. (2014). Cognitive impairment in depression: A systematic review and meta-analysis. <em>Psychological Medicine, 44</em>(10), 2029–2040.</li>
+        <li>Du, Y., Wei, J., Yang, X., Dou, Y., Zhao, L., Qi, X., Yu, X., Guo, W., Wang, Q., Deng, W., Li, M., Lin, D., Li, T., &amp; Ma, X. (2021). Plasma metabolites were associated with spatial working memory in major depressive disorder. <em>Medicine, 100</em>(8), e24581.</li>
+      </ul>
+    </div></div>
+  </div>
+
+  <!-- ============ DOT PROBE ============ -->
+  <div class="ct-section" id="dotprobe">
+    <div class="ct-section-head"><span class="ct-dot" style="background:var(--domain-anxiety);"></span><span class="text-card-title" style="font-size:var(--text-base);">Dot-probe task</span></div>
+    <div class="ct-section-sub">Used in Alex's case (social anxiety) — attentional bias to threat</div>
+
+    <div class="card"><div class="card-body">
+      <p class="text-secondary" style="margin:0 0 10px;">The dot-probe paradigm was introduced by MacLeod, Mathews, &amp; Tata (1986) to measure where attention is drawn without relying on self-report. Two stimuli — words or faces, one neutral and one emotionally salient (e.g., threatening) — appear briefly side by side on screen, then both disappear and a small probe (a dot, or in later variants a letter) appears in the location where one of them had been. The respondent presses a button to indicate the probe's location as fast as possible.</p>
+
+      <div class="ct-subhead">Logic of the measure</div>
+      <p class="text-secondary" style="margin:0;">If attention was already drawn toward the emotional stimulus at the moment it disappeared, probes replacing it are detected faster than probes replacing the neutral stimulus. The <strong>attentional bias index</strong> is typically computed as the difference in reaction time between trials where the probe appears in the neutral-stimulus location versus the threat-stimulus location; a positive value indicates vigilance toward threat, a negative value indicates avoidance of it.</p>
+
+      <div class="ct-note">A systematic review of facial dot-probe studies in social anxiety found that socially anxious individuals reliably show heightened attention toward negative/angry faces compared with neutral faces, but no consistent bias for positive faces — i.e., the effect is specific to threat-relevant material, not a general attentional difference (Bantin et al., 2016).</div>
+
+      <div class="ct-subhead">Attentional bias to threat: anxious vs. non-anxious groups</div>
+      <div class="ct-chart">
+        <svg viewBox="0 0 500 190" role="img" aria-label="Overlapping distributions showing a medium effect size for attentional bias in anxiety">
+          <line x1="20" y1="150" x2="480" y2="150" stroke="var(--line)" stroke-width="1.5"/>
+          <path d="M 100,150 C 100,150 140,30 190,30 C 240,30 280,150 280,150 Z" fill="#8a97a8" opacity="0.55"/>
+          <path d="M 132,150 C 132,150 172,30 222,30 C 272,30 312,150 312,150 Z" fill="var(--domain-anxiety)" opacity="0.55"/>
+          <line x1="190" y1="30" x2="190" y2="165" stroke="#5b6472" stroke-width="1.5" stroke-dasharray="3 3"/>
+          <line x1="222" y1="30" x2="222" y2="165" stroke="var(--domain-anxiety-ink)" stroke-width="1.5" stroke-dasharray="3 3"/>
+          <text x="150" y="182" font-size="12" fill="#5b6472" text-anchor="middle">Non-anxious (n=1,768)</text>
+          <text x="290" y="182" font-size="12" fill="var(--domain-anxiety-ink)" text-anchor="middle">Anxious (n=2,263)</text>
+          <text x="380" y="60" font-size="13" font-weight="600" fill="var(--text-primary)">d = 0.45</text>
+          <text x="380" y="78" font-size="11" fill="var(--text-tertiary)">(medium effect)</text>
+        </svg>
+        <p class="ct-chart-caption">Distributions are illustrative (shifted by the reported effect size, not raw score data) — they show what a <strong>medium, Cohen's d = 0.45</strong> group difference actually looks like: real and reliable in aggregate across 172 studies, but with substantial overlap between individuals in each group. Bias toward threat is consistently higher in anxious samples, not an all-or-nothing marker. <strong>Source:</strong> Bar-Haim et al. (2007), meta-analysis of 172 studies, N=2,263 anxious vs. N=1,768 non-anxious.</p>
+      </div>
+
+      <div class="ct-subhead">A note on reliability</div>
+      <p class="text-secondary" style="margin:0;">Traditional reaction-time dot-probe indices have repeatedly been reported to have poor internal consistency and test–retest reliability across the wider attentional-bias literature — a methodological concern worth raising with students alongside the task itself, not a reason to discard the paradigm.</p>
+
+      <div class="ct-subhead">Selective bibliography</div>
+      <ul class="ct-refs">
+        <li>MacLeod, C., Mathews, A., &amp; Tata, P. (1986). Attentional bias in emotional disorders. <em>Journal of Abnormal Psychology, 95</em>(1), 15–20.</li>
+        <li>Bantin, T., Stevens, S., Gerlach, A.L., &amp; Hermann, C. (2016). What does the facial dot-probe task tell us about attentional processes in social anxiety? A systematic review. <em>Journal of Behavior Therapy and Experimental Psychiatry, 50</em>, 40–51.</li>
+        <li>Bar-Haim, Y., Lamy, D., Pergamin, L., Bakermans-Kranenburg, M.J., &amp; van IJzendoorn, M.H. (2007). Threat-related attentional bias in anxious and nonanxious individuals: A meta-analytic study. <em>Psychological Bulletin, 133</em>(1), 1–24.</li>
+      </ul>
+    </div></div>
+  </div>
+
+  <!-- ============ STOP SIGNAL ============ -->
+  <div class="ct-section" id="stopsignal">
+    <div class="ct-section-head"><span class="ct-dot" style="background:var(--domain-substance);"></span><span class="text-card-title" style="font-size:var(--text-base);">Stop-signal task</span></div>
+    <div class="ct-section-sub">Used in Jordan's case (substance use) — inhibitory control</div>
+
+    <div class="card"><div class="card-body">
+      <p class="text-secondary" style="margin:0 0 10px;">On most trials, the respondent makes a fast choice response (e.g., left/right arrow key matching an arrow's direction). On a minority of trials (typically ~25%), a stop signal appears after a short, variable delay, instructing the respondent to withhold that response. The task is one of the most widely used laboratory measures of response inhibition across clinical, developmental, and comparative (animal) research.</p>
+
+      <div class="ct-subhead">Stop-Signal Reaction Time (SSRT)</div>
+      <p class="text-secondary" style="margin:0;">SSRT is not observed directly — it is estimated from the horse-race model, which treats the go process and the stop process as independent runners: whichever finishes first determines whether the response is executed or withheld. By titrating the stop-signal delay (SSD) so that stopping succeeds on roughly half of stop trials, and combining SSD with the go-RT distribution, an estimate of the covert stopping latency (SSRT) can be derived. The 2019 consensus guide explicitly recommends the <strong>integration method</strong> over the older mean method for estimating SSRT, because the integration method is more robust to skew in the RT distribution.</p>
+
+      <div class="ct-note">The 2019 cross-lab consensus paper — 48 co-authors from the response-inhibition field — issued 12 concrete recommendations for running and analysing the stop-signal task (e.g., ~25% stop-signal rate, a staircase-tracking SSD procedure, the integration method for SSRT, minimum trial counts) specifically to stop avoidable methodological choices from silently biasing SSRT estimates and group comparisons.</div>
+
+      <div class="ct-subhead">SSRT deficits across disorders — and an honest caveat about substance use</div>
+      <div class="ct-chart">
+        <svg viewBox="0 0 500 230" role="img" aria-label="Bar chart comparing SSRT effect sizes across psychiatric disorders">
+          <line x1="170" y1="15" x2="170" y2="205" stroke="var(--line)" stroke-width="1"/>
+          <text x="170" y="10" font-size="10.5" fill="var(--text-tertiary)" text-anchor="middle">g = 0</text>
+          <!-- OCD g=0.77 -->
+          <text x="160" y="38" font-size="12" fill="var(--text-primary)" text-anchor="end">OCD</text>
+          <rect x="170" y="28" width="154" height="16" fill="#8a97a8" opacity="0.85" rx="2"/>
+          <text x="330" y="40" font-size="12" font-weight="600" fill="var(--text-primary)">g=0.77</text>
+          <!-- Schizophrenia g=0.69 -->
+          <text x="160" y="68" font-size="12" fill="var(--text-primary)" text-anchor="end">Schizophrenia</text>
+          <rect x="170" y="58" width="138" height="16" fill="var(--domain-psychosis)" opacity="0.85" rx="2"/>
+          <text x="314" y="70" font-size="12" font-weight="600" fill="var(--text-primary)">g=0.69</text>
+          <!-- ADHD g=0.62 -->
+          <text x="160" y="98" font-size="12" fill="var(--text-primary)" text-anchor="end">ADHD</text>
+          <rect x="170" y="88" width="124" height="16" fill="#8a97a8" opacity="0.85" rx="2"/>
+          <text x="300" y="100" font-size="12" font-weight="600" fill="var(--text-primary)">g=0.62</text>
+          <!-- Substance use - contested -->
+          <text x="160" y="135" font-size="12" fill="var(--text-primary)" text-anchor="end">Substance use</text>
+          <text x="160" y="149" font-size="10" fill="var(--text-tertiary)" text-anchor="end">(older estimate)</text>
+          <rect x="170" y="120" width="90" height="16" fill="var(--domain-substance)" opacity="0.4" rx="2" stroke="var(--domain-substance)" stroke-width="1.5" stroke-dasharray="3 2"/>
+          <text x="266" y="132" font-size="12" fill="var(--text-secondary)">Smith et al., 2014</text>
+          <text x="160" y="178" font-size="10" fill="var(--text-tertiary)" text-anchor="end">(2023 re-analysis)</text>
+          <rect x="170" y="163" width="30" height="16" fill="var(--domain-substance)" opacity="0.85" rx="2"/>
+          <text x="206" y="175" font-size="12" font-weight="600" fill="var(--text-primary)">g≈0.13–0.27, ns</text>
+          <text x="20" y="205" font-size="11" fill="var(--text-tertiary)">medium/large, well-replicated deficits</text>
+          <text x="20" y="220" font-size="11" fill="var(--text-tertiary)">substance use specifically: small, not statistically significant in the most recent meta-analysis</text>
+        </svg>
+        <p class="ct-chart-caption">SSRT deficits (Hedges' g vs. healthy controls) are well-established and medium-to-large for OCD, schizophrenia, and ADHD. For <strong>substance use disorders specifically</strong>, the picture is less settled: the same 2010 meta-analysis that established those three deficits explicitly found SSRT to be "less impaired or normal" for substance dependence, and a more recent, publication-bias-checked 2023 re-analysis reached the same conclusion (Hedges' g = 0.13–0.27, not statistically significant) — even though an intervening 2014 meta-analysis (Smith et al.) had reported a deficit. This is a genuinely open, actively-revisited question in the field, not a settled fact in either direction. <strong>Sources:</strong> Lipszyc &amp; Schachar (2010); Fascher et al. (2023).</p>
+      </div>
+
+      <div class="ct-subhead">Why it belongs in an addiction workup</div>
+      <p class="text-secondary" style="margin:0;">Kwako et al.'s Addictions Neuroclinical Assessment (ANA) framework groups laboratory measures relevant to addictive disorders into three functional domains derived from the neurocircuitry of addiction — <strong>incentive salience</strong>, <strong>negative emotionality</strong>, and <strong>executive function</strong> — echoing Koob &amp; Volkow's three-stage model of the addiction cycle (binge/intoxication, withdrawal/negative affect, preoccupation/anticipation). Response inhibition, measured with tasks such as the stop-signal task, sits within the executive function domain.</p>
+
+      <div class="ct-subhead">Selective bibliography</div>
+      <ul class="ct-refs">
+        <li>Verbruggen, F., Aron, A.R., Band, G.P.H., Beste, C., Bissett, P.G., Brockett, A.T., Brown, J.W., Chamberlain, S.R., Chambers, C.D., Colonius, H., Colzato, L.S., Corneil, B.D., Coxon, J.P., Dupuis, A., Eagle, D.M., Garavan, H., Greenhouse, I., Heathcote, A., Huster, R.J., Jahfari, S., Kenemans, J.L., Leunissen, I., Li, C.R., Logan, G.D., Matzke, D., Morein-Zamir, S., Murthy, A., Paré, M., Poldrack, R.A., Ridderinkhof, K.R., Robbins, T.W., Roesch, M., Rubia, K., Schachar, R.J., Schall, J.D., Stock, A.K., Swann, N.C., Thakkar, K.N., van der Molen, M.W., Vermeylen, L., Vink, M., Wessel, J.R., Whelan, R., Zandbelt, B.B., &amp; Boehler, C.N. (2019). A consensus guide to capturing the ability to inhibit actions and impulsive behaviors in the stop-signal task. <em>eLife, 8</em>, e46323. https://doi.org/10.7554/eLife.46323</li>
+        <li>Kwako, L.E., Momenan, R., Litten, R.Z., Koob, G.F., &amp; Goldman, D. (2016). Addictions Neuroclinical Assessment: A neuroscience-based framework for addictive disorders. <em>Biological Psychiatry, 80</em>(3), 179–189.</li>
+        <li>Logan, G.D., Cowan, W.B., &amp; Davis, K.A. (1984). On the ability to inhibit simple and choice reaction time responses: A model and a method. <em>Journal of Experimental Psychology: Human Perception and Performance, 10</em>(2), 276–291.</li>
+        <li>Lipszyc, J., &amp; Schachar, R. (2010). Inhibitory control and psychopathology: A meta-analysis of studies using the stop signal task. <em>Journal of the International Neuropsychological Society, 16</em>(6), 1064–1076.</li>
+        <li>Fascher, M., Nowaczynski, S., Spindler, C., Strobach, T., &amp; Muehlhan, M. (2023). Neural underpinnings of response inhibition in substance use disorders: Weak meta-analytic evidence for a widely used construct. <em>Psychopharmacology, 241</em>, 1–17.</li>
+      </ul>
+      <div class="ct-note" style="margin-top:14px;"><strong>On the year in the prompt for this page:</strong> the Verbruggen stop-signal consensus guide is sometimes cited informally as "2022" in course material — the paper itself was published in <em>eLife</em> on 29 April 2019 (volume 8, article e46323), which is the date used above.</div>
+    </div></div>
+  </div>
+
+  <!-- ============ ALCOHOL PURCHASE TASK ============ -->
+  <div class="ct-section" id="apt">
+    <div class="ct-section-head"><span class="ct-dot" style="background:var(--domain-substance);"></span><span class="text-card-title" style="font-size:var(--text-base);">Alcohol Purchase Task (behavioural economics)</span></div>
+    <div class="ct-section-sub">Used in Jordan's case (substance use) — reinforcing value / demand for alcohol</div>
+
+    <div class="card"><div class="card-body">
+      <p class="text-secondary" style="margin:0 0 10px;">A hypothetical purchase task asks how many standard drinks the respondent would buy and consume at each of a series of escalating prices (from free up to a price high enough that consumption drops to zero). Plotting consumption against price produces an individual demand curve, adapted for alcohol specifically by Murphy &amp; MacKillop (2006) from the general hypothetical-purchase-task framework of Jacobs &amp; Bickel (1999).</p>
+
+      <div class="ct-subhead">The demand-curve indices</div>
+      <table class="ct-table">
+        <thead><tr><th>Index</th><th>What it captures</th></tr></thead>
+        <tbody>
+          <tr><td>Intensity (Q0)</td><td>Consumption when price = 0 — demand at no constraint</td></tr>
+          <tr><td>Breakpoint</td><td>First price at which consumption drops to zero</td></tr>
+          <tr><td>Omax</td><td>Maximum expenditure reached, across all price points</td></tr>
+          <tr><td>Pmax</td><td>The price at which Omax occurs — where demand shifts from inelastic to elastic</td></tr>
+          <tr><td>Elasticity (α)</td><td>Derived rate at which consumption falls as price rises, from the exponentiated demand equation</td></tr>
+        </tbody>
+      </table>
+      <p class="text-secondary" style="margin:0;">Higher Q0, higher Omax, and a later (higher-price) breakpoint or Pmax all indicate a stronger reinforcing value of alcohol for that individual — i.e., alcohol is harder to "price out" of their behaviour.</p>
+
+      <div class="ct-note">In the original validation (267 college student drinkers), demand-curve indices derived from the Alcohol Purchase Task were well described by an exponential demand equation and correlated with independent measures of drinking quantity and alcohol-related problems, supporting the task as a brief, non-invasive proxy for a costly laboratory self-administration paradigm (Murphy &amp; MacKillop, 2006).</div>
+
+      <div class="ct-subhead">Selective bibliography</div>
+      <ul class="ct-refs">
+        <li>Murphy, J.G., &amp; MacKillop, J. (2006). Relative reinforcing efficacy of alcohol among college student drinkers. <em>Experimental and Clinical Psychopharmacology, 14</em>(2), 219–227. https://doi.org/10.1037/1064-1297.14.2.219</li>
+        <li>Jacobs, E.A., &amp; Bickel, W.K. (1999). Modeling drug consumption in the clinic using simulation procedures: Demand for heroin and cigarettes in opioid-dependent outpatients. <em>Experimental and Clinical Psychopharmacology, 7</em>(4), 412–426.</li>
+        <li>Kaplan, B.A., Foster, R.N.S., Reed, D.D., Amlung, M., Murphy, J.G., &amp; MacKillop, J. (2018). Understanding alcohol motivation using the alcohol purchase task: A methodological systematic review. <em>Drug and Alcohol Dependence, 191</em>, 117–140.</li>
+      </ul>
+    </div></div>
+  </div>
+
+</div>
+
+<script src="/theme-init.js"></script>
+<script>window.CLINCOG_SHELL = { activeNav: "cognitive-tests", breadcrumb: [{ label: "Cognitive tests" }] };</script>
+<script src="/shell.js?v=2"></script>
+<script src="/a11y.js"></script>
+</body>
+</html>

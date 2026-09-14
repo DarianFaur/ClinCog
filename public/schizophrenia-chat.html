@@ -10,7 +10,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/favicon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/tokens.css">
 <link rel="stylesheet" href="/components.css">
 <link rel="stylesheet" href="/shell.css">
@@ -18,7 +18,7 @@
   if (!localStorage.getItem("clincog_name")) { location.replace("/"); }
 </script>
 <style>
-  .chat-page-intro { font-size: 13px; color: var(--text-secondary); margin: 0 0 var(--sp-4); text-align: center; }
+  .chat-page-intro { font-size: 13px; color: var(--text-secondary); margin: 0 0 var(--sp-4); font-style: italic; }
   .chat-card { display: flex; flex-direction: column; height: 680px; margin-bottom: var(--sp-3); position: relative; }
   .chat-card .chat-scroll { flex: 1; }
   .chat-restart-row { display: flex; justify-content: flex-end; margin-bottom: var(--sp-5); }
@@ -43,7 +43,7 @@
 
   <div style="margin-bottom:var(--sp-5);">
     <span class="text-eyebrow">Week 1 · Psychosis · Conceptualization</span>
-    <h1 class="text-page-title" style="font-size:22px;margin-top:4px;">Dennis, 25</h1>
+    <h1 class="text-page-title" style="margin-top:4px;">Dennis, 25</h1>
   </div>
 
   <div class="card" style="margin-bottom:var(--sp-4);">
@@ -83,7 +83,7 @@
       <button type="submit" id="chat-send" class="btn btn-primary">Ask</button>
     </form>
   </div>
-  <div id="chat-status" class="text-secondary" style="font-size:12px;margin-bottom:var(--sp-3);"></div>
+  <div id="chat-status" class="text-secondary" style="font-size:var(--text-sm);margin-bottom:var(--sp-3);"></div>
   <div class="chat-restart-row">
     <button id="chat-restart" class="btn btn-ghost btn-sm" type="button">Restart this interview</button>
   </div>
@@ -94,7 +94,7 @@
 <script src="/storage.js"></script>
 <script src="/icons.js"></script>
 <script src="/shell.js?v=2"></script>
-<script src="/chat.js" data-module="schizophrenia"></script>
+<script src="/chat.js" data-module="schizophrenia" data-patient-name="Dennis"></script>
 <script src="/icd-select.js" data-module="schizophrenia" data-eval-href="/schizophrenia-eval.html"></script>
 <script src="/reveal.js"></script>
 <script src="/a11y.js"></script>

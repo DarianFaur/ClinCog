@@ -10,7 +10,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/favicon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/tokens.css">
 <link rel="stylesheet" href="/components.css">
 <link rel="stylesheet" href="/shell.css">
@@ -30,13 +30,13 @@
   .case-detail-row { display: grid; grid-template-columns: 40px 1fr auto; gap: var(--sp-4); align-items: flex-start; padding: var(--sp-4) 0; border-bottom: 1px solid var(--border); }
   .case-detail-row:last-child { border-bottom: none; }
   .case-detail-icon { width: 40px; height: 40px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; }
-  .case-detail-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
-  .case-detail-meta { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
+  .case-detail-name { font-size: var(--text-base); font-weight: 600; color: var(--text-primary); }
+  .case-detail-meta { font-size: var(--text-sm); color: var(--text-tertiary); margin-top: 2px; }
   .case-detail-timeline { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-top: var(--sp-2); }
   .case-detail-timeline .badge { font-weight: 500; }
   .case-reflection {
     margin-top: var(--sp-3); padding: var(--sp-3) var(--sp-4); background: var(--bg-surface-alt);
-    border-radius: var(--radius-md); font-size: 13px; color: var(--text-secondary); font-style: italic; line-height: 1.6;
+    border-radius: var(--radius-md); font-size: var(--text-base); color: var(--text-secondary); font-style: italic; line-height: 1.6;
   }
   .case-reflection::before { content: "“"; font-style: normal; font-weight: 700; color: var(--text-tertiary); margin-right: 2px; }
 
@@ -49,7 +49,7 @@
 <div id="shell-content">
 
   <div class="prog-header">
-    <h1 class="text-page-title" style="font-size:24px;">My progress</h1>
+    <h1 class="text-page-title">My progress</h1>
     <span class="text-secondary">A full record of what you've actually done across all four cases — including your own end-of-case reflections. Nothing here is graded; it's for your own reference.</span>
   </div>
 
@@ -71,7 +71,7 @@
 <script>window.CLINCOG_SHELL = { activeNav: "progress", breadcrumb: [{ label: "Dashboard", href: "/dashboard.html" }, { label: "My progress" }] };</script>
 <script src="/storage.js"></script>
 <script src="/icons.js"></script>
-<script src="/shell.js"></script>
+<script src="/shell.js?v=2"></script>
 <script src="/a11y.js"></script>
 <script>
   const DOMAIN_CLASS = { schizophrenia: "psychosis", depression: "mood", anxiety: "anxiety", addiction: "substance" };

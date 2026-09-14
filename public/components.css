@@ -40,13 +40,13 @@ body {
 --------------------------------------------------------------- */
 .card {
   background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
+  border: 1px solid transparent;
+  border-radius: 18px;
+  box-shadow: 0 1px 2px rgba(16,24,40,.03), 0 10px 28px -6px rgba(16,24,40,.07);
   transition: transform var(--duration-hover) var(--ease-standard),
               box-shadow var(--duration-hover) var(--ease-standard);
 }
-.card-hoverable:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.card-hoverable:hover { transform: translateY(-2px); box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 16px 36px -8px rgba(16,24,40,.12); }
 .card-body { padding: var(--sp-5); }
 @media (max-width: 640px) { .card-body { padding: var(--sp-4); } }
 .card-header {
@@ -69,7 +69,7 @@ body {
 }
 .stat-card .stat-label { display: block; margin-bottom: var(--sp-2); }
 .stat-card .stat-value { display: block; margin-bottom: var(--sp-2); }
-.stat-card .stat-delta { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; }
+.stat-card .stat-delta { display: inline-flex; align-items: center; gap: 4px; font-size: var(--text-xs); font-weight: 500; }
 .stat-card .stat-delta.up { color: var(--success); }
 .stat-card .stat-delta.down { color: var(--danger); }
 .stat-card .stat-delta .stat-delta-note { color: var(--text-tertiary); font-weight: 400; margin-left: 2px; }
@@ -88,7 +88,7 @@ body {
 }
 .progress-row { display: flex; align-items: center; gap: var(--sp-3); }
 .progress-row .progress-track { flex: 1; }
-.progress-row .progress-pct { font-size: 12px; font-weight: 600; color: var(--text-secondary); min-width: 32px; text-align: right; }
+.progress-row .progress-pct { font-size: var(--text-xs); font-weight: 600; color: var(--text-secondary); min-width: 32px; text-align: right; }
 
 /* ---------------------------------------------------------------
    Badge
@@ -96,7 +96,7 @@ body {
 .badge {
   display: inline-flex; align-items: center; gap: 5px;
   border-radius: var(--radius-pill); padding: 3px 10px;
-  font-size: 11px; font-weight: 600; line-height: 1.4; white-space: nowrap;
+  font-size: var(--text-xs); font-weight: 600; line-height: 1.4; white-space: nowrap;
 }
 .badge-neutral { background: var(--bg-surface-alt); color: var(--text-secondary); border: 1px solid var(--border); }
 .badge-success { background: var(--success-soft); color: var(--success); }
@@ -116,15 +116,15 @@ body {
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   height: 36px; padding: 0 var(--sp-4); border-radius: var(--radius-md);
-  font-family: var(--font-sans); font-size: 13px; font-weight: 500;
-  border: 1px solid transparent; cursor: pointer;
+  font-family: var(--font-sans); font-size: var(--text-sm); font-weight: 500;
+  border: 1px solid transparent; cursor: pointer; text-decoration: none;
   transition: background var(--duration-hover) var(--ease-standard),
               border-color var(--duration-hover) var(--ease-standard),
               color var(--duration-hover) var(--ease-standard);
 }
 .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
-.btn-sm { height: 30px; padding: 0 var(--sp-3); font-size: 12px; }
+.btn-sm { height: 30px; padding: 0 var(--sp-3); font-size: var(--text-xs); }
 
 /* Deliberately monochrome, not colored - a bright accent here would
    compete with whatever domain color a page is theming its own content
@@ -150,7 +150,8 @@ body {
 /* ---------------------------------------------------------------
    Case card - the dashboard's centerpiece
 --------------------------------------------------------------- */
-.case-card { padding: var(--sp-5); display: flex; flex-direction: column; gap: var(--sp-4); }
+.case-card { padding: var(--sp-6); display: flex; flex-direction: column; gap: var(--sp-4); cursor: default; }
+.case-card:hover { transform: translateY(-2px); box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 16px 36px -8px rgba(16,24,40,.12); }
 .case-card-top { display: flex; align-items: flex-start; gap: var(--sp-3); }
 .case-card-icon {
   width: 44px; height: 44px; border-radius: var(--radius-md); flex-shrink: 0;
@@ -162,15 +163,15 @@ body {
 .case-card-icon.domain-substance { background: var(--domain-substance-soft); color: var(--domain-substance); }
 .case-card-identity { flex: 1; min-width: 0; }
 .case-card-name { font-size: var(--text-card-title-size); font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
-.case-card-meta { font-size: 12px; color: var(--text-secondary); }
+.case-card-meta { font-size: var(--text-sm); color: var(--text-secondary); }
 
 .case-card-grid {
   display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3) var(--sp-4);
   padding: var(--sp-3) 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
 }
 .case-card-grid-item { display: flex; flex-direction: column; gap: 2px; }
-.case-card-grid-item .val { font-size: 13px; font-weight: 600; color: var(--text-primary); }
-.case-card-grid-item .lbl { font-size: 11px; color: var(--text-tertiary); }
+.case-card-grid-item .val { font-size: var(--text-base); font-weight: 600; color: var(--text-primary); }
+.case-card-grid-item .lbl { font-size: var(--text-xs); color: var(--text-tertiary); }
 
 .case-card-footer { display: flex; gap: var(--sp-2); }
 .case-card-footer .btn { flex: 1; }
@@ -185,10 +186,10 @@ body {
 .table-wrap::-webkit-scrollbar { height: 6px; }
 .table-wrap::-webkit-scrollbar-track { background: transparent; }
 .table-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-.table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.table { width: 100%; border-collapse: collapse; font-size: var(--text-base); }
 .table thead th {
   background: var(--bg-surface-alt); text-align: left;
-  font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em;
+  font-size: var(--text-xs); font-weight: 600; text-transform: uppercase; letter-spacing: .04em;
   color: var(--text-tertiary); padding: var(--sp-3) var(--sp-4);
   border-bottom: 1px solid var(--border); white-space: nowrap;
 }
@@ -206,7 +207,7 @@ body {
     border: 1px solid var(--border); border-radius: var(--radius-md);
   }
   .table-wrap.collapse-mobile td { padding: 4px 0; border: none; }
-  .table-wrap.collapse-mobile td::before { content: attr(data-label); display: block; font-size: 11px; color: var(--text-tertiary); }
+  .table-wrap.collapse-mobile td::before { content: attr(data-label); display: block; font-size: var(--text-xs); color: var(--text-tertiary); }
 }
 
 /* ---------------------------------------------------------------
@@ -223,7 +224,7 @@ body {
 .chat-row.from-patient { align-self: flex-start; align-items: flex-start; }
 .chat-row.from-student { align-self: flex-end; align-items: flex-end; }
 
-.chat-bubble { padding: var(--sp-3) var(--sp-4); font-size: 14px; line-height: 1.55; }
+.chat-bubble { padding: var(--sp-3) var(--sp-4); font-size: var(--text-base); line-height: 1.55; }
 .chat-row.from-patient .chat-bubble {
   background: var(--bg-surface-alt); color: var(--text-primary);
   border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) 4px;
@@ -233,9 +234,9 @@ body {
   color: var(--text-primary);
   border-radius: var(--radius-lg) var(--radius-lg) 4px var(--radius-lg);
 }
-.chat-timestamp { font-size: 11px; color: var(--text-tertiary); margin-top: 4px; padding: 0 4px; }
+.chat-timestamp { font-size: var(--text-xs); color: var(--text-tertiary); margin-top: 4px; padding: 0 4px; }
 
-.chat-speaker { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: var(--text-tertiary); margin-bottom: 4px; padding: 0 4px; text-transform: uppercase; letter-spacing: .03em; }
+.chat-speaker { display: flex; align-items: center; gap: 5px; font-size: var(--text-xs); font-weight: 600; color: var(--text-tertiary); margin-bottom: 4px; padding: 0 4px; text-transform: uppercase; letter-spacing: .03em; }
 .chat-row.from-student .chat-speaker { flex-direction: row-reverse; }
 .chat-speaker svg { flex-shrink: 0; opacity: .75; }
 
@@ -251,9 +252,18 @@ body {
   padding: var(--sp-4) var(--sp-5); border-top: 1px solid var(--border);
   background: var(--bg-surface); position: sticky; bottom: 0;
 }
+@media (max-width: 767px) {
+  /* the accessibility toggle sits fixed bottom-right (52px + 20px
+     margin); without extra room here, the Ask button renders right
+     underneath it. Shrinking the input (rather than shifting the
+     button) lets normal flex reflow push the button left naturally,
+     since padding/margin on the button or row had no visible effect
+     here for reasons not fully understood - this does. */
+  .chat-composer #chat-input { max-width: calc(100% - 130px); }
+}
 .chat-composer input, .chat-composer textarea {
   flex: 1; resize: none; border: 1px solid var(--border); border-radius: var(--radius-md);
-  padding: 9px 12px; font-family: var(--font-sans); font-size: 14px; color: var(--text-primary);
+  padding: 9px 12px; font-family: var(--font-sans); font-size: var(--text-base); color: var(--text-primary);
   background: var(--bg-app); max-height: 120px; line-height: 1.5;
 }
 .chat-composer input:focus, .chat-composer textarea:focus { outline: none; border-color: var(--accent); }
@@ -264,8 +274,8 @@ body {
 .empty-state { display: flex; flex-direction: column; align-items: center; text-align: center;
   padding: var(--sp-8) var(--sp-5); gap: var(--sp-3); color: var(--text-tertiary); }
 .empty-state svg { color: var(--text-tertiary); }
-.empty-state .empty-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
-.empty-state .empty-note { font-size: 13px; color: var(--text-secondary); max-width: 36ch; }
+.empty-state .empty-title { font-size: var(--text-base); font-weight: 600; color: var(--text-primary); }
+.empty-state .empty-note { font-size: var(--text-sm); color: var(--text-secondary); max-width: 36ch; }
 
 /* ---------------------------------------------------------------
    Activity row - a single timeline entry (dashboard "Recent
@@ -275,8 +285,8 @@ body {
 .activity-row { display: flex; align-items: flex-start; gap: var(--sp-3); padding: var(--sp-3) 0; border-bottom: 1px solid var(--border); }
 .activity-row:last-child { border-bottom: none; }
 .activity-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
-.activity-text { font-size: 13px; color: var(--text-primary); }
-.activity-time { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+.activity-text { font-size: var(--text-base); color: var(--text-primary); }
+.activity-time { font-size: var(--text-xs); color: var(--text-tertiary); margin-top: 2px; }
 
 .grid-2-col { display: grid; grid-template-columns: 1.4fr 1fr; gap: var(--sp-5); align-items: start; margin-bottom: var(--sp-6); }
 @media (max-width: 1100px) { .grid-2-col { grid-template-columns: 1fr; } }

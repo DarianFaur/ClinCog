@@ -108,21 +108,21 @@
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'DM Mono', ui-monospace, monospace;
 
-  --text-metric-size: 28px; --text-metric-weight: 600; --text-metric-lh: 1.2;
-  --text-page-title-size: 20px; --text-page-title-weight: 600; --text-page-title-lh: 1.3;
-  --text-card-title-size: 15px; --text-card-title-weight: 600; --text-card-title-lh: 1.4;
-  --text-body-size: 14px; --text-body-weight: 400; --text-body-lh: 1.6;
-  --text-label-size: 12px; --text-label-weight: 500; --text-label-lh: 1.4; --text-label-spacing: .01em;
-  --text-eyebrow-size: 11px; --text-eyebrow-weight: 600; --text-eyebrow-spacing: .08em;
+  --text-metric-size: clamp(1.625rem, 1.4rem + 1vw, 2.125rem); --text-metric-weight: 600; --text-metric-lh: 1.2;
+  --text-page-title-size: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem); --text-page-title-weight: 600; --text-page-title-lh: 1.3;
+  --text-card-title-size: clamp(1rem, 0.9rem + 0.4vw, 1.1875rem); --text-card-title-weight: 600; --text-card-title-lh: 1.4;
+  --text-body-size: clamp(0.9375rem, 0.9rem + 0.2vw, 1.0625rem); --text-body-weight: 400; --text-body-lh: 1.6;
+  --text-label-size: clamp(0.75rem, 0.7rem + 0.2vw, 0.875rem); --text-label-weight: 500; --text-label-lh: 1.4; --text-label-spacing: .01em;
+  --text-eyebrow-size: clamp(0.6875rem, 0.65rem + 0.15vw, 0.8125rem); --text-eyebrow-weight: 600; --text-eyebrow-spacing: .08em;
 
   /* ---- Fluid type scale (matches Jordan/addiction-eval.html's own
      scale exactly, now shared app-wide so every page scales together
      at any viewport width instead of jumping between fixed sizes) ---- */
-  --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
-  --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
-  --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
-  --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
-  --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+  --text-xs: clamp(0.75rem, 0.71rem + 0.2vw, 0.8125rem);
+  --text-sm: clamp(0.8125rem, 0.78rem + 0.25vw, 0.9375rem);
+  --text-base: clamp(0.9375rem, 0.9rem + 0.2vw, 1.0625rem);
+  --text-lg: clamp(1.0625rem, 0.95rem + 0.6vw, 1.375rem);
+  --text-xl: clamp(1.375rem, 1.15rem + 1vw, 2rem);
 
   /* ---- Sidebar: fixed identity, deliberately independent of the
      light/dark toggle - a dark sidebar is a brand choice, not a theme

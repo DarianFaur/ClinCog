@@ -61,9 +61,9 @@
       </div>
       <div class="shell-nav-group">
         <div class="shell-nav-eyebrow">Resources</div>
-        ${navItem("book", "ICD-11 glossary", "#", "resources")}
-        ${navItem("info", "CDDR criteria guide", "#", "resources")}
-        ${navItem("layers", "Cognitive tasks", "#", "resources")}
+        ${navItem("book", "ICD-11 glossary", "/icd-glossary.html", "icd-glossary")}
+        ${navItem("info", "CDDR criteria guide", "/cddr-guide.html", "cddr-guide")}
+        ${navItem("layers", "Cognitive tasks", "/cognitive-tests.html", "cognitive-tests")}
       </div>
       <div class="shell-nav-group">
         <div class="shell-nav-eyebrow">Seminar</div>
