@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-shell-autocollapse>
 <head>
 <meta charset="UTF-8">
 <meta name="color-scheme" content="light dark">
@@ -12,6 +12,8 @@
 
 
 <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+<link rel="preload" as="script" href="/shell.js?v=2">
+<link rel="preload" as="style" href="/shell.css">
 <link rel="stylesheet" href="/tokens.css">
 <link rel="stylesheet" href="/components.css">
 <link rel="stylesheet" href="/shell.css">
@@ -19,16 +21,25 @@
 :root { color-scheme: light; }
 [data-theme="dark"] { color-scheme: dark; }
 :root,[data-theme="light"]{
-  --color-bg:#ffffff;--color-surface:#ffffff;--color-surface-2:#f2f2f2;
-  --color-surface-offset:#f2f2f2;--color-divider:#e5e5e5;--color-border:#e5e5e5;
-  --color-text:#1a1a1a;--color-text-muted:#6b7280;--color-text-faint:#9ca3af;
-  --color-primary:#c99b4a;--color-primary-hover:#b3853a;--color-primary-active:#1a1a1a;
+  /* Aliased onto the shared surfaces. This page kept its own neutral
+     ramp - cool blue-greys in dark, flat greys in light - which is why
+     its panels read a different temperature from the rest of the app. */
+  --color-bg:var(--bg-app);--color-surface:var(--bg-surface);--color-surface-2:var(--bg-surface-alt);
+  --color-surface-offset:var(--bg-surface-alt);--color-divider:var(--border);--color-border:var(--border);
+  /* Aligned with the app tokens; the local faint grey measured 2.5:1. */
+  --color-text:var(--text-primary);--color-text-muted:var(--text-secondary);--color-text-faint:var(--text-tertiary);
+  /* Was the old amber; as a solid fill under white text it measured
+     2.54:1. Solid buttons now use the shared near-black. */
+  --color-primary:var(--domain-substance);--color-primary-hover:var(--domain-substance-ink);--color-primary-active:var(--ink);
   --color-primary-highlight:#f6ecd9;
   --color-success:#437a22;--color-success-hover:#2e5c10;--color-success-highlight:#d4dfcc;
   --color-error:#a12c7b;--color-error-hover:#7d1e5e;--color-error-highlight:#e0ced7;
   --color-warning:#964219;--color-warning-highlight:#ddcfc6;
-  --color-gold:#d19900;--color-gold-highlight:#e9e0c6;
-  --color-blue:#006494;--color-blue-highlight:#c6d8e4;
+  /* Pulled onto the shared domain tokens. This page had its own gold and
+     a saturated blue picked independently of the rest of the app, which is
+     why its section icons and note boxes read as belonging elsewhere. */
+  --color-gold:var(--domain-substance);--color-gold-highlight:var(--domain-substance-soft);
+  --color-blue:var(--domain-mood);--color-blue-highlight:var(--domain-mood-soft);
   --shadow-sm:0 1px 2px oklch(0.2 0.01 80/0.06);
   --shadow-md:0 4px 12px oklch(0.2 0.01 80/0.08);
   --shadow-lg:0 12px 32px oklch(0.2 0.01 80/0.12);
@@ -46,10 +57,10 @@
   --space-12:3rem;--space-16:4rem;
 }
 [data-theme="dark"]{
-  --color-bg:#1c1e22;--color-surface:#262930;--color-surface-2:#202227;
-  --color-surface-offset:#202227;--color-divider:#383b42;--color-border:#383b42;
-  --color-text:#f2f2f2;--color-text-muted:#a8acaf;--color-text-faint:#6b7280;
-  --color-primary:#d9a441;--color-primary-hover:#e8b862;--color-primary-active:#c99b4a;
+  --color-bg:var(--bg-app);--color-surface:var(--bg-surface);--color-surface-2:var(--bg-surface-alt);
+  --color-surface-offset:var(--bg-surface-alt);--color-divider:var(--border);--color-border:var(--border);
+  --color-text:var(--text-primary);--color-text-muted:var(--text-secondary);--color-text-faint:var(--text-tertiary);
+  --color-primary:var(--domain-substance);--color-primary-hover:var(--domain-substance-ink);--color-primary-active:var(--ink);
   --color-primary-highlight:#332c1c;
   --color-success:#6daa45;--color-success-hover:#4d8f25;--color-success-highlight:#3a4435;
   --color-error:#d163a7;--color-error-hover:#b9478f;--color-error-highlight:#4c3d46;
@@ -62,10 +73,10 @@
 }
 @media(prefers-color-scheme:dark){html:not([data-theme="light"]){
   color-scheme: dark;
-  --color-bg:#1c1e22;--color-surface:#262930;--color-surface-2:#202227;
-  --color-surface-offset:#202227;--color-divider:#383b42;--color-border:#383b42;
-  --color-text:#f2f2f2;--color-text-muted:#a8acaf;--color-text-faint:#6b7280;
-  --color-primary:#d9a441;--color-primary-hover:#e8b862;--color-primary-active:#c99b4a;
+  --color-bg:var(--bg-app);--color-surface:var(--bg-surface);--color-surface-2:var(--bg-surface-alt);
+  --color-surface-offset:var(--bg-surface-alt);--color-divider:var(--border);--color-border:var(--border);
+  --color-text:var(--text-primary);--color-text-muted:var(--text-secondary);--color-text-faint:var(--text-tertiary);
+  --color-primary:var(--domain-substance);--color-primary-hover:var(--domain-substance-ink);--color-primary-active:var(--ink);
   --color-primary-highlight:#332c1c;
   --color-success:#6daa45;--color-success-hover:#4d8f25;--color-success-highlight:#3a4435;
   --color-error:#d163a7;--color-error-hover:#b9478f;--color-error-highlight:#4c3d46;
@@ -173,7 +184,7 @@ body.mobile-mode .sst-kbd-hint{display:none;}
 .page-header p{font-size:var(--text-sm);color:var(--color-text-muted);max-width:65ch;}
 
 /* VIGNETTE */
-.vignette-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);padding:var(--space-6);margin-bottom:var(--space-6);box-shadow:var(--shadow-sm);}
+.vignette-card{background:var(--color-surface);border: none; border-radius:var(--radius-xl);padding:var(--space-6);margin-bottom:var(--space-6);box-shadow:var(--shadow-sm);}
 .vignette-header{display:flex;align-items:flex-start;gap:var(--space-4);margin-bottom:var(--space-5);}
 .vignette-avatar{width:52px;height:52px;border-radius:var(--radius-full);background:var(--color-primary-highlight);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--font-display);font-size:var(--text-lg);color:var(--color-primary);}
 .vignette-meta{flex:1;}
@@ -206,7 +217,7 @@ body.mobile-mode .sst-kbd-hint{display:none;}
 .tool-section-sub{font-size:var(--text-xs);color:var(--color-text-muted);margin-top:2px;}
 
 /* INSTRUMENT CARDS */
-.instrument-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);padding:var(--space-5);margin-bottom:var(--space-4);box-shadow:var(--shadow-sm);}
+.instrument-card{background:var(--color-surface);border: none; border-radius:var(--radius-xl);padding:var(--space-5);margin-bottom:var(--space-4);box-shadow:var(--shadow-sm);}
 .instrument-card-header{display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-4);cursor:pointer;}
 .instrument-name{font-weight:600;font-size:var(--text-base);}
 .instrument-desc{font-size:var(--text-sm);color:var(--color-text-muted);}
@@ -223,10 +234,10 @@ body.mobile-mode .sst-kbd-hint{display:none;}
 .question-probe{font-size:var(--text-base);font-style:italic;margin-bottom:var(--space-1);color:var(--color-text);line-height:1.6;}
 .question-followup{font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-3);font-style:italic;}
 .radio-group{display:flex;gap:var(--space-3);flex-wrap:wrap;}
-.radio-option{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-5);border-radius:var(--radius-md);border:1px solid var(--color-border);background:var(--color-surface-2);cursor:pointer;font-size:var(--text-sm);font-weight:500;transition:all var(--transition-interactive);}
-.radio-option:hover{border-color:var(--color-primary);background:var(--color-primary-highlight);}
-.radio-option.selected{border-color:var(--color-primary);background:var(--color-primary-highlight);color:var(--color-primary);font-weight:600;}
-.radio-option.selected-yes{border-color:var(--color-primary);background:var(--color-primary-highlight);color:var(--color-primary);font-weight:600;}
+.radio-option{display:flex;align-items:center;gap:var(--space-2);padding:9px 18px;border-radius:var(--radius-pill);border:none;background:var(--bg-surface-alt);cursor:pointer;font-size:var(--text-sm);font-weight:500;transition:background var(--duration-hover) var(--ease-standard),color var(--duration-hover) var(--ease-standard);}
+.radio-option:hover{background:var(--border);color:var(--text-primary);}
+.radio-option.selected{border:none;background:var(--domain-substance-soft);color:var(--domain-substance-ink);font-weight:600;}
+.radio-option.selected-yes{border:none;background:var(--domain-substance-soft);color:var(--domain-substance-ink);font-weight:600;}
 .radio-option input[type="radio"]{display:none;}
 
 /* LIKERT 1-4 */
@@ -249,7 +260,7 @@ body.mobile-mode .sst-kbd-hint{display:none;}
 .score-interpretation{font-size:var(--text-xs);color:var(--color-text-muted);margin-top:2px;}
 
 /* BUTTONS */
-.btn-primary{padding:var(--space-3) var(--space-6);border-radius:var(--radius-md);background:var(--color-primary);color:white;font-weight:600;font-size:var(--text-sm);}
+.btn-primary{padding:0 var(--space-6);height:44px;display:inline-flex;align-items:center;gap:8px;border-radius:var(--radius-pill);background:var(--ink);color:var(--ink-text);font-weight:600;font-size:var(--text-sm);}
 .btn-primary:hover{background:var(--color-primary-hover);}
 .btn-primary:disabled{opacity:0.4;cursor:not-allowed;}
 .btn-secondary{padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);font-size:var(--text-sm);background:var(--color-surface-offset);color:var(--color-text);font-weight:500;}
@@ -344,7 +355,9 @@ body.mobile-mode .sst-kbd-hint{display:none;}
        happens to equal --domain-substance exactly, so no visual
        mismatch results from this. ---- */
 :root {
-  --domain-addiction: var(--color-primary);
+  /* Local alias onto the shared substance tokens. */
+  --domain-addiction: var(--domain-substance);
+  --domain-addiction-ink: var(--domain-substance-ink);
   --accent-bg: var(--color-primary-highlight);
   --serif: var(--font-display);
   --sans: var(--font-body);
@@ -371,10 +384,10 @@ body.mobile-mode .sst-kbd-hint{display:none;}
   color: var(--ink3); flex-shrink: 0; z-index: 1; transition: all .2s;
 }
 .v-step.done .v-step-dot { border: none; background: var(--domain-addiction); color: #fff; font-size: 13px; }
-.v-step.current .v-step-dot { border-width: 2px; border-color: var(--domain-addiction); background: var(--accent-bg); color: var(--domain-addiction); font-weight: 600; }
+.v-step.current .v-step-dot { border-width: 2px; border-color: var(--domain-addiction); background: var(--domain-substance-soft); color: var(--domain-addiction-ink); font-weight: 600; }
 .v-step-label { font-size: 14.5px; color: var(--ink3); transition: color .2s; }
-.v-step.current .v-step-label { color: var(--domain-addiction); font-weight: 600; }
-.v-step.done .v-step-label { color: var(--ink2); }
+.v-step.current .v-step-label { color: var(--domain-addiction-ink); font-weight: 600; }
+.v-step.done .v-step-label { color: var(--text-primary); opacity: .78; }
 .v-step:hover:not(.v-step.current):not([style*="cursor: not-allowed"]) .v-step-label { color: var(--ink); }
 
 /* ============================================================
@@ -387,7 +400,7 @@ body.mobile-mode .sst-kbd-hint{display:none;}
 /* Widen this page's content region beyond the shell's shared 1440px
    cap - safer than escaping via 100vw, which ignored the persistent
    sidebar's width and caused content to render partly underneath it. */
-.shell-content-inner { max-width: 1900px; }
+:root { --shell-content-max: 1900px; }
 
 .eval-layout {
   max-width: 1900px; margin: 0 auto; padding: 32px 32px 40px;
@@ -414,7 +427,7 @@ body.mobile-mode .sst-kbd-hint{display:none;}
   .eval-layout { padding: 24px 0; }
 }
 
-.ctx-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-xs); padding: 0; overflow: hidden; flex-shrink: 0; }
+.ctx-card { background: var(--surface); border: none; border-radius: var(--radius-lg); box-shadow: var(--shadow-xs); padding: 0; overflow: hidden; flex-shrink: 0; }
 .ctx-card > .ctx-card-body { padding: 16px 18px; }
 .ctx-card h4 { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink3); font-weight: 600; margin-bottom: 12px; }
 .ctx-card-header {
@@ -497,7 +510,7 @@ body.mobile-mode .sst-kbd-hint{display:none;}
 .ctx-guide-mark.n { background: var(--bg-surface-alt); color: var(--ink3); }
 .ctx-guide-mark.u { background: var(--warning-soft, #fff3e0); color: var(--warning, #a05a00); }
 
-.scoring-card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow-xs); padding: 12px 14px; }
+.scoring-card { background: var(--surface); border: none; border-radius: 10px; box-shadow: var(--shadow-xs); padding: 12px 14px; }
 .scoring-card h4 { font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink3); font-weight: 600; margin-bottom: 3px; }
 .scoring-count { font-family: var(--serif); font-size: 1.35rem; font-weight: 600; color: var(--ink); line-height: 1.1; margin-bottom: 1px; transition: color .2s; }
 .scoring-count .of { font-size: .78rem; color: var(--ink3); font-weight: 400; }
@@ -508,12 +521,12 @@ body.mobile-mode .sst-kbd-hint{display:none;}
   font-family: var(--mono); font-size: 9px; font-weight: 600; background: var(--bg-surface-alt); color: var(--ink3);
   transition: all .2s;
 }
-.scoring-dot.p { background: var(--accent-bg); color: var(--domain-addiction); }
+.scoring-dot.p { background: var(--domain-substance-soft); color: var(--domain-addiction-ink); }
 .scoring-dot.n { background: var(--bg-surface-alt); color: var(--ink2); }
 .scoring-dot.u { background: #fff3e0; color: #a05a00; }
 
 .mini-stats { display: flex; gap: 8px; }
-.mini-stat { flex: 1; min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 4px; text-align: center; }
+.mini-stat { flex: 1; min-width: 0; background: var(--surface); border: none; border-radius: 8px; padding: 8px 4px; text-align: center; }
 .mini-stat-num { font-family: var(--serif); font-size: 17px; font-weight: 700; color: var(--ink); line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mini-stat-lbl { font-size: 8.5px; color: var(--ink3); text-transform: uppercase; letter-spacing: .02em; margin-top: 3px; line-height: 1.2; }
 
@@ -534,7 +547,7 @@ body.mobile-mode .sst-kbd-hint{display:none;}
   <div class="eval-layout two-col">
   <aside class="eval-context" data-for-view="intro"></aside>
   <div class="eval-work" style="max-width:640px;">
-    <p style="font-family:'DM Mono',monospace;font-size:11px;color:var(--color-primary);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px;">Seminar Activity · Addiction Module</p>
+    <p style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--domain-substance-ink);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px;">Seminar Activity · Addiction Module</p>
     <h1 style="font-size:2.35rem;font-weight:700;letter-spacing:-.01em;line-height:1.15;margin-bottom:16px;">Three Ways to Evaluate<br>Substance Use</h1>
     <p style="font-size:16px;line-height:1.7;color:var(--color-text-muted);max-width:560px;margin-bottom:32px;">You will read a clinical vignette and evaluate the same patient through three different conceptual frameworks. The lens shapes what you see.</p>
     <div style="border-top:1px solid var(--color-border);margin-bottom:32px;">
@@ -659,7 +672,7 @@ body.mobile-mode .sst-kbd-hint{display:none;}
       </div>
     </div>
     <div class="instrument-card">
-      <div style="background:var(--color-gold-highlight);border:1px solid var(--color-gold);border-radius:var(--radius-lg);padding:var(--space-3) var(--space-4);font-size:var(--text-xs);color:var(--color-warning);margin-bottom:var(--space-4);">
+      <div style="background:var(--bg-surface-alt);border:none;border-radius:var(--radius-md);padding:16px 20px;font-size:var(--text-sm);line-height:1.65;color:var(--text-secondary);margin-bottom:var(--space-4);">
         <strong>Rater note:</strong> All features are assessed in reference to the past 12 months, based on what the conversation with Jordan revealed. Use the clarifying note under each item if the case file is ambiguous. Rate only what is clearly evidenced, not assumed.
       </div>
       <div id="scid-questions"></div>
@@ -2198,7 +2211,7 @@ function buildReport() {
     <div class="chart-container">
       <div class="chart-title">SSRT — Normative Comparison</div>
       <div class="chart-sub">Participant SSRT on a reference distribution (M=200 ms, SD=30 ms). Shaded bands: typical range (170–230 ms) and slow inhibition (>250 ms).</div>
-      ${!state.stopResult.reliable ? `<div style="background:var(--color-error-highlight);border:1px solid var(--color-error);border-radius:var(--radius-md);padding:var(--space-3) var(--space-4);margin-bottom:var(--space-3);font-size:var(--text-xs);color:var(--color-error);">⚠ Commission rate (${state.stopResult.commissionRate}%) is outside the 25–75% validity window — SSRT estimate may be unreliable.</div>` : ''}
+      ${!state.stopResult.reliable ? `<div style="background:var(--color-error-highlight);border:none;border-radius:var(--radius-md);padding:var(--space-3) var(--space-4);margin-bottom:var(--space-3);font-size:var(--text-xs);color:var(--color-error);">⚠ Commission rate (${state.stopResult.commissionRate}%) is outside the 25–75% validity window — SSRT estimate may be unreliable.</div>` : ''}
       <div id="chart-ssrt-dist" style="height:320px"></div>
     </div>
   </div>` : ''}

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-shell-autocollapse>
 <head>
 <meta charset="UTF-8" />
 <meta name="color-scheme" content="light dark">
@@ -10,6 +10,8 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/favicon-180.png">
 
+<link rel="preload" as="script" href="/shell.js?v=2">
+<link rel="preload" as="style" href="/shell.css">
 <link rel="stylesheet" href="/tokens.css">
 <link rel="stylesheet" href="/components.css">
 <link rel="stylesheet" href="/shell.css">
@@ -62,9 +64,9 @@ body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-
   color: var(--ink3); flex-shrink: 0; z-index: 1; transition: all .2s;
 }
 .v-step.done .v-step-dot { border: none; background: var(--domain-mood); color: #fff; font-size: 13px; }
-.v-step.current .v-step-dot { border-width: 2px; border-color: var(--domain-mood); background: var(--accent-bg); color: var(--domain-mood); font-weight: 600; }
+.v-step.current .v-step-dot { border-width: 2px; border-color: var(--domain-mood); background: var(--accent-bg); color: var(--domain-mood-ink); font-weight: 600; }
 .v-step-label { font-size: 14.5px; color: var(--ink3); transition: color .2s; }
-.v-step.current .v-step-label { color: var(--domain-mood); font-weight: 600; }
+.v-step.current .v-step-label { color: var(--domain-mood-ink); font-weight: 600; }
 .v-step.done .v-step-label { color: var(--ink2); }
 .v-step:hover:not(.v-step.current):not([style*="cursor: not-allowed"]) .v-step-label { color: var(--ink); }
 
@@ -84,7 +86,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-
 /* Widen this page's content region beyond the shell's shared 1440px
    cap - safer than escaping via 100vw, which ignored the persistent
    sidebar's width and caused content to render partly underneath it. */
-.shell-content-inner { max-width: 1900px; }
+:root { --shell-content-max: 1900px; }
 
 .eval-layout {
   max-width: 1900px; margin: 0 auto; padding: 32px 32px 40px;
@@ -106,7 +108,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-
   .eval-layout { padding: 24px 0; }
 }
 
-.ctx-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-xs); padding: 0; overflow: hidden; flex-shrink: 0; }
+.ctx-card { background: var(--surface); border: none; border-radius: var(--radius-lg); box-shadow: var(--shadow-xs); padding: 0; overflow: hidden; flex-shrink: 0; }
 .ctx-card > .ctx-card-body { padding: 16px 18px; }
 .ctx-card h4 { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink3); font-weight: 600; margin-bottom: 12px; }
 .ctx-card-header {
@@ -162,7 +164,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-
 }
 .ctx-card.pinned .ctx-body { max-height: none !important; flex: 1; overflow-y: auto; }
 .ctx-card.pinned .ctx-vignette-text, .ctx-card.pinned .ctx-chat { max-height: none; overflow-y: visible; }
-.ctx-card.pinned .ctx-pin-btn { color: var(--accent); }
+.ctx-card.pinned .ctx-pin-btn { color: var(--accent-ink); }
 .eval-context.has-pinned > *:not(.pinned) { visibility: hidden; }
 .ctx-patient-name { font-family: var(--serif); font-size: 1.15rem; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
 .ctx-patient-meta { font-size: 14px; color: var(--ink3); margin-bottom: 12px; }
@@ -189,7 +191,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-
 .ctx-guide-mark.n { background: var(--bg-surface-alt); color: var(--ink3); }
 .ctx-guide-mark.u { background: var(--warning-soft, #fff3e0); color: var(--warning, #a05a00); }
 
-.scoring-card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow-xs); padding: 12px 14px; }
+.scoring-card { background: var(--surface); border: none; border-radius: 10px; box-shadow: var(--shadow-xs); padding: 12px 14px; }
 .scoring-card h4 { font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink3); font-weight: 600; margin-bottom: 3px; }
 .scoring-count { font-family: var(--serif); font-size: 1.35rem; font-weight: 600; color: var(--ink); line-height: 1.1; margin-bottom: 1px; transition: color .2s; }
 .scoring-count .of { font-size: .78rem; color: var(--ink3); font-weight: 400; }
@@ -200,12 +202,12 @@ body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-
   font-family: var(--mono); font-size: 9px; font-weight: 600; background: var(--bg-surface-alt); color: var(--ink3);
   transition: all .2s;
 }
-.scoring-dot.p { background: var(--accent-bg); color: var(--domain-mood); }
+.scoring-dot.p { background: var(--accent-bg); color: var(--domain-mood-ink); }
 .scoring-dot.n { background: var(--bg-surface-alt); color: var(--ink2); }
 .scoring-dot.u { background: #fff3e0; color: #a05a00; }
 
 .mini-stats { display: flex; gap: 8px; }
-.mini-stat { flex: 1; min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 4px; text-align: center; }
+.mini-stat { flex: 1; min-width: 0; background: var(--surface); border: none; border-radius: 8px; padding: 8px 4px; text-align: center; }
 .mini-stat-num { font-family: var(--serif); font-size: 17px; font-weight: 700; color: var(--ink); line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mini-stat-lbl { font-size: 8.5px; color: var(--ink3); text-transform: uppercase; letter-spacing: .02em; margin-top: 3px; line-height: 1.2; }
 
@@ -213,7 +215,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-
 
 .vignette-page-title { font-size: 37.6px; font-weight: 700; color: var(--ink); margin: 0 0 16px; line-height: 1.15; }
 .vignette-page-sub { font-size: 16px; color: var(--ink2); margin-bottom: 24px; }
-.vignette-card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 24px; box-shadow: var(--shadow-xs); margin-bottom: 24px; }
+.vignette-card { background: var(--surface); border: none; border-radius: 16px; padding: 24px; box-shadow: var(--shadow-xs); margin-bottom: 24px; }
 .vignette-card-name { font-size: 18px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
 .vignette-card-meta { font-size: 16px; color: var(--ink2); margin-bottom: 16px; }
 .vignette-card-divider { border-top: 1px solid var(--line); margin-bottom: 20px; }
@@ -223,26 +225,29 @@ body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-
 .vignette-section p { font-size: 16px; line-height: 1.75; color: var(--ink); margin: 0; }
 .vignette-highlight { background: var(--accent-bg); border-left: 3px solid var(--domain-mood); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 16px; line-height: 1.6; color: var(--ink); }
 h1 { font-family: var(--serif); font-size: 2.35rem; font-weight: 700; line-height: 1.15; letter-spacing: -0.01em; color: var(--ink); margin-bottom: 16px; }
-h1 em { font-style: normal; color: var(--domain-mood); }
+h1 em { font-style: normal; color: var(--domain-mood-ink); }
 h2 { font-family: var(--serif); font-size: 1.8rem; font-weight: 400; color: var(--ink); margin-bottom: 10px; }
 h3 { font-size: .75rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); margin-bottom: 12px; }
 p.lead { font-size: 1rem; color: var(--ink2); line-height: 1.75; }
 hr { border: none; border-top: 1px solid var(--line); margin: 36px 0; }
 
-.callout { border-radius: var(--radius-md); border-left: 3px solid var(--domain-mood); padding: 14px 18px; background: var(--accent-bg); font-size: .85rem; color: var(--ink2); margin: 16px 0; }
+/* Tinted panel rather than a coloured rule down one edge. The bar was
+   the last remaining border-as-decoration on these pages, and it read
+   loudest of all now that nothing else is outlined. */
+.callout { border-radius: var(--radius-md); border: none; padding: 16px 20px; background: var(--bg-surface-alt); font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.65; margin: var(--sp-5) 0; }
 .callout.warn { border-color: var(--warn); background: var(--warn-bg); color: var(--warn); }
 
 .layers { margin: 32px 0 40px; display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-4, 16px); border-top: none; }
 @media (max-width: 800px) { .layers { grid-template-columns: 1fr; } }
 .layer-row {
-  display: block; padding: 22px; border: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  display: block; padding: 28px; border: none;
   border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow-sm);
   transition: transform .15s, box-shadow .15s;
 }
 .layer-row:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 .layer-num {
   display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px;
-  font-family: var(--mono); font-size: 12px; color: var(--domain-mood); background: var(--accent-bg);
+  font-family: var(--mono); font-size: 12px; color: var(--domain-mood-ink); background: var(--accent-bg);
   border: none; border-radius: var(--radius-md); margin-bottom: 14px; letter-spacing: 0;
 }
 .layer-text { display: block; }
@@ -257,13 +262,13 @@ hr { border: none; border-top: 1px solid var(--line); margin: 36px 0; }
 .patient-line span { color: var(--ink3); font-size: .85rem; }
 
 .scid-q {
-  padding: 20px 22px; margin-bottom: 12px; border: 1px solid var(--line); border-radius: var(--radius-md);
+  padding: 20px 22px; margin-bottom: 12px; border: none; border-radius: var(--radius-md);
   background: var(--surface); transition: border-color .15s;
 }
 .scid-q:has(.radio-row label.p:has(input:checked)) { border-color: var(--domain-mood); }
 .scid-q-top { display: flex; gap: 14px; margin-bottom: 14px; }
 .scid-code {
-  font-family: var(--mono); font-size: 12px; color: var(--domain-mood); min-width: 26px; padding-top: 2px;
+  font-family: var(--mono); font-size: 12px; color: var(--domain-mood-ink); min-width: 26px; padding-top: 2px;
   font-weight: 600;
 }
 .scid-q-text { font-size: .92rem; color: var(--ink); line-height: 1.6; }
@@ -282,43 +287,43 @@ hr { border: none; border-top: 1px solid var(--line); margin: 36px 0; }
 .radio-row label:has(input:checked).u { background: var(--ink); border-color: var(--ink); color: #fff; }
 
 .a10-strip {
-  margin: 24px 0; padding: 24px 28px; border: 1px solid var(--line); border-radius: var(--radius-lg);
+  margin: 24px 0; padding: 24px 28px; border: none; border-radius: var(--radius-lg);
   background: var(--surface); box-shadow: var(--shadow-sm); display: flex; align-items: flex-start; gap: 32px; flex-wrap: wrap;
 }
 .a10-count .n { font-family: var(--serif); font-size: 3rem; font-weight: 300; line-height: 1; }
 .a10-count .l { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink3); }
 .a10-status { font-size: .82rem; color: var(--ink3); margin-top: 4px; }
-.a10-status.ok { color: var(--domain-mood); font-weight: 500; }
+.a10-status.ok { color: var(--domain-mood-ink); font-weight: 500; }
 
 .sec-label { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink3); padding: 26px 0 8px; }
 
 .dx-options { margin-top: 8px; display: flex; flex-direction: column; gap: 8px; }
-.dx-options label { display: flex; align-items: center; gap: 10px; padding: 13px 16px; border: 1px solid var(--line); border-radius: var(--radius-md); cursor: pointer; font-size: .9rem; transition: all .15s; background: var(--surface); }
+.dx-options label { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border: none; border-radius: var(--radius-md); cursor: pointer; font-size: var(--text-base); transition: background var(--duration-hover) var(--ease-standard); background: var(--bg-surface-alt); }
 .dx-options label:hover { border-color: var(--ink3); }
 .dx-options input { accent-color: var(--domain-mood); width: 16px; height: 16px; }
 .dx-options label:has(input:checked) { border-color: var(--domain-mood); background: var(--accent-bg); }
 
 .yn-row { display: flex; gap: 8px; padding-left: 40px; }
-.yn-row label { display: flex; align-items: center; gap: 6px; padding: 7px 16px; border: 1px solid var(--line); border-radius: var(--radius-pill); cursor: pointer; font-size: .82rem; font-weight: 500; color: var(--ink2); background: var(--bg-surface-alt, var(--surface)); transition: all .15s; }
+.yn-row label { display: flex; align-items: center; gap: 6px; padding: 9px 18px; border: none; border-radius: var(--radius-pill); cursor: pointer; font-size: var(--text-sm); font-weight: 500; color: var(--text-secondary); background: var(--bg-surface-alt); transition: background var(--duration-hover) var(--ease-standard), color var(--duration-hover) var(--ease-standard); }
 .yn-row label:hover { border-color: var(--ink3); color: var(--ink); }
 .yn-row input { display: none; }
 .yn-row label:has(input:checked) { background: var(--domain-mood); border-color: var(--domain-mood); color: #fff; }
 
-.hitop-block { padding: 20px 22px; margin-bottom: 16px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); }
-.hitop-scale-name { font-family: var(--sans); font-size: var(--text-xs); font-weight: 700; color: var(--domain-mood); text-transform: uppercase; letter-spacing: .06em; border-bottom: 1px solid var(--accent-bg); padding-bottom: 8px; margin-bottom: 14px; }
+.hitop-block { padding: 20px 22px; margin-bottom: 16px; border: none; border-radius: var(--radius-md); background: var(--surface); }
+.hitop-scale-name { font-family: var(--sans); font-size: var(--text-xs); font-weight: 700; color: var(--domain-mood-ink); text-transform: uppercase; letter-spacing: .06em; border-bottom: 1px solid var(--accent-bg); padding-bottom: 8px; margin-bottom: 14px; }
 .hitop-pair { display: flex; flex-direction: column; gap: 0; }
 .hitop-item { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 14px 0; border-top: 1px solid var(--line); }
 .hitop-item:first-child { border-top: none; padding-top: 0; }
 .hitop-item-text { flex: 1; min-width: 200px; font-size: var(--text-sm); color: var(--ink); }
 .likert-legend { display: flex; gap: 8px; margin-bottom: 20px; background: var(--bg-surface-alt); border-radius: 12px; padding: 16px 18px; }
 .likert-legend-item { flex: 1; text-align: center; }
-.likert-legend-num { font-size: 22px; font-weight: 700; color: var(--domain-mood); }
+.likert-legend-num { font-size: 22px; font-weight: 700; color: var(--domain-mood-ink); }
 .likert-legend-label { font-size: 11px; color: var(--ink2); line-height: 1.3; margin-top: 2px; }
-.sec-label.hitop-scale { font-family: var(--sans); font-size: 13px; font-weight: 700; color: var(--domain-mood); border-bottom: 1px solid var(--accent-bg); padding: 8px 0; margin-top: 18px; }
+.sec-label.hitop-scale { font-family: var(--sans); font-size: 13px; font-weight: 700; color: var(--domain-mood-ink); border-bottom: 1px solid var(--accent-bg); padding: 8px 0; margin-top: 18px; }
 .likert { display: flex; gap: 6px; }
 .likert label { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
 .likert label .lbl { display: none; }
-.likert label .num { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: var(--ink3); transition: all .15s; background: var(--bg-surface-alt, var(--surface)); }
+.likert label .num { width: 36px; height: 36px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; font-size: var(--text-sm); font-weight: 500; color: var(--text-secondary); transition: background var(--duration-hover) var(--ease-standard), color var(--duration-hover) var(--ease-standard); background: var(--bg-surface-alt); }
 .likert label:hover .num { border-color: var(--domain-mood); }
 .likert input { display: none; }
 .likert label:has(input:checked) .num { background: var(--domain-mood); border-color: var(--domain-mood); color: #fff; }
@@ -366,7 +371,7 @@ textarea.interp:focus { outline: none; border-color: var(--domain-mood); }
 .reflect-block h3 { font-family: var(--serif); font-size: 1.2rem; margin-bottom: 8px; text-transform: none; letter-spacing: 0; }
 .reflect-block .reflect-note { font-size: .88rem; color: var(--ink2); line-height: 1.6; margin-bottom: 16px; max-width: 60ch; }
 .reflect-block textarea { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-family: var(--sans); font-size: .88rem; color: var(--ink); background: var(--surface); resize: vertical; min-height: 88px; line-height: 1.6; margin-bottom: 14px; }
-.reflect-done-msg { display: flex; align-items: center; gap: 8px; font-size: .88rem; font-weight: 600; color: var(--domain-mood); margin-bottom: 4px; }
+.reflect-done-msg { display: flex; align-items: center; gap: 8px; font-size: .88rem; font-weight: 600; color: var(--domain-mood-ink); margin-bottom: 4px; }
 .report-sec h3 { margin-bottom: 14px; font-size: 1.05rem; line-height: 1.4; }
 .t-labels { display: flex; justify-content: space-between; font-size: .68rem; color: var(--ink3); font-family: var(--mono); margin-top: 4px; }
 
@@ -385,7 +390,7 @@ textarea.interp:focus { outline: none; border-color: var(--domain-mood); }
 
 .cpills { display: flex; gap: 6px; flex-wrap: wrap; }
 .cpill { font-size: .75rem; padding: 5px 12px; border-radius: var(--radius-pill); font-weight: 500; }
-.cpill.met { color: var(--domain-mood); background: var(--accent-bg); }
+.cpill.met { color: var(--domain-mood-ink); background: var(--accent-bg); }
 .cpill.unm { color: var(--ink2); background: var(--bg-surface-alt, #f3f4f6); }
 .cpill.unk { color: var(--ink3); background: var(--bg-surface-alt, #f3f4f6); }
 
@@ -431,18 +436,21 @@ textarea.interp:focus { outline: none; border-color: var(--domain-mood); }
 .question-followup { font-size: var(--text-xs); color: var(--ink3); margin-top: 6px; font-style: italic; }
 .radio-row { padding-left: 0; gap: 12px; margin-top: 12px; }
 .radio-row label {
-  border-radius: 8px; border: 1px solid var(--line); background: var(--bg-surface-alt);
-  padding: 8px 20px; font-weight: 500; font-size: var(--text-sm); transition: all .15s;
+  border-radius: var(--radius-pill); border: none; background: var(--bg-surface-alt);
+  padding: 9px 18px; font-weight: 500; font-size: var(--text-sm);
+  transition: background var(--duration-hover) var(--ease-standard),
+              color var(--duration-hover) var(--ease-standard);
 }
-.radio-row label:hover { border-color: var(--domain-mood); background: var(--accent-bg); }
+.radio-row label:hover { background: var(--border); color: var(--text-primary); }
 .radio-row label:has(input:checked).p,
 .radio-row label:has(input:checked).n,
 .radio-row label:has(input:checked).u {
-  background: var(--accent-bg); border-color: var(--domain-mood); color: var(--domain-mood); font-weight: 600;
+  background: var(--domain-mood-soft); border: none;
+  color: var(--domain-mood-ink); font-weight: 600;
 }
 
 .hitop-block { border: none; border-radius: 0; background: transparent; padding: 20px 0; border-top: 1px solid var(--line); margin-bottom: 0; }
-.instrument-card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px; box-shadow: var(--shadow-xs); }
+.instrument-card { background: var(--surface); border: none; border-radius: 16px; padding: 20px; box-shadow: var(--shadow-xs); }
 .instrument-card .scid-q:first-child, .instrument-card .hitop-block:first-child, .instrument-card .bdi-q:first-child { border-top: none; }
 .bdi-q { padding: 18px 0; border-top: 1px solid var(--line); }
 .bdi-q-label { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--ink3); margin-bottom: 12px; display: flex; gap: 8px; }
@@ -481,7 +489,7 @@ textarea.interp:focus { outline: none; border-color: var(--domain-mood); }
     <div class="eval-work" style="max-width:900px;">
     <div class="eyebrow">Seminar Activity · Depression Module</div>
     <h1>Three Ways to<br><em>Evaluate</em> Depression</h1>
-    <p class="lead" style="max-width:540px;">You will read a clinical vignette and evaluate the same patient through three different conceptual frameworks. The lens shapes what you see.</p>
+    <p class="lead" style="max-width:var(--measure);">You will read a clinical vignette and evaluate the same patient through three different conceptual frameworks. The lens shapes what you see.</p>
     <div class="layers">
       <div class="layer-row"><span class="layer-num">01</span><div class="layer-text"><span class="lt">Categorical — ICD-11 via CDDR</span><span class="ls">Structured diagnostic interview · criterion-based decision</span></div></div>
       <div class="layer-row"><span class="layer-num">02</span><div class="layer-text"><span class="lt">Dimensional–Psychological — BDI-II &amp; HiTOP</span><span class="ls">Quantified severity · spectrum position</span></div></div>

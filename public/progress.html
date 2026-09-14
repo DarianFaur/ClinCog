@@ -10,6 +10,8 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/favicon-180.png">
 
+<link rel="preload" as="script" href="/shell.js?v=2">
+<link rel="preload" as="style" href="/shell.css">
 <link rel="stylesheet" href="/tokens.css">
 <link rel="stylesheet" href="/components.css">
 <link rel="stylesheet" href="/shell.css">
@@ -17,6 +19,10 @@
   if (!localStorage.getItem("clincog_name")) { location.replace("/"); }
 </script>
 <style>
+  /* Prose-heavy page: narrow the column so running text fills its box
+     instead of stopping short inside a wide one. */
+  :root { --shell-content-max: 1040px; }
+
   .prog-header { margin-bottom: var(--sp-6); }
   .prog-header .text-secondary { margin-top: 4px; display: block; max-width: 60ch; }
 

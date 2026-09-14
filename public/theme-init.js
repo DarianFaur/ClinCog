@@ -30,4 +30,23 @@
 
   var zoom = parseFloat(localStorage.getItem("clincog_zoom")) || 1;
   if (zoom !== 1) html.style.zoom = zoom;
+
+  // Resolve the sidebar's width here, in <head>, rather than waiting for
+  // shell.js at the bottom of the document. shell.js builds the whole
+  // chrome in JS, so until it runs the page paints edge to edge with no
+  // sidebar and no topbar, and then everything jumps 260px to the right
+  // once it lands. Stamping the resolved state now lets shell.css reserve
+  // the exact final geometry on the very first paint, which is what makes
+  // navigation between pages look instant instead of assembled.
+  //
+  // data-shell-autocollapse is set statically on <html> by the case pages
+  // that want to start collapsed; it is an attribute rather than part of
+  // window.CLINCOG_SHELL because that config object is declared near the
+  // end of the body, far too late to influence first paint.
+  var mobileShell = matchMedia("(max-width: 1023px)").matches;
+  var collapsed = !mobileShell && (
+    html.hasAttribute("data-shell-autocollapse") ||
+    localStorage.getItem("clincog_sidebar") === "collapsed"
+  );
+  html.setAttribute("data-shell-sidebar", mobileShell ? "drawer" : (collapsed ? "collapsed" : "open"));
 })();

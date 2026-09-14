@@ -190,17 +190,28 @@
     window.scrollTo({ top: drawerScrollY, left: 0, behavior: "instant" });
   }
 
-  if (cfg.autoCollapse && !isMobile()) {
+  // theme-init.js already resolved this in <head> and shell.css painted the
+  // boot band at that width. Read its answer back rather than recomputing,
+  // so the real sidebar can never disagree with what was already on screen.
+  if (document.documentElement.getAttribute("data-shell-sidebar") === "collapsed") {
+    frame.classList.add("shell-collapsed");
+  } else if (cfg.autoCollapse && !isMobile()) {
     frame.classList.add("shell-collapsed");
   } else if (localStorage.getItem(SIDEBAR_KEY) === "collapsed" && !isMobile()) {
     frame.classList.add("shell-collapsed");
   }
+
+  // Hand over from the boot layout to the assembled chrome. Everything is
+  // in place by this point, so the boot rules can switch off with nothing
+  // left to move.
+  document.documentElement.classList.add("shell-ready");
 
   hamburger.addEventListener("click", () => {
     if (isMobile()) {
       sidebar.classList.contains("open") ? closeDrawer() : openDrawer();
     } else {
       const collapsed = frame.classList.toggle("shell-collapsed");
+      document.documentElement.setAttribute("data-shell-sidebar", collapsed ? "collapsed" : "open");
       // On conceptualization/evaluation pages, the collapse is enforced
       // per-page, not a real preference - toggling there for the current
       // session shouldn't overwrite what the user actually wants on

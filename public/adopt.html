@@ -10,10 +10,16 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/favicon-180.png">
 
+<link rel="preload" as="script" href="/shell.js?v=2">
+<link rel="preload" as="style" href="/shell.css">
 <link rel="stylesheet" href="/tokens.css">
 <link rel="stylesheet" href="/components.css">
 <link rel="stylesheet" href="/shell.css">
 <style>
+  /* Prose-heavy page: narrow the column so running text fills its box
+     instead of stopping short inside a wide one. */
+  :root { --shell-content-max: 940px; }
+
   .adopt-form { display: flex; flex-direction: column; gap: 10px; margin: 18px 0 22px; }
   .adopt-field label { display: block; font-size: var(--text-xs); font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
   .adopt-field .hint { font-size: var(--text-xs); color: var(--text-secondary); margin-bottom: 8px; line-height: 1.5; }
@@ -23,7 +29,7 @@
   .adopt-status { display: flex; align-items: center; gap: 8px; font-size: var(--text-xs); font-weight: 600; padding: 4px 0; }
   .adopt-status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); flex-shrink: 0; }
   .adopt-status.on .dot { background: var(--accent); }
-  .adopt-status.on { color: var(--accent); }
+  .adopt-status.on { color: var(--accent-ink); }
   .adopt-status.off { color: var(--text-secondary); }
   .adopt-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
   .adopt-section { border-top: 1px solid var(--border); padding-top: 24px; margin-top: 24px; }
@@ -31,7 +37,7 @@
   .adopt-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0 24px; }
   @media (max-width: 640px) { .adopt-compare { grid-template-columns: 1fr; } }
   .adopt-compare-card { border: 1px solid var(--border); border-radius: 14px; padding: 20px; background: var(--bg-surface); display: flex; flex-direction: column; }
-  .adopt-compare-label { font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: .06em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+  .adopt-compare-label { font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: .06em; text-transform: uppercase; color: var(--accent-ink); margin-bottom: 8px; }
   .adopt-compare-card h3 { font-size: var(--text-sm); margin-bottom: 10px; }
   .adopt-compare-card ul { margin: 0 0 16px; padding-left: 18px; font-size: var(--text-xs); color: var(--text-secondary); display: flex; flex-direction: column; gap: 6px; }
   .adopt-compare-card .btn { margin-top: auto; text-align: center; }
@@ -39,7 +45,7 @@
   .provider-btn { padding: 8px 16px; border: 1px solid var(--border); border-radius: 999px; background: var(--bg-surface);
     color: var(--text-secondary); font-family: var(--font-sans); font-size: var(--text-xs); font-weight: 600; cursor: pointer; transition: all .15s; }
   .provider-btn:hover { border-color: var(--accent); color: var(--text-primary); }
-  .provider-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .provider-btn.active { background: var(--ink); border-color: transparent; color: var(--ink-text); }
   .adopt-select { width: 100%; padding: 11px 14px; border: 1px solid var(--border); border-radius: 10px;
     font-family: var(--font-sans); font-size: var(--text-sm); color: var(--text-primary); background: var(--bg-surface); box-sizing: border-box; cursor: pointer; }
   .adopt-select:focus { outline: none; border-color: var(--accent); }
@@ -142,7 +148,7 @@
       <button class="btn btn-secondary" id="clear-btn">Clear my keys</button>
       <a class="btn btn-secondary" href="/dashboard.html">Back to dashboard</a>
     </div>
-    <div id="save-confirm" style="display:none; margin-top:14px; font-size:var(--text-xs); color: var(--accent); font-weight:600;">✓ Saved to this browser.</div>
+    <div id="save-confirm" style="display:none; margin-top:14px; font-size:var(--text-xs); color: var(--accent-ink); font-weight:600;">✓ Saved to this browser.</div>
   </div></div>
 </div>
 

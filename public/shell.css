@@ -130,9 +130,13 @@ body { overflow-x: clip; overflow-y: visible; }
 }
 .shell-collapsed .shell-main { margin-left: 68px; }
 .shell-topbar {
-  min-height: 76px; flex-shrink: 0; position: sticky; top: 0; z-index: 30;
+  /* Fixed rather than min-height: the boot layout in this file has to
+     reserve this exact height before any of it exists, and a height that
+     drifts with the fluid title size cannot be reserved. The two-line
+     stack inside fits comfortably at 88px. */
+  height: 88px; flex-shrink: 0; position: sticky; top: 0; z-index: 30;
   background: var(--bg-app); border-bottom: none;
-  display: flex; align-items: center; gap: var(--sp-4); padding: var(--sp-4) var(--sp-7);
+  display: flex; align-items: center; gap: var(--sp-4); padding: 0 var(--sp-7);
 }
 .shell-hamburger {
   width: 32px; height: 32px; border-radius: var(--radius-md); border: none; background: transparent;
@@ -162,7 +166,12 @@ body { overflow-x: clip; overflow-y: visible; }
 .shell-topbar-right { margin-left: auto; display: flex; align-items: center; gap: var(--sp-2); flex-shrink: 0; }
 
 .shell-body { flex: 1; }
-.shell-content-inner { max-width: 1200px; margin: 0 auto; padding: var(--sp-7) var(--sp-7) var(--sp-8); }
+/* The column cap is a variable so the boot layout in this file can reserve
+   the same width. Pages that want a wider column (the evaluation pages
+   use 1900px for their two-column grid) set --shell-content-max on :root
+   rather than overriding this rule, which would leave the boot layout
+   reserving a column of the wrong width. */
+.shell-content-inner { max-width: var(--shell-content-max, 1200px); margin: 0 auto; padding: var(--sp-7) var(--sp-7) var(--sp-8); }
 
 /* ---------------------------------------------------------------
    Mobile backdrop (drawer overlay)
@@ -184,10 +193,82 @@ body { overflow-x: clip; overflow-y: visible; }
   .shell-collapsed .shell-nav-chevron, .shell-collapsed .shell-term-badge-text, .shell-collapsed .shell-term-badge .progress-track { display: revert; }
   .shell-collapsed .shell-nav-item { justify-content: flex-start; padding: 9px var(--sp-3); }
   .shell-content-inner { padding: var(--sp-5) var(--sp-4) var(--sp-7); }
-  .shell-topbar { padding: var(--sp-3) var(--sp-4); min-height: 64px; }
+  .shell-topbar { padding: 0 var(--sp-4); height: 72px; }
   .shell-main, .shell-collapsed .shell-main { margin-left: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .shell-sidebar, .shell-nav-item, .shell-case-list, .shell-backdrop { transition: none; }
 }
+
+/* ===============================================================
+   Boot layout — first paint, before shell.js runs
+   ---------------------------------------------------------------
+   shell.js assembles the sidebar, topbar and frame in JavaScript
+   at the bottom of the document. Until it executes, the page has
+   no chrome at all: content paints at the full viewport width
+   starting at x=0, and then shifts right by the sidebar width and
+   reflows once the script lands. On a warm cache that is a frame
+   or two; on a cold one it is the "the sidebar loads late" jump.
+
+   These rules paint the sidebar band and reserve the content's
+   final geometry from the very first frame, using the state that
+   theme-init.js resolved in <head>. They are switched off the
+   moment shell.js adds .shell-ready, handing over to the real
+   chrome with nothing to move.
+=============================================================== */
+html:not(.shell-ready) body { background: var(--bg-app); }
+
+/* The dark band. Painted by the document itself so it exists in the
+   first frame, then replaced by the real sidebar. */
+html:not(.shell-ready) body::before {
+  content: ""; position: fixed; left: 0; top: 0; height: 100vh;
+  width: 260px; background: var(--sidebar-bg); z-index: 40;
+}
+html[data-shell-sidebar="collapsed"]:not(.shell-ready) body::before { width: 68px; }
+html[data-shell-sidebar="drawer"]:not(.shell-ready) body::before { display: none; }
+
+/* Reserve the content's final box. The left offset reproduces what the
+   assembled shell produces: the sidebar's width, then the inner column
+   centred within whatever space is left, capped at 1200px. Below that
+   cap the centring term is zero, so on ordinary laptop widths this is
+   simply sidebar + gutter. */
+html:not(.shell-ready) #shell-content {
+  --boot-sidebar: 260px;
+  --boot-gutter: var(--sp-7);
+  box-sizing: border-box;
+  display: block;
+  margin: 0;
+  padding-top: calc(88px + var(--sp-7));
+  padding-bottom: var(--sp-8);
+  /* The centring term has to appear on BOTH sides. With it only on the
+     left, the content box stays wider than the real 1200px column, and
+     anything that centres itself inside (the evaluation pages' grid)
+     lands in a different place before and after the handover. */
+  padding-right: calc(
+    var(--boot-gutter) +
+    max(0px, (100vw - var(--boot-sidebar) - var(--shell-content-max, 1200px)) / 2)
+  );
+  padding-left: calc(
+    var(--boot-sidebar) + var(--boot-gutter) +
+    max(0px, (100vw - var(--boot-sidebar) - var(--shell-content-max, 1200px)) / 2)
+  );
+}
+html[data-shell-sidebar="collapsed"]:not(.shell-ready) #shell-content { --boot-sidebar: 68px; }
+html[data-shell-sidebar="drawer"]:not(.shell-ready) #shell-content { --boot-sidebar: 0px; }
+
+/* 1023px, not 767px: the shell's own mobile padding and topbar height
+   live in the max-width:1023px block, and the boot layout has to switch
+   at exactly the same width or the two disagree in the 768-1023 band. */
+@media (max-width: 1023px) {
+  html:not(.shell-ready) #shell-content {
+    --boot-gutter: var(--sp-4);
+    padding-top: calc(72px + var(--sp-5));
+    padding-bottom: var(--sp-7);
+  }
+}
+
+/* Suppress the sidebar's width transition on the very first frame, or the
+   handover from the boot band to the real sidebar animates from 0. */
+html:not(.shell-ready) .shell-sidebar,
+html:not(.shell-ready) .shell-main { transition: none !important; }

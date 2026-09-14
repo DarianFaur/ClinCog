@@ -62,7 +62,7 @@
   .icd-picker .icd-confirmed .label { font-weight:600; color:var(--text-primary); font-size:14px; }
   .icd-picker .icd-confirmed button { background:none; border:none; text-decoration:underline;
     color:var(--text-secondary); font-size:13px; cursor:pointer; padding:0; }
-  .icd-picker .icd-error { display:none; color:#900; font-size:13px; margin-top:10px; }
+  .icd-picker .icd-error { display:none; color:var(--danger); font-size:var(--text-sm); margin-top:10px; }
   .icd-picker .icd-error.on { display:block; }
   .icd-continue-row { display:none; margin-top:18px; }
   .icd-continue-row.on { display:block; }

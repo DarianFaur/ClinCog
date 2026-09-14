@@ -18,15 +18,15 @@ html[data-theme="dark"] {
   --surface: #ffffff;
   --surface-sunken: #f2f2f2;
   --ink: #1a1a1a;
-  --ink-muted: #6b7280;
-  --ink-faint: #9ca3af;
-  --line: #e5e5e5;
+  --ink-muted: #6e6a64;
+  --ink-faint: #7a766f;
+  --line: #e6e3de;
 
   /* Brand colors: exact values sampled from the reference screenshot */
-  --brand: #8bb6a2;
-  --brand-hover: #729b87;
+  --brand: #6f9d87;
+  --brand-hover: #5b8570;
   --brand-deep: #636d79;
-  --brand-pale: #eaf2ee;
+  --brand-pale: #e5ece7;
   --slate: #636d79;
   --slate-pale: #f2f2f2;
 
@@ -34,10 +34,13 @@ html[data-theme="dark"] {
   --coral-pale: #ffe5e2;
 
   /* Per-case domain accents - the sage/indigo/gold family from the screenshot */
-  --domain-psychosis: #a15c74;
-  --domain-mood: #4d4e8e;
-  --domain-anxiety: #8bb6a2;
-  --domain-substance: #c99b4a;
+  /* Kept in step with tokens.css. index.html is the one page that does
+     not load tokens.css, so these have to be maintained alongside it or
+     the splash drifts away from the rest of the app. */
+  --domain-psychosis: #bf768e;
+  --domain-mood: #9a80bd;
+  --domain-anxiety: #59987c;
+  --domain-substance: #ab8546;
 
   --warn: #8b3a00;
   --warn-bg: #fff6ef;
@@ -68,7 +71,7 @@ html[data-theme="dark"] {
   --surface-sunken: #202227;
   --ink: #f2f2f2;
   --ink-muted: #a8acaf;
-  --ink-faint: #6b7280;
+  --ink-faint: #928d85;
   --line: #383b42;
 
   --brand: #8bb6a2;
@@ -80,10 +83,10 @@ html[data-theme="dark"] {
   --coral: #ff6f63;
   --coral-pale: #3a2422;
 
-  --domain-psychosis: #c97e94;
-  --domain-mood: #7677c9;
-  --domain-anxiety: #8bb6a2;
-  --domain-substance: #d9a441;
+  --domain-psychosis: #eaa2b9;
+  --domain-mood: #c3ace1;
+  --domain-anxiety: #83c3a6;
+  --domain-substance: #d2b180;
 
   --warn-bg: #2a1c10;
 
@@ -115,7 +118,7 @@ html, body { transition: background-color .25s ease, color .25s ease; }
     --surface-sunken: #202227;
     --ink: #f2f2f2;
     --ink-muted: #a8acaf;
-    --ink-faint: #6b7280;
+    --ink-faint: #928d85;
     --line: #383b42;
 
     --brand: #8bb6a2;
@@ -127,10 +130,10 @@ html, body { transition: background-color .25s ease, color .25s ease; }
     --coral: #ff6f63;
     --coral-pale: #3a2422;
 
-    --domain-psychosis: #c97e94;
-    --domain-mood: #7677c9;
-    --domain-anxiety: #8bb6a2;
-    --domain-substance: #d9a441;
+    --domain-psychosis: #eaa2b9;
+    --domain-mood: #c3ace1;
+    --domain-anxiety: #83c3a6;
+    --domain-substance: #d2b180;
 
     --warn-bg: #2a1c10;
 
@@ -1101,10 +1104,10 @@ html[data-theme="dark"] body.app-frame-bg {
 }
 .module-card::before { display: none; }
 .module-card:hover { border-color: transparent; transform: translateY(-3px); box-shadow: none; }
-.module-card[data-domain="psychosis"] { --domain-color: var(--domain-psychosis); }
-.module-card[data-domain="mood"] { --domain-color: var(--domain-mood); }
-.module-card[data-domain="anxiety"] { --domain-color: var(--domain-anxiety); }
-.module-card[data-domain="substance"] { --domain-color: var(--domain-substance); }
+.module-card[data-domain="psychosis"] { --domain-color: var(--domain-psychosis-ink); }
+.module-card[data-domain="mood"] { --domain-color: var(--domain-mood-ink); }
+.module-card[data-domain="anxiety"] { --domain-color: var(--domain-anxiety-ink); }
+.module-card[data-domain="substance"] { --domain-color: var(--domain-substance-ink); }
 .module-card .week { color: rgba(255,255,255,.7); }
 .module-card .patient-meta { color: rgba(255,255,255,.8); }
 .module-card .teaser { color: rgba(255,255,255,.85); }

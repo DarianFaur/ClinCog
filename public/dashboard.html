@@ -11,6 +11,8 @@
 <link rel="apple-touch-icon" href="/favicon-180.png">
 <!-- Temporary CDN fallback until real self-hosted Inter woff2 files
      are added at /public/fonts/ - see tokens.css header comment. -->
+<link rel="preload" as="script" href="/shell.js?v=2">
+<link rel="preload" as="style" href="/shell.css">
 <link rel="stylesheet" href="/tokens.css">
 <link rel="stylesheet" href="/components.css">
 <link rel="stylesheet" href="/shell.css">
@@ -66,9 +68,9 @@
   .lens-card p, .lens-card .text-body { max-width: var(--measure); }
   @media (max-width: 900px) { .lens-grid { grid-template-columns: 1fr; } }
   .lens-card { padding: 28px; }
-  .lens-icon { width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--domain-anxiety-soft); color: var(--domain-anxiety); display: flex; align-items: center; justify-content: center; margin-bottom: var(--sp-3); }
-  .lens-card:nth-child(2) .lens-icon { background: var(--domain-mood-soft); color: var(--domain-mood); }
-  .lens-card:nth-child(3) .lens-icon { background: var(--domain-substance-soft); color: var(--domain-substance); }
+  .lens-icon { width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--domain-anxiety-soft); color: var(--domain-anxiety-ink); display: flex; align-items: center; justify-content: center; margin-bottom: var(--sp-3); }
+  .lens-card:nth-child(2) .lens-icon { background: var(--domain-mood-soft); color: var(--domain-mood-ink); }
+  .lens-card:nth-child(3) .lens-icon { background: var(--domain-substance-soft); color: var(--domain-substance-ink); }
 </style>
 </head>
 <body>

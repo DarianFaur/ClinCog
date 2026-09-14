@@ -10,14 +10,20 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/favicon-180.png">
 
+<link rel="preload" as="script" href="/shell.js?v=2">
+<link rel="preload" as="style" href="/shell.css">
 <link rel="stylesheet" href="/tokens.css">
 <link rel="stylesheet" href="/components.css">
 <link rel="stylesheet" href="/shell.css">
 <style>
+  /* Prose-heavy page: narrow the column so running text fills its box
+     instead of stopping short inside a wide one. */
+  :root { --shell-content-max: 940px; }
+
   .help-num {
     display: inline-flex; align-items: center; justify-content: center;
     width: 22px; height: 22px; border-radius: 50%; background: var(--domain-anxiety-soft);
-    color: var(--domain-anxiety); font-size: var(--text-xs); font-weight: 600; margin-right: 8px; flex-shrink: 0;
+    color: var(--domain-anxiety-ink); font-size: var(--text-xs); font-weight: 600; margin-right: 8px; flex-shrink: 0;
   }
   .help-section-title { display: flex; align-items: center; margin-bottom: 8px; }
   .help-note { margin-top: var(--sp-3); padding: var(--sp-3) var(--sp-4); background: var(--bg-surface-alt); border-radius: var(--radius-md); font-size: var(--text-xs); color: var(--text-secondary); }
@@ -31,7 +37,7 @@
   <div style="margin-bottom:var(--sp-6);">
     <span class="text-eyebrow">Guide</span>
     <h2 class="text-page-title" style="font-size:var(--text-lg);margin-top:4px;">How to use ClinCog</h2>
-    <p class="text-secondary" style="margin-top:8px;max-width:65ch;">Everything you need to know to get through a week's case smoothly — five minutes, once, and you're set for the rest of the term.</p>
+    <p class="text-secondary" style="margin-top:8px;">Everything you need to know to get through a week's case smoothly — five minutes, once, and you're set for the rest of the term.</p>
   </div>
 
   <div class="card" style="margin-bottom:var(--sp-4);"><div class="card-body">
@@ -80,7 +86,7 @@
 <script>window.CLINCOG_SHELL = { activeNav: "help", breadcrumb: [{ label: "Help" }] };</script>
 <script src="/storage.js"></script>
 <script src="/icons.js"></script>
-<script src="/shell.js"></script>
+<script src="/shell.js?v=2"></script>
 <script src="/a11y.js"></script>
 <script>
   if (window.location.hostname === "uvt.clincog.net") {

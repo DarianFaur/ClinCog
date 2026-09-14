@@ -133,7 +133,12 @@
   --border: #e6e3de;
   --text-primary: #1a1a1a;
   --text-secondary: #6e6a64;
-  --text-tertiary: #a09a92;
+  /* Darkened from #a09a92, which measured 2.79:1 against the page and
+     failed AA everywhere it was used - and it is used for every eyebrow,
+     every label and every caption in the app. It now clears 4.5:1 against the
+     tinted panel as well as against white, which is the harder of the two
+     and where most labels actually sit. */
+  --text-tertiary: #706c65;
 
   /* ---- Brand ---- */
   --accent: #6f9d87;
@@ -142,6 +147,9 @@
      outer segment with a saturated inner arc; without this the two rings
      read as one doubled stroke. Roughly the accent at 30% over white. */
   --accent-soft: #d4e2db;
+  /* Text-weight companion. --accent sits at 3.07:1 against white, which is
+     right for a fill or a dot and short of AA for a link or a label. */
+  --accent-ink: #527363;
   --slate: #6e6a64;
 
   /* Solid near-black used by primary buttons and the sidebar - the
@@ -153,30 +161,42 @@
   /* ---- Clinical domains: base / soft (badge bg) / ink (text on soft) ----
      Values carried over unchanged from the existing platform palette -
      formalized into a consistent three-token pattern, not reinvented. */
-  --domain-psychosis: #a15c74;
-  --domain-psychosis-soft: rgba(161,92,116,.12);
-  --domain-psychosis-ink: #a15c74;
+  /* The four domain hues, rebalanced. Measured in CIELAB, the previous
+     set ranged from L* 35.9 (mood) to L* 70.6 (anxiety) - a 35-point
+     spread, which is why they stopped reading as one family once the
+     page ground moved from cool grey to warm off-white: mood sat far
+     darker and colder than everything around it, while anxiety and
+     substance were too pale to register as accents at all.
 
-  --domain-mood: #4d4e8e;
-  --domain-mood-soft: rgba(77,78,142,.12);
-  --domain-mood-ink: #4d4e8e;
+     Every base now sits at L* 58 and every ink at L* 42, so all four
+     land on the same contrast (3.39 and 6.0 against white) by
+     construction rather than by eye. Hue and chroma are preserved,
+     except mood, which moved 12 degrees off the cold indigo end
+     towards violet to sit with the warm ground. */
+  --domain-psychosis: #bf768e;
+  --domain-psychosis-soft: rgba(191,118,142,.14);
+  --domain-psychosis-ink: #934d66;
 
-  --domain-anxiety: #8bb6a2;
-  --domain-anxiety-soft: rgba(139,182,162,.12);
-  --domain-anxiety-ink: #4f7a64;
+  --domain-mood: #9a80bd;
+  --domain-mood-soft: rgba(154,128,189,.14);
+  --domain-mood-ink: #705892;
 
-  --domain-substance: #c99b4a;
-  --domain-substance-soft: rgba(201,155,74,.12);
-  --domain-substance-ink: #8a6423;
+  --domain-anxiety: #59987c;
+  --domain-anxiety-soft: rgba(89,152,124,.14);
+  --domain-anxiety-ink: #306e55;
+
+  --domain-substance: #ab8546;
+  --domain-substance-soft: rgba(171,133,70,.14);
+  --domain-substance-ink: #7f5e1f;
 
   /* ---- Semantic: system states only, never clinical content ---- */
-  --success: #2e9e5b;
+  --success: #247b47;
   --success-soft: rgba(46,158,91,.12);
-  --warning: #b7791f;
+  --warning: #956219;
   --warning-soft: rgba(183,121,31,.12);
-  --danger: #d64545;
+  --danger: #c03e3e;
   --danger-soft: rgba(214,69,69,.12);
-  --info: #3b82c4;
+  --info: #336fa8;
   --info-soft: rgba(59,130,196,.12);
 
   /* ---- Shape & depth ---- */
@@ -199,10 +219,14 @@
   --font-display: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'DM Mono', ui-monospace, monospace;
 
-  /* Prose measure. Anything that is a paragraph of running text caps
-     here - unbounded line length was the main reason the resource
-     pages read as an unedited document rather than a product. */
-  --measure: 68ch;
+  /* Prose measure. Unbounded line length was the reason the resource
+     pages read as an unedited document, but 68ch inside a 1136px card
+     left a third of the box empty, which reads as broken rather than
+     as a reading column. 78ch is still comfortable, and the rule is
+     now: narrow the CONTAINER on prose-heavy pages (via
+     --shell-content-max) rather than stranding short lines inside a
+     wide one. Secondary text inside a card fills its card. */
+  --measure: 78ch;
 
   /* Calm voice. The dashboard reference carries hierarchy with a
      moderate semibold heading sitting directly above a muted grey
@@ -256,31 +280,32 @@ html[data-theme="dark"] {
   --border: #2e2c29;
   --text-primary: #ecebe8;
   --text-secondary: #a29d95;
-  --text-tertiary: #7a756e;
+  --text-tertiary: #928d85;
 
   --accent: #8bb6a2;
   --accent-hover: #a3c9b6;
   --accent-soft: rgba(139,182,162,.22);
+  --accent-ink: #a3c9b6;
   --slate: #a29d95;
   --ink: #ecebe8;
   --ink-hover: #ffffff;
   --ink-text: #1a1a1a;
 
-  --domain-psychosis: #c97e94;
-  --domain-psychosis-soft: rgba(201,126,148,.16);
-  --domain-psychosis-ink: #e0a3b5;
+  --domain-psychosis: #eaa2b9;
+  --domain-psychosis-soft: rgba(234,162,185,.16);
+  --domain-psychosis-ink: #ffc0d4;
 
-  --domain-mood: #7677c9;
-  --domain-mood-soft: rgba(118,119,201,.16);
-  --domain-mood-ink: #a3a4dc;
+  --domain-mood: #c3ace1;
+  --domain-mood-soft: rgba(195,172,225,.16);
+  --domain-mood-ink: #dec9f8;
 
-  --domain-anxiety: #8bb6a2;
-  --domain-anxiety-soft: rgba(139,182,162,.16);
-  --domain-anxiety-ink: #a3c9b6;
+  --domain-anxiety: #83c3a6;
+  --domain-anxiety-soft: rgba(131,195,166,.16);
+  --domain-anxiety-ink: #a2dec2;
 
-  --domain-substance: #d9a441;
-  --domain-substance-soft: rgba(217,164,65,.16);
-  --domain-substance-ink: #e8bd6f;
+  --domain-substance: #d2b180;
+  --domain-substance-soft: rgba(210,177,128,.16);
+  --domain-substance-ink: #eccda2;
 
   --success: #4cb87a;
   --success-soft: rgba(76,184,122,.16);
@@ -308,26 +333,28 @@ html[data-theme="dark"] {
     --border: #2e2c29;
     --text-primary: #ecebe8;
     --text-secondary: #a29d95;
-    --text-tertiary: #7a756e;
+    --text-tertiary: #928d85;
     --accent: #8bb6a2;
     --accent-hover: #a3c9b6;
     --accent-soft: rgba(139,182,162,.22);
+    --accent-ink: #a3c9b6;
+  --accent-ink: #a3c9b6;
     --slate: #a29d95;
     --ink: #ecebe8;
     --ink-hover: #ffffff;
     --ink-text: #1a1a1a;
-    --domain-psychosis: #c97e94;
-    --domain-psychosis-soft: rgba(201,126,148,.16);
-    --domain-psychosis-ink: #e0a3b5;
-    --domain-mood: #7677c9;
-    --domain-mood-soft: rgba(118,119,201,.16);
-    --domain-mood-ink: #a3a4dc;
-    --domain-anxiety: #8bb6a2;
-    --domain-anxiety-soft: rgba(139,182,162,.16);
-    --domain-anxiety-ink: #a3c9b6;
-    --domain-substance: #d9a441;
-    --domain-substance-soft: rgba(217,164,65,.16);
-    --domain-substance-ink: #e8bd6f;
+    --domain-psychosis: #eaa2b9;
+    --domain-psychosis-soft: rgba(234,162,185,.16);
+    --domain-psychosis-ink: #ffc0d4;
+    --domain-mood: #c3ace1;
+    --domain-mood-soft: rgba(195,172,225,.16);
+    --domain-mood-ink: #dec9f8;
+    --domain-anxiety: #83c3a6;
+    --domain-anxiety-soft: rgba(131,195,166,.16);
+    --domain-anxiety-ink: #a2dec2;
+    --domain-substance: #d2b180;
+    --domain-substance-soft: rgba(210,177,128,.16);
+    --domain-substance-ink: #eccda2;
     --success: #4cb87a; --success-soft: rgba(76,184,122,.16);
     --warning: #d9a441; --warning-soft: rgba(217,164,65,.16);
     --danger: #e8706f; --danger-soft: rgba(232,112,111,.16);
