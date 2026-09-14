@@ -75,29 +75,52 @@
     </nav>
     <div class="shell-sidebar-bottom">
       <div class="shell-term-badge">
-        <span class="shell-term-badge-text">${completedCount} / ${modules.length} cases complete</span>
+        <span class="shell-term-badge-text"><strong>${completedCount}</strong> / ${modules.length} cases complete</span>
         <div class="progress-track" style="height:4px;"><div class="progress-fill" style="width:${modules.length ? (completedCount / modules.length) * 100 : 0}%"></div></div>
       </div>
     </div>`;
 
   // ---- topbar markup ----------------------------------------------------
   const crumbs = (cfg.breadcrumb || [{ label: "ClinCog" }]);
-  const breadcrumbHtml = crumbs.map((c, i) => {
-    const isLast = i === crumbs.length - 1;
+  // The last crumb is rendered again as the topbar title, so a single-crumb
+  // page would otherwise show its own name twice. Drop the trail entirely
+  // in that case and let the title stand alone.
+  const trail = crumbs.length > 1 ? crumbs : [];
+  const breadcrumbHtml = trail.map((c, i) => {
+    const isLast = i === trail.length - 1;
     const sep = i > 0 ? `<span class="shell-crumb-sep">›</span>` : "";
     return c.href && !isLast
       ? `${sep}<a href="${c.href}" class="shell-crumb">${c.label}</a>`
       : `${sep}<span class="shell-crumb${isLast ? " current" : ""}">${c.label}</span>`;
+    // note: the last crumb is also rendered as the topbar title underneath,
+    // so .current is styled as part of the trail here, not as the heading.
   }).join("");
 
   const topbarHtml = `
     <button type="button" class="shell-hamburger" id="shell-hamburger" aria-label="Toggle sidebar">
       <span class="shell-nav-icon"></span>
     </button>
-    <nav class="shell-breadcrumb">${breadcrumbHtml}</nav>
+    <div class="shell-topbar-main">
+      <nav class="shell-breadcrumb">${breadcrumbHtml}</nav>
+      <div class="shell-topbar-title" id="shell-topbar-title">${crumbs[crumbs.length - 1].label}</div>
+    </div>
     <div class="shell-topbar-right">
       <a href="/help.html" class="btn btn-ghost btn-sm">Help</a>
     </div>`;
+
+  // The topbar title doubles as the page's <h1>, but the evaluation pages
+  // supply their own heading per view, and two competing <h1>s on one page
+  // is worse than none in the chrome. Promote only when the page has not
+  // already declared one.
+  function promoteTopbarTitle() {
+    const el = document.getElementById("shell-topbar-title");
+    if (!el || document.querySelector("h1")) return;
+    const h1 = document.createElement("h1");
+    h1.className = el.className;
+    h1.id = el.id;
+    h1.textContent = el.textContent;
+    el.replaceWith(h1);
+  }
 
   // ---- assemble the frame ------------------------------------------------
   // Wraps whatever the page already put in <body> as the "content" region -
@@ -124,6 +147,8 @@
   contentEl.style.display = "";
   contentEl.removeAttribute("id"); // avoid a duplicate #shell-content once moved
   contentEl.classList.add("shell-content-inner");
+
+  promoteTopbarTitle();
 
   // ---- icons --------------------------------------------------------------
   if (typeof ClinIcons !== "undefined") {

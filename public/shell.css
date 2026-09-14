@@ -34,8 +34,8 @@ body { overflow-x: clip; overflow-y: visible; }
               transform var(--duration-layout) var(--ease-standard);
   z-index: 40;
 }
-.shell-sidebar-top { height: 56px; flex-shrink: 0; display: flex; align-items: center; padding: 0 var(--sp-5); border-bottom: 1px solid var(--sidebar-border); }
-.shell-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--sidebar-text-active); font-family: var(--font-sans); font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; }
+.shell-sidebar-top { height: 64px; flex-shrink: 0; display: flex; align-items: center; padding: 0 var(--sp-5); border-bottom: none; }
+.shell-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--sidebar-text-active); font-family: var(--font-sans); font-weight: 600; font-size: 15px; letter-spacing: -.01em; white-space: nowrap; overflow: hidden; }
 .shell-brand img { width: 24px; height: 24px; flex-shrink: 0; }
 
 /* The nav list is the ONLY scrollable region inside the sidebar - top
@@ -50,23 +50,30 @@ body { overflow-x: clip; overflow-y: visible; }
 .shell-nav::-webkit-scrollbar { width: 6px; }
 .shell-nav::-webkit-scrollbar-track { background: transparent; }
 .shell-nav::-webkit-scrollbar-thumb { background: var(--sidebar-border); border-radius: 3px; }
-.shell-nav-group { margin-bottom: var(--sp-5); }
+.shell-nav-group { margin-bottom: var(--sp-6); }
 .shell-nav-eyebrow {
   font-size: var(--text-eyebrow-size); font-weight: var(--text-eyebrow-weight);
   letter-spacing: var(--text-eyebrow-spacing); text-transform: uppercase;
-  color: rgba(255,255,255,.4); padding: 0 var(--sp-3); margin-bottom: 6px;
+  color: rgba(255,255,255,.34); padding: 0 var(--sp-4); margin-bottom: var(--sp-2);
   white-space: nowrap; overflow: hidden;
 }
 .shell-nav-item {
-  display: flex; align-items: center; gap: 12px; padding: 9px var(--sp-3);
+  display: flex; align-items: center; gap: 12px; padding: 10px var(--sp-4);
   border-radius: var(--radius-md); color: var(--sidebar-text); text-decoration: none;
   font-size: 13.5px; font-weight: 500; cursor: pointer; position: relative;
-  border-left: 3px solid transparent; margin-bottom: 2px;
+  border-left: none; margin-bottom: 2px;
   transition: background var(--duration-hover) var(--ease-standard), color var(--duration-hover) var(--ease-standard);
   white-space: nowrap; overflow: hidden;
 }
 .shell-nav-item:hover { background: var(--sidebar-bg-hover); color: var(--sidebar-text-active); }
-.shell-nav-item.active { background: var(--sidebar-bg-active); color: var(--sidebar-text-active); border-left-color: var(--accent); }
+.shell-nav-item.active { background: var(--sidebar-bg-active); color: var(--sidebar-text-active); font-weight: 600; }
+/* Accent marker as a pseudo-element rather than a border, so the item's
+   own padding and pill shape stay symmetrical - a 3px border-left made
+   the active row sit 3px narrower than its neighbours. */
+.shell-nav-item.active::before {
+  content: ""; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 18px; border-radius: 0 3px 3px 0; background: var(--accent);
+}
 .shell-nav-icon { width: 18px; height: 18px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 .shell-nav-label { overflow: hidden; text-overflow: ellipsis; }
 .shell-nav-expandable { justify-content: space-between; }
@@ -88,8 +95,9 @@ body { overflow-x: clip; overflow-y: visible; }
 .shell-case-dot.domain-anxiety { background: var(--domain-anxiety); }
 .shell-case-dot.domain-substance { background: var(--domain-substance); }
 
-.shell-sidebar-bottom { flex-shrink: 0; padding: var(--sp-4) var(--sp-4); border-top: 1px solid var(--sidebar-border); display: flex; align-items: center; gap: var(--sp-3); }
+.shell-sidebar-bottom { flex-shrink: 0; padding: var(--sp-5); border-top: 1px solid var(--sidebar-border); display: flex; align-items: center; gap: var(--sp-3); }
 .shell-term-badge { flex: 1; min-width: 0; }
+.shell-term-badge-text strong { color: var(--sidebar-text-active); font-weight: 600; }
 .shell-term-badge-text { display: block; font-size: 11px; color: var(--sidebar-text); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .shell-term-badge .progress-track { background: rgba(255,255,255,.15); }
 .shell-term-badge .progress-fill { background: var(--accent); }
@@ -122,28 +130,39 @@ body { overflow-x: clip; overflow-y: visible; }
 }
 .shell-collapsed .shell-main { margin-left: 68px; }
 .shell-topbar {
-  height: 56px; flex-shrink: 0; position: sticky; top: 0; z-index: 30;
-  background: var(--bg-surface); border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: var(--sp-4); padding: 0 var(--sp-6);
+  min-height: 76px; flex-shrink: 0; position: sticky; top: 0; z-index: 30;
+  background: var(--bg-app); border-bottom: none;
+  display: flex; align-items: center; gap: var(--sp-4); padding: var(--sp-4) var(--sp-7);
 }
 .shell-hamburger {
   width: 32px; height: 32px; border-radius: var(--radius-md); border: none; background: transparent;
   color: var(--text-secondary); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
 }
 .shell-hamburger:hover { background: var(--bg-surface-alt); color: var(--text-primary); }
-.shell-breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 14.5px; overflow: hidden; white-space: nowrap; }
+/* Two-line topbar: the trail sits small and muted above, the page's own
+   name sits below it at heading weight. A single-line breadcrumb left
+   every page without an actual title in the chrome. */
+.shell-topbar-main { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.shell-breadcrumb { display: flex; align-items: center; gap: 6px; font-size: var(--text-xs); overflow: hidden; white-space: nowrap; }
+.shell-topbar-title {
+  font-size: var(--text-lg); font-weight: 600; letter-spacing: -.015em;
+  color: var(--text-primary); line-height: 1.25;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
 @media (max-width: 767px) {
-  .shell-crumb:not(.current), .shell-crumb-sep { display: none; }
-  .shell-crumb.current { font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
+  /* Keep only the immediate parent above the title - the full trail does
+     not fit, and the title already says where you are. */
+  .shell-crumb:not(:nth-last-child(3)), .shell-crumb-sep { display: none; }
+  .shell-breadcrumb { font-size: var(--text-xs); }
 }
 .shell-crumb { color: var(--text-secondary); text-decoration: none; }
 .shell-crumb:hover { color: var(--text-primary); }
-.shell-crumb.current { color: var(--text-primary); font-weight: 600; }
+.shell-crumb.current { color: var(--text-tertiary); font-weight: 400; }
 .shell-crumb-sep { color: var(--text-tertiary); }
 .shell-topbar-right { margin-left: auto; display: flex; align-items: center; gap: var(--sp-2); flex-shrink: 0; }
 
 .shell-body { flex: 1; }
-.shell-content-inner { max-width: 1440px; margin: 0 auto; padding: var(--sp-6); }
+.shell-content-inner { max-width: 1200px; margin: 0 auto; padding: var(--sp-7) var(--sp-7) var(--sp-8); }
 
 /* ---------------------------------------------------------------
    Mobile backdrop (drawer overlay)
@@ -164,8 +183,8 @@ body { overflow-x: clip; overflow-y: visible; }
   .shell-collapsed .shell-brand-word, .shell-collapsed .shell-nav-eyebrow, .shell-collapsed .shell-nav-label,
   .shell-collapsed .shell-nav-chevron, .shell-collapsed .shell-term-badge-text, .shell-collapsed .shell-term-badge .progress-track { display: revert; }
   .shell-collapsed .shell-nav-item { justify-content: flex-start; padding: 9px var(--sp-3); }
-  .shell-content-inner { padding: var(--sp-4); }
-  .shell-topbar { padding: 0 var(--sp-4); }
+  .shell-content-inner { padding: var(--sp-5) var(--sp-4) var(--sp-7); }
+  .shell-topbar { padding: var(--sp-3) var(--sp-4); min-height: 64px; }
   .shell-main, .shell-collapsed .shell-main { margin-left: 0; }
 }
 

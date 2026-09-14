@@ -9,29 +9,40 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/favicon-180.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="/tokens.css">
 <link rel="stylesheet" href="/components.css">
 <link rel="stylesheet" href="/shell.css">
 <style>
-  .gl-section { margin-bottom: var(--sp-7, 40px); }
+  .gl-section { margin-bottom: var(--sp-8); }
+  /* Reading column. A term card stretched to the full 1200px content
+     width leaves the right half of every card empty once the text is
+     capped at 68ch, so the column itself is capped instead. */
+  .gl-term-list { display: block; max-width: 860px; }
+  .gl-search-wrap { max-width: 860px; }
   .gl-section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
   .gl-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; background: var(--accent); }
-  .gl-section-sub { font-size: var(--text-xs); color: var(--text-tertiary); margin: 2px 0 14px 20px; }
+  .gl-section-sub { font-size: var(--text-sm); color: var(--text-tertiary); margin: 4px 0 var(--sp-5) 20px; max-width: var(--measure); }
   .gl-search-wrap { margin-bottom: var(--sp-6); position: relative; }
   .gl-search-wrap input {
-    width: 100%; box-sizing: border-box; padding: 12px 14px 12px 40px; font-size: var(--text-sm);
-    border: 1.5px solid var(--border); border-radius: var(--radius-md); font-family: var(--font-sans);
-    background: var(--bg-surface); color: var(--text-primary);
+    width: 100%; box-sizing: border-box; padding: 15px 18px 15px 46px; font-size: var(--text-base);
+    border: none; border-radius: var(--radius-pill); font-family: var(--font-sans);
+    background: var(--bg-surface); color: var(--text-primary); box-shadow: var(--shadow-sm);
   }
-  .gl-search-wrap input:focus { outline: none; border-color: var(--accent); }
-  .gl-search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--text-tertiary); pointer-events: none; }
-  .gl-term { border-bottom: 1px solid var(--border); padding: 16px 0; }
-  .gl-term:last-child { border-bottom: none; }
-  .gl-term-name { font-weight: 600; color: var(--text-primary); font-size: var(--text-base); }
-  .gl-term-def { color: var(--text-secondary); margin-top: 4px; font-size: var(--text-sm); line-height: 1.65; }
-  .gl-term-example { margin-top: 8px; padding: 8px 12px; background: var(--bg-surface-alt); border-radius: var(--radius-sm); font-size: var(--text-xs); color: var(--text-secondary); }
+  .gl-search-wrap input:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .gl-search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--text-tertiary); pointer-events: none; }
+  /* Each entry is its own surface. Previously every term was a row in
+     one giant card separated by hairlines, and the definitions ran the
+     full width of the viewport - around 120 characters per line, which
+     is what made this page read as an unedited document. */
+  .gl-term {
+    background: var(--bg-surface); border-radius: var(--radius-md);
+    padding: var(--sp-5) var(--sp-6); margin-bottom: var(--sp-3);
+  }
+  .gl-term:last-child { margin-bottom: 0; }
+  .gl-term-name { font-weight: 600; color: var(--text-primary); font-size: var(--text-lg); letter-spacing: -.012em; }
+  .gl-term-def { color: var(--text-secondary); margin-top: var(--sp-2); font-size: var(--text-base); line-height: 1.65; max-width: var(--measure); }
+  .gl-term-example { margin-top: var(--sp-3); padding: var(--sp-3) var(--sp-4); background: var(--bg-surface-alt); border-radius: var(--radius-sm); font-size: var(--text-sm); color: var(--text-secondary); max-width: var(--measure); }
   .gl-term-example strong { color: var(--text-tertiary); text-transform: uppercase; font-size: 10.5px; letter-spacing: .04em; }
   .gl-term.gl-hidden { display: none; }
   .gl-no-results { display: none; padding: 24px 0; text-align: center; color: var(--text-tertiary); font-size: var(--text-sm); }
@@ -39,7 +50,7 @@
   .gl-links { display: flex; flex-direction: column; gap: 6px; margin: 12px 0 0; }
   .gl-links a { font-size: var(--text-sm); color: var(--accent); text-decoration: none; }
   .gl-links a:hover { text-decoration: underline; }
-  .gl-refs { margin: 10px 0 0; padding-left: 18px; font-size: var(--text-xs); color: var(--text-secondary); line-height: 1.9; }
+  .gl-refs { margin: 10px 0 0; padding-left: 18px; font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.9; max-width: var(--measure); }
   .gl-refs li { margin-bottom: 6px; }
 </style>
 </head>
@@ -48,9 +59,7 @@
 <div id="shell-content">
 
   <div style="margin-bottom:var(--sp-6);">
-    <span class="text-eyebrow">Resources</span>
-    <h1 class="text-page-title" style="font-size:var(--text-lg);margin-top:4px;">ICD-11 glossary</h1>
-    <p class="text-secondary" style="margin-top:8px;">The vocabulary ICD-11 and its CDDR diagnostic manual use for their own structure — what a "linearization" is, what "essential features" means, why some categories don't have codes — collected in one place instead of scattered across documentation. Search or scroll; terms are grouped by what they describe.</p>
+    <p class="text-secondary" style="margin-top:var(--sp-3);max-width:var(--measure);">The vocabulary ICD-11 and its CDDR diagnostic manual use for their own structure — what a "linearization" is, what "essential features" means, why some categories don't have codes — collected in one place instead of scattered across documentation. Search or scroll; terms are grouped by what they describe.</p>
   </div>
 
   <div class="gl-search-wrap">
@@ -67,7 +76,7 @@
     <div class="gl-section-head"><span class="gl-dot"></span><span class="text-card-title" style="font-size:var(--text-base);">How ICD-11 is built</span></div>
     <div class="gl-section-sub">The classification's own architecture — foundation, linearizations, and how codes are assembled</div>
 
-    <div class="card"><div class="card-body" style="padding:4px var(--sp-5);">
+    <div class="gl-term-list"><div>
 
       <div class="gl-term" data-term="foundation component">
         <div class="gl-term-name">Foundation Component</div>
@@ -107,7 +116,7 @@
     <div class="gl-section-head"><span class="gl-dot"></span><span class="text-card-title" style="font-size:var(--text-base);">The parts of a CDDR diagnostic write-up</span></div>
     <div class="gl-section-sub">Every disorder in the CDDR manual is described using this same set of headings</div>
 
-    <div class="card"><div class="card-body" style="padding:4px var(--sp-5);">
+    <div class="gl-term-list"><div>
 
       <div class="gl-term" data-term="essential required features">
         <div class="gl-term-name">Essential (Required) Features</div>

@@ -9,10 +9,8 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/favicon-180.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <!-- Temporary CDN fallback until real self-hosted Inter woff2 files
      are added at /public/fonts/ - see tokens.css header comment. -->
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/tokens.css">
 <link rel="stylesheet" href="/components.css">
 <link rel="stylesheet" href="/shell.css">
@@ -23,42 +21,51 @@
 </script>
 <style>
   /* Page-specific touches - small enough not to warrant their own file yet. */
-  .dash-hero-greeting { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--sp-5); margin-bottom: var(--sp-6); flex-wrap: wrap; }
+  .dash-hero-greeting { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--sp-5); margin-bottom: var(--sp-7); flex-wrap: wrap; }
   .dash-hero-greeting .sub { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
   .dash-hero-greeting .sub a { color: var(--text-secondary); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; background: none; border: none; padding: 0; font: inherit; }
   .dash-hero-greeting .sub a:hover { color: var(--text-primary); }
+  /* On a phone the greeting line and its two inline actions were
+     competing for one row and each wrapping mid-phrase. Stack them. */
+  @media (max-width: 767px) {
+    .dash-hero-greeting .sub { flex-wrap: wrap; row-gap: 4px; }
+    .dash-hero-greeting .sub > span:first-child { flex: 1 0 100%; }
+  }
 
   /* "Continue your case" - a deliberately warmer, larger moment than a
      plain stat card, using the current case's own domain color as an
      accent so it feels tied to that specific patient, not generic. */
   .continue-hero {
-    position: relative; overflow: hidden; padding: var(--sp-6);
+    position: relative; overflow: hidden; padding: var(--sp-8) var(--sp-7);
     display: grid; grid-template-columns: 1fr auto; gap: var(--sp-6); align-items: center;
-    margin-bottom: var(--sp-6);
+    margin-bottom: var(--sp-7);
   }
   .continue-hero::before {
     content: ""; position: absolute; inset: 0; opacity: .07; pointer-events: none;
     background: radial-gradient(circle at 100% 0%, var(--domain-color, var(--accent)), transparent 60%);
   }
   .continue-hero-body { position: relative; }
-  .continue-hero-quote { font-style: italic; color: var(--text-secondary); margin: var(--sp-2) 0 var(--sp-4); font-size: var(--text-sm); }
-  .continue-hero-progress { display: flex; align-items: center; gap: var(--sp-3); max-width: 320px; margin-bottom: var(--sp-4); }
+  .continue-hero-quote { font-style: italic; color: var(--text-secondary); margin: var(--sp-3) 0 var(--sp-5); font-size: var(--text-base); max-width: 52ch; }
+  .continue-hero-progress { display: flex; align-items: center; gap: var(--sp-3); max-width: 320px; margin-bottom: var(--sp-6); }
   .continue-hero-progress .progress-fill { background: var(--domain-color, var(--accent)); }
   @media (max-width: 768px) { .continue-hero { grid-template-columns: 1fr; text-align: left; } .continue-hero-mark { display: none; } }
 
   .dash-grid-cases { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--sp-5); margin-bottom: var(--sp-6); }
   @media (max-width: 900px) { .dash-grid-cases { grid-template-columns: 1fr; } }
 
-  .stat-card-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; padding: 0; margin-bottom: var(--sp-6); overflow: hidden; }
-  @media (max-width: 560px) { .stat-card-row { grid-template-columns: 1fr; } .stat-card-row .stat-card { border-right: none !important; border-bottom: 1px solid var(--border); } .stat-card-row .stat-card:last-child { border-bottom: none; } }
+  /* Three separate surfaces, not one wide card split by hairlines - a
+     divided card reads as a table, three cards read as data blocks. */
+  .stat-card-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-4); margin-bottom: var(--sp-7); }
+  @media (max-width: 900px) { .stat-card-row { grid-template-columns: 1fr; gap: var(--sp-3); } }
 
   /* .grid-2-col now lives in components.css - shared with progress.html */
 
   /* .activity-row, .activity-dot, .activity-text, .activity-time now live in components.css - shared with progress.html */
 
   .lens-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-4); }
+  .lens-card p, .lens-card .text-body { max-width: var(--measure); }
   @media (max-width: 900px) { .lens-grid { grid-template-columns: 1fr; } }
-  .lens-card { padding: var(--sp-5); }
+  .lens-card { padding: 28px; }
   .lens-icon { width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--domain-anxiety-soft); color: var(--domain-anxiety); display: flex; align-items: center; justify-content: center; margin-bottom: var(--sp-3); }
   .lens-card:nth-child(2) .lens-icon { background: var(--domain-mood-soft); color: var(--domain-mood); }
   .lens-card:nth-child(3) .lens-icon { background: var(--domain-substance-soft); color: var(--domain-substance); }
@@ -70,32 +77,36 @@
 
   <div class="dash-hero-greeting">
     <div>
-      <h1 class="text-page-title" id="greeting-h1" style="font-size:var(--text-lg);">Hello.</h1>
+      <h2 class="text-page-title" id="greeting-h1">Hello.</h2>
       <div class="sub text-secondary" id="greeting-sub"></div>
     </div>
   </div>
 
   <div id="continue-slot"></div>
 
-  <div class="card stat-card-row">
-    <div class="stat-card" style="border-right:1px solid var(--border);">
-      <div class="stat-icon" id="stat-icon-1"></div>
-      <span class="text-label">CASES COMPLETE</span>
-      <span class="text-metric stat-value" id="stat-complete">0/0</span>
+  <div class="stat-card-row">
+    <div class="card stat-card has-donut">
+      <div class="stat-card-figures">
+        <span class="pair-label">Cases complete</span>
+        <div class="donut-legend" id="legend-complete"></div>
+      </div>
+      <div class="donut" id="donut-complete"></div>
     </div>
-    <div class="stat-card" style="border-right:1px solid var(--border);">
-      <div class="stat-icon" id="stat-icon-2"></div>
-      <span class="text-label">EVALUATIONS REACHED</span>
-      <span class="text-metric stat-value" id="stat-evals">0/0</span>
+    <div class="card stat-card has-donut">
+      <div class="stat-card-figures">
+        <span class="pair-label">Evaluations reached</span>
+        <div class="donut-legend" id="legend-evals"></div>
+      </div>
+      <div class="donut" id="donut-evals"></div>
     </div>
-    <div class="stat-card">
+    <div class="card stat-card">
       <div class="stat-icon" id="stat-icon-3"></div>
-      <span class="text-label">MESSAGES EXCHANGED</span>
-      <span class="text-metric stat-value" id="stat-exchanges">0</span>
+      <span class="pair-label">Messages exchanged</span>
+      <span class="pair-value stat-value" id="stat-exchanges">0</span>
     </div>
   </div>
 
-  <h2 class="text-card-title" style="margin-bottom:var(--sp-4);">This term's cases</h2>
+  <h2 class="text-page-title" style="margin-bottom:var(--sp-5);font-size:var(--text-lg);">This term's cases</h2>
   <div class="dash-grid-cases" id="module-grid"></div>
 
   <div class="grid-2-col">
@@ -138,6 +149,7 @@
 <script src="/storage.js"></script>
 <script src="/icons.js"></script>
 <script src="/shell.js?v=2"></script>
+<script src="/donut.js"></script>
 <script src="/reveal.js"></script>
 <script src="/a11y.js"></script>
 <script>
@@ -145,7 +157,7 @@
   const name = ClinCog.getName();
   document.getElementById("greeting-h1").textContent = name ? `Hello, ${name}.` : "Hello.";
   document.getElementById("greeting-sub").innerHTML =
-    `Ready to continue with this term's cases. <a id="change-name">Not you?</a> · <a id="restart-progress">Restart all progress</a>`;
+    `<span>Ready to continue with this term's cases.</span> <a id="change-name">Not you?</a> · <a id="restart-progress">Restart all progress</a>`;
   document.getElementById("change-name").addEventListener("click", () => {
     ClinCog.clearName();
     location.href = "/";
@@ -181,7 +193,7 @@
           <div class="continue-hero-quote">${current.quote}</div>
           <div class="continue-hero-progress">
             <span class="text-label" style="white-space:nowrap;">Conceptualization</span>
-            <div class="progress-track"><div class="progress-fill" style="width:${Math.round(s.conceptPct * 100)}%"></div></div>
+            <div class="progress-track hatched"><div class="progress-fill" style="width:${Math.round(s.conceptPct * 100)}%"></div></div>
             <span class="progress-pct">${Math.round(s.conceptPct * 100)}%</span>
           </div>
           <a class="btn btn-primary" href="${nextHref}">${nextLabel} →</a>
@@ -201,8 +213,52 @@
 
   // ---- stat cards, all real ----
   const metrics = ClinCog.getMetrics();
-  document.getElementById("stat-complete").textContent = `${metrics.casesCompleted}/${metrics.totalCases}`;
-  document.getElementById("stat-evals").textContent = `${metrics.evalsReached}/${metrics.totalCases}`;
+  // ---- the two donuts ----
+  // Outer ring is always the full breakdown of all four cases; inner solid
+  // arc is the headline figure named by the card's own label. Middle
+  // category is hatched in the warning hue and the untouched remainder in
+  // the plain border hue, so "started but not finished" and "never opened"
+  // stay distinguishable at a glance.
+  const started = metrics.casesExplored;
+  const donuts = [
+    {
+      mount: "donut-complete", legend: "legend-complete",
+      title: "Cases complete",
+      value: metrics.casesCompleted,
+      segments: [
+        { value: metrics.casesCompleted, color: "var(--accent-soft)", dot: "var(--accent)", label: "Complete" },
+        { value: Math.max(0, started - metrics.casesCompleted), color: "var(--warning)", hatched: true, label: "In progress" },
+        { value: Math.max(0, metrics.totalCases - started), color: "var(--border)", hatched: true, label: "Not started" }
+      ]
+    },
+    {
+      mount: "donut-evals", legend: "legend-evals",
+      title: "Evaluations reached",
+      value: metrics.evalsReached,
+      segments: [
+        { value: metrics.evalsReached, color: "var(--accent-soft)", dot: "var(--accent)", label: "Reached" },
+        { value: Math.max(0, started - metrics.evalsReached), color: "var(--warning)", hatched: true, label: "In interview" },
+        { value: Math.max(0, metrics.totalCases - started), color: "var(--border)", hatched: true, label: "Not started" }
+      ]
+    }
+  ];
+
+  donuts.forEach(d => {
+    ClinCogDonut.render(document.getElementById(d.mount), {
+      segments: d.segments,
+      value: d.value,
+      total: metrics.totalCases,
+      headline: 1,
+      color: "var(--accent)",
+      title: `${d.title}: ${d.value} of ${metrics.totalCases}`
+    });
+    document.getElementById(d.legend).innerHTML = d.segments.map(s => `
+      <div class="donut-legend-row">
+        <span class="donut-legend-dot" style="background:${s.dot || s.color}"></span>
+        <span class="donut-legend-val">${s.value}</span>
+        <span class="donut-legend-lbl">${s.label}</span>
+      </div>`).join("");
+  });
   document.getElementById("stat-exchanges").textContent = metrics.totalExchanges;
 
   // ---- case cards, using the new component ----
@@ -233,7 +289,7 @@
           <div class="case-card-grid-item"><span class="val">${s.exchanges}</span><span class="lbl">Messages exchanged</span></div>
           <div class="case-card-grid-item"><span class="val">${s.state === "not-started" ? "—" : (s.evalReached ? "Reached" : "In chat")}</span><span class="lbl">Stage</span></div>
         </div>
-        <div class="progress-row"><div class="progress-track"><div class="progress-fill" style="width:${Math.round(s.conceptPct*100)}%;background:var(${DOMAIN_VAR[m.id]})"></div></div><span class="progress-pct">${Math.round(s.conceptPct*100)}%</span></div>
+        <div class="progress-row"><div class="progress-track hatched slim"><div class="progress-fill" style="width:${Math.round(s.conceptPct*100)}%;background:var(${DOMAIN_VAR[m.id]})"></div></div><span class="progress-pct">${Math.round(s.conceptPct*100)}%</span></div>
         <div class="case-card-footer">
           <a class="btn btn-secondary" href="${m.chat}">Conceptualize</a>
           <a class="btn ${evalDisabled ? 'btn-secondary' : 'btn-primary'}" href="${m.eval}" ${evalDisabled ? 'aria-disabled="true" onclick="return false;" style="opacity:.5;cursor:not-allowed;"' : ''}>Evaluate</a>
@@ -269,8 +325,8 @@
   }
 
   // ---- icons ----
-  document.getElementById("stat-icon-1").innerHTML = ClinIcons.get("check-square", 20);
-  document.getElementById("stat-icon-2").innerHTML = ClinIcons.get("bar-chart", 20);
+  // Only the third stat card still carries a corner icon - the first two
+  // now show a donut instead, and their icon mounts were removed with it.
   document.getElementById("stat-icon-3").innerHTML = ClinIcons.get("message-circle", 20);
   document.getElementById("lens-icon-1").innerHTML = ClinIcons.get("check-square", 20);
   document.getElementById("lens-icon-2").innerHTML = ClinIcons.get("bar-chart", 20);

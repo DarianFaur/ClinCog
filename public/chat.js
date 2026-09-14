@@ -112,6 +112,8 @@
   }
 
   function renderMessage(text, who) {
+    const placeholder = chatDiv.querySelector(".chat-empty");
+    if (placeholder) placeholder.remove();
     const row = document.createElement("div");
     row.className = "chat-row " + (who === "student" ? "from-student" : "from-patient");
     const speaker = document.createElement("div");
@@ -171,10 +173,28 @@
   }
 
   // Restore any previous conversation for this case, on this device.
+  // Shown when no exchange has happened yet. Without it the conversation
+  // area is a large blank rectangle that reads as a loading failure rather
+  // than as an interview waiting to be started.
+  function renderEmptyState() {
+    const wrap = document.createElement("div");
+    wrap.className = "chat-empty";
+    wrap.innerHTML =
+      '<div class="chat-empty-icon">' + HEAD_ICON + "</div>" +
+      "<p class=\"chat-empty-title\">No questions asked yet</p>" +
+      '<p class="chat-empty-hint">Open with something broad &mdash; what brought ' +
+      patientName + " here, and when it started &mdash; then follow what you hear.</p>";
+    chatDiv.appendChild(wrap);
+  }
+
   function restore() {
     chatDiv.innerHTML = "";
-    for (const msg of history) {
-      renderMessage(msg.content, msg.role === "user" ? "student" : "patient");
+    if (!history.length) {
+      renderEmptyState();
+    } else {
+      for (const msg of history) {
+        renderMessage(msg.content, msg.role === "user" ? "student" : "patient");
+      }
     }
     updateStatus();
   }

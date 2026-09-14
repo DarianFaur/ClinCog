@@ -4,61 +4,151 @@
    should ever be hardcoded outside this file - everything else
    references these custom properties.
 
-   Inter is self-hosted from public/fonts/ (via @fontsource/inter,
-   latin subset, WOFF2) - no Google Fonts CDN dependency for the
-   app's primary typeface.
+   Inter and DM Mono are self-hosted from public/fonts/ (@fontsource,
+   WOFF2). Both latin and latin-ext subsets are shipped - latin-ext is
+   required for Romanian (a-breve, s-comma, t-comma). No Google Fonts
+   CDN dependency. Poppins was removed: it was declared in styles.css
+   but never actually loaded, and the hierarchy is now carried by
+   weight and tracking within a single family.
    ============================================================ */
 
 @font-face {
   font-family: 'Inter';
-  src: url('/fonts/Inter-Light.woff2') format('woff2');
+  src: url('/fonts/Inter-300-latin.woff2') format('woff2');
   font-weight: 300;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 @font-face {
   font-family: 'Inter';
-  src: url('/fonts/Inter-Regular.woff2') format('woff2');
+  src: url('/fonts/Inter-300-latin-ext.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-400-latin.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 @font-face {
   font-family: 'Inter';
-  src: url('/fonts/Inter-Medium.woff2') format('woff2');
+  src: url('/fonts/Inter-400-latin-ext.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-500-latin.woff2') format('woff2');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 @font-face {
   font-family: 'Inter';
-  src: url('/fonts/Inter-SemiBold.woff2') format('woff2');
+  src: url('/fonts/Inter-500-latin-ext.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-600-latin.woff2') format('woff2');
   font-weight: 600;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 @font-face {
   font-family: 'Inter';
-  src: url('/fonts/Inter-Bold.woff2') format('woff2');
+  src: url('/fonts/Inter-600-latin-ext.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-700-latin.woff2') format('woff2');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-700-latin-ext.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: 'DM Mono';
+  src: url('/fonts/DMMono-400-latin.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: 'DM Mono';
+  src: url('/fonts/DMMono-400-latin-ext.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: 'DM Mono';
+  src: url('/fonts/DMMono-500-latin.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: 'DM Mono';
+  src: url('/fonts/DMMono-500-latin-ext.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
 }
 
 :root {
   /* ---- Neutrals (light) ---- */
-  --bg-app: #f4f6f8;
+  --bg-app: #f6f5f3;
   --bg-surface: #ffffff;
-  --bg-surface-alt: #fafbfc;
-  --border: #e8ecef;
-  --text-primary: #1f2937;
-  --text-secondary: #6b7280;
-  --text-tertiary: #9ca3af;
+  --bg-surface-alt: #f1efec;
+  --border: #e6e3de;
+  --text-primary: #1a1a1a;
+  --text-secondary: #6e6a64;
+  --text-tertiary: #a09a92;
 
   /* ---- Brand ---- */
-  --accent: #8bb6a2;
-  --accent-hover: #729b87;
-  --slate: #636d79;
+  --accent: #6f9d87;
+  --accent-hover: #5b8570;
+  /* Pale companion to the accent. The reference's donut pairs a pale
+     outer segment with a saturated inner arc; without this the two rings
+     read as one doubled stroke. Roughly the accent at 30% over white. */
+  --accent-soft: #d4e2db;
+  --slate: #6e6a64;
+
+  /* Solid near-black used by primary buttons and the sidebar - the
+     single strongest "premium" cue taken from the reference. */
+  --ink: #1a1a1a;
+  --ink-hover: #000000;
+  --ink-text: #ffffff;
 
   /* ---- Clinical domains: base / soft (badge bg) / ink (text on soft) ----
      Values carried over unchanged from the existing platform palette -
@@ -90,15 +180,15 @@
   --info-soft: rgba(59,130,196,.12);
 
   /* ---- Shape & depth ---- */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
   --radius-pill: 999px;
 
-  --shadow-xs: 0 1px 2px rgba(16,24,40,.04);
-  --shadow-sm: 0 1px 3px rgba(16,24,40,.06), 0 1px 2px rgba(16,24,40,.04);
-  --shadow-md: 0 4px 12px rgba(16,24,40,.07);
-  --shadow-lg: 0 12px 28px rgba(16,24,40,.10);
+  --shadow-xs: 0 1px 2px rgba(28,25,22,.04);
+  --shadow-sm: 0 1px 2px rgba(28,25,22,.04), 0 8px 24px -8px rgba(28,25,22,.08);
+  --shadow-md: 0 1px 2px rgba(28,25,22,.05), 0 12px 32px -10px rgba(28,25,22,.10);
+  --shadow-lg: 0 2px 4px rgba(28,25,22,.05), 0 20px 48px -12px rgba(28,25,22,.14);
 
   /* ---- Spacing: 4px scale ---- */
   --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
@@ -106,14 +196,25 @@
 
   /* ---- Typography ---- */
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'DM Mono', ui-monospace, monospace;
 
-  --text-metric-size: clamp(1.625rem, 1.4rem + 1vw, 2.125rem); --text-metric-weight: 600; --text-metric-lh: 1.2;
-  --text-page-title-size: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem); --text-page-title-weight: 600; --text-page-title-lh: 1.3;
-  --text-card-title-size: clamp(1rem, 0.9rem + 0.4vw, 1.1875rem); --text-card-title-weight: 600; --text-card-title-lh: 1.4;
-  --text-body-size: clamp(0.9375rem, 0.9rem + 0.2vw, 1.0625rem); --text-body-weight: 400; --text-body-lh: 1.6;
-  --text-label-size: clamp(0.75rem, 0.7rem + 0.2vw, 0.875rem); --text-label-weight: 500; --text-label-lh: 1.4; --text-label-spacing: .01em;
-  --text-eyebrow-size: clamp(0.6875rem, 0.65rem + 0.15vw, 0.8125rem); --text-eyebrow-weight: 600; --text-eyebrow-spacing: .08em;
+  /* Prose measure. Anything that is a paragraph of running text caps
+     here - unbounded line length was the main reason the resource
+     pages read as an unedited document rather than a product. */
+  --measure: 68ch;
+
+  /* Calm voice. The dashboard reference carries hierarchy with a
+     moderate semibold heading sitting directly above a muted grey
+     subtitle, not with oversized tightly-tracked display type. Sizes
+     and tracking are pulled back accordingly; only the metric stays
+     large, because a number is the one thing that should shout. */
+  --text-metric-size: clamp(1.75rem, 1.5rem + 1vw, 2.25rem); --text-metric-weight: 700; --text-metric-lh: 1.1; --text-metric-spacing: -.02em;
+  --text-page-title-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.625rem); --text-page-title-weight: 600; --text-page-title-lh: 1.25; --text-page-title-spacing: -.012em;
+  --text-card-title-size: clamp(1rem, 0.94rem + 0.3vw, 1.125rem); --text-card-title-weight: 600; --text-card-title-lh: 1.35; --text-card-title-spacing: -.008em;
+  --text-body-size: clamp(0.9375rem, 0.9rem + 0.2vw, 1.0625rem); --text-body-weight: 400; --text-body-lh: 1.65;
+  --text-label-size: clamp(0.75rem, 0.72rem + 0.15vw, 0.8125rem); --text-label-weight: 500; --text-label-lh: 1.4; --text-label-spacing: .01em;
+  --text-eyebrow-size: clamp(0.6875rem, 0.66rem + 0.12vw, 0.75rem); --text-eyebrow-weight: 600; --text-eyebrow-spacing: .07em;
 
   /* ---- Fluid type scale (matches Jordan/addiction-eval.html's own
      scale exactly, now shared app-wide so every page scales together
@@ -122,17 +223,24 @@
   --text-sm: clamp(0.8125rem, 0.78rem + 0.25vw, 0.9375rem);
   --text-base: clamp(0.9375rem, 0.9rem + 0.2vw, 1.0625rem);
   --text-lg: clamp(1.0625rem, 0.95rem + 0.6vw, 1.375rem);
-  --text-xl: clamp(1.375rem, 1.15rem + 1vw, 2rem);
+  --text-xl: clamp(1.375rem, 1.15rem + 1vw, 1.875rem);
+  /* Top step, for hero moments only. Deliberately short of a true
+     display size - the reference never goes there. */
+  --text-display: clamp(1.75rem, 1.45rem + 1.4vw, 2.5rem);
+
+  /* Subtitle sitting under a heading: same block, muted, regular
+     weight. This pairing is what carries hierarchy now. */
+  --text-subtitle-size: var(--text-sm);
 
   /* ---- Sidebar: fixed identity, deliberately independent of the
      light/dark toggle - a dark sidebar is a brand choice, not a theme
      one, matching the existing platform's sidebar treatment. ---- */
-  --sidebar-bg: #4b525c;
-  --sidebar-bg-active: rgba(255,255,255,.10);
+  --sidebar-bg: #151513;
+  --sidebar-bg-active: rgba(255,255,255,.08);
   --sidebar-bg-hover: rgba(255,255,255,.06);
-  --sidebar-text: rgba(255,255,255,.72);
+  --sidebar-text: rgba(255,255,255,.62);
   --sidebar-text-active: #ffffff;
-  --sidebar-border: rgba(255,255,255,.08);
+  --sidebar-border: rgba(255,255,255,.07);
 
   /* ---- Motion ---- */
   --ease-standard: cubic-bezier(.4,0,.2,1);
@@ -142,17 +250,21 @@
 }
 
 html[data-theme="dark"] {
-  --bg-app: #16181d;
-  --bg-surface: #1e2128;
-  --bg-surface-alt: #23262e;
-  --border: #2d313a;
-  --text-primary: #e8eaed;
-  --text-secondary: #9aa3ae;
-  --text-tertiary: #6b7280;
+  --bg-app: #131211;
+  --bg-surface: #1c1b19;
+  --bg-surface-alt: #232220;
+  --border: #2e2c29;
+  --text-primary: #ecebe8;
+  --text-secondary: #a29d95;
+  --text-tertiary: #7a756e;
 
   --accent: #8bb6a2;
   --accent-hover: #a3c9b6;
-  --slate: #a8acaf;
+  --accent-soft: rgba(139,182,162,.22);
+  --slate: #a29d95;
+  --ink: #ecebe8;
+  --ink-hover: #ffffff;
+  --ink-text: #1a1a1a;
 
   --domain-psychosis: #c97e94;
   --domain-psychosis-soft: rgba(201,126,148,.16);
@@ -190,16 +302,20 @@ html[data-theme="dark"] {
    so an explicit "light" choice always wins (see theme-init.js). */
 @media (prefers-color-scheme: dark) {
   html:not([data-theme="light"]) {
-    --bg-app: #16181d;
-    --bg-surface: #1e2128;
-    --bg-surface-alt: #23262e;
-    --border: #2d313a;
-    --text-primary: #e8eaed;
-    --text-secondary: #9aa3ae;
-    --text-tertiary: #6b7280;
+    --bg-app: #131211;
+    --bg-surface: #1c1b19;
+    --bg-surface-alt: #232220;
+    --border: #2e2c29;
+    --text-primary: #ecebe8;
+    --text-secondary: #a29d95;
+    --text-tertiary: #7a756e;
     --accent: #8bb6a2;
     --accent-hover: #a3c9b6;
-    --slate: #a8acaf;
+    --accent-soft: rgba(139,182,162,.22);
+    --slate: #a29d95;
+    --ink: #ecebe8;
+    --ink-hover: #ffffff;
+    --ink-text: #1a1a1a;
     --domain-psychosis: #c97e94;
     --domain-psychosis-soft: rgba(201,126,148,.16);
     --domain-psychosis-ink: #e0a3b5;

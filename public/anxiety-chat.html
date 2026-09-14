@@ -9,8 +9,7 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/favicon-180.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="/tokens.css">
 <link rel="stylesheet" href="/components.css">
 <link rel="stylesheet" href="/shell.css">
@@ -18,17 +17,18 @@
   if (!localStorage.getItem("clincog_name")) { location.replace("/"); }
 </script>
 <style>
-  .chat-page-intro { font-size: 13px; color: var(--text-secondary); margin: 0 0 var(--sp-4); font-style: italic; }
+  .chat-page-intro { font-size: var(--text-sm); color: var(--text-secondary); margin: 0 0 var(--sp-5); font-style: italic; max-width: var(--measure); }
   .chat-card { display: flex; flex-direction: column; height: 680px; margin-bottom: var(--sp-3); position: relative; }
   .chat-card .chat-scroll { flex: 1; }
   .chat-restart-row { display: flex; justify-content: flex-end; margin-bottom: var(--sp-5); }
   .chat-fullscreen-btn {
     position: absolute; top: 10px; right: 10px; z-index: 5;
     width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
-    border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-surface);
-    color: var(--text-secondary); cursor: pointer; transition: all .15s;
+    border: none; border-radius: var(--radius-md); background: var(--bg-surface-alt);
+    color: var(--text-secondary); cursor: pointer;
+    transition: background var(--duration-hover) var(--ease-standard), color var(--duration-hover) var(--ease-standard);
   }
-  .chat-fullscreen-btn:hover { background: var(--bg-surface-alt); color: var(--text-primary); }
+  .chat-fullscreen-btn:hover { background: var(--border); color: var(--text-primary); }
   .chat-card.is-fullscreen {
     position: fixed; inset: 16px; z-index: 1000; height: auto; width: auto;
     box-shadow: var(--shadow-lg); margin-bottom: 0;
@@ -43,11 +43,11 @@
 
   <div style="margin-bottom:var(--sp-5);">
     <span class="text-eyebrow">Week 3 · Anxiety · Conceptualization</span>
-    <h1 class="text-page-title" style="margin-top:4px;">Alex, 24</h1>
+    <h2 class="text-page-title" style="margin-top:4px;">Alex, 24</h2>
   </div>
 
   <div class="card" style="margin-bottom:var(--sp-4);">
-    <div class="card-body">
+    <div class="card-body prose">
       <strong>Case summary:</strong> Alex is a 24-year-old undergraduate student referred
     by their GP after persistent difficulties with academic performance and
     social engagement. Alex describes intense fear, dating back to early

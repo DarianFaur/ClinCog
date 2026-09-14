@@ -45,9 +45,13 @@ html[data-theme="dark"] {
   /* Typography: bold geometric sans for headings (matches the
      reference), Inter for body copy, DM Mono for small data
      labels only (kept from the original clinical-file styling). */
-  --head: 'Poppins', 'Inter', system-ui, sans-serif;
-  --sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --mono: 'DM Mono', ui-monospace, monospace;
+  /* Poppins is gone: it was never actually loaded (no @font-face, no CDN
+     link anywhere), so every heading has been rendering in the system
+     fallback. Hierarchy is now carried by weight and tracking inside
+     Inter, which is what the reference does too. */
+  --head: var(--font-display);
+  --sans: var(--font-sans);
+  --mono: var(--font-mono);
 
   --max: 1240px;
   --radius-pill: 999px;
@@ -176,7 +180,7 @@ body.bg-mesh::before {
   pointer-events: none;
 }
 
-h1, h2, h3 { font-family: var(--head); font-weight: 700; margin: 0; letter-spacing: -0.01em; }
+h1, h2, h3 { font-family: var(--head); font-weight: 600; margin: 0; letter-spacing: -0.012em; line-height: 1.25; }
 
 a { color: inherit; }
 

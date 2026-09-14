@@ -9,45 +9,47 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/favicon-180.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="/tokens.css">
 <link rel="stylesheet" href="/components.css">
 <link rel="stylesheet" href="/shell.css">
 <style>
-  .bm-intro { }
+  .bm-intro { max-width: var(--measure); }
   .bm-global-actions { display: flex; gap: var(--sp-3); align-items: center; margin: var(--sp-5) 0 var(--sp-6); flex-wrap: wrap; }
   .bm-save-status { font-size: var(--text-xs); color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
   .bm-save-status .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex-shrink: 0; opacity: 0; transition: opacity .3s; }
   .bm-save-status.on .dot { opacity: 1; }
 
-  .bm-test { margin-bottom: var(--sp-6); }
+  .bm-test { margin-bottom: var(--sp-5); }
   .bm-test-header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--sp-4); margin-bottom: var(--sp-4); }
-  .bm-test-title { font-size: var(--text-lg); font-weight: 600; color: var(--text-primary); font-family: var(--font-display); }
+  .bm-test-title { font-size: var(--text-lg); font-weight: 600; letter-spacing: -.012em; color: var(--text-primary); }
   .bm-test-used-in { font-size: var(--text-xs); color: var(--text-tertiary); margin-top: 4px; }
   .bm-test-used-in .case-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 4px; }
-  .bm-reset-btn { font-size: var(--text-xs); color: var(--text-secondary); background: var(--bg-surface-alt); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 6px 12px; cursor: pointer; white-space: nowrap; transition: all .15s; }
-  .bm-reset-btn:hover { background: var(--bg-surface); border-color: var(--text-tertiary); color: var(--text-primary); }
+  .bm-reset-btn { font-size: var(--text-xs); font-weight: 500; color: var(--text-secondary); background: var(--bg-surface-alt); border: none; border-radius: var(--radius-pill); padding: 8px 14px; cursor: pointer; white-space: nowrap; transition: background var(--duration-hover) var(--ease-standard), color var(--duration-hover) var(--ease-standard); }
+  .bm-reset-btn:hover { background: var(--border); color: var(--text-primary); }
 
   .bm-param-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--sp-4); margin-bottom: var(--sp-4); }
   .bm-field label { display: block; font-size: var(--text-xs); color: var(--text-secondary); margin-bottom: 6px; }
-  .bm-field input { width: 100%; box-sizing: border-box; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: var(--radius-md); font-family: var(--font-mono); font-size: var(--text-sm); color: var(--text-primary); background: var(--bg-surface); }
-  .bm-field input:focus { outline: none; border-color: var(--accent); }
+  /* Filled, borderless, with a focus ring rather than a coloured border -
+     a 1.5px outline on every field was the loudest chrome on the page. */
+  .bm-field input { width: 100%; box-sizing: border-box; padding: 11px 14px; border: none; border-radius: var(--radius-md); font-family: var(--font-mono); font-size: var(--text-sm); color: var(--text-primary); background: var(--bg-surface-alt); }
+  .bm-field input:focus { outline: 2px solid var(--accent); outline-offset: -2px; background: var(--bg-surface); }
 
   .bm-subgroup-label { font-size: var(--text-xs); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--text-tertiary); margin: var(--sp-4) 0 var(--sp-3); padding-top: var(--sp-3); border-top: 1px solid var(--border); }
   .bm-subgroup-label:first-child { margin-top: 0; padding-top: 0; border-top: none; }
 
   .bm-subscale-table { width: 100%; border-collapse: collapse; margin-bottom: var(--sp-4); }
-  .bm-subscale-table th { text-align: left; font-size: var(--text-xs); font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: .04em; padding: 0 8px 8px; border-bottom: 1px solid var(--border); }
-  .bm-subscale-table td { padding: 6px 8px; border-bottom: 1px solid var(--bg-surface-alt); }
+  .bm-subscale-table th { text-align: left; font-size: var(--text-xs); font-weight: 500; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: .06em; padding: 0 8px 10px; border-bottom: none; }
+  .bm-subscale-table td { padding: 9px 8px; border-bottom: none; box-shadow: inset 0 -1px 0 var(--bg-surface-alt); }
+  .bm-subscale-table tr:last-child td { box-shadow: none; }
   .bm-subscale-table td:first-child { font-size: var(--text-sm); color: var(--text-primary); }
-  .bm-subscale-table input { width: 80px; box-sizing: border-box; padding: 6px 8px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: var(--text-xs); color: var(--text-primary); background: var(--bg-surface); }
-  .bm-subscale-table input:focus { outline: none; border-color: var(--accent); }
+  .bm-subscale-table input { width: 84px; box-sizing: border-box; padding: 8px 10px; border: none; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: var(--text-sm); color: var(--text-primary); background: var(--bg-surface-alt); }
+  .bm-subscale-table input:focus { outline: 2px solid var(--accent); outline-offset: -2px; background: var(--bg-surface); }
 
   .bm-citation-field label { display: flex; align-items: center; gap: 6px; font-size: var(--text-xs); font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
-  .bm-citation-field textarea { width: 100%; box-sizing: border-box; min-height: 56px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-md); font-family: var(--font-sans); font-size: var(--text-xs); color: var(--text-primary); background: var(--bg-surface-alt); line-height: 1.6; resize: none; overflow: hidden; }
-  .bm-citation-field textarea:focus { outline: none; border-color: var(--accent); background: var(--bg-surface); }
-  .bm-citation-hint { font-size: var(--text-xs); color: var(--text-tertiary); margin-top: 4px; }
+  .bm-citation-field textarea { width: 100%; box-sizing: border-box; min-height: 56px; padding: 12px 14px; border: none; border-radius: var(--radius-md); font-family: var(--font-sans); font-size: var(--text-sm); color: var(--text-secondary); background: var(--bg-surface-alt); line-height: 1.65; resize: none; overflow: hidden; max-width: var(--measure); }
+  .bm-citation-field textarea:focus { outline: 2px solid var(--accent); outline-offset: -2px; color: var(--text-primary); }
+  .bm-citation-hint { font-size: var(--text-xs); color: var(--text-tertiary); margin-top: 6px; max-width: var(--measure); }
 </style>
 </head>
 <body>
@@ -55,9 +57,7 @@
 <div id="shell-content">
 
   <div style="margin-bottom:var(--sp-6);">
-    <span class="text-eyebrow">Seminar</span>
-    <h1 class="text-page-title" style="font-size:var(--text-lg);margin-top:4px;">Assessment benchmarks</h1>
-    <p class="text-secondary bm-intro" style="margin-top:8px;">
+    <p class="text-secondary bm-intro" style="margin-top:var(--sp-3);max-width:var(--measure);">
       Every standardized instrument in ClinCog converts a raw score to a T-score and percentile against a normative mean and standard deviation. The values below ship with reasonable published defaults, but you're the instructor — if you'd rather teach against a different normative sample, replace them here. Changes apply only in this browser and take effect the next time a report is generated.
     </p>
   </div>

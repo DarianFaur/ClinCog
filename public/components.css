@@ -26,9 +26,9 @@ body {
    Typography utility classes - one class per role from the tokens
    table, so no page ever hand-rolls a font-size/weight combo.
 --------------------------------------------------------------- */
-.text-metric { font-size: var(--text-metric-size); font-weight: var(--text-metric-weight); line-height: var(--text-metric-lh); color: var(--text-primary); }
-.text-page-title { font-size: var(--text-page-title-size); font-weight: var(--text-page-title-weight); line-height: var(--text-page-title-lh); color: var(--text-primary); }
-.text-card-title { font-size: var(--text-card-title-size); font-weight: var(--text-card-title-weight); line-height: var(--text-card-title-lh); color: var(--text-primary); }
+.text-metric { font-size: var(--text-metric-size); font-weight: var(--text-metric-weight); line-height: var(--text-metric-lh); letter-spacing: var(--text-metric-spacing); color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.text-page-title { font-size: var(--text-page-title-size); font-weight: var(--text-page-title-weight); line-height: var(--text-page-title-lh); letter-spacing: var(--text-page-title-spacing); color: var(--text-primary); }
+.text-card-title { font-size: var(--text-card-title-size); font-weight: var(--text-card-title-weight); line-height: var(--text-card-title-lh); letter-spacing: var(--text-card-title-spacing); color: var(--text-primary); }
 .text-body { font-size: var(--text-body-size); font-weight: var(--text-body-weight); line-height: var(--text-body-lh); }
 .text-label { font-size: var(--text-label-size); font-weight: var(--text-label-weight); line-height: var(--text-label-lh); letter-spacing: var(--text-label-spacing); color: var(--text-secondary); }
 .text-eyebrow { font-size: var(--text-eyebrow-size); font-weight: var(--text-eyebrow-weight); letter-spacing: var(--text-eyebrow-spacing); text-transform: uppercase; color: var(--text-tertiary); }
@@ -40,18 +40,29 @@ body {
 --------------------------------------------------------------- */
 .card {
   background: var(--bg-surface);
-  border: 1px solid transparent;
-  border-radius: 18px;
-  box-shadow: 0 1px 2px rgba(16,24,40,.03), 0 10px 28px -6px rgba(16,24,40,.07);
+  border: none;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   transition: transform var(--duration-hover) var(--ease-standard),
               box-shadow var(--duration-hover) var(--ease-standard);
 }
-.card-hoverable:hover { transform: translateY(-2px); box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 16px 36px -8px rgba(16,24,40,.12); }
-.card-body { padding: var(--sp-5); }
-@media (max-width: 640px) { .card-body { padding: var(--sp-4); } }
+.card-hoverable:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.card-body { padding: 28px; }
+@media (max-width: 767px) { .card-body { padding: var(--sp-5); } }
+
+/* Divider between rows INSIDE a card. Inset from the card's own padding
+   so it never runs edge to edge - taken from the reference, and the
+   reason a stack of rows reads as one object rather than a table. */
+.card-divider { height: 1px; background: var(--border); margin: var(--sp-5) 28px; border: 0; }
+@media (max-width: 767px) { .card-divider { margin: var(--sp-4) var(--sp-5); } }
+
+/* Prose measure helper - cap running text so lines stay readable. */
+.prose { max-width: var(--measure); }
+.prose p { margin: 0 0 var(--sp-4); line-height: var(--text-body-lh); }
+.prose p:last-child { margin-bottom: 0; }
 .card-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: var(--sp-4) var(--sp-5);
+  padding: var(--sp-5) 28px;
   border-bottom: 1px solid var(--border);
 }
 .card-header .text-card-title { margin: 0; }
@@ -60,9 +71,9 @@ body {
 /* ---------------------------------------------------------------
    Stat card
 --------------------------------------------------------------- */
-.stat-card { position: relative; padding: var(--sp-5); }
+.stat-card { position: relative; padding: 28px; }
 .stat-card .stat-icon {
-  position: absolute; top: var(--sp-5); right: var(--sp-5);
+  position: absolute; top: 24px; right: 24px;
   width: 40px; height: 40px; border-radius: var(--radius-md);
   display: flex; align-items: center; justify-content: center;
   background: var(--accent-soft, var(--domain-anxiety-soft)); color: var(--accent);
@@ -77,10 +88,23 @@ body {
 /* ---------------------------------------------------------------
    Progress bar
 --------------------------------------------------------------- */
+/* Thicker and fully rounded, per the dashboard reference - a 6px hairline
+   track reads as a loading indicator, a 12px pill reads as a measurement.
+   The remainder is hatched rather than flat grey so "not yet done" is
+   visibly a quantity, not just empty space. */
 .progress-track {
-  height: 6px; border-radius: var(--radius-pill);
+  height: 12px; border-radius: var(--radius-pill);
   background: var(--border); overflow: hidden; width: 100%;
 }
+.progress-track.hatched {
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      var(--border) 0 5px,
+      var(--bg-surface-alt) 5px 10px
+    );
+}
+.progress-track.slim { height: 6px; }
 .progress-fill {
   height: 100%; border-radius: var(--radius-pill);
   background: var(--accent);
@@ -88,17 +112,18 @@ body {
 }
 .progress-row { display: flex; align-items: center; gap: var(--sp-3); }
 .progress-row .progress-track { flex: 1; }
-.progress-row .progress-pct { font-size: var(--text-xs); font-weight: 600; color: var(--text-secondary); min-width: 32px; text-align: right; }
+.progress-row .progress-pct { font-size: var(--text-sm); font-weight: 600; color: var(--text-primary); min-width: 42px; text-align: right; font-variant-numeric: tabular-nums; }
 
 /* ---------------------------------------------------------------
    Badge
 --------------------------------------------------------------- */
 .badge {
   display: inline-flex; align-items: center; gap: 5px;
-  border-radius: var(--radius-pill); padding: 3px 10px;
-  font-size: var(--text-xs); font-weight: 600; line-height: 1.4; white-space: nowrap;
+  border-radius: var(--radius-pill); padding: 5px 12px;
+  font-size: var(--text-xs); font-weight: 500; line-height: 1.4; white-space: nowrap;
+  border: none;
 }
-.badge-neutral { background: var(--bg-surface-alt); color: var(--text-secondary); border: 1px solid var(--border); }
+.badge-neutral { background: var(--bg-surface-alt); color: var(--text-secondary); }
 .badge-success { background: var(--success-soft); color: var(--success); }
 .badge-warning { background: var(--warning-soft); color: var(--warning); }
 .badge-danger  { background: var(--danger-soft);  color: var(--danger); }
@@ -115,7 +140,7 @@ body {
 --------------------------------------------------------------- */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  height: 36px; padding: 0 var(--sp-4); border-radius: var(--radius-md);
+  height: 44px; padding: 0 var(--sp-6); border-radius: var(--radius-pill);
   font-family: var(--font-sans); font-size: var(--text-sm); font-weight: 500;
   border: 1px solid transparent; cursor: pointer; text-decoration: none;
   transition: background var(--duration-hover) var(--ease-standard),
@@ -124,7 +149,7 @@ body {
 }
 .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
-.btn-sm { height: 30px; padding: 0 var(--sp-3); font-size: var(--text-xs); }
+.btn-sm { height: 34px; padding: 0 var(--sp-4); font-size: var(--text-xs); }
 
 /* Deliberately monochrome, not colored - a bright accent here would
    compete with whatever domain color a page is theming its own content
@@ -137,12 +162,18 @@ body {
    color rather than text-primary/bg-surface, so primary actions read
    as an echo of the app's persistent chrome - intentional, not
    arbitrary. Theme-invariant on purpose, matching the sidebar itself. */
-.btn-primary { background: var(--sidebar-bg); color: #fff; border-color: rgba(255,255,255,.18); }
-.btn-primary:hover:not(:disabled) { opacity: .85; }
+/* Sentence case, not uppercase-tracked. The uppercase pill came from the
+   e-commerce reference; this reference keeps its buttons quiet and lets
+   the numbers and charts carry the emphasis. */
+.btn-primary {
+  background: var(--ink); color: var(--ink-text); border-color: transparent;
+  font-size: var(--text-sm); font-weight: 600; letter-spacing: 0;
+}
+.btn-primary:hover:not(:disabled) { background: var(--ink-hover); opacity: 1; }
 .btn-primary:active:not(:disabled) { transform: translateY(1px); }
 
-.btn-secondary { background: var(--bg-surface); color: var(--text-primary); border-color: var(--border); }
-.btn-secondary:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.btn-secondary { background: var(--bg-surface-alt); color: var(--text-primary); border-color: transparent; }
+.btn-secondary:hover:not(:disabled) { background: var(--border); color: var(--text-primary); }
 
 .btn-ghost { background: transparent; color: var(--text-secondary); }
 .btn-ghost:hover:not(:disabled) { background: var(--bg-surface-alt); color: var(--text-primary); }
@@ -150,8 +181,8 @@ body {
 /* ---------------------------------------------------------------
    Case card - the dashboard's centerpiece
 --------------------------------------------------------------- */
-.case-card { padding: var(--sp-6); display: flex; flex-direction: column; gap: var(--sp-4); cursor: default; }
-.case-card:hover { transform: translateY(-2px); box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 16px 36px -8px rgba(16,24,40,.12); }
+.case-card { padding: 28px; display: flex; flex-direction: column; gap: var(--sp-5); cursor: default; }
+.case-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 .case-card-top { display: flex; align-items: flex-start; gap: var(--sp-3); }
 .case-card-icon {
   width: 44px; height: 44px; border-radius: var(--radius-md); flex-shrink: 0;
@@ -167,11 +198,12 @@ body {
 
 .case-card-grid {
   display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3) var(--sp-4);
-  padding: var(--sp-3) 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  padding: var(--sp-4); border: none;
+  background: var(--bg-surface-alt); border-radius: var(--radius-md);
 }
 .case-card-grid-item { display: flex; flex-direction: column; gap: 2px; }
-.case-card-grid-item .val { font-size: var(--text-base); font-weight: 600; color: var(--text-primary); }
-.case-card-grid-item .lbl { font-size: var(--text-xs); color: var(--text-tertiary); }
+.case-card-grid-item .val { font-size: var(--text-lg); font-weight: 700; letter-spacing: -.015em; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.case-card-grid-item .lbl { font-size: var(--text-xs); font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: var(--text-tertiary); }
 
 .case-card-footer { display: flex; gap: var(--sp-2); }
 .case-card-footer .btn { flex: 1; }
@@ -191,11 +223,12 @@ body {
   background: var(--bg-surface-alt); text-align: left;
   font-size: var(--text-xs); font-weight: 600; text-transform: uppercase; letter-spacing: .04em;
   color: var(--text-tertiary); padding: var(--sp-3) var(--sp-4);
-  border-bottom: 1px solid var(--border); white-space: nowrap;
+  border-bottom: none; white-space: nowrap;
 }
 .table thead th.sortable { cursor: pointer; user-select: none; }
 .table thead th.sortable:hover { color: var(--text-secondary); }
-.table tbody tr { height: 48px; border-bottom: 1px solid var(--border); transition: background var(--duration-hover); }
+.table tbody tr { height: 52px; box-shadow: inset 0 -1px 0 var(--border); transition: background var(--duration-hover); }
+.table tbody tr:last-child { box-shadow: none; }
 .table tbody tr:hover { background: var(--bg-surface-alt); }
 .table tbody td { padding: 0 var(--sp-4); color: var(--text-primary); }
 
@@ -203,8 +236,8 @@ body {
   .table-wrap.collapse-mobile thead { display: none; }
   .table-wrap.collapse-mobile, .table-wrap.collapse-mobile tbody, .table-wrap.collapse-mobile tr, .table-wrap.collapse-mobile td { display: block; width: 100%; }
   .table-wrap.collapse-mobile tr {
-    height: auto; padding: var(--sp-3) var(--sp-4); margin-bottom: var(--sp-3);
-    border: 1px solid var(--border); border-radius: var(--radius-md);
+    height: auto; padding: var(--sp-4); margin-bottom: var(--sp-3);
+    border: none; background: var(--bg-surface-alt); border-radius: var(--radius-md);
   }
   .table-wrap.collapse-mobile td { padding: 4px 0; border: none; }
   .table-wrap.collapse-mobile td::before { content: attr(data-label); display: block; font-size: var(--text-xs); color: var(--text-tertiary); }
@@ -262,11 +295,11 @@ body {
   .chat-composer #chat-input { max-width: calc(100% - 130px); }
 }
 .chat-composer input, .chat-composer textarea {
-  flex: 1; resize: none; border: 1px solid var(--border); border-radius: var(--radius-md);
-  padding: 9px 12px; font-family: var(--font-sans); font-size: var(--text-base); color: var(--text-primary);
-  background: var(--bg-app); max-height: 120px; line-height: 1.5;
+  flex: 1; resize: none; border: none; border-radius: var(--radius-pill);
+  padding: 12px 18px; font-family: var(--font-sans); font-size: var(--text-base); color: var(--text-primary);
+  background: var(--bg-surface-alt); max-height: 120px; line-height: 1.5;
 }
-.chat-composer input:focus, .chat-composer textarea:focus { outline: none; border-color: var(--accent); }
+.chat-composer input:focus, .chat-composer textarea:focus { outline: 2px solid var(--accent); outline-offset: -2px; }
 
 /* ---------------------------------------------------------------
    Empty state
@@ -282,8 +315,8 @@ body {
    activity", progress.html "Full activity history"). Always built
    from real, timestamped events - never a placeholder feed.
 --------------------------------------------------------------- */
-.activity-row { display: flex; align-items: flex-start; gap: var(--sp-3); padding: var(--sp-3) 0; border-bottom: 1px solid var(--border); }
-.activity-row:last-child { border-bottom: none; }
+.activity-row { display: flex; align-items: flex-start; gap: var(--sp-3); padding: var(--sp-4) 0; box-shadow: inset 0 -1px 0 var(--border); }
+.activity-row:last-child { box-shadow: none; }
 .activity-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
 .activity-text { font-size: var(--text-base); color: var(--text-primary); }
 .activity-time { font-size: var(--text-xs); color: var(--text-tertiary); margin-top: 2px; }
@@ -306,4 +339,192 @@ body {
   .skeleton { animation: none; }
   .chat-typing .dot { animation: none; opacity: .7; }
   .card, .btn, .progress-fill { transition: none; }
+}
+
+/* ---------------------------------------------------------------
+   Icon tile - rounded square, soft domain fill, glyph in the
+   saturated hue. Replaces loose floating icons; gives every data
+   block a consistent anchor at its top-left.
+--------------------------------------------------------------- */
+.icon-tile {
+  width: 40px; height: 40px; border-radius: var(--radius-md); flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--bg-surface-alt); color: var(--text-secondary);
+}
+.icon-tile.domain-psychosis { background: var(--domain-psychosis-soft); color: var(--domain-psychosis); }
+.icon-tile.domain-mood      { background: var(--domain-mood-soft);      color: var(--domain-mood); }
+.icon-tile.domain-anxiety   { background: var(--domain-anxiety-soft);   color: var(--domain-anxiety); }
+.icon-tile.domain-substance { background: var(--domain-substance-soft); color: var(--domain-substance); }
+.icon-tile.accent { background: var(--domain-anxiety-soft); color: var(--accent); }
+
+/* Label/value pair - the repeating motif. Small muted uppercase label
+   above a large near-black value. */
+.pair-label {
+  display: block; font-size: var(--text-xs); font-weight: 500;
+  letter-spacing: .06em; text-transform: uppercase; color: var(--text-tertiary);
+  margin-bottom: var(--sp-2);
+}
+.pair-value {
+  display: block; font-size: var(--text-metric-size); font-weight: 700;
+  line-height: var(--text-metric-lh); letter-spacing: var(--text-metric-spacing);
+  color: var(--text-primary); font-variant-numeric: tabular-nums;
+}
+
+/* Every number in the app aligns. */
+.text-metric, .pair-value, .stat-value, .table td { font-variant-numeric: tabular-nums; }
+
+/* ---------------------------------------------------------------
+   Key/value row - "Label: Value" on one line, label muted and
+   regular, value near-black and semibold. Reference uses this for
+   its identity panel; here it fits the vignette and benchmark
+   panels, where a two-line label-above-value pair wastes height.
+--------------------------------------------------------------- */
+.kv-list { display: flex; flex-direction: column; gap: var(--sp-2); }
+.kv-row { font-size: var(--text-sm); line-height: 1.5; }
+.kv-row .kv-key { color: var(--text-tertiary); }
+.kv-row .kv-val { color: var(--text-primary); font-weight: 600; }
+
+/* ---------------------------------------------------------------
+   Fraction - current value carries the weight, the divisor recedes.
+   "0/4" set in one uniform weight reads as a single opaque token;
+   splitting it makes the number the thing you actually see.
+--------------------------------------------------------------- */
+.frac { font-variant-numeric: tabular-nums; }
+.frac .frac-total { color: var(--text-tertiary); font-weight: 400; }
+
+/* ---------------------------------------------------------------
+   Dashed divider - softer than a solid rule, used between blocks
+   inside a panel rather than between rows of the same list.
+--------------------------------------------------------------- */
+.divider-dashed { height: 0; border: 0; border-top: 1px dashed var(--border); margin: var(--sp-5) 0; }
+
+/* ---------------------------------------------------------------
+   Segmented control - pill container on the tinted surface, active
+   segment lifts out as a white chip.
+--------------------------------------------------------------- */
+.segmented {
+  display: inline-flex; padding: 4px; gap: 2px;
+  background: var(--bg-surface-alt); border-radius: var(--radius-pill);
+}
+.segmented button {
+  border: none; background: transparent; cursor: pointer;
+  font-family: var(--font-sans); font-size: var(--text-sm); font-weight: 500;
+  color: var(--text-secondary); padding: 7px var(--sp-4); border-radius: var(--radius-pill);
+  transition: background var(--duration-hover) var(--ease-standard), color var(--duration-hover) var(--ease-standard);
+}
+.segmented button:hover { color: var(--text-primary); }
+.segmented button[aria-selected="true"] {
+  background: var(--bg-surface); color: var(--text-primary); font-weight: 600;
+  box-shadow: var(--shadow-xs);
+}
+
+/* ---------------------------------------------------------------
+   Step chip - numbered rounded square for sequential navigation.
+   Replaces the plain numbered circle: a filled chip makes "where
+   am I" legible at a glance, and .has-flag marks a step with
+   something still outstanding.
+--------------------------------------------------------------- */
+.step-chip {
+  position: relative; width: 34px; height: 34px; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-md); background: var(--bg-surface-alt);
+  font-size: var(--text-sm); font-weight: 600; color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+  transition: background var(--duration-hover) var(--ease-standard), color var(--duration-hover) var(--ease-standard);
+}
+.step-chip.done { background: var(--domain-anxiety-soft); color: var(--accent); }
+.step-chip.current { background: var(--ink); color: var(--ink-text); }
+.step-chip.has-flag::after {
+  content: ""; position: absolute; right: -2px; bottom: -2px;
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--warning); box-shadow: 0 0 0 2px var(--bg-surface);
+}
+
+/* ---------------------------------------------------------------
+   Icon button row - equal rounded squares, active one takes a soft
+   accent fill instead of a border.
+--------------------------------------------------------------- */
+.icon-row { display: flex; gap: var(--sp-2); flex-wrap: wrap; }
+.icon-btn {
+  width: 42px; height: 42px; border-radius: var(--radius-md); border: none;
+  background: var(--bg-surface-alt); color: var(--text-secondary);
+  display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+  transition: background var(--duration-hover) var(--ease-standard), color var(--duration-hover) var(--ease-standard);
+}
+.icon-btn:hover { background: var(--border); color: var(--text-primary); }
+.icon-btn.on { background: var(--domain-anxiety-soft); color: var(--accent); }
+
+/* ---------------------------------------------------------------
+   Heading + subtitle pairing. The reference's hierarchy device:
+   a moderate semibold title with a muted line immediately under it,
+   no gap, no rule. Replaces shouting with a size jump.
+--------------------------------------------------------------- */
+.titled { display: flex; flex-direction: column; gap: 2px; }
+.titled .titled-sub { font-size: var(--text-subtitle-size); color: var(--text-tertiary); line-height: 1.4; }
+
+/* ---------------------------------------------------------------
+   Donut - see donut.js for the geometry and why there are two
+   rings. The centre figure is absolutely positioned over the SVG
+   rather than set as SVG <text>, so it inherits the page's real
+   font metrics and tabular figures instead of rendering at a size
+   the type scale knows nothing about.
+--------------------------------------------------------------- */
+.donut { position: relative; width: 118px; height: 118px; flex-shrink: 0; }
+.donut-svg { width: 100%; height: 100%; display: block; }
+.donut-arc { transition: d var(--duration-progress) var(--ease-standard); }
+.donut-centre {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 1px; pointer-events: none;
+}
+.donut-value {
+  font-size: 26px; font-weight: 700; line-height: 1; letter-spacing: -.02em;
+  color: var(--text-primary); font-variant-numeric: tabular-nums;
+}
+.donut-total {
+  font-size: var(--text-sm); font-weight: 500; line-height: 1;
+  color: var(--text-tertiary); font-variant-numeric: tabular-nums;
+}
+.donut-sm { width: 92px; height: 92px; }
+.donut-sm .donut-value { font-size: 21px; }
+
+/* Legend: dot, value at weight, label muted - all on one line. */
+.donut-legend { display: flex; flex-direction: column; gap: var(--sp-3); }
+.donut-legend-row { display: flex; align-items: center; gap: var(--sp-3); font-size: var(--text-sm); }
+.donut-legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.donut-legend-val { font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums; min-width: 14px; }
+.donut-legend-lbl { color: var(--text-secondary); }
+
+/* Stat card with a donut: legend left, ring right, as in the reference. */
+.stat-card.has-donut {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4);
+}
+.stat-card.has-donut .stat-icon { display: none; }
+.stat-card-figures { min-width: 0; }
+@media (max-width: 560px) { .stat-card.has-donut { gap: var(--sp-3); } }
+
+/* ---------------------------------------------------------------
+   Chat empty state - see chat.js renderEmptyState(). A 680px-tall
+   empty scroll area reads as a broken page; this gives it a reason
+   to be there and a first move to make.
+--------------------------------------------------------------- */
+.chat-empty {
+  height: 100%; min-height: 240px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: var(--sp-7) var(--sp-6); gap: var(--sp-2);
+}
+.chat-empty-icon {
+  width: 52px; height: 52px; border-radius: var(--radius-lg);
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-surface-alt); color: var(--text-tertiary);
+  margin-bottom: var(--sp-3);
+}
+.chat-empty-icon svg { width: 24px; height: 24px; }
+.chat-empty-title {
+  margin: 0; font-size: var(--text-base); font-weight: 600;
+  letter-spacing: -.008em; color: var(--text-secondary);
+}
+.chat-empty-hint {
+  margin: 0; font-size: var(--text-sm); line-height: 1.6;
+  color: var(--text-tertiary); max-width: 44ch;
 }

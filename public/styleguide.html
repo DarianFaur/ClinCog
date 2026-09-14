@@ -6,11 +6,9 @@
 <script src="/theme-init.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ClinCog · Styleguide</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <!-- Temporary CDN fallback: real self-hosted Inter woff2 files still
      need to be added at /public/fonts/ (see tokens.css header comment).
      Remove this link once those files exist. -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/tokens.css">
 <link rel="stylesheet" href="/components.css">
 <style>
@@ -95,9 +93,9 @@
       </div>
     </div>
     <div class="sg-row" style="margin-bottom:24px;">
-      <div class="sg-radius-demo" style="border-radius:var(--radius-sm)">sm 6px</div>
-      <div class="sg-radius-demo" style="border-radius:var(--radius-md)">md 10px</div>
-      <div class="sg-radius-demo" style="border-radius:var(--radius-lg)">lg 14px</div>
+      <div class="sg-radius-demo" style="border-radius:var(--radius-sm)">sm 8px</div>
+      <div class="sg-radius-demo" style="border-radius:var(--radius-md)">md 12px</div>
+      <div class="sg-radius-demo" style="border-radius:var(--radius-lg)">lg 20px</div>
       <div class="sg-radius-demo" style="border-radius:var(--radius-pill)">pill</div>
     </div>
     <div class="sg-row">
@@ -111,10 +109,10 @@
   <section class="sg-section">
     <div class="text-page-title">Tokens — Typography</div>
     <div class="card"><div class="card-body" style="display:flex;flex-direction:column;gap:14px;">
-      <div><div class="text-metric">28 / Metric number</div></div>
-      <div><div class="text-page-title">20 / Page title</div></div>
-      <div><div class="text-card-title">15 / Card title</div></div>
-      <div><div class="text-body">14 / Body text — the base size across the app, not 16px. Density is intentional.</div></div>
+      <div><div class="text-metric">28&ndash;36 / Metric number</div></div>
+      <div><div class="text-page-title">20&ndash;26 / Page title</div></div>
+      <div><div class="text-card-title">16&ndash;18 / Card title</div></div>
+      <div><div class="text-body" style="max-width:var(--measure);">15&ndash;17 / Body text — capped at <code>--measure</code> (68ch). Anything longer than this stops reading like a product and starts reading like an unedited document.</div></div>
       <div><div class="text-label">12 / LABEL & META</div></div>
       <div><div class="text-eyebrow">11 / EYEBROW SIDEBAR</div></div>
     </div></div>
@@ -345,7 +343,94 @@
 
 </div>
 
+
+  <!-- ============ PRIMITIVES ADDED IN THE v2 REDESIGN ============ -->
+  <section class="sg-section">
+    <div class="text-page-title">v2 primitives</div>
+    <span class="text-secondary">Added during the visual redesign. Everything here is defined in components.css and driven by tokens.</span>
+
+    <div class="text-eyebrow" style="margin:24px 0 8px;">Label / value pair &amp; fraction</div>
+    <div class="sg-grid-2">
+      <div class="card stat-card">
+        <span class="pair-label">Cases complete</span>
+        <span class="pair-value frac">2<span class="frac-total">/4</span></span>
+      </div>
+      <div class="card stat-card">
+        <span class="pair-label">Messages exchanged</span>
+        <span class="pair-value">37</span>
+      </div>
+    </div>
+
+    <div class="text-eyebrow" style="margin:24px 0 8px;">Donut (see donut.js)</div>
+    <div class="card"><div class="card-body" style="display:flex;align-items:center;gap:32px;flex-wrap:wrap;">
+      <div class="donut" id="sg-donut"></div>
+      <div class="donut-legend" id="sg-donut-legend"></div>
+      <p class="text-secondary" style="margin:0;max-width:46ch;font-size:var(--text-sm);">
+        Outer ring is the full breakdown and always closes the circle; inner arc is the
+        headline figure, solid with round caps and no track behind it. Hatched segments
+        mean &ldquo;not done yet&rdquo; &mdash; a quantity, not empty space.
+      </p>
+    </div></div>
+
+    <div class="text-eyebrow" style="margin:24px 0 8px;">Progress track</div>
+    <div class="card"><div class="card-body">
+      <div class="progress-row" style="margin-bottom:16px;">
+        <div class="progress-track hatched"><div class="progress-fill" style="width:62%"></div></div>
+        <span class="progress-pct">62%</span>
+      </div>
+      <div class="progress-row">
+        <div class="progress-track hatched slim"><div class="progress-fill" style="width:25%"></div></div>
+        <span class="progress-pct">25%</span>
+      </div>
+    </div></div>
+
+    <div class="text-eyebrow" style="margin:24px 0 8px;">Step chips</div>
+    <div class="card"><div class="card-body" style="display:flex;gap:10px;align-items:center;">
+      <span class="step-chip done">1</span>
+      <span class="step-chip done">2</span>
+      <span class="step-chip current">3</span>
+      <span class="step-chip has-flag">4</span>
+      <span class="step-chip">5</span>
+      <span class="step-chip">6</span>
+    </div></div>
+
+    <div class="text-eyebrow" style="margin:24px 0 8px;">Icon tiles &amp; icon row</div>
+    <div class="card"><div class="card-body" style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;">
+      <div style="display:flex;gap:10px;">
+        <span class="icon-tile domain-psychosis"></span>
+        <span class="icon-tile domain-mood"></span>
+        <span class="icon-tile domain-anxiety"></span>
+        <span class="icon-tile domain-substance"></span>
+      </div>
+      <div class="icon-row">
+        <button class="icon-btn on" type="button"></button>
+        <button class="icon-btn" type="button"></button>
+        <button class="icon-btn" type="button"></button>
+      </div>
+    </div></div>
+
+    <div class="text-eyebrow" style="margin:24px 0 8px;">Segmented control</div>
+    <div class="card"><div class="card-body">
+      <div class="segmented">
+        <button type="button" aria-selected="true">By category</button>
+        <button type="button" aria-selected="false">By instrument</button>
+      </div>
+    </div></div>
+
+    <div class="text-eyebrow" style="margin:24px 0 8px;">Key / value rows &amp; dashed divider</div>
+    <div class="card"><div class="card-body">
+      <div class="kv-list">
+        <div class="kv-row"><span class="kv-key">Case:</span> <span class="kv-val">Dennis, 25</span></div>
+        <div class="kv-row"><span class="kv-key">Domain:</span> <span class="kv-val">Psychosis</span></div>
+        <div class="kv-row"><span class="kv-key">Stage:</span> <span class="kv-val">HiTOP-SR</span></div>
+      </div>
+      <hr class="divider-dashed">
+      <p class="text-secondary" style="margin:0;font-size:var(--text-sm);">Dashed dividers separate blocks inside a panel; the solid inset <code>.card-divider</code> separates rows of one list.</p>
+    </div></div>
+  </section>
+
 <script src="/icons.js"></script>
+<script src="/donut.js"></script>
 <script>
   // Fill in the icon-bearing elements declared above via ClinIcons.
   const iconMap = {
@@ -361,6 +446,39 @@
   });
   document.getElementById("icon-send-btn").innerHTML = ClinIcons.get("send", 14) + " Ask";
   document.getElementById("empty-state-demo").insertAdjacentHTML("afterbegin", ClinIcons.get("inbox", 40));
+
+  // ---- v2 primitives demo -------------------------------------------------
+  (function () {
+    const segs = [
+      { value: 2, color: "var(--accent-soft)", dot: "var(--accent)", label: "Complete" },
+      { value: 1, color: "var(--warning)", hatched: true, label: "In progress" },
+      { value: 1, color: "var(--border)", hatched: true, label: "Not started" }
+    ];
+    if (window.ClinCogDonut) {
+      ClinCogDonut.render(document.getElementById("sg-donut"), {
+        segments: segs, value: 2, total: 4, headline: 1,
+        color: "var(--accent)", title: "Cases complete: 2 of 4"
+      });
+    }
+    const legend = document.getElementById("sg-donut-legend");
+    if (legend) {
+      legend.innerHTML = segs.map(function (x) {
+        return '<div class="donut-legend-row">' +
+          '<span class="donut-legend-dot" style="background:' + (x.dot || x.color) + '"></span>' +
+          '<span class="donut-legend-val">' + x.value + "</span>" +
+          '<span class="donut-legend-lbl">' + x.label + "</span></div>";
+      }).join("");
+    }
+    const tiles = { "domain-psychosis": "brain", "domain-mood": "brain", "domain-anxiety": "brain", "domain-substance": "brain" };
+    document.querySelectorAll(".icon-tile").forEach(function (el) {
+      const key = Object.keys(tiles).find(function (k) { return el.classList.contains(k); });
+      el.innerHTML = ClinIcons.get(tiles[key] || "help", 20);
+    });
+    const rowIcons = ["message-circle", "bar-chart", "book"];
+    document.querySelectorAll(".icon-row .icon-btn").forEach(function (el, i) {
+      el.innerHTML = ClinIcons.get(rowIcons[i] || "help", 18);
+    });
+  })();
 
   // Simple theme toggle for previewing both palettes, consistent with
   // the rest of the site's storage key.
