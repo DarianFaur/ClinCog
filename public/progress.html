@@ -23,6 +23,20 @@
      instead of stopping short inside a wide one. */
   :root { --shell-content-max: 1040px; }
 
+  .bk-card { margin-top: var(--sp-4); }
+  .bk-note { font-size: var(--text-base); color: var(--text-secondary); line-height: 1.65; margin: 0 0 var(--sp-5); max-width: var(--measure); }
+  .bk-actions { display: flex; gap: var(--sp-3); flex-wrap: wrap; align-items: center; }
+  .bk-small { font-size: var(--text-sm); color: var(--text-tertiary); line-height: 1.6; margin: var(--sp-4) 0 0; max-width: var(--measure); }
+
+  .bk-preview { margin-top: var(--sp-5); background: var(--bg-surface-alt); border-radius: var(--radius-md); padding: var(--sp-5); }
+  .bk-preview-title { font-size: var(--text-base); font-weight: 600; letter-spacing: -.008em; color: var(--text-primary); }
+  .bk-preview-meta { font-size: var(--text-sm); color: var(--text-tertiary); margin-top: 2px; }
+  .bk-list { list-style: none; margin: var(--sp-4) 0 0; padding: 0; display: flex; flex-direction: column; gap: var(--sp-2); }
+  .bk-list li { font-size: var(--text-sm); color: var(--text-secondary); display: flex; gap: var(--sp-3); align-items: baseline; }
+  .bk-list .bk-case { color: var(--text-primary); font-weight: 600; min-width: 96px; }
+  .bk-warn { font-size: var(--text-sm); color: var(--text-primary); line-height: 1.6; margin: var(--sp-5) 0 var(--sp-4); }
+  .bk-confirm { display: flex; gap: var(--sp-3); flex-wrap: wrap; }
+
   .prog-header { margin-bottom: var(--sp-6); }
   .prog-header .text-secondary { margin-top: 4px; display: block; max-width: 60ch; }
 
@@ -70,12 +84,40 @@
     </div>
   </div>
 
+  <!-- Backup. Everything on this page lives in this browser only, so
+       clearing site data or switching machine loses it. -->
+  <div class="card bk-card">
+    <div class="card-header"><span class="text-card-title">Back up your progress</span></div>
+    <div class="card-body">
+      <p class="bk-note">
+        Your conversations, ratings and reflections are stored in this browser and
+        nowhere else. Clearing your browsing data, using a different computer, or
+        opening ClinCog in a private window all start you from scratch. A backup file
+        carries everything across.
+      </p>
+
+      <div class="bk-actions">
+        <button type="button" class="btn btn-primary" id="bk-export">Download backup</button>
+        <button type="button" class="btn btn-secondary" id="bk-import-btn">Restore from a file</button>
+        <input type="file" id="bk-file" accept="application/json,.json" hidden>
+      </div>
+
+      <p class="bk-small">
+        The file is plain JSON. API keys are never included, so a backup is safe to
+        email to yourself or keep in a shared drive.
+      </p>
+
+      <div class="bk-preview" id="bk-preview" hidden></div>
+    </div>
+  </div>
+
 </div>
 
 <script>window.CLINCOG_SHELL = { activeNav: "progress", breadcrumb: [{ label: "Dashboard", href: "/dashboard.html" }, { label: "My progress" }] };</script>
 <script src="/storage.js"></script>
 <script src="/icons.js"></script>
 <script src="/shell.js?v=2"></script>
+<script src="/toast.js"></script>
 <script src="/a11y.js"></script>
 <script>
   const DOMAIN_CLASS = { schizophrenia: "psychosis", depression: "mood", anxiety: "anxiety", addiction: "substance" };
@@ -140,6 +182,127 @@
         </div>
       </div>`).join("");
   }
+
+  // ---- Backup -------------------------------------------------------------
+  (function () {
+    const exportBtn = document.getElementById("bk-export");
+    const importBtn = document.getElementById("bk-import-btn");
+    const fileInput = document.getElementById("bk-file");
+    const preview = document.getElementById("bk-preview");
+
+    function announce(opts) {
+      if (window.ClinCogToast) ClinCogToast.show(opts);
+    }
+
+    exportBtn.addEventListener("click", function () {
+      const payload = ClinCog.exportAll();
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      const who = (payload.name || "clincog").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      const day = new Date().toISOString().slice(0, 10);
+      a.href = url;
+      a.download = `clincog-${who || "backup"}-${day}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      // Revoking immediately can cancel the download in some browsers.
+      setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+    });
+
+    importBtn.addEventListener("click", function () { fileInput.click(); });
+
+    fileInput.addEventListener("change", function () {
+      const file = fileInput.files && fileInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function () {
+        let payload;
+        try {
+          payload = JSON.parse(String(reader.result));
+        } catch {
+          announce({ title: "That file could not be read.", detail: "It does not contain valid JSON." });
+          fileInput.value = "";
+          return;
+        }
+        const summary = ClinCog.summariseExport(payload);
+        if (!summary.valid) {
+          announce({ title: "That file cannot be restored.", detail: summary.error });
+          fileInput.value = "";
+          return;
+        }
+        showPreview(payload, summary);
+        fileInput.value = "";
+      };
+      reader.readAsText(file);
+    });
+
+    // Restoring replaces what is here, so the person sees what the file holds
+    // and what they currently have before anything is touched.
+    function showPreview(payload, summary) {
+      const current = ClinCog.getMetrics();
+      const when = summary.exportedAt
+        ? new Date(summary.exportedAt).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })
+        : "an unknown date";
+
+      const rows = summary.cases.length
+        ? summary.cases.map(function (c) {
+            const bits = [];
+            if (c.exchanges) bits.push(c.exchanges + (c.exchanges === 1 ? " message" : " messages"));
+            if (c.complete) bits.push("case complete");
+            else if (c.evalReached) bits.push("evaluation reached");
+            return '<li><span class="bk-case"></span><span class="bk-bits"></span></li>';
+          }).join("")
+        : "<li>No case activity in this file.</li>";
+
+      preview.hidden = false;
+      preview.innerHTML =
+        '<div class="bk-preview-title">Backup from ' + escapeHtml(summary.name || "an unnamed student") + "</div>" +
+        '<div class="bk-preview-meta">Saved ' + escapeHtml(when) + " \u00b7 " + summary.keyCount + " stored items</div>" +
+        '<ul class="bk-list">' + rows + "</ul>" +
+        '<p class="bk-warn">Restoring replaces everything currently in this browser' +
+        (current.totalExchanges
+          ? " \u2014 including the " + current.totalExchanges +
+            (current.totalExchanges === 1 ? " message" : " messages") + " already here."
+          : ".") +
+        " This cannot be undone.</p>" +
+        '<div class="bk-confirm">' +
+        '<button type="button" class="btn btn-primary" id="bk-confirm">Replace my data</button>' +
+        '<button type="button" class="btn btn-secondary" id="bk-cancel">Cancel</button>' +
+        "</div>";
+
+      // Case names are filled in as text, never interpolated into the markup.
+      const items = preview.querySelectorAll(".bk-list li");
+      summary.cases.forEach(function (c, i) {
+        const li = items[i];
+        if (!li) return;
+        const bits = [];
+        if (c.exchanges) bits.push(c.exchanges + (c.exchanges === 1 ? " message" : " messages"));
+        if (c.complete) bits.push("case complete");
+        else if (c.evalReached) bits.push("evaluation reached");
+        li.querySelector(".bk-case").textContent = c.label;
+        li.querySelector(".bk-bits").textContent = bits.join(" \u00b7 ");
+      });
+
+      document.getElementById("bk-cancel").addEventListener("click", function () {
+        preview.hidden = true; preview.innerHTML = "";
+      });
+      document.getElementById("bk-confirm").addEventListener("click", function () {
+        const result = ClinCog.importAll(payload);
+        if (!result.valid) {
+          announce({ title: "Restore failed.", detail: result.error });
+          return;
+        }
+        location.reload();
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, function (ch) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch];
+      });
+    }
+  })();
 
   document.querySelectorAll('[data-icon-slot="brain"]').forEach(el => el.innerHTML = ClinIcons.get("brain", 20));
   const timelineEmpty = document.getElementById("timeline-empty");

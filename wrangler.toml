@@ -47,6 +47,36 @@ name = "ICD_RATE_LIMITER"
 namespace_id = "1002"
 simple = { limit = 200, period = 60 }
 
+# CONTACT_RATE_LIMITER: the contact form. Unlike the API routes this is not
+# a volume backstop but the actual anti-spam ceiling, so it is strict - a
+# person writing in good faith sends one message, not three a minute.
+# Turnstile still runs on every submission on top of this.
+#
+# period only accepts 10 or 60 seconds; a longer window is not expressible
+# here, so the ceiling is per minute rather than per ten minutes.
+[[ratelimits]]
+name = "CONTACT_RATE_LIMITER"
+namespace_id = "1004"
+simple = { limit = 2, period = 60 }
+
+# Outbound mail for the contact form. Cloudflare Email Routing only, no
+# third-party provider and no API key: sending to a destination address
+# verified on the account is free on every plan and does not count against
+# any quota. The binding is pinned to that one address rather than left
+# unrestricted, so the Worker cannot be made to mail anywhere else even if
+# the endpoint itself were compromised.
+#
+# SELF-HOSTING: change this to your own address, and verify it first under
+# Compute > Email Service > Email Routing > Destination Addresses. It has to
+# match the CONTACT_TO secret. The address appears twice because Cloudflare
+# does not let the Worker read back the destination pinned to a binding, and
+# pinning is what stops the Worker mailing anywhere else - worth one repeated
+# line. Leaving someone else's address here simply breaks sending: bindings
+# are per-account, so an address verified on another account is rejected.
+[[send_email]]
+name = "CONTACT_EMAIL"
+destination_address = "darian.faur@e-uvt.ro"
+
 [assets]
 directory = "./public"
 binding = "ASSETS"

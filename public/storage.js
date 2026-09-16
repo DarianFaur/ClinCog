@@ -258,6 +258,99 @@ const ClinCog = {
   // and percentiles across the evaluation pages. Per-browser, same as
   // everything else here - an instructor sets these once on their own
   // device and their own report generation uses them from then on. ----
+  // ---- Export / import -------------------------------------------------
+  // All state lives in localStorage under one prefix, so a backup is just
+  // every key that starts with it. That keeps the export exhaustive without
+  // a hand-maintained list that would silently go stale the next time a
+  // feature adds a key.
+  //
+  // BYOK is deliberately left out. Those are live API credentials, and an
+  // export is a file people mail to themselves or drop in a shared folder;
+  // a progress backup is not a place to put a secret. An instructor moving
+  // machines re-enters them on the Adopt page, which takes a minute.
+  EXPORT_PREFIX: "clincog_",
+  EXPORT_SCHEMA: 1,
+  EXPORT_EXCLUDE: ["clincog_byok"],
+
+  exportAll() {
+    const data = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (!key || !key.startsWith(this.EXPORT_PREFIX)) continue;
+      if (this.EXPORT_EXCLUDE.includes(key)) continue;
+      data[key] = localStorage.getItem(key);
+    }
+    return {
+      app: "clincog",
+      schema: this.EXPORT_SCHEMA,
+      exportedAt: new Date().toISOString(),
+      name: this.getName(),
+      note: "ClinCog progress backup. API keys are not included.",
+      data,
+    };
+  },
+
+  // What the file contains, in the terms a person actually cares about, so
+  // the import screen can say what is about to happen rather than asking
+  // them to trust a filename.
+  summariseExport(payload) {
+    if (!payload || payload.app !== "clincog" || typeof payload.data !== "object") {
+      return { valid: false, error: "This does not look like a ClinCog backup file." };
+    }
+    if (payload.schema > this.EXPORT_SCHEMA) {
+      return { valid: false, error: "This backup was made by a newer version of ClinCog." };
+    }
+    const keys = Object.keys(payload.data);
+    const cases = (this.MODULES || []).map((m) => {
+      const history = payload.data[`clincog_chat_${m.id}`];
+      let exchanges = 0;
+      try {
+        const parsed = JSON.parse(history || "[]");
+        exchanges = Array.isArray(parsed) ? parsed.filter((x) => x.role === "user").length : 0;
+      } catch { exchanges = 0; }
+      return {
+        id: m.id,
+        label: m.patient ? `${m.patient}, ${m.age}` : m.id,
+        exchanges,
+        evalReached: !!payload.data[`clincog_eval_${m.id}`],
+        complete: !!payload.data[`clincog_complete_${m.id}`],
+      };
+    }).filter((c) => c.exchanges || c.evalReached || c.complete);
+
+    return {
+      valid: true,
+      name: payload.name || "",
+      exportedAt: payload.exportedAt || null,
+      keyCount: keys.length,
+      cases,
+    };
+  },
+
+  // Replaces rather than merges. Two devices with different chat histories
+  // for the same case cannot be reconciled into one coherent transcript,
+  // and a half-merged conversation is worse than either original - so the
+  // choice is made explicitly by the person, on a screen that tells them
+  // what they currently have and what the file holds.
+  importAll(payload) {
+    const summary = this.summariseExport(payload);
+    if (!summary.valid) return summary;
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith(this.EXPORT_PREFIX) && !this.EXPORT_EXCLUDE.includes(key)) {
+        localStorage.removeItem(key);
+      }
+    }
+    for (const [key, value] of Object.entries(payload.data)) {
+      // Never trust the file to name its own keys: a crafted export could
+      // otherwise write outside the app's namespace.
+      if (!key.startsWith(this.EXPORT_PREFIX)) continue;
+      if (this.EXPORT_EXCLUDE.includes(key)) continue;
+      if (typeof value !== "string") continue;
+      localStorage.setItem(key, value);
+    }
+    return { valid: true, imported: Object.keys(payload.data).length };
+  },
+
   benchmarkKey(testId) {
     return `clincog_benchmark_${testId}`;
   },

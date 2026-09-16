@@ -228,6 +228,13 @@
      wide one. Secondary text inside a card fills its card. */
   --measure: 78ch;
 
+  /* Height of the application taskbar. Read by shell.css (the sticky bar
+     itself and the boot layout that has to reserve it) and by the
+     evaluation pages, whose helper column sticks just below it. It was
+     three separate hardcoded numbers before, which is how they drifted. */
+  --topbar-h: 72px;
+  --topbar-gap: 12px;
+
   /* Calm voice. The dashboard reference carries hierarchy with a
      moderate semibold heading sitting directly above a muted grey
      subtitle, not with oversized tightly-tracked display type. Sizes
@@ -371,5 +378,38 @@ html[data-theme="dark"] {
     --duration-hover: 1ms;
     --duration-layout: 1ms;
     --duration-progress: 1ms;
+  }
+}
+
+@media (max-width: 1023px) {
+  :root, html { --topbar-h: 62px; }
+}
+
+/* ---------------------------------------------------------------
+   Toast surface. Inverts with the theme: a near-black pill on a
+   light page, a lifted warm grey on a dark one. See toast.js.
+--------------------------------------------------------------- */
+:root, html {
+  --toast-bg: rgba(23,23,26,.84);
+  --toast-fg: #f4f3f1;
+  --toast-fg-dim: rgba(244,243,241,.62);
+  --toast-mark: #f0a09c;
+  --toast-ring: rgba(255,255,255,.10);
+  --toast-track: rgba(255,255,255,.12);
+}
+html[data-theme="dark"] {
+  --toast-bg: rgba(46,44,41,.90);
+  --toast-fg: #f4f3f1;
+  --toast-fg-dim: rgba(244,243,241,.60);
+  --toast-mark: #e8837f;
+  --toast-ring: rgba(255,255,255,.14);
+  --toast-track: rgba(255,255,255,.14);
+}
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) {
+    --toast-bg: rgba(46,44,41,.90);
+    --toast-mark: #e8837f;
+    --toast-ring: rgba(255,255,255,.14);
+    --toast-track: rgba(255,255,255,.14);
   }
 }

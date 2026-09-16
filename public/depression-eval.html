@@ -31,8 +31,8 @@
   --ink3: var(--text-tertiary);
   --line: var(--border);
   --accent-bg: var(--domain-mood-soft);
-  --warn: #8b3a00;
-  --warn-bg: #fff7f2;
+  --warn: var(--warning);
+  --warn-bg: var(--warning-soft);
   --serif: var(--font-sans);
   --sans: var(--font-sans);
   --mono: var(--font-mono);
@@ -93,9 +93,18 @@ body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-
   display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 28px; align-items: start;
   justify-content: center;
 }
+/* Compact rail. The report step's helper column holds nothing but the
+   stepper, so on that step it drops its labels and shrinks to the circles,
+   handing the width to the three report columns. */
+.eval-layout.rail-compact { grid-template-columns: 76px minmax(0, 1fr); }
+.eval-layout.rail-compact .v-step-label { display: none; }
+.eval-layout.rail-compact .v-step { justify-content: center; gap: 0; }
+.eval-layout.rail-compact .ctx-card > .ctx-card-body { padding: var(--sp-4) 0; }
+@media (max-width: 1100px) { .eval-layout.rail-compact { grid-template-columns: 1fr; } }
+
 .eval-context {
   display: flex; flex-direction: column; gap: 16px;
-  position: sticky; top: 75px;
+  position: sticky; top: calc(var(--topbar-h) + var(--topbar-gap));
 }
 .ctx-sticky-top { flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; }
 .ctx-scroll-area { display: flex; flex-direction: column; gap: 16px; }
@@ -108,12 +117,13 @@ body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-
   .eval-layout { padding: 24px 0; }
 }
 
-.ctx-card { background: var(--surface); border: none; border-radius: var(--radius-lg); box-shadow: var(--shadow-xs); padding: 0; overflow: hidden; flex-shrink: 0; }
-.ctx-card > .ctx-card-body { padding: 16px 18px; }
-.ctx-card h4 { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink3); font-weight: 600; margin-bottom: 12px; }
+.ctx-card { background: var(--bg-surface); border: none; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: 0; overflow: hidden; flex-shrink: 0; }
+.ctx-card > .ctx-card-body { padding: var(--sp-5) var(--sp-5) var(--sp-6); }
+.ctx-card h4 { font-size: var(--text-xs); text-transform: uppercase; letter-spacing: .07em; color: var(--text-tertiary); font-weight: 500; margin-bottom: var(--sp-3); }
 .ctx-card-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 13px 18px; border-bottom: 1px solid var(--line);
+  padding: var(--sp-4) var(--sp-5); border-bottom: none;
+  box-shadow: inset 0 -1px 0 var(--border);
 }
 .ctx-card-header h4 { margin: 0; }
 .ctx-toggle-btn {
@@ -130,8 +140,9 @@ body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-
 .ctx-pin-btn:hover { color: var(--ink); background: var(--bg-surface-alt); }
 .ctx-card.pinned {
   position: fixed; top: 0; z-index: 500; display: flex; flex-direction: column;
-  box-shadow: var(--shadow-lg); border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  box-shadow: var(--shadow-lg); border-radius: var(--radius-lg);
   margin: 0 !important; visibility: visible !important; background: var(--surface);
+  overflow: hidden;
 }
 .pin-backdrop { display: none; }
 .helper-fab, .helper-fab-menu { display: none; }
@@ -171,59 +182,76 @@ body { font-family: var(--sans); background: var(--bg); color: var(--ink); font-
 .ctx-patient-complaint { font-size: 13px; color: var(--ink2); line-height: 1.6; padding-top: 12px; border-top: 1px solid var(--line); }
 
 .ctx-body { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
-.ctx-body > .ctx-card-body { padding: 14px 18px 18px; }
-.ctx-vignette-text { font-family: var(--font-sans); font-size: 15px; line-height: 1.65; color: var(--ink2); max-height: 280px; overflow-y: auto; }
+.ctx-body > .ctx-card-body { padding: var(--sp-4) var(--sp-5) var(--sp-5); }
+.ctx-vignette-text { font-family: var(--font-sans); font-size: var(--text-sm); line-height: 1.7; color: var(--text-secondary); max-height: 280px; overflow-y: auto; }
 .ctx-vignette-text p { margin-bottom: 1em; }
 .ctx-vignette-text p:last-child { margin-bottom: 0; }
 
 .ctx-chat { display: flex; flex-direction: column; gap: 10px; max-height: 280px; overflow-y: auto; }
 .ctx-chat .chat-row { max-width: 92%; }
-.ctx-chat .chat-bubble { padding: 8px 12px; font-size: 15px; line-height: 1.65; }
-.ctx-chat-empty { font-size: 14px; color: var(--ink3); font-style: italic; }
+.ctx-chat .chat-bubble { padding: var(--sp-3) var(--sp-4); font-size: var(--text-sm); line-height: 1.6; }
+.ctx-chat-empty { font-size: var(--text-sm); color: var(--text-tertiary); font-style: italic; }
 
-.ctx-guide-row { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ink2); margin-bottom: 8px; }
+.ctx-guide-row { display: flex; align-items: center; gap: var(--sp-3); font-size: var(--text-sm); color: var(--text-secondary); margin-bottom: var(--sp-2); }
 .ctx-guide-row:last-child { margin-bottom: 0; }
 .ctx-guide-mark {
-  display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px;
-  border-radius: var(--radius-sm); font-family: var(--mono); font-size: 11px; font-weight: 600; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px;
+  border-radius: var(--radius-sm); font-family: var(--font-sans); font-size: var(--text-xs); font-weight: 600; flex-shrink: 0;
 }
 .ctx-guide-mark.p { background: var(--success-soft, var(--accent-bg)); color: var(--success, var(--domain-mood)); }
 .ctx-guide-mark.n { background: var(--bg-surface-alt); color: var(--ink3); }
 .ctx-guide-mark.u { background: var(--warning-soft, #fff3e0); color: var(--warning, #a05a00); }
 
-.scoring-card { background: var(--surface); border: none; border-radius: 10px; box-shadow: var(--shadow-xs); padding: 12px 14px; }
-.scoring-card h4 { font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink3); font-weight: 600; margin-bottom: 3px; }
-.scoring-count { font-family: var(--serif); font-size: 1.35rem; font-weight: 600; color: var(--ink); line-height: 1.1; margin-bottom: 1px; transition: color .2s; }
-.scoring-count .of { font-size: .78rem; color: var(--ink3); font-weight: 400; }
-.scoring-sub { font-size: 11.5px; color: var(--ink3); margin-bottom: 8px; line-height: 1.4; }
-.scoring-dots { display: flex; flex-wrap: wrap; gap: 4px; }
+.scoring-card { background: var(--bg-surface); border: none; border-radius: var(--radius-md); box-shadow: var(--shadow-xs); padding: var(--sp-4) var(--sp-5); }
+.scoring-card h4 { font-size: var(--text-xs); text-transform: uppercase; letter-spacing: .06em; color: var(--text-tertiary); font-weight: 500; margin-bottom: var(--sp-2); }
+.scoring-count { font-size: var(--text-xl); font-weight: 700; letter-spacing: -.02em; color: var(--text-primary); line-height: 1.1; margin-bottom: 2px; font-variant-numeric: tabular-nums; }
+.scoring-count .of { font-size: var(--text-base); color: var(--text-tertiary); font-weight: 400; }
+.scoring-sub { font-size: var(--text-xs); color: var(--text-tertiary); margin-bottom: var(--sp-3); line-height: 1.45; }
+.scoring-dots { display: flex; flex-wrap: wrap; gap: var(--sp-1); }
 .scoring-dot {
-  width: 18px; height: 18px; border-radius: 5px; display: flex; align-items: center; justify-content: center;
-  font-family: var(--mono); font-size: 9px; font-weight: 600; background: var(--bg-surface-alt); color: var(--ink3);
-  transition: all .2s;
+  width: 22px; height: 22px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-sans); font-size: var(--text-xs); font-weight: 600;
+  background: var(--bg-surface-alt); color: var(--text-tertiary);
+  transition: background var(--duration-hover) var(--ease-standard), color var(--duration-hover) var(--ease-standard);
 }
 .scoring-dot.p { background: var(--accent-bg); color: var(--domain-mood-ink); }
 .scoring-dot.n { background: var(--bg-surface-alt); color: var(--ink2); }
-.scoring-dot.u { background: #fff3e0; color: #a05a00; }
+.scoring-dot.u { background: var(--warning-soft); color: var(--warning); }
 
-.mini-stats { display: flex; gap: 8px; }
-.mini-stat { flex: 1; min-width: 0; background: var(--surface); border: none; border-radius: 8px; padding: 8px 4px; text-align: center; }
-.mini-stat-num { font-family: var(--serif); font-size: 17px; font-weight: 700; color: var(--ink); line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.mini-stat-lbl { font-size: 8.5px; color: var(--ink3); text-transform: uppercase; letter-spacing: .02em; margin-top: 3px; line-height: 1.2; }
+/* Label above value, matching the dashboard's stat cards. The tile used
+   to lead with the number and hang a 8.5px label under it, which was
+   both the wrong order and below the app's smallest type step. */
+.mini-stats { display: flex; gap: var(--sp-2); }
+.mini-stat {
+  flex: 1; min-width: 0; background: var(--bg-surface); border: none;
+  border-radius: var(--radius-md); padding: 12px 10px;
+  display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: 3px;
+  box-shadow: var(--shadow-xs);
+}
+.mini-stat-num {
+  font-size: var(--text-lg); font-weight: 700; letter-spacing: -.02em;
+  color: var(--text-primary); line-height: 1.1;
+  font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.mini-stat-lbl {
+  font-size: var(--text-xs); font-weight: 500; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: .06em; line-height: 1.2;
+}
 
 .eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink3); margin-bottom: 10px; }
 
-.vignette-page-title { font-size: 37.6px; font-weight: 700; color: var(--ink); margin: 0 0 16px; line-height: 1.15; }
-.vignette-page-sub { font-size: 16px; color: var(--ink2); margin-bottom: 24px; }
-.vignette-card { background: var(--surface); border: none; border-radius: 16px; padding: 24px; box-shadow: var(--shadow-xs); margin-bottom: 24px; }
+.vignette-page-title { font-size: var(--text-display); font-weight: 600; letter-spacing: -.02em; color: var(--text-primary); margin: 0 0 var(--sp-4); line-height: 1.2; }
+.vignette-page-sub { font-size: var(--text-base); color: var(--text-secondary); margin-bottom: var(--sp-6); max-width: var(--measure); }
+.vignette-card { background: var(--bg-surface); border: none; border-radius: var(--radius-lg); padding: 28px; box-shadow: var(--shadow-sm); margin-bottom: var(--sp-6); }
 .vignette-card-name { font-size: 18px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
 .vignette-card-meta { font-size: 16px; color: var(--ink2); margin-bottom: 16px; }
-.vignette-card-divider { border-top: 1px solid var(--line); margin-bottom: 20px; }
+.vignette-card-divider { border: none; height: 1px; background: var(--border); margin-bottom: var(--sp-5); }
 .vignette-section { margin-bottom: 16px; }
 .vignette-section:last-child { margin-bottom: 0; }
-.vignette-section-title { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--ink3); margin-bottom: 8px; }
-.vignette-section p { font-size: 16px; line-height: 1.75; color: var(--ink); margin: 0; }
-.vignette-highlight { background: var(--accent-bg); border-left: 3px solid var(--domain-mood); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 16px; line-height: 1.6; color: var(--ink); }
+.vignette-section-title { font-size: var(--text-xs); font-weight: 500; text-transform: uppercase; letter-spacing: .07em; color: var(--text-tertiary); margin-bottom: var(--sp-2); }
+.vignette-section p { font-size: var(--text-base); line-height: 1.75; color: var(--text-primary); margin: 0; max-width: var(--measure); }
+/* Tonal panel, not a coloured rule. Same treatment as .callout. */
+.vignette-highlight { background: var(--domain-mood-soft); border: none; padding: var(--sp-4) var(--sp-5); border-radius: var(--radius-md); margin: var(--sp-4) 0; font-size: var(--text-base); line-height: 1.65; color: var(--text-primary); }
 h1 { font-family: var(--serif); font-size: 2.35rem; font-weight: 700; line-height: 1.15; letter-spacing: -0.01em; color: var(--ink); margin-bottom: 16px; }
 h1 em { font-style: normal; color: var(--domain-mood-ink); }
 h2 { font-family: var(--serif); font-size: 1.8rem; font-weight: 400; color: var(--ink); margin-bottom: 10px; }
@@ -262,8 +290,9 @@ hr { border: none; border-top: 1px solid var(--line); margin: 36px 0; }
 .patient-line span { color: var(--ink3); font-size: .85rem; }
 
 .scid-q {
-  padding: 20px 22px; margin-bottom: 12px; border: none; border-radius: var(--radius-md);
-  background: var(--surface); transition: border-color .15s;
+  padding: var(--sp-6); margin-bottom: var(--sp-3); border: none; border-radius: var(--radius-md);
+  background: var(--bg-surface); box-shadow: var(--shadow-xs);
+  transition: box-shadow var(--duration-hover) var(--ease-standard);
 }
 .scid-q:has(.radio-row label.p:has(input:checked)) { border-color: var(--domain-mood); }
 .scid-q-top { display: flex; gap: 14px; margin-bottom: 14px; }
@@ -287,8 +316,9 @@ hr { border: none; border-top: 1px solid var(--line); margin: 36px 0; }
 .radio-row label:has(input:checked).u { background: var(--ink); border-color: var(--ink); color: #fff; }
 
 .a10-strip {
-  margin: 24px 0; padding: 24px 28px; border: none; border-radius: var(--radius-lg);
-  background: var(--surface); box-shadow: var(--shadow-sm); display: flex; align-items: flex-start; gap: 32px; flex-wrap: wrap;
+  margin: var(--sp-6) 0; padding: 28px; border: none; border-radius: var(--radius-lg);
+  background: var(--bg-surface); box-shadow: var(--shadow-sm);
+  display: flex; align-items: flex-start; gap: var(--sp-7); flex-wrap: wrap;
 }
 .a10-count .n { font-family: var(--serif); font-size: 3rem; font-weight: 300; line-height: 1; }
 .a10-count .l { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink3); }
@@ -309,57 +339,128 @@ hr { border: none; border-top: 1px solid var(--line); margin: 36px 0; }
 .yn-row input { display: none; }
 .yn-row label:has(input:checked) { background: var(--domain-mood); border-color: var(--domain-mood); color: #fff; }
 
-.hitop-block { padding: 20px 22px; margin-bottom: 16px; border: none; border-radius: var(--radius-md); background: var(--surface); }
+.hitop-block { padding: var(--sp-6); margin-bottom: var(--sp-3); border: none; border-radius: var(--radius-md); background: var(--bg-surface); box-shadow: var(--shadow-xs); }
 .hitop-scale-name { font-family: var(--sans); font-size: var(--text-xs); font-weight: 700; color: var(--domain-mood-ink); text-transform: uppercase; letter-spacing: .06em; border-bottom: 1px solid var(--accent-bg); padding-bottom: 8px; margin-bottom: 14px; }
 .hitop-pair { display: flex; flex-direction: column; gap: 0; }
-.hitop-item { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 14px 0; border-top: 1px solid var(--line); }
-.hitop-item:first-child { border-top: none; padding-top: 0; }
-.hitop-item-text { flex: 1; min-width: 200px; font-size: var(--text-sm); color: var(--ink); }
-.likert-legend { display: flex; gap: 8px; margin-bottom: 20px; background: var(--bg-surface-alt); border-radius: 12px; padding: 16px 18px; }
-.likert-legend-item { flex: 1; text-align: center; }
-.likert-legend-num { font-size: 22px; font-weight: 700; color: var(--domain-mood-ink); }
-.likert-legend-label { font-size: 11px; color: var(--ink2); line-height: 1.3; margin-top: 2px; }
+.hitop-item { display: flex; align-items: center; gap: var(--sp-4); flex-wrap: wrap; padding: var(--sp-4) 0; border-top: none; box-shadow: inset 0 1px 0 var(--border); }
+.hitop-item:first-child { box-shadow: none; padding-top: 0; }
+.hitop-item-text { flex: 1; min-width: 200px; font-size: var(--text-base); line-height: 1.55; color: var(--text-primary); }
+/* The scale key is now a segmented strip: each step sits on its own
+   surface inside the tinted rail, so it reads as a scale rather than as
+   four numbers floating in a box. */
+.likert-legend { display: flex; gap: var(--sp-2); margin-bottom: var(--sp-5); background: var(--bg-surface-alt); border-radius: var(--radius-md); padding: var(--sp-2); }
+.likert-legend-item {
+  flex: 1; text-align: center; background: var(--bg-surface);
+  border-radius: var(--radius-sm); padding: var(--sp-3) var(--sp-2);
+  box-shadow: var(--shadow-xs);
+}
+.likert-legend-num { font-size: var(--text-lg); font-weight: 700; letter-spacing: -.02em; color: var(--domain-mood-ink); font-variant-numeric: tabular-nums; }
+.likert-legend-label { font-size: var(--text-xs); color: var(--text-secondary); line-height: 1.35; margin-top: 3px; }
 .sec-label.hitop-scale { font-family: var(--sans); font-size: 13px; font-weight: 700; color: var(--domain-mood-ink); border-bottom: 1px solid var(--accent-bg); padding: 8px 0; margin-top: 18px; }
 .likert { display: flex; gap: 6px; }
 .likert label { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
 .likert label .lbl { display: none; }
 .likert label .num { width: 36px; height: 36px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; font-size: var(--text-sm); font-weight: 500; color: var(--text-secondary); transition: background var(--duration-hover) var(--ease-standard), color var(--duration-hover) var(--ease-standard); background: var(--bg-surface-alt); }
-.likert label:hover .num { border-color: var(--domain-mood); }
+.likert label:hover .num { background: var(--border); color: var(--text-primary); }
 .likert input { display: none; }
 .likert label:has(input:checked) .num { background: var(--domain-mood); border-color: var(--domain-mood); color: #fff; }
 
-.ctab-wrap { overflow-x: auto; margin: 20px 0; }
-.ctab { width: 100%; border-collapse: collapse; font-size: .8rem; font-family: var(--sans); border: 1px solid #c4d4dc; }
-.ctab thead tr { background: #1a4a7a; }
-.ctab thead th { padding: 8px 10px; color: #fff; text-align: left; font-size: .72rem; font-weight: 500; border-right: 1px solid rgba(255,255,255,.15); }
-.ctab thead th:last-child { border-right: none; }
-.ctab .tr-head td { background: #dce8f2; font-weight: 700; font-size: .78rem; color: #1a4a7a; padding: 7px 10px; border-top: 1px solid #c4d4dc; border-left: 3px solid #1a4a7a; }
-.ctab tbody tr { border-bottom: 1px solid #e4eef4; }
-.ctab td { padding: 7px 10px; color: #1a2a3a; vertical-align: middle; border-right: 1px solid #e4eef4; }
-.ctab td:last-child { border-right: none; }
-.ctab .mn { font-style: italic; color: #2a4a6a; padding-left: 14px !important; }
-.ctab .imp { color: #c00; font-weight: 600; }
-.ctab .brd { color: #a05000; font-weight: 600; }
+.session-head {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: var(--sp-3) var(--sp-6);
+  background: var(--bg-surface-alt); border-radius: var(--radius-md);
+  padding: var(--sp-4) var(--sp-5); margin-bottom: var(--sp-4);
+}
+.session-head .kv-row { font-size: var(--text-sm); line-height: 1.5; }
+.session-head .kv-key { color: var(--text-tertiary); }
+.session-head .kv-val { color: var(--text-primary); font-weight: 600; }
 
-.ss-chart { width: 120px; height: 16px; position: relative; }
-.ss-bg { width: 100%; height: 8px; background: #e0eaf0; border-radius: 2px; position: relative; top: 4px; }
-.ss-norm { position: absolute; left: 25%; width: 50%; height: 100%; background: #c0dcc0; }
-.ss-fill { position: absolute; left: 0; height: 100%; border-radius: 2px; }
-.ss-fill.imp { background: #c00; }
-.ss-fill.brd { background: #c06000; }
-.ss-mid { position: absolute; left: 50%; top: -2px; width: 2px; height: 12px; background: #1a4a7a; }
+.ctab-wrap { margin: var(--sp-5) 0; }
+.ctab-wrap { border-radius: var(--radius-md); overflow: hidden; background: var(--bg-surface); }
+/* The results table used to be styled like a lab printout: navy header
+   band, white type on it, and a grid of hairlines between every cell.
+   It now follows the same rules as every other table in the app -
+   no outer border, an uppercase label row instead of a coloured band,
+   and one inset hairline between rows. */
+.ctab { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: var(--text-sm); font-family: var(--font-sans); border: none; }
+.ctab td { overflow-wrap: break-word; hyphens: auto; padding-left: 8px; padding-right: 8px; }
+.ctab th { overflow-wrap: normal; hyphens: none; letter-spacing: .02em; padding-left: 8px; padding-right: 8px; }
+.ctab th:nth-child(1), .ctab td:nth-child(1) { width: 28%; }
+.ctab th:nth-child(2), .ctab td:nth-child(2) { width: 13%; }
+.ctab th:nth-child(3), .ctab td:nth-child(3) { width: 14%; }
+.ctab th:nth-child(4), .ctab td:nth-child(4) { width: 19%; }
+.ctab th:nth-child(5), .ctab td:nth-child(5) { width: 12%; }
+.ctab th:nth-child(6), .ctab td:nth-child(6) { width: 14%; }
+/* The grouping row spans the table and must not inherit a column width. */
+.ctab .tr-head td { width: auto !important; }
+.ctab thead tr { background: transparent; }
+.ctab thead th {
+  padding: 10px 12px; color: var(--text-tertiary); text-align: left;
+  font-size: var(--text-xs); font-weight: 500; letter-spacing: .06em;
+  text-transform: uppercase; border: none;
+}
+.ctab .tr-head td {
+  background: var(--bg-surface-alt); font-weight: 600; font-size: var(--text-sm);
+  color: var(--text-primary); padding: 9px 12px; border: none; letter-spacing: -.008em;
+}
+.ctab tbody tr { border: none; box-shadow: inset 0 -1px 0 var(--border); }
+.ctab tbody tr:last-child { box-shadow: none; }
+.ctab td { padding: 10px 12px; color: var(--text-primary); vertical-align: middle; border: none; font-variant-numeric: tabular-nums; }
+.ctab .mn { font-style: italic; color: var(--text-secondary); padding-left: 22px !important; }
+.ctab .imp { color: var(--danger); font-weight: 600; }
+.ctab .brd { color: var(--warning); font-weight: 600; }
 
-textarea.interp { width: 100%; border: 1px solid var(--line); padding: 10px 14px; font-family: var(--sans); font-size: .88rem; color: var(--ink); background: var(--surface); resize: vertical; min-height: 88px; line-height: 1.6; transition: border-color .2s; }
-textarea.interp:focus { outline: none; border-color: var(--domain-mood); }
+/* Score strip, rebuilt on the dashboard's progress track: a pill-shaped
+   rail with the remainder hatched rather than flat, the normal range
+   shown as a soft accent band, and the mean marked by a hairline. */
+.ss-chart { width: 100%; min-width: 40px; max-width: 132px; height: 16px; position: relative; }
+.ss-bg {
+  width: 100%; height: 10px; border-radius: var(--radius-pill);
+  position: relative; top: 3px; overflow: hidden;
+  background: repeating-linear-gradient(-45deg, var(--border) 0 5px, var(--bg-surface-alt) 5px 10px);
+}
+.ss-norm { position: absolute; left: 25%; width: 50%; height: 100%; background: var(--accent-soft); }
+.ss-fill { position: absolute; left: 0; height: 100%; border-radius: var(--radius-pill); background: var(--accent); }
+.ss-fill.imp { background: var(--danger); }
+.ss-fill.brd { background: var(--warning); }
+.ss-mid { position: absolute; left: 50%; top: 1px; width: 2px; height: 14px; border-radius: 1px; background: var(--text-tertiary); }
+
+textarea.interp { width: 100%; box-sizing: border-box; border: none; border-radius: var(--radius-md); padding: 13px 16px; font-family: var(--font-sans); font-size: var(--text-base); color: var(--text-primary); background: var(--bg-surface-alt); resize: vertical; min-height: 96px; line-height: 1.65; }
+textarea.interp:focus { outline: 2px solid var(--accent); outline-offset: -2px; background: var(--bg-surface); }
 
 .nav-row { display: flex; gap: 10px; margin-top: 40px; }
 
-.alert { display: none; padding: 10px 14px; border-left: 3px solid #c00; background: #fff5f5; font-size: .83rem; color: #900; margin-top: 14px; }
-.alert.on { display: block; }
+/* The inline .alert bar was replaced by the shared toast (toast.js). */
 
-.report-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin: 0 -24px; }
+/* The three layers used to be a hard repeat(3, 1fr) that only collapsed
+   below 1200px. But 1fr is minmax(auto, 1fr), and two of the columns hold
+   tables whose min-content is roughly 490px, so the grid refused to shrink
+   and pushed 334px off the side of a 1280px laptop and 174px off a 1440.
+   auto-fit lets it fall 3 -> 2 -> 1 on its own. The floor is 400px rather
+   than 320: measured per cell, a narrow column broke "Detachment" across
+   lines, because five or six columns of a results table do not fit there at
+   any distribution of percentages. 500px is the width at which the widest
+   label in these tables stops wrapping mid-word - below it the grid drops to
+   two columns, which is the right answer. */
+.report-cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(500px, 100%), 1fr));
+  gap: var(--sp-4);
+  margin: 0;
+}
 .report-col-stack { display: flex; flex-direction: column; }
-.report-sec { padding: 8px 24px; border-top: none; }
+/* Each layer is its own card now. Dividers between grid children break
+   as soon as the grid wraps to two rows - the rule ends up between
+   sections that are no longer side by side - so separation comes from
+   the card surface instead, which is also what the dashboard does. */
+.report-sec {
+  min-width: 0;
+  padding: var(--sp-5) var(--sp-6);
+  background: var(--bg-surface); border: none; border-top: none;
+  border-radius: var(--radius-md); box-shadow: var(--shadow-xs);
+}
+.report-sec table { width: 100%; }
+.report-sec .ctab-wrap, .report-sec .scroll-x { overflow-x: auto; }
 .report-col-stack .report-sec:nth-child(2) { border-top: 1px dashed var(--line); margin-top: 20px; padding-top: 28px; }
 .report-cols > .report-sec + .report-sec, .report-cols > .report-col-stack + .report-sec, .report-cols > .report-sec + .report-col-stack { border-left: 1px solid var(--line); }
 .report-sec-sub { font-size: .72em; font-weight: 400; color: var(--ink3); text-transform: none; }
@@ -394,10 +495,31 @@ textarea.interp:focus { outline: none; border-color: var(--domain-mood); }
 .cpill.unm { color: var(--ink2); background: var(--bg-surface-alt, #f3f4f6); }
 .cpill.unk { color: var(--ink3); background: var(--bg-surface-alt, #f3f4f6); }
 
-.ht-table { width: 100%; border-collapse: collapse; font-size: .84rem; margin-top: 8px; }
-.ht-table th { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .07em; color: var(--ink3); font-weight: 400; padding: 0 12px 8px; text-align: left; border-bottom: 1px solid var(--line); }
-.ht-table td { padding: 12px; border-bottom: 1px solid var(--line); color: var(--ink2); }
-.ht-table tbody tr:last-child td { border-bottom: none; }
+/* No inner scrollbars. What made the table unshrinkable was the fixed
+   132px profile bar, not the text - so the bar became fluid and the
+   min-width came off. On the report step the helper column also collapses
+   to its numbered circles (see .rail-compact), which returns 244px to the
+   table rather than asking it to fit in a space that was never enough. */
+.ht-table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: var(--text-sm); margin-top: var(--sp-2); }
+/* Explicit column widths. With table-layout:fixed and no widths the browser
+   divides the row equally, which starved the two text columns and split
+   "Restricted Affectivity" across three lines mid-word. break-word rather
+   than anywhere: only a word that truly cannot fit gets broken. */
+.ht-table td { overflow-wrap: break-word; hyphens: auto; }
+.ht-table th { overflow-wrap: normal; hyphens: none; letter-spacing: .02em; padding-left: 8px; padding-right: 8px; }
+.ht-table td { padding-left: 8px; padding-right: 8px; }
+/* Measured, not guessed: the two label columns hold words like
+   "Detachment" that need ~110px at this size, so they get the room and the
+   numeric columns give it up. The profile bar shrinks to suit. */
+.ht-table th:nth-child(1), .ht-table td:nth-child(1) { width: 30%; }
+.ht-table th:nth-child(2), .ht-table td:nth-child(2) { width: 27%; }
+.ht-table th:nth-child(3), .ht-table td:nth-child(3) { width: 9%; }
+.ht-table th:nth-child(4), .ht-table td:nth-child(4) { width: 13%; }
+.ht-table th:nth-child(5), .ht-table td:nth-child(5) { width: 21%; }
+.ht-table .ht-n { text-align: right; }
+.ht-table th { font-family: var(--font-sans); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: .06em; color: var(--text-tertiary); font-weight: 500; padding: 0 12px 10px; text-align: left; border-bottom: none; }
+.ht-table td { padding: 12px; border-bottom: none; box-shadow: inset 0 -1px 0 var(--border); color: var(--text-secondary); }
+.ht-table tbody tr:last-child td { box-shadow: none; }
 .ht-table .ht-n { font-family: var(--mono); font-size: .8rem; }
 .mini-bar { height: 6px; background: var(--line); width: 120px; overflow: hidden; display: inline-block; vertical-align: middle; border-radius: var(--radius-pill); }
 .mini-fill { height: 100%; transition: width .7s; background: var(--domain-mood); border-radius: var(--radius-pill); }
@@ -469,7 +591,7 @@ textarea.interp:focus { outline: none; border-color: var(--domain-mood); }
 .bdi-opts label:has(input:checked) .opt-n { background: var(--domain-mood); border-color: var(--domain-mood); color: #fff; }
 .bdi-opts input { display: none; }
 .hitop-block:first-child { border-top: none; }
-.likert label .num { border-radius: var(--radius-md); width: 40px; height: 40px; border-width: 1.5px; font-size: var(--text-sm); font-weight: 600; }
+.likert label .num { border-radius: var(--radius-md); width: 40px; height: 40px; border: none; font-size: var(--text-sm); font-weight: 600; }
 .likert label:has(input:checked) .num { background: var(--domain-mood); border-color: var(--domain-mood); color: #fff; }
 
 </style>
@@ -598,8 +720,6 @@ textarea.interp:focus { outline: none; border-color: var(--domain-mood); }
     <div class="callout" style="font-size:.76rem;margin-top:26px;line-height:1.6;">
       Diagnostic criteria reproduced verbatim from: World Health Organization. <em>Clinical descriptions and diagnostic requirements for ICD-11 mental, behavioural and neurodevelopmental disorders (CDDR)</em>. Geneva: WHO; 2024. Text licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/3.0/igo/" target="_blank" rel="noopener">CC BY-NC-ND 3.0 IGO</a>. ICD-11 classification content licensed under CC BY-ND 3.0 IGO.
     </div>
-
-    <div class="alert" id="sal">Please rate all 9 symptom items, the exclusion criterion, and record a conclusion before continuing.</div>
     <div class="nav-row">
       <button class="btn btn-secondary" onclick="go(1)">← Vignette</button>
       <button class="btn btn-primary" onclick="valSCID()">Proceed →</button>
@@ -809,8 +929,6 @@ textarea.interp:focus { outline: none; border-color: var(--domain-mood); }
       </div>
     </div>
     </div>
-
-    <div class="alert" id="bal">Please complete all 21 BDI-II items and all 6 HiTOP subscales before continuing.</div>
     <div class="nav-row">
       <button class="btn btn-secondary" onclick="go(2)">← ICD-11</button>
       <button class="btn btn-primary" onclick="valBDI()">Proceed to CANTAB →</button>
@@ -828,18 +946,15 @@ textarea.interp:focus { outline: none; border-color: var(--domain-mood); }
     <h2>CANTAB Report</h2>
     <p class="lead" style="margin-bottom:20px;">Read Darren's automated CANTAB results, then answer the interpretation questions.</p>
 
-    <div style="border:1px solid #c4d4dc;overflow:hidden;margin-bottom:4px;">
-      <table style="width:100%;border-collapse:collapse;font-size:.8rem;background:#dce8f2;">
-        <tr>
-          <td style="padding:5px 10px;font-weight:700;color:#1a4a7a;border-right:1px solid #c4d4dc;">Subject ID</td><td style="padding:5px 10px;border-right:1px solid #c4d4dc;">DM</td>
-          <td style="padding:5px 10px;font-weight:700;color:#1a4a7a;border-right:1px solid #c4d4dc;">Sex</td><td style="padding:5px 10px;border-right:1px solid #c4d4dc;">M</td>
-          <td style="padding:5px 10px;font-weight:700;color:#1a4a7a;border-right:1px solid #c4d4dc;">Session start time</td><td style="padding:5px 10px;">March 14, 2025 · 10:22 AM</td>
-        </tr>
-        <tr style="border-top:1px solid #c4d4dc;">
-          <td style="padding:5px 10px;font-weight:700;color:#1a4a7a;border-right:1px solid #c4d4dc;">Subjects</td><td colspan="3" style="padding:5px 10px;border-right:1px solid #c4d4dc;">Subject: Depression</td>
-          <td style="padding:5px 10px;font-weight:700;color:#1a4a7a;border-right:1px solid #c4d4dc;">Age</td><td style="padding:5px 10px;">34</td>
-        </tr>
-      </table>
+    <!-- Session header. Was a six-column table faking a lab printout,
+         with a navy grid and 5px cells; it is a set of key/value pairs,
+         so it now uses the shared .kv-list primitive on a tinted panel. -->
+    <div class="session-head">
+      <div class="kv-row"><span class="kv-key">Subject ID:</span> <span class="kv-val">DM</span></div>
+      <div class="kv-row"><span class="kv-key">Sex:</span> <span class="kv-val">M</span></div>
+      <div class="kv-row"><span class="kv-key">Session start time:</span> <span class="kv-val">March 14, 2025 · 10:22 AM</span></div>
+      <div class="kv-row"><span class="kv-key">Subjects:</span> <span class="kv-val">Subject: Depression</span></div>
+      <div class="kv-row"><span class="kv-key">Age:</span> <span class="kv-val">34</span></div>
     </div>
 
     <div class="ctab-wrap">
@@ -874,8 +989,6 @@ textarea.interp:focus { outline: none; border-color: var(--domain-mood); }
       <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">2. How do these deficits connect to the vignette? Which of Darren's behaviours can now be explained neuropsychologically?</label><textarea class="interp" id="cog2" oninput="tick()" placeholder="Link test data to Darren's difficulties at work, indecisiveness, inability to plan…"></textarea></div>
       <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">3. What does the cognitive layer add that ICD-11 categories or the BDI-II alone could not reveal?</label><textarea class="interp" id="cog3" oninput="tick()" placeholder="Mechanisms, treatment implications, prognosis…"></textarea></div>
     </div>
-
-    <div class="alert" id="cal">Please answer at least the first two questions before generating the report.</div>
     <div class="nav-row">
       <button class="btn btn-secondary" onclick="go(3)">← BDI-II &amp; HiTOP</button>
       <button class="btn btn-primary" onclick="valCANTAB()">Generate Report →</button>
@@ -977,6 +1090,7 @@ textarea.interp:focus { outline: none; border-color: var(--domain-mood); }
 <script src="/storage.js"></script>
 <script src="/icons.js"></script>
 <script src="/shell.js?v=2"></script>
+<script src="/toast.js"></script>
 <script src="/a11y.js"></script>
 <script>
 function completeCase() {
@@ -1092,8 +1206,13 @@ function pinCard(card) {
   }
   card.style.left = leftPos + 'px';
   card.style.width = pinnedWidth + 'px';
-  card.style.top = topOffset + 'px';
-  card.style.height = `calc(100vh - ${topOffset}px)`;
+  // 12px below the bar's hairline, so the panel clears it rather than
+  // butting against it.
+  card.style.top = (topOffset + 12) + 'px';
+  // Leave the same 16px at the bottom as on the left, so the expanded
+  // card reads as a panel floating over the page rather than one that
+  // ran out of room against the window edge.
+  card.style.height = `calc(100vh - ${topOffset}px - 28px)`;
   card.classList.add('pinned');
   ctx.classList.add('has-pinned');
   const body = card.querySelector('.ctx-body');
@@ -1234,7 +1353,7 @@ function paintContextPanels() {
 let cur=0;
 let maxStepReached=0;
 function stepClick(n) { if (n <= maxStepReached) go(n); }
-function go(n){document.getElementById('pg'+cur).classList.remove('on');cur=n;if(n>maxStepReached)maxStepReached=n;document.getElementById('pg'+cur).classList.add('on');window.scrollTo({top:0,behavior:'smooth'});tick();expandContextCardsByDefault();reapplyPin();updateHelperFabVisibility();if(n===5){ClinCog.markEvalReached('depression');paintReflectState();}}
+function go(n){document.getElementById('pg'+cur).classList.remove('on');cur=n;if(n>maxStepReached)maxStepReached=n;document.getElementById('pg'+cur).classList.add('on');window.scrollTo({top:0,behavior:'smooth'});tick();expandContextCardsByDefault();reapplyPin();updateHelperFabVisibility();document.querySelectorAll('.eval-layout').forEach(el=>el.classList.toggle('rail-compact',n===5));if(n===5){ClinCog.markEvalReached('depression');paintReflectState();}}
 
 function stepFraction() {
   if (cur === 2) {
@@ -1311,14 +1430,18 @@ function countCddr(){
   tick();
 }
 function valSCID(){
-  let ok=true;
+  // Count each requirement separately so the toast can name what is left
+  // rather than repeating the full rule every time.
   const items=['a','b','c','d','e','f','g','h','i'];
-  for(const it of items)if(!document.querySelector(`input[name="cddr_${it}"]:checked`)){ok=false;break;}
-  if(ok&&!document.querySelector('input[name="cddr_exclusion"]:checked'))ok=false;
-  if(ok&&!document.querySelector('input[name="sdx"]:checked'))ok=false;
-  const al=document.getElementById('sal');
-  if(!ok){al.classList.add('on');setTimeout(()=>al.classList.remove('on'),3500);return;}
-  al.classList.remove('on');go(3);
+  const itemsLeft=items.filter(it=>!document.querySelector(`input[name="cddr_${it}"]:checked`)).length;
+  const exclusionLeft=document.querySelector('input[name="cddr_exclusion"]:checked')?0:1;
+  const dxLeft=document.querySelector('input[name="sdx"]:checked')?0:1;
+  if(!itemsLeft&&!exclusionLeft&&!dxLeft){go(3);return;}
+  ClinCogToast.gate([
+    {n:itemsLeft,label:'symptom item',plural:'symptom items'},
+    {n:exclusionLeft,label:'exclusion criterion'},
+    {n:dxLeft,label:'diagnostic conclusion'}
+  ]);
 }
 
 function calcBDI(){
@@ -1334,19 +1457,21 @@ function calcBDI(){
   tick();
 }
 function valBDI(){
-  let ok=true;
-  for(let i=1;i<=21;i++)if(!document.querySelector(`input[name="b${i}"]:checked`)){ok=false;break;}
+  let bdiLeft=0;
+  for(let i=1;i<=21;i++)if(!document.querySelector(`input[name="b${i}"]:checked`))bdiLeft++;
   const subs=[['hcp1','hcp2'],['hdd1','hdd2'],['hem1','hem2'],['hin1','hin2'],['hns1','hns2'],['hsu1','hsu2']];
-  if(ok)for(const p of subs)if(!document.querySelector(`input[name="${p[0]}"]:checked`)||!document.querySelector(`input[name="${p[1]}"]:checked`)){ok=false;break;}
-  const al=document.getElementById('bal');
-  if(!ok){al.classList.add('on');setTimeout(()=>al.classList.remove('on'),4000);return;}
-  al.classList.remove('on');go(4);
+  let hitopLeft=0;
+  for(const p of subs)for(const n of p)if(!document.querySelector(`input[name="${n}"]:checked`))hitopLeft++;
+  if(!bdiLeft&&!hitopLeft){go(4);return;}
+  ClinCogToast.gate([
+    {n:bdiLeft,label:'BDI-II item',plural:'BDI-II items'},
+    {n:hitopLeft,label:'HiTOP item',plural:'HiTOP items'}
+  ]);
 }
 function valCANTAB(){
-  const c1=document.getElementById('cog1').value.trim(),c2=document.getElementById('cog2').value.trim();
-  const al=document.getElementById('cal');
-  if(!c1||!c2){al.classList.add('on');setTimeout(()=>al.classList.remove('on'),3500);return;}
-  al.classList.remove('on');buildReport();go(5);
+  const left=['cog1','cog2'].filter(id=>!document.getElementById(id).value.trim()).length;
+  if(left){ClinCogToast.gate([{n:left,label:'interpretation answer',plural:'interpretation answers'}]);return;}
+  buildReport();go(5);
 }
 
 function erf(x){const a=[0.254829592,-0.284496736,1.421413741,-1.453152027,1.061405429],p=0.3275911,s=x<0?-1:1;x=Math.abs(x);const t=1/(1+p*x);return s*(1-(((((a[4]*t+a[3])*t)+a[2])*t+a[1])*t+a[0])*t*Math.exp(-x*x));}
@@ -1414,7 +1539,8 @@ function drawNormPlot(canvasId, tScore, label) {
     const x = tx(t), y = ty(norm(z));
     t === Tmin ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
   }
-  ctx.strokeStyle = '#1a5c5c';
+  // Chart ink follows the accent rather than a one-off teal.
+  ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#6f9d87';
   ctx.lineWidth = 2;
   ctx.stroke();
 
@@ -1514,8 +1640,8 @@ function buildReport(){
     htTotalRaw+=tot;
     const tsc=rawToT_ht(tot),pct=tPct(tsc);
     const w=Math.max(2,Math.min(100,((tsc-30)/50)*100));
-    const col=tsc>=65?'#c00':tsc>=57?'#c06000':tsc>=50?'#7a5800':'#2d9e9e';
-    const tc=tsc>=65?'color:#c00;':tsc>=57?'color:#c06000;':'';
+    const col=tsc>=65?'var(--danger)':tsc>=57?'var(--warning)':tsc>=50?'var(--warning)':'var(--accent)';
+    const tc=tsc>=65?'color:var(--danger);':tsc>=57?'color:var(--warning);':'';
     html+=`<tr><td>${s.n}</td><td class="ht-n">${tot}</td><td class="ht-t" style="${tc}">${tsc}</td><td class="ht-n">${pct}th</td><td><div class="mini-bar"><div class="mini-fill" style="width:${w}%;background:${col};"></div></div></td></tr>`;
   }
   document.getElementById('r-ht-body').innerHTML=html;

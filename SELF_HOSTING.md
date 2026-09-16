@@ -160,6 +160,17 @@ You can also delete the `CHAT_RATE_LIMITER_DEMO` block — it exists only
 to protect the original demo tier's Gemini budget, which doesn't apply to
 your instance at all.
 
+**One line you must change rather than delete.** Near the bottom there is
+a `[[send_email]]` block with `destination_address` set to the original
+author's university address. That's the contact form's mailbox. Replace it
+with your own address — and verify that address first, in the Cloudflare
+dashboard under **Compute → Email Service → Email Routing → Destination
+Addresses** (Cloudflare mails you a link to click). If you leave someone
+else's address there, sending simply fails: these bindings only work with
+addresses verified on *your* account. If you don't want a contact form at
+all, delete the `[[send_email]]` and `CONTACT_RATE_LIMITER` blocks — the
+Contact page will then say it isn't configured, which is accurate.
+
 Your file should look something like this afterward:
 ```toml
 name = "clincog"
@@ -179,6 +190,15 @@ name = "ICD_RATE_LIMITER"
 namespace_id = "1002"
 simple = { limit = 200, period = 60 }
 
+[[ratelimits]]
+name = "CONTACT_RATE_LIMITER"
+namespace_id = "1004"
+simple = { limit = 2, period = 60 }
+
+[[send_email]]
+name = "CONTACT_EMAIL"
+destination_address = "you@your-university.edu"   # <- your verified address
+
 [assets]
 directory = "./public"
 binding = "ASSETS"
@@ -195,7 +215,30 @@ Back in the terminal (make sure you're still in the `clincog` folder):
    You'll be asked to paste the key (from Step 6) — paste it and press
    Enter. It won't show on screen as you paste it — that's normal, a
    security measure.
-2. Deploy for the first time:
+2. Set the contact form's details. These are the name, role and address
+   shown on the Contact page, and the mailbox its messages go to. They're
+   stored as secrets rather than written into the code so that your copy
+   never carries anyone else's contact details — and so yours never end up
+   in a public repository if you push your changes back to GitHub.
+   ```
+   wrangler secret put CONTACT_TO
+   wrangler secret put CONTACT_NAME
+   wrangler secret put CONTACT_ROLE
+   wrangler secret put CONTACT_FROM
+   ```
+   - `CONTACT_TO` — the same address you verified in Step 8.
+   - `CONTACT_NAME` — how you want to be named on the page, e.g. `Ana Popescu`.
+   - `CONTACT_ROLE` — one line about who you are, e.g.
+     `Lecturer, Department of Psychology, University of X`.
+   - `CONTACT_FROM` — the address messages are *sent from*, on a domain in
+     your own Cloudflare account, e.g. `contact@your-domain.org`. If you
+     skip it, ClinCog uses `contact@` plus whatever hostname the visitor is
+     on, which works on a plain domain but not on a subdomain you haven't
+     set up for email — so it's worth setting.
+
+   Skip these and nothing breaks except the Contact page, which will say it
+   isn't configured instead of pointing your students at a stranger.
+3. Deploy for the first time:
    ```
    wrangler deploy
    ```

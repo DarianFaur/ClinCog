@@ -71,6 +71,7 @@
         ${navItem("help", "Help", "/help.html", "help")}
         ${navItem("target", "Assessment benchmarks", "/benchmarks.html", "benchmarks")}
         ${navItem("sparkle", "Adopt with your own keys", "/adopt.html", "adopt")}
+        ${navItem("message-square", "Contact", "/contact.html", "contact")}
       </div>
     </nav>
     <div class="shell-sidebar-bottom">

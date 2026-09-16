@@ -289,6 +289,157 @@ async function verifyTurnstile(token, ip, env) {
   }
 }
 
+// ---- Contact form ----------------------------------------------------------
+// Mail goes out through Cloudflare Email Routing's send_email binding rather
+// than a third-party provider: the destination is a single address verified
+// on the account, which is free on every plan and exempt from sending quotas.
+// The binding in wrangler.toml is pinned to that address, so this code cannot
+// send anywhere else regardless of what arrives in the request body.
+
+// RFC 5322 wants a numeric zone offset. Date.toUTCString() ends in "GMT",
+// which is the obsolete form - accepted by most parsers, but it is one more
+// thing for a filter to score against a message it does not already trust.
+function rfc5322Date(d) {
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const p = (n) => String(n).padStart(2, "0");
+  return days[d.getUTCDay()] + ", " + p(d.getUTCDate()) + " " + months[d.getUTCMonth()] +
+         " " + d.getUTCFullYear() + " " + p(d.getUTCHours()) + ":" + p(d.getUTCMinutes()) +
+         ":" + p(d.getUTCSeconds()) + " +0000";
+}
+
+// Header values must be ASCII. A subject or display name containing a
+// Romanian diacritic would otherwise go out as raw 8-bit bytes in a header,
+// which is invalid and a reliable way to be scored as spam. RFC 2047
+// encodes it instead.
+function encodeHeaderWord(value) {
+  const text = String(value || "");
+  if (/^[\x20-\x7E]*$/.test(text)) return text;
+  const bytes = new TextEncoder().encode(text);
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return "=?UTF-8?B?" + btoa(binary) + "?=";
+}
+
+// base64 with the 76-character line wrapping the format requires.
+function base64Body(text) {
+  const bytes = new TextEncoder().encode(text);
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return (btoa(binary).match(/.{1,76}/g) || []).join("\r\n") + "\r\n";
+}
+
+// The three pieces of identity the contact page needs. Secrets rather than
+// [vars] because vars live in wrangler.toml, which is committed - putting
+// them there would leave the original author's details in the repository,
+// which is the problem this is solving.
+function contactAddress(env) {
+  const value = String(env.CONTACT_TO || "").trim();
+  return isEmail(value) ? value : "";
+}
+
+// The envelope sender has to sit on a domain this Cloudflare account can
+// sign for. Deriving it from the DESTINATION was wrong: the destination is
+// usually somewhere else entirely - a university mailbox - and mail claiming
+// to come from a domain you do not control fails authentication outright.
+// So it comes from the hostname the request arrived on, which is by
+// definition a zone on this account, and CONTACT_FROM overrides that when
+// the sending domain differs from the one serving the site.
+function contactSender(env, hostname) {
+  const configured = String(env.CONTACT_FROM || "").trim();
+  if (isEmail(configured)) return configured;
+  const host = String(hostname || "").trim().toLowerCase();
+  return host ? "contact@" + host.replace(/^www\./, "") : "";
+}
+
+function contactIdentity(env) {
+  return {
+    configured: !!contactAddress(env),
+    address: contactAddress(env),
+    name: String(env.CONTACT_NAME || "").trim(),
+    role: String(env.CONTACT_ROLE || "").trim(),
+  };
+}
+
+function contactError(status, message) {
+  return new Response(JSON.stringify({ error: message }), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+// Header injection guard. Anything that ends up on a header line has its
+// newlines stripped - without this, a subject containing CRLF could append
+// arbitrary headers to the outgoing message.
+function headerSafe(value, max) {
+  return String(value || "").replace(/[\r\n]+/g, " ").trim().slice(0, max || 200);
+}
+
+function isEmail(value) {
+  return typeof value === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim());
+}
+
+async function sendContactEmail(body, env, hostname) {
+  const topic = headerSafe(body.topic, 80);
+  const name = headerSafe(body.name, 120);
+  const replyTo = String(body.email || "").trim();
+  const message = String(body.message || "").trim();
+
+  if (!message) return { ok: false, error: "The message is empty." };
+  if (message.length > 8000) return { ok: false, error: "That message is too long to send." };
+  if (replyTo && !isEmail(replyTo)) return { ok: false, error: "That email address does not look right." };
+
+  // Destination comes from a secret, not from the source. Anyone who clones
+  // this repository and deploys it gets their own instance; a recipient
+  // baked into the code would make their students' messages point at the
+  // original author. If it is unset the caller has already been told the
+  // form is not configured, so reaching here without it is a bug.
+  const to = contactAddress(env);
+  if (!to) return { ok: false, error: "The contact form is not configured." };
+  const subject = "ClinCog - " + (topic || "Message");
+  const from = contactSender(env, hostname);
+  if (!from) return { ok: false, error: "The contact form is not configured." };
+
+  // Built by hand rather than with a MIME library: one plain-text part, no
+  // attachments, so a handful of headers and a body is the whole message.
+  const headers = [
+    "From: " + encodeHeaderWord("ClinCog contact form") + " <" + from + ">",
+    "To: " + to,
+    "Subject: " + encodeHeaderWord(headerSafe(subject, 180)),
+    "Message-ID: <" + crypto.randomUUID() + "@clincog.net>",
+    "Date: " + rfc5322Date(new Date()),
+    "MIME-Version: 1.0",
+    'Content-Type: text/plain; charset="utf-8"',
+    // base64 rather than 8bit: the body carries whatever a student typed,
+    // which on a Romanian keyboard means diacritics. Raw 8-bit bytes in a
+    // message body depend on the receiving server negotiating 8BITMIME, and
+    // filters treat a mismatch as a malformed message.
+    "Content-Transfer-Encoding: base64",
+  ];
+  // Reply-To carries the sender's own address, so replying from the inbox
+  // reaches the person rather than the form.
+  if (replyTo) headers.push("Reply-To: " + headerSafe(replyTo, 200));
+
+  const lines = [];
+  if (topic) lines.push("Topic: " + topic);
+  if (name) lines.push("From: " + name);
+  if (replyTo) lines.push("Reply to: " + replyTo);
+  if (lines.length) lines.push("");
+  lines.push(message);
+
+  const raw = headers.join("\r\n") + "\r\n\r\n" + base64Body(lines.join("\r\n") + "\r\n");
+
+  try {
+    const { EmailMessage } = await import("cloudflare:email");
+    await env.CONTACT_EMAIL.send(new EmailMessage(from, to, raw));
+    return { ok: true };
+  } catch (err) {
+    console.error("Contact send failed:", err);
+    return { ok: false, error: "The message could not be sent right now." };
+  }
+}
+
 function rateLimitedResponse() {
   return new Response(
     JSON.stringify({ text: "Too many requests right now - please wait a moment and try again." }),
@@ -376,6 +527,46 @@ export default {
       if (provider === "gemini") return respondAsPatientGemini(body.history, key, vignette, model);
       if (provider === "openai") return respondAsPatientOpenAI(body.history, key, vignette, model);
       return respondAsPatient(body.history, key, vignette, model);
+    }
+
+    // ---- Contact form ----------------------------------------------------
+    // The page asks who it is writing to rather than having it hardcoded.
+    if (url.pathname === "/api/contact/info" && request.method === "GET") {
+      return new Response(JSON.stringify(contactIdentity(env)), {
+        headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
+      });
+    }
+
+    if (url.pathname === "/api/contact" && request.method === "POST") {
+      // Fail closed: an unconfigured instance says so instead of falling back
+      // to a default recipient who never agreed to receive the mail.
+      if (!contactAddress(env)) {
+        return contactError(503, "The contact form is not configured on this instance.");
+      }
+
+      const { success: withinLimit } =
+        await env.CONTACT_RATE_LIMITER.limit({ key: clientIp || "unknown" });
+      if (!withinLimit) {
+        return contactError(429, "Too many messages from this connection. Try again in a few minutes.");
+      }
+
+      let body;
+      try {
+        body = await request.json();
+      } catch {
+        return contactError(400, "Could not read the message.");
+      }
+
+      const turnstileOk = await verifyTurnstile(body.turnstileToken, clientIp, env);
+      if (!turnstileOk) {
+        return contactError(403, "Could not verify this request came from a browser. Reload the page and try again.");
+      }
+
+      const sent = await sendContactEmail(body, env, url.hostname);
+      return new Response(JSON.stringify(sent.ok ? { ok: true } : { error: sent.error }), {
+        status: sent.ok ? 200 : 502,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     if (url.pathname === "/api/icd/token" && request.method === "POST") {

@@ -132,10 +132,19 @@ body { overflow-x: clip; overflow-y: visible; }
 .shell-topbar {
   /* Fixed rather than min-height: the boot layout in this file has to
      reserve this exact height before any of it exists, and a height that
-     drifts with the fluid title size cannot be reserved. The two-line
-     stack inside fits comfortably at 88px. */
-  height: 88px; flex-shrink: 0; position: sticky; top: 0; z-index: 30;
-  background: var(--bg-app); border-bottom: none;
+     drifts with the fluid title size cannot be reserved. 72px is the
+     tightest the two-line stack fits at the top of the fluid type scale.
+
+     Separation from the page is a single hairline drawn as an inset
+     shadow, plus a translucent ground with a blur behind it. A solid
+     fill would read as a second surface competing with the cards; this
+     way the bar stays part of the page and content passing underneath
+     stays visible but muted, which is also what stops the scroll from
+     looking like it is disappearing into nothing. */
+  height: var(--topbar-h); flex-shrink: 0; position: sticky; top: 0; z-index: 30;
+  background: color-mix(in srgb, var(--bg-app) 84%, transparent);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  box-shadow: inset 0 -1px 0 var(--border);
   display: flex; align-items: center; gap: var(--sp-4); padding: 0 var(--sp-7);
 }
 .shell-hamburger {
@@ -149,6 +158,11 @@ body { overflow-x: clip; overflow-y: visible; }
 .shell-topbar-main { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .shell-breadcrumb { display: flex; align-items: center; gap: 6px; font-size: var(--text-xs); overflow: hidden; white-space: nowrap; }
 .shell-topbar-title {
+  /* Reset the margin: this element is promoted to an <h1> when the page
+     has not declared one of its own, and the browser's default h1 margin
+     (0.67em top and bottom, ~29px here) was silently inflating the bar
+     and clipping the title on the pages where promotion happens. */
+  margin: 0;
   font-size: var(--text-lg); font-weight: 600; letter-spacing: -.015em;
   color: var(--text-primary); line-height: 1.25;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
@@ -193,7 +207,7 @@ body { overflow-x: clip; overflow-y: visible; }
   .shell-collapsed .shell-nav-chevron, .shell-collapsed .shell-term-badge-text, .shell-collapsed .shell-term-badge .progress-track { display: revert; }
   .shell-collapsed .shell-nav-item { justify-content: flex-start; padding: 9px var(--sp-3); }
   .shell-content-inner { padding: var(--sp-5) var(--sp-4) var(--sp-7); }
-  .shell-topbar { padding: 0 var(--sp-4); height: 72px; }
+  .shell-topbar { padding: 0 var(--sp-4); height: var(--topbar-h); }
   .shell-main, .shell-collapsed .shell-main { margin-left: 0; }
 }
 
@@ -239,7 +253,7 @@ html:not(.shell-ready) #shell-content {
   box-sizing: border-box;
   display: block;
   margin: 0;
-  padding-top: calc(88px + var(--sp-7));
+  padding-top: calc(var(--topbar-h) + var(--sp-7));
   padding-bottom: var(--sp-8);
   /* The centring term has to appear on BOTH sides. With it only on the
      left, the content box stays wider than the real 1200px column, and
@@ -263,7 +277,7 @@ html[data-shell-sidebar="drawer"]:not(.shell-ready) #shell-content { --boot-side
 @media (max-width: 1023px) {
   html:not(.shell-ready) #shell-content {
     --boot-gutter: var(--sp-4);
-    padding-top: calc(72px + var(--sp-5));
+    padding-top: calc(var(--topbar-h) + var(--sp-5));
     padding-bottom: var(--sp-7);
   }
 }

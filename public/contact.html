@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact · ClinCog</title>
+<script src="/theme-init.js"></script>
+<link rel="preload" as="script" href="/shell.js?v=2">
+<link rel="preload" as="style" href="/shell.css">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
+<link rel="icon" href="/favicon.svg">
+<style>
+  /* Prose-heavy page: narrow the column so running text fills its box. */
+  :root { --shell-content-max: 940px; }
+
+  .ct-lede { font-size: var(--text-base); color: var(--text-secondary); line-height: 1.7; margin: var(--sp-3) 0 var(--sp-7); }
+
+  /* Who you're writing to. Identity block built on the shared kv pattern:
+     a domain-tinted tile, the name, the role, and the address as a
+     selectable value rather than a link that hides what it is. */
+  .ct-person {
+    display: flex; gap: var(--sp-5); align-items: flex-start;
+    padding: 28px; margin-bottom: var(--sp-4);
+  }
+  .ct-person .icon-tile { width: 48px; height: 48px; border-radius: var(--radius-md); }
+  .ct-person .icon-tile svg { width: 22px; height: 22px; }
+  .ct-person-body { min-width: 0; flex: 1; }
+  .ct-person-name { font-size: var(--text-lg); font-weight: 600; letter-spacing: -.012em; color: var(--text-primary); }
+  .ct-person-role { font-size: var(--text-sm); color: var(--text-tertiary); margin-top: 2px; }
+  .ct-person-note { font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.65; margin: var(--sp-4) 0 0; }
+  .ct-address-row { display: flex; align-items: center; gap: var(--sp-2); margin-top: var(--sp-4); flex-wrap: wrap; }
+  .ct-address {
+    font-family: var(--font-mono); font-size: var(--text-sm); color: var(--text-primary);
+    background: var(--bg-surface-alt); border-radius: var(--radius-sm); padding: 7px 12px;
+    user-select: all;
+  }
+  .ct-copy {
+    border: none; background: transparent; color: var(--text-secondary); cursor: pointer;
+    font-family: var(--font-sans); font-size: var(--text-sm); font-weight: 500;
+    padding: 7px 12px; border-radius: var(--radius-pill);
+    transition: background var(--duration-hover) var(--ease-standard), color var(--duration-hover) var(--ease-standard);
+  }
+  .ct-copy:hover { background: var(--bg-surface-alt); color: var(--text-primary); }
+
+  /* Form */
+  .ct-form-card { padding: 28px; }
+  .ct-field { margin-bottom: var(--sp-5); }
+  .ct-field:last-of-type { margin-bottom: var(--sp-6); }
+  .ct-two { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); }
+  @media (max-width: 640px) { .ct-two { grid-template-columns: 1fr; } }
+  .ct-label {
+    display: block; font-size: var(--text-xs); font-weight: 500;
+    letter-spacing: .06em; text-transform: uppercase; color: var(--text-tertiary);
+    margin-bottom: var(--sp-2);
+  }
+  .ct-input, .ct-textarea {
+    width: 100%; box-sizing: border-box; border: none; border-radius: var(--radius-md);
+    background: var(--bg-surface-alt); color: var(--text-primary);
+    font-family: var(--font-sans); font-size: var(--text-base); line-height: 1.6;
+    padding: 13px 16px;
+  }
+  .ct-textarea { min-height: 170px; resize: vertical; }
+  .ct-input:focus, .ct-textarea:focus {
+    outline: 2px solid var(--accent); outline-offset: -2px; background: var(--bg-surface);
+  }
+  .ct-input::placeholder, .ct-textarea::placeholder { color: var(--text-tertiary); }
+
+  /* Topic picker, using the shared segmented control. */
+  .ct-topics { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+  .ct-topic {
+    border: none; cursor: pointer; font-family: var(--font-sans);
+    font-size: var(--text-sm); font-weight: 500; color: var(--text-secondary);
+    background: var(--bg-surface-alt); padding: 9px 16px; border-radius: var(--radius-pill);
+    transition: background var(--duration-hover) var(--ease-standard), color var(--duration-hover) var(--ease-standard);
+  }
+  .ct-topic:hover { background: var(--border); color: var(--text-primary); }
+  .ct-topic[aria-pressed="true"] {
+    background: var(--domain-anxiety-soft); color: var(--domain-anxiety-ink); font-weight: 600;
+  }
+
+  .ct-actions { display: flex; align-items: center; gap: var(--sp-4); flex-wrap: wrap; }
+  .ct-hint { font-size: var(--text-sm); color: var(--text-tertiary); line-height: 1.5; max-width: 42ch; }
+
+  .ct-sent { display: flex; gap: var(--sp-4); align-items: flex-start; }
+  .ct-sent .icon-tile { width: 44px; height: 44px; }
+  .ct-sent-title { font-size: var(--text-lg); font-weight: 600; letter-spacing: -.012em; color: var(--text-primary); }
+  .ct-sent-note { font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.65; margin: var(--sp-2) 0 0; }
+
+  .ct-unconfigured .ct-person-note { margin-top: var(--sp-3); max-width: var(--measure); }
+  .ct-unconfigured code { font-family: var(--font-mono); font-size: var(--text-sm);
+    background: var(--bg-surface-alt); border-radius: var(--radius-sm); padding: 2px 6px; }
+
+  .ct-foot { font-size: var(--text-sm); color: var(--text-tertiary); line-height: 1.7; margin-top: var(--sp-6); }
+  .ct-foot a { color: var(--accent-ink); }
+
+  @media (max-width: 767px) {
+    .ct-person, .ct-form-card { padding: var(--sp-5); }
+    .ct-person { flex-direction: column; gap: var(--sp-4); }
+  }
+</style>
+</head>
+<body>
+
+<div id="shell-content">
+
+  <div style="margin-bottom:var(--sp-6);">
+    <p class="ct-lede">
+      Something unclear, something broken, or an idea for a case? Write to the person
+      who runs this seminar. Every message goes straight to a single inbox &mdash; there is
+      no ticket system and no one else in between.
+    </p>
+  </div>
+
+  <!-- Nothing renders until /api/contact/info says who this instance writes
+       to. An instance that was deployed without the contact secrets shows the
+       notice below instead of a stranger's address. -->
+  <div class="card ct-unconfigured" id="ct-unconfigured" hidden>
+    <div class="card-body">
+      <div class="ct-person-name">Contact is not set up on this instance</div>
+      <p class="ct-person-note">
+        Whoever deployed this copy of ClinCog has not set a contact address yet.
+        If that is you, the self-hosting guide covers it: set the
+        <code>CONTACT_TO</code>, <code>CONTACT_NAME</code> and
+        <code>CONTACT_ROLE</code> secrets and deploy again.
+      </p>
+    </div>
+  </div>
+
+  <div class="card ct-person" id="ct-person" hidden>
+    <span class="icon-tile domain-anxiety" id="ct-person-icon"></span>
+    <div class="ct-person-body">
+      <div class="ct-person-name" id="ct-name-out">&nbsp;</div>
+      <div class="ct-person-role" id="ct-role-out">&nbsp;</div>
+      <p class="ct-person-note">
+        ClinCog is a teaching tool, not a product. It exists for one seminar, it is
+        maintained by one person alongside teaching it, and the fastest way to get
+        something fixed is to say what went wrong.
+      </p>
+      <div class="ct-address-row">
+        <span class="ct-address" id="ct-address">&nbsp;</span>
+        <button type="button" class="ct-copy" id="ct-copy">Copy address</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card ct-form-card" id="ct-form" hidden>
+    <div class="ct-field">
+      <span class="ct-label">What is this about</span>
+      <div class="ct-topics" id="ct-topics" role="group" aria-label="Message topic">
+        <button type="button" class="ct-topic" data-topic="Question about a case" aria-pressed="false">Question about a case</button>
+        <button type="button" class="ct-topic" data-topic="Something is broken" aria-pressed="false">Something is broken</button>
+        <button type="button" class="ct-topic" data-topic="Suggestion" aria-pressed="false">Suggestion</button>
+        <button type="button" class="ct-topic" data-topic="Using ClinCog in my own teaching" aria-pressed="false">Using it in my own teaching</button>
+        <button type="button" class="ct-topic" data-topic="Something else" aria-pressed="false">Something else</button>
+      </div>
+    </div>
+
+    <div class="ct-field ct-two">
+      <div>
+        <label class="ct-label" for="ct-name">Your name</label>
+        <input class="ct-input" id="ct-name" type="text" autocomplete="name" placeholder="So a reply can be addressed to you">
+      </div>
+      <div>
+        <label class="ct-label" for="ct-email">Your email</label>
+        <input class="ct-input" id="ct-email" type="email" autocomplete="email" placeholder="So a reply can reach you">
+      </div>
+    </div>
+
+    <div class="ct-field">
+      <label class="ct-label" for="ct-message">Message</label>
+      <textarea class="ct-textarea" id="ct-message"
+        placeholder="If something went wrong, it helps to say which case and which step you were on."></textarea>
+    </div>
+
+    <div class="ct-actions">
+      <button type="button" class="btn btn-primary" id="ct-send">Send message &rarr;</button>
+      <span class="ct-hint" id="ct-hint">Sent straight from here. Add your email if you would like a reply.</span>
+    </div>
+  </div>
+
+  <p class="ct-foot">
+    Your message is delivered to the address above and nothing else is kept &mdash; no account,
+    no log of what you wrote. Leaving your email is optional; without it the message still
+    arrives, there is just no way to answer it. If sending fails for any reason, the button
+    switches to <strong>Copy message</strong> so you can paste it into your own email instead.
+  </p>
+
+</div>
+
+<script src="/storage.js"></script>
+<script>window.CLINCOG_SHELL = { activeNav: "contact", breadcrumb: [{ label: "Contact" }] };</script>
+<script src="/shell.js?v=2"></script>
+<script src="/toast.js"></script>
+<script src="/icons.js"></script>
+<script src="/a11y.js"></script>
+<script>
+(function () {
+  "use strict";
+  // Learned from the Worker, never hardcoded. Until it arrives the page
+  // shows nothing to copy and nothing to write to.
+  var ADDRESS = "";
+
+  document.getElementById("ct-person-icon").innerHTML = ClinIcons.get("message-square", 22);
+
+  fetch("/api/contact/info", { headers: { Accept: "application/json" } })
+    .then(function (r) { return r.json(); })
+    .catch(function () { return { configured: false }; })
+    .then(function (info) {
+      if (!info || !info.configured) {
+        document.getElementById("ct-unconfigured").hidden = false;
+        return;
+      }
+      ADDRESS = info.address;
+      document.getElementById("ct-name-out").textContent = info.name || info.address;
+      document.getElementById("ct-role-out").textContent = info.role || "";
+      document.getElementById("ct-address").textContent = info.address;
+      document.getElementById("ct-person").hidden = false;
+      document.getElementById("ct-form").hidden = false;
+    });
+
+  // ---- topic picker -------------------------------------------------------
+  var topic = null;
+  var topics = document.getElementById("ct-topics");
+  topics.addEventListener("click", function (e) {
+    var btn = e.target.closest(".ct-topic");
+    if (!btn) return;
+    var already = btn.getAttribute("aria-pressed") === "true";
+    topics.querySelectorAll(".ct-topic").forEach(function (b) {
+      b.setAttribute("aria-pressed", "false");
+    });
+    if (!already) { btn.setAttribute("aria-pressed", "true"); topic = btn.dataset.topic; }
+    else { topic = null; }
+  });
+
+  // ---- copy the address ---------------------------------------------------
+  function copyText(text, okLabel, el, restore) {
+    var done = function () {
+      el.textContent = okLabel;
+      setTimeout(function () { el.textContent = restore; }, 1800);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } else { fallback(); }
+    function fallback() {
+      // Older browsers and non-secure origins have no clipboard API; select
+      // the text so the person can copy it with the keyboard instead of
+      // being told nothing happened.
+      var ta = document.createElement("textarea");
+      ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); done(); } catch (err) {
+        ClinCogToast.show({ title: "Copying is blocked in this browser.",
+                            detail: "Select the address and copy it manually." });
+      }
+      ta.remove();
+    }
+  }
+
+  var copyBtn = document.getElementById("ct-copy");
+  copyBtn.addEventListener("click", function () {
+    copyText(ADDRESS, "Copied", copyBtn, "Copy address");
+  });
+
+  // ---- Turnstile ----------------------------------------------------------
+  // Same invisible widget the chat pages use. A public contact form is a spam
+  // target from day one, so every submission is challenged before the Worker
+  // will send anything.
+  var TURNSTILE_SITE_KEY = "0x4AAAAAAEnj-1VYzxHm_t9H";
+  var widgetId = null, tsReady = false, pendingResolve = null, pendingReject = null;
+
+  (function initTurnstile() {
+    var script = document.createElement("script");
+    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+    script.async = true; script.defer = true;
+    script.onload = function () {
+      var holder = document.createElement("div");
+      holder.style.display = "none";
+      document.body.appendChild(holder);
+      widgetId = turnstile.render(holder, {
+        sitekey: TURNSTILE_SITE_KEY,
+        size: "invisible",
+        execution: "execute",
+        callback: function (t) { if (pendingResolve) pendingResolve(t); },
+        "error-callback": function () { if (pendingReject) pendingReject(new Error("challenge failed")); }
+      });
+      tsReady = true;
+    };
+    document.head.appendChild(script);
+  })();
+
+  function turnstileToken() {
+    return new Promise(function (resolve, reject) {
+      if (!tsReady) { reject(new Error("not ready")); return; }
+      pendingResolve = resolve; pendingReject = reject;
+      setTimeout(function () { reject(new Error("timeout")); }, 8000);
+      turnstile.reset(widgetId);
+      turnstile.execute(widgetId);
+    });
+  }
+
+  // ---- send ---------------------------------------------------------------
+  var sendBtn = document.getElementById("ct-send");
+  var hint = document.getElementById("ct-hint");
+  var sending = false;
+
+  function fields() {
+    return {
+      topic: topic,
+      name: document.getElementById("ct-name").value.trim(),
+      email: document.getElementById("ct-email").value.trim(),
+      message: document.getElementById("ct-message").value.trim()
+    };
+  }
+
+  function offerCopy(f, reason) {
+    hint.textContent = reason;
+    sendBtn.disabled = false;
+    sendBtn.textContent = "Copy message";
+    sendBtn.onclick = function () {
+      var text = "To: " + ADDRESS +
+                 "\nSubject: ClinCog \u2014 " + (f.topic || "Message") + "\n\n" +
+                 f.message + (f.name ? "\n\n\u2014 " + f.name : "") +
+                 (f.email ? "\n" + f.email : "");
+      copyText(text, "Copied", sendBtn, "Copy message");
+    };
+  }
+
+  function succeeded() {
+    var card = document.querySelector(".ct-form-card");
+    card.innerHTML =
+      '<div class="ct-sent">' +
+      '<span class="icon-tile domain-anxiety" id="ct-sent-icon"></span>' +
+      '<div><div class="ct-sent-title">Message sent</div>' +
+      '<p class="ct-sent-note">It has gone to the inbox above. If you left an email, ' +
+      'a reply will come from there \u2014 usually within a few days, sooner in term time.</p></div></div>';
+    document.getElementById("ct-sent-icon").innerHTML = ClinIcons.get("check-square", 22);
+  }
+
+  sendBtn.addEventListener("click", function () {
+    if (sending) return;
+    var f = fields();
+
+    // Same gate treatment as the evaluation pages: count what is missing and
+    // name it, rather than saying the form is incomplete.
+    var missing = [
+      { n: f.topic ? 0 : 1, label: "a topic" },
+      { n: f.message ? 0 : 1, label: "a message" }
+    ];
+    if (missing.some(function (m) { return m.n; })) { ClinCogToast.gate(missing); return; }
+
+    if (f.email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(f.email)) {
+      ClinCogToast.show({ title: "That email address does not look right.",
+                          detail: "Leave it empty if you would rather not be replied to." });
+      return;
+    }
+
+    sending = true;
+    sendBtn.disabled = true;
+    sendBtn.textContent = "Sending\u2026";
+    hint.textContent = "";
+
+    turnstileToken()
+      .then(function (token) {
+        return fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            topic: f.topic, name: f.name, email: f.email,
+            message: f.message, turnstileToken: token
+          })
+        });
+      })
+      .then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (data) {
+          if (!res.ok) throw new Error(data.error || "Sending failed.");
+          return data;
+        });
+      })
+      .then(function () { succeeded(); })
+      .catch(function (err) {
+        sending = false;
+        // Whatever went wrong - challenge, rate limit, mail transport - the
+        // person should not lose what they wrote. Hand them the copy route.
+        offerCopy(f, (err && err.message ? err.message : "Sending failed.") +
+                     " Copy the message and send it from your own email instead.");
+      });
+  });
+})();
+</script>
+</body>
+</html>
