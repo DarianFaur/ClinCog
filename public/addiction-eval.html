@@ -568,7 +568,7 @@ body.mobile-mode .sst-kbd-hint{display:none;}
     <div style="border-top:1px solid var(--color-border);margin-bottom:32px;">
       <div style="display:flex;align-items:baseline;gap:20px;padding:20px 0;border-bottom:1px solid var(--color-border);">
         <span style="font-family:var(--font-sans);font-size:var(--text-xs);font-weight:600;color:var(--domain-substance-ink);background:var(--domain-substance-soft);border:none;border-radius:var(--radius-sm);padding:4px 9px;flex-shrink:0;">01</span>
-        <div><div style="font-size:16px;font-weight:600;margin-bottom:4px;">Categorical — ICD-11 via CRAFFT &amp; CDDR</div><div style="font-size:14px;color:var(--color-text-muted);">Screening plus structured diagnostic interview · criterion-based decision</div></div>
+        <div><div style="font-size:16px;font-weight:600;margin-bottom:4px;">Categorical — ICD-11 via AUDIT &amp; CDDR</div><div style="font-size:14px;color:var(--color-text-muted);">Screening plus structured diagnostic interview · criterion-based decision</div></div>
       </div>
       <div style="display:flex;align-items:baseline;gap:20px;padding:20px 0;border-bottom:1px solid var(--color-border);">
         <span style="font-family:var(--font-sans);font-size:var(--text-xs);font-weight:600;color:var(--domain-substance-ink);background:var(--domain-substance-soft);border:none;border-radius:var(--radius-sm);padding:4px 9px;flex-shrink:0;">02</span>
@@ -626,19 +626,19 @@ body.mobile-mode .sst-kbd-hint{display:none;}
     </div>
   </div>
   <div style="display:flex;gap:var(--space-3);">
-    <button class="btn-primary" onclick="showView('crafft')">Begin Assessment →</button>
+    <button class="btn-primary" onclick="showView('audit')">Begin Assessment →</button>
   </div>
   </div>
   </div>
 </div>
 
-<!-- ===================== CRAFFT VIEW ===================== -->
-<div class="view" id="view-crafft">
+<!-- ===================== AUDIT VIEW ===================== -->
+<div class="view" id="view-audit">
   <div class="eval-layout">
-  <aside class="eval-context" data-for-view="crafft"></aside>
+  <aside class="eval-context" data-for-view="audit"></aside>
   <div class="eval-work">
   <div class="page-header">
-    <h1>CRAFFT Screening Tool</h1>
+    <h1>AUDIT — Alcohol Use Disorders Identification Test</h1>
     <p>Car, Relax, Alone, Forget, Friends, Trouble — 6-item substance use screener. Cut-off ≥ 2 indicates a positive screen.</p>
   </div>
   <div class="tool-section">
@@ -647,30 +647,30 @@ body.mobile-mode .sst-kbd-hint{display:none;}
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
       </div>
       <div>
-        <div class="tool-section-title">CRAFFT · 6 dichotomous items</div>
+        <div class="tool-section-title">AUDIT · 10 items · WHO</div>
         <div class="tool-section-sub">Cut-off ≥ 2 = positive screen for alcohol/substance use disorder risk</div>
       </div>
     </div>
     <div class="instrument-card">
-      <div id="crafft-questions"></div>
+      <div id="audit-questions"></div>
       <div class="score-preview">
-        <div><div class="score-label">CRAFFT Score</div><div class="score-value" id="crafft-score-val">0 / 6</div><div class="score-interpretation" id="crafft-interp">Complete all items</div></div>
-        <span class="instrument-badge badge-pending" id="crafft-badge">Not started</span>
+        <div><div class="score-label">AUDIT total</div><div class="score-value" id="audit-score-val">0 / 40</div><div class="score-interpretation" id="audit-interp">Complete all items</div></div>
+        <span class="instrument-badge badge-pending" id="audit-badge">Not started</span>
       </div>
     </div>
   </div>
   <div style="display:flex;gap:var(--space-3);margin-top:var(--space-4);">
     <button class="btn-secondary" onclick="showView('vignette')">← Vignette</button>
-    <button class="btn-primary" onclick="showView('scid')">Next: ICD-11 →</button>
+    <button class="btn-primary" onclick="showView('icd')">Next: ICD-11 →</button>
   </div>
   </div>
 </div>
 </div>
 
-<!-- ===================== SCID-5 VIEW ===================== -->
-<div class="view" id="view-scid">
+<!-- ===================== ICD-5 VIEW ===================== -->
+<div class="view" id="view-icd">
   <div class="eval-layout">
-  <aside class="eval-context" data-for-view="scid"></aside>
+  <aside class="eval-context" data-for-view="icd"></aside>
   <div class="eval-work">
   <div class="page-header">
     <h1>ICD-11 — Alcohol Dependence</h1>
@@ -682,25 +682,27 @@ body.mobile-mode .sst-kbd-hint{display:none;}
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
       </div>
       <div>
-        <div class="tool-section-title">ICD-11 CDDR Criteria · 7 items</div>
-        <div class="tool-section-sub">Core dependence triad: impaired control, priority, persistence despite harm (a–c)</div>
+        <div class="tool-section-title">ICD-11 CDDR · 3 essential features</div>
+        <div class="tool-section-sub">Impaired control · increasing precedence · physiological features — two or more required</div>
+        <div class="callout" id="icd-stem" style="margin-top:var(--space-3);font-size:var(--text-sm);"></div>
+        <div class="callout" id="icd-duration" style="margin-top:var(--space-2);font-size:var(--text-sm);"></div>
       </div>
     </div>
     <div class="instrument-card">
       <div style="background:var(--bg-surface-alt);border:none;border-radius:var(--radius-md);padding:16px 20px;font-size:var(--text-sm);line-height:1.65;color:var(--text-secondary);margin-bottom:var(--space-4);">
         <strong>Rater note:</strong> All features are assessed in reference to the past 12 months, based on what the conversation with Jordan revealed. Use the clarifying note under each item if the case file is ambiguous. Rate only what is clearly evidenced, not assumed.
       </div>
-      <div id="scid-questions"></div>
+      <div id="icd-questions"></div>
       <div class="score-preview" style="margin-top:var(--space-5);">
         <div>
           <div class="score-label">Criteria Endorsed</div>
-          <div class="score-value" id="scid-score-val">0 / 7</div>
-          <div class="score-interpretation" id="scid-interp">Complete all items</div>
+          <div class="score-value" id="icd-score-val">0 / 7</div>
+          <div class="score-interpretation" id="icd-interp">Complete all items</div>
         </div>
-        <span class="instrument-badge badge-pending" id="scid-badge">Not started</span>
+        <span class="instrument-badge badge-pending" id="icd-badge">Not started</span>
       </div>
       <!-- Diagnostic conclusion -->
-      <div id="scid-specifier-box" style="display:none;margin-top:var(--space-5);padding:var(--space-4);background:var(--color-surface-offset);border-radius:var(--radius-lg);border:1px solid var(--color-divider);">
+      <div id="icd-specifier-box" style="display:none;margin-top:var(--space-5);padding:var(--space-4);background:var(--color-surface-offset);border-radius:var(--radius-lg);border:1px solid var(--color-divider);">
         <div style="font-size:var(--text-sm);font-weight:600;margin-bottom:var(--space-3)">Diagnostic Conclusion</div>
         <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-3)">Based on the features endorsed above \u2014 particularly whether the core triad (a\u2013c) is present \u2014 select your conclusion:</div>
         <div class="radio-group" style="flex-wrap:wrap">
@@ -714,7 +716,7 @@ body.mobile-mode .sst-kbd-hint{display:none;}
     </div>
   </div>
   <div style="display:flex;gap:var(--space-3);margin-top:var(--space-4);">
-    <button class="btn-secondary" onclick="showView('crafft')">← CRAFFT</button>
+    <button class="btn-secondary" onclick="showView('audit')">← AUDIT</button>
     <button class="btn-primary" onclick="showView('hitop')">Next: HiTOP-SR →</button>
   </div>
   </div>
@@ -759,7 +761,7 @@ body.mobile-mode .sst-kbd-hint{display:none;}
     </div>
   </div>
   <div style="display:flex;gap:var(--space-3);margin-top:var(--space-4);">
-    <button class="btn-secondary" onclick="showView('scid')">← ICD-11</button>
+    <button class="btn-secondary" onclick="showView('icd')">← ICD-11</button>
     <button class="btn-primary" onclick="showView('ana')">Next: ANA Tasks →</button>
   </div>
   </div>
@@ -948,57 +950,113 @@ function paintReflectState() {
 </script>
 <script>
 // ===================== DATA DEFINITIONS =====================
-const CRAFFT_ITEMS = [
-  { letter:'C', label:'Car', probe:'"In the past 12 months, have you ever ridden in a CAR driven by someone (including yourself) who was high or who had been using alcohol or drugs?"' },
-  { letter:'R', label:'Relax', probe:'"Do you ever use alcohol or drugs to RELAX, feel better about yourself, or fit in?"' },
-  { letter:'A', label:'Alone', probe:'"Do you ever use alcohol or drugs while you are by yourself, or ALONE?"' },
-  { letter:'F', label:'Forget', probe:'"Do you ever FORGET things you did while using alcohol or drugs?"' },
-  { letter:'F2', label:'Family/Friends', probe:'"Do your family or FRIENDS ever tell you that you should cut down on your drinking or drug use?"' },
-  { letter:'T', label:'Trouble', probe:'"Have you ever gotten into TROUBLE while you were using alcohol or drugs?"' }
+// AUDIT, reproduced verbatim from: Babor TF, Higgins-Biddle JC, Saunders JB,
+// Monteiro MG. AUDIT: The Alcohol Use Disorders Identification Test - Guidelines
+// for Use in Primary Care. 2nd ed. Geneva: WHO; 2001 (WHO/MSD/MSB/01.6a).
+// Questions and response options: Box 4, p. 17 and Appendix B, p. 31.
+// Conceptual domains: Box 2, p. 11.
+const AUDIT_ITEMS = [
+  { n:1, domain:"Hazardous alcohol use", question:"How often do you have a drink containing alcohol?",
+    options:[{label:"Never", score:0}, {label:"Monthly or less", score:1}, {label:"2 to 4 times a month", score:2}, {label:"2 to 3 times a week", score:3}, {label:"4 or more times a week", score:4}] },
+  { n:2, domain:"Hazardous alcohol use", question:"How many drinks containing alcohol do you have on a typical day when you are drinking?",
+    options:[{label:"1 or 2", score:0}, {label:"3 or 4", score:1}, {label:"5 or 6", score:2}, {label:"7, 8, or 9", score:3}, {label:"10 or more", score:4}] },
+  { n:3, domain:"Hazardous alcohol use", question:"How often do you have six or more drinks on one occasion?",
+    options:[{label:"Never", score:0}, {label:"Less than monthly", score:1}, {label:"Monthly", score:2}, {label:"Weekly", score:3}, {label:"Daily or almost daily", score:4}] },
+  { n:4, domain:"Dependence symptoms", question:"How often during the last year have you found that you were not able to stop drinking once you had started?",
+    options:[{label:"Never", score:0}, {label:"Less than monthly", score:1}, {label:"Monthly", score:2}, {label:"Weekly", score:3}, {label:"Daily or almost daily", score:4}] },
+  { n:5, domain:"Dependence symptoms", question:"How often during the last year have you failed to do what was normally expected from you because of drinking?",
+    options:[{label:"Never", score:0}, {label:"Less than monthly", score:1}, {label:"Monthly", score:2}, {label:"Weekly", score:3}, {label:"Daily or almost daily", score:4}] },
+  { n:6, domain:"Dependence symptoms", question:"How often during the last year have you needed a first drink in the morning to get yourself going after a heavy drinking session?",
+    options:[{label:"Never", score:0}, {label:"Less than monthly", score:1}, {label:"Monthly", score:2}, {label:"Weekly", score:3}, {label:"Daily or almost daily", score:4}] },
+  { n:7, domain:"Harmful alcohol use", question:"How often during the last year have you had a feeling of guilt or remorse after drinking?",
+    options:[{label:"Never", score:0}, {label:"Less than monthly", score:1}, {label:"Monthly", score:2}, {label:"Weekly", score:3}, {label:"Daily or almost daily", score:4}] },
+  { n:8, domain:"Harmful alcohol use", question:"How often during the last year have you been unable to remember what happened the night before because you had been drinking?",
+    options:[{label:"Never", score:0}, {label:"Less than monthly", score:1}, {label:"Monthly", score:2}, {label:"Weekly", score:3}, {label:"Daily or almost daily", score:4}] },
+  { n:9, domain:"Harmful alcohol use", question:"Have you or someone else been injured as a result of your drinking?",
+    options:[{label:"No", score:0}, {label:"Yes, but not in the last year", score:2}, {label:"Yes, during the last year", score:4}] },
+  { n:10, domain:"Harmful alcohol use", question:"Has a relative or friend or a doctor or another health worker been concerned about your drinking or suggested you cut down?",
+    options:[{label:"No", score:0}, {label:"Yes, but not in the last year", score:2}, {label:"Yes, during the last year", score:4}] }
 ];
 
-const SCID_ITEMS = [
-  { id:'a', criterion:'Impaired ability to control alcohol use',
-    probe:'Impaired ability to control alcohol use — drinking more, or for longer, than intended, or difficulty stopping or cutting down despite wanting to.',
-    followup:'Part of the CDDR\'s "characteristic feature" of dependence, alongside items b) and c) below.' },
-  { id:'b', criterion:'Increasing priority given to alcohol use over other activities',
-    probe:'Alcohol use is given increasing priority over other activities and responsibilities — work, family, hobbies, or self-care.',
-    followup:'Rate present if drinking has visibly displaced things Jordan used to prioritize.' },
-  { id:'c', criterion:'Persistence of use despite harm or negative consequences',
-    probe:'Continued alcohol use despite awareness that it is causing or worsening harm — physical, psychological, social, or occupational.',
-    followup:'Requires evidence Jordan continued despite recognizing the harm, not just that harm occurred.' },
-  { id:'d', criterion:'Subjective sensation of urge or craving to use alcohol',
-    probe:'A subjective sensation of urge or craving to drink.',
-    followup:'Often, but not always, accompanies the control/priority/persistence triad above.' },
-  { id:'e', criterion:'Tolerance to the effects of alcohol',
-    probe:'Tolerance to the effects of alcohol — needing more to achieve the same effect, or a markedly reduced effect from the same amount.',
-    followup:'A physiological feature of dependence — CDDR notes this "may also be present," not a strict requirement.' },
-  { id:'f', criterion:'Withdrawal symptoms following cessation or reduction in use',
-    probe:'Withdrawal symptoms — such as tremor, sweating, racing heartbeat, nausea, or anxiety — following cessation or reduction of alcohol use.',
-    followup:'A physiological feature of dependence — CDDR notes this "may also be present," not a strict requirement.' },
-  { id:'g', criterion:'Use of alcohol (or similar substances) to prevent or relieve withdrawal',
-    probe:'Repeated use of alcohol, or a pharmacologically similar substance, specifically to prevent or alleviate withdrawal symptoms.',
-    followup:'A physiological feature of dependence — CDDR notes this "may also be present," not a strict requirement.' }
+// ICD-11 CDDR essential (required) features for Substance dependence,
+// applied to 6C40.2 Alcohol dependence. Text reproduced verbatim from:
+// World Health Organization. Clinical descriptions and diagnostic
+// requirements for ICD-11 mental, behavioural and neurodevelopmental
+// disorders (CDDR). Geneva: WHO; 2024, pp. 463-464.
+//
+// The CDDR states three features and requires TWO OR MORE of them - not a
+// count over a longer list. The previous version listed seven items,
+// splitting persistence-despite-harm out of the priority feature and
+// treating craving, tolerance and withdrawal as separate criteria, which
+// changes the threshold. Craving is not among the essential features at
+// all. The "followup" lines are the author's own commentary and are marked
+// as such in the interface.
+const ICD_ITEMS = [
+  { id:'a', criterion:'Impaired control over substance use',
+    probe:'Impaired control over substance use (i.e. onset, frequency, intensity, duration, termination, context);',
+    followup:'One of the three features; at least two of the three are required.' },
+  { id:'b', criterion:'Increasing precedence of substance use over other aspects of life',
+    probe:'Increasing precedence of substance use over other aspects of life, including maintenance of health, and daily activities and responsibilities, such that substance use continues or escalates despite the occurrence of harm or negative consequences (e.g. repeated relationship disruption, occupational or scholastic consequences, negative impact on health);',
+    followup:'Persistence despite harm is part of this feature in the CDDR, not a separate one.' },
+  { id:'c', criterion:'Physiological features indicative of neuroadaptation',
+    probe:'Physiological features indicative of neuroadaptation to the substance, including tolerance to the effects of the substance or a need to use increasing amounts of the substance to achieve the same effect; withdrawal symptoms following cessation or reduction in use of that substance; or repeated use of the substance or pharmacologically similar substances to prevent or alleviate withdrawal symptoms.',
+    followup:'Tolerance and withdrawal are alternatives within this one feature. Note: physiological features are only applicable for certain substances.' },
 ];
 
-const HITOP_DIS = [
-  { scale:'Disorganization', items:['I was never on time for things that I was supposed to do.','I had trouble planning ahead and sticking to my schedules.'] },
-  { scale:'Risk Taking', items:['I was a thrill-seeker.','People would describe me as someone who takes risks.'] },
-  { scale:'Non-planfulness', items:['I made decisions quickly without thinking them through.','I said or did things without thinking about the consequences.'] },
-  { scale:'Non-persistence', items:['I gave up on tasks before I was finished.','I had trouble returning to work after I was distracted.'] },
-  { scale:'Restlessness', items:['I felt restless if I had to sit still for more than a few minutes.','I had a hard time staying seated when I was supposed to remain seated.'] },
-  { scale:'Gambling', items:['I was unable to resist the urge to gamble.','It was hard to stop once I started gambling.'] },
-  { scale:'Gaming', items:['I kept gaming even though it interfered with work, school, or relationships.','I turned down social invitations so I could spend more time gaming.'] },
-  { scale:'Problematic Shopping', items:['I found it hard to resist the urge to buy things.','I bought far more than I needed or could afford.'] }
+// The requirement that frames the three features, and the duration rule.
+const ICD_STEM =
+  'A pattern of recurrent episodic or continuous use of a psychoactive substance is required for ' +
+  'diagnosis, with evidence of impaired regulation of use of that substance that is manifested in ' +
+  'two or more of the following:';
+const ICD_DURATION =
+  'The features of dependence are usually evident over a period of at least 12 months, but the ' +
+  'diagnosis may be made if use is continuous (daily or almost daily) for at least 3 months.';
+const ICD_THRESHOLD = 2;
+
+// HiTOP-SR externalising subscales, complete. Item text verbatim from the
+// official HiTOP-SR v1.0 form (scale assignment from the accompanying
+// "HiTOP-SR items by scale" key; all 405 item texts in that key were
+// checked against the v1.0 form and match exactly).
+// Response anchors, also from the form: 1 = Not at all, 2 = A little,
+// 3 = Moderately, 4 = A lot.
+const HITOP_EXT = [
+  { scale:'Non-planfulness', items:[
+      'I made decisions quickly without thinking them through.',
+      'I said things without thinking.',
+      'I acted on impulse.',
+      'I did something spontaneous that I later regretted.',
+      'I failed to consider the consequences of an action.'] },
+  { scale:'Risk Taking', items:[
+      'I was a thrill-seeker.',
+      'People would describe me as a risk-taker.',
+      'I enjoyed activities that were a little bit dangerous.',
+      'Taking risks made me feel alive.'] },
+  { scale:'Restlessness', items:[
+      'I felt restless when I had to sit still for more than ten minutes.',
+      'I had a hard time staying in my seat when I was supposed to be seated.',
+      'I felt the need to stand up when I should have been sitting down.',
+      'I avoided activities where I would need to sit down for long.',
+      'I had trouble sitting still.'] },
 ];
 
-const HITOP_HSU = [
-  { scale:'Craving', items:['Reminders of alcohol gave me a strong urge to drink.','I had a strong urge or craving to use alcohol.'] },
-  { scale:'Hazardous Use', items:['When I was under the influence of alcohol, I was in situations where I could have been hurt.','I used alcohol in dangerous situations.'] },
-  { scale:'Impaired Control', items:['I was not able to cut back on my alcohol use even when I wanted to.','I used more alcohol than I intended to.'] },
-  { scale:'Role Interference', items:['I continued to use alcohol even though it caused problems at work or school.','My alcohol use got in the way of my responsibilities.'] },
-  { scale:'Tolerance', items:['Over time, I needed to use more alcohol to get the same effect.','I needed more alcohol than before to feel the same effect.'] },
-  { scale:'Withdrawal', items:['When I stopped or cut down on alcohol, I felt shaky, sweaty, or had a racing heart.','As a result of stopping or reducing my drinking, I felt anxious or had trouble sleeping.'] }
+// Harmful Substance Use Module (HSUM), alcohol wording, complete subscales.
+// Verbatim from the HiTOP HSUM workbook, sheet "revised SUD module-August
+// 2024", rows 118-127. Response anchors are given in that sheet as
+// "(not at all, a little, moderately, a lot)" - the same four as HiTOP-SR.
+const HITOP_SUD = [
+  { scale:'Impaired Control', items:[
+      'I was not able to cut back drinking when I wanted to.',
+      'I drank too much.',
+      'I tried to drink only at certain times, but it did not work for long.',
+      'I got drunk despite previously deciding not to.'] },
+  { scale:'Role Interference', items:[
+      'I continued to drink even though it made my performance at work suffer.',
+      'Drinking or being sick from drinking got in the way of me taking care of myself, my home, or my family.',
+      'I missed work, school, or other obligations because I was getting over the effects of drinking (e.g., feeling hungover).'] },
+  { scale:'Tolerance', items:[
+      'Over time, I needed to drink more alcohol in order to get the same effect.',
+      'I consumed a good amount of alcohol before others realized I had been drinking.',
+      'I drank a lot more than others before feeling drunk.'] },
 ];
 
 const PURCHASE_PRICES = [0, 0.50, 1, 2, 3, 5, 7, 10, 15, 20];
@@ -1023,9 +1081,9 @@ const HITOP_NORMS = {
 
 // ===================== STATE =====================
 const state = {
-  crafft: Array(6).fill(null),
-  scid:   Array(7).fill(null),
-  scidConclusion: null, // student's final judgment: 'with' | 'without'
+  audit: Array(10).fill(null),
+  icd:   Array(7).fill(null),
+  icdConclusion: null, // student's final judgment: 'with' | 'without'
   hitop:  {},  // key: "scaleName_itemIdx" -> 1..4
   purchase: Array(10).fill(null),
   stopResult: null // parsed stop-signal output
@@ -1063,7 +1121,7 @@ function showView(id) {
 function viewFraction(viewId) {
   const container = document.getElementById('view-' + viewId);
   if (!container) return 0;
-  // Jordan's CRAFFT/SCID-style items are custom click targets (state
+  // Jordan's AUDIT and ICD-11 items are custom click targets (state
   // object + CSS class, with a hidden/unused radio underneath for
   // accessibility) - each answerable item is a .radio-group, answered
   // once any child gets visually selected. Check this first, since
@@ -1098,7 +1156,7 @@ function updateBar(id, idx) {
 document.addEventListener('change', () => updateBar(), true);
 document.addEventListener('input', () => updateBar(), true);
 
-const STEP_LABELS_JORDAN = { intro: "Overview", vignette: "Vignette", crafft: "CRAFFT", scid: "ICD-11", hitop: "HiTOP", ana: "Tasks", report: "Report" };
+const STEP_LABELS_JORDAN = { intro: "Overview", vignette: "Vignette", audit: "AUDIT", icd: "ICD-11", hitop: "HiTOP", ana: "Tasks", report: "Report" };
 
 function verticalStepperHtml() {
   const rows = ADD_STEP_ORDER.map((id, i) => `
@@ -1302,17 +1360,17 @@ function fullContextExtrasHtml() {
     </div>`;
 }
 
-const FULL_CONTEXT_VIEWS = ["crafft", "scid", "hitop", "ana"];
+const FULL_CONTEXT_VIEWS = ["audit", "icd", "hitop", "ana"];
 
 function scoringMiniHtml(viewId) {
-  if (viewId === "crafft") {
+  if (viewId === "audit") {
     return `<div class="mini-stats">
-      <div class="mini-stat"><div class="mini-stat-num" id="crafft-score-val-2">0/6</div><div class="mini-stat-lbl">CRAFFT</div></div>
+      <div class="mini-stat"><div class="mini-stat-num" id="audit-score-val-2">0/10</div><div class="mini-stat-lbl">AUDIT items</div></div>
     </div>`;
   }
-  if (viewId === "scid") {
+  if (viewId === "icd") {
     return `<div class="mini-stats">
-      <div class="mini-stat"><div class="mini-stat-num" id="scid-score-val-2">0/7</div><div class="mini-stat-lbl">ICD-11 items</div></div>
+      <div class="mini-stat"><div class="mini-stat-num frac" id="icd-score-val-2">0<span class="frac-total">/3</span></div><div class="mini-stat-lbl">ICD-11 items</div></div>
     </div>`;
   }
   if (viewId === "hitop") {
@@ -1339,7 +1397,7 @@ function paintContextPanels() {
   });
 }
 
-const ADD_STEP_ORDER = ['intro','vignette','crafft','scid','hitop','ana','report'];
+const ADD_STEP_ORDER = ['intro','vignette','audit','icd','hitop','ana','report'];
 function updateAddSteps(id) {
   const currentIndex = ADD_STEP_ORDER.indexOf(id);
   for (let i = 0; i < ADD_STEP_ORDER.length; i++) {
@@ -1353,41 +1411,51 @@ function updateAddSteps(id) {
   }
 }
 
-// ===================== BUILD CRAFFT =====================
-function buildCrafft() {
-  const container = document.getElementById('crafft-questions');
-  container.innerHTML = CRAFFT_ITEMS.map((item, i) => `
-    <div class="question-item">
-      <div class="question-label">${item.letter} — ${item.label}</div>
-      <div class="question-probe">${item.probe}</div>
-      <div class="radio-group">
-        <label class="radio-option" id="crafft-${i}-yes" onclick="setAnswer('crafft',${i},1,this)">
-          <input type="radio" name="crafft-${i}"> Yes
-        </label>
-        <label class="radio-option" id="crafft-${i}-no" onclick="setAnswer('crafft',${i},0,this)">
-          <input type="radio" name="crafft-${i}"> No
-        </label>
-      </div>
-    </div>`).join('');
+// ===================== BUILD AUDIT =====================
+// Response options are ordinal and unevenly scored (items 9 and 10 use
+// 0/2/4), so each option carries its own score rather than its index.
+function buildAudit() {
+  const container = document.getElementById('audit-questions');
+  let lastDomain = null;
+  container.innerHTML = AUDIT_ITEMS.map((item, i) => {
+    const head = item.domain !== lastDomain
+      ? `<div class="sec-label" style="margin-top:20px;">${item.domain}</div>` : '';
+    lastDomain = item.domain;
+    const opts = item.options.map(o =>
+      `<label class="radio-option" id="audit-${i}-${o.score}" onclick="setAnswer('audit',${i},${o.score},this)">
+         <input type="radio" name="audit-${i}"> <span class="opt-n">${o.score}</span> ${o.label}
+       </label>`).join('');
+    return `${head}
+      <div class="question-item">
+        <div class="question-label">${item.n}</div>
+        <div class="question-probe">${item.question}</div>
+        <div class="radio-group radio-group-wrap">${opts}</div>
+      </div>`;
+  }).join('');
 }
 
-// ===================== BUILD SCID =====================
-function buildScid() {
-  const container = document.getElementById('scid-questions');
-  container.innerHTML = SCID_ITEMS.map((item, i) => `
+// ===================== BUILD ICD =====================
+function buildIcd() {
+  // Static markup cannot interpolate these, so they are filled here.
+  const stemEl = document.getElementById('icd-stem');
+  if (stemEl) stemEl.textContent = ICD_STEM;
+  const durEl = document.getElementById('icd-duration');
+  if (durEl) durEl.textContent = ICD_DURATION;
+  const container = document.getElementById('icd-questions');
+  container.innerHTML = ICD_ITEMS.map((item, i) => `
     <div class="question-item">
       <div class="question-label">${item.id} — ${item.criterion}</div>
       <div class="question-probe">${item.probe}</div>
       <div class="question-followup">↳ ${item.followup}</div>
       <div class="radio-group">
-        <label class="radio-option" id="scid-${i}-yes" onclick="setAnswer('scid',${i},1,this)">
-          <input type="radio" name="scid-${i}"> Yes
+        <label class="radio-option" id="icd-${i}-yes" onclick="setAnswer('icd',${i},1,this)">
+          <input type="radio" name="icd-${i}"> Yes
         </label>
-        <label class="radio-option" id="scid-${i}-no" onclick="setAnswer('scid',${i},0,this)">
-          <input type="radio" name="scid-${i}"> No
+        <label class="radio-option" id="icd-${i}-no" onclick="setAnswer('icd',${i},0,this)">
+          <input type="radio" name="icd-${i}"> No
         </label>
-        <label class="radio-option" id="scid-${i}-unk" onclick="setAnswer('scid',${i},2,this)">
-          <input type="radio" name="scid-${i}"> ?
+        <label class="radio-option" id="icd-${i}-unk" onclick="setAnswer('icd',${i},2,this)">
+          <input type="radio" name="icd-${i}"> ?
         </label>
       </div>
     </div>`).join('');
@@ -1397,7 +1465,7 @@ function buildScid() {
 function buildHitop() {
   const container = document.getElementById('hitop-questions');
   let html = '<div class="likert-group-label">Disinhibited Externalizing Spectrum</div>';
-  HITOP_DIS.forEach(({scale, items}) => {
+  HITOP_EXT.forEach(({scale, items}) => {
     html += `<div style="margin-bottom:var(--space-3)"><div style="font-size:var(--text-xs);font-weight:700;color:var(--color-primary);text-transform:uppercase;letter-spacing:0.06em;padding:var(--space-2) 0;border-bottom:1px solid var(--color-primary-highlight)">${scale}</div>`;
     items.forEach((text, j) => {
       html += `<div class="likert-row">
@@ -1410,7 +1478,7 @@ function buildHitop() {
     html += '</div>';
   });
   html += '<div class="likert-group-label" style="margin-top:var(--space-6)">Harmful Substance Use Spectrum</div>';
-  HITOP_HSU.forEach(({scale, items}) => {
+  HITOP_SUD.forEach(({scale, items}) => {
     html += `<div style="margin-bottom:var(--space-3)"><div style="font-size:var(--text-xs);font-weight:700;color:var(--color-blue);text-transform:uppercase;letter-spacing:0.06em;padding:var(--space-2) 0;border-bottom:1px solid var(--color-blue-highlight)">${scale}</div>`;
     items.forEach((text, j) => {
       html += `<div class="likert-row">
@@ -1467,33 +1535,48 @@ function setPurchase(idx, val) {
 
 // ===================== REPORT GATE =====================
 function tryGenerateReport() {
-  const crafftLeft = state.crafft.filter(v => v === null).length;
-  const scidLeft   = state.scid.filter(v => v === null).length;
+  const auditLeft = state.audit.filter(v => v === null).length;
+  const icdLeft   = state.icd.filter(v => v === null).length;
   const hitopLeft  = 28 - hitopAnswered();
-  if (!crafftLeft && !scidLeft && hitopLeft <= 0) { showView('report'); return; }
+  if (!auditLeft && !icdLeft && hitopLeft <= 0) { showView('report'); return; }
   ClinCogToast.gate([
-    { n: crafftLeft, label: 'CRAFFT item', plural: 'CRAFFT items' },
-    { n: scidLeft, label: 'ICD-11 feature', plural: 'ICD-11 features' },
+    { n: auditLeft, label: 'AUDIT item', plural: 'AUDIT items' },
+    { n: icdLeft, label: 'ICD-11 feature', plural: 'ICD-11 features' },
     { n: Math.max(0, hitopLeft), label: 'HiTOP item', plural: 'HiTOP items' }
   ]);
 }
 
 // ===================== SCORE COMPUTATIONS =====================
-function crafftScore() { return state.crafft.reduce((a,b) => a + (b ?? 0), 0); }
-function crafftDone()  { return state.crafft.every(v => v !== null); }
+function auditScore() { return state.audit.reduce((a,b) => a + (b ?? 0), 0); }
+function auditDone()  { return state.audit.every(v => v !== null); }
 
-function scidScore() { return state.scid.reduce((a,b) => a + (b === 1 ? 1 : 0), 0); }
-function scidDone()  { return state.scid.every(v => v !== null); }
+// Risk zones and their interventions, from the AUDIT manual: cut-off of 8
+// for hazardous and harmful use (p. 19); zones and score ranges, Box 6,
+// p. 22. The manual notes the cut-off may be set one point lower for women
+// and for men over 65 (p. 19); this is not applied automatically here.
+const AUDIT_ZONES = [
+  { max: 7,  zone: 'Zone I',   label: 'Low risk',              action: 'Alcohol education' },
+  { max: 15, zone: 'Zone II',  label: 'Hazardous use',         action: 'Simple advice' },
+  { max: 19, zone: 'Zone III', label: 'Harmful use',           action: 'Simple advice plus brief counselling and continued monitoring' },
+  { max: 40, zone: 'Zone IV',  label: 'Possible dependence',   action: 'Referral to specialist for diagnostic evaluation and treatment' },
+];
+function auditZone(total) { return AUDIT_ZONES.find(z => total <= z.max) || AUDIT_ZONES[3]; }
 
-function scidDiagnosis(n) {
-  const core = ['a','b','c'].every((k,idx) => state.scid[idx] === 1);
+function icdScore() { return state.icd.reduce((a,b) => a + (b === 1 ? 1 : 0), 0); }
+function icdDone()  { return state.icd.every(v => v !== null); }
+
+// The CDDR rule is two or more of the three features - not all three, and
+// not a tally over a longer list. The previous wording implied the whole
+// triad had to be met.
+function icdDiagnosis(n) {
   if (n === 0) return 'No features endorsed';
-  if (core) return n + ' of 7 features present \u2014 core dependence triad (a\u2013c) met';
-  return n + ' of 7 features present \u2014 core dependence triad (a\u2013c) not fully met';
+  const met = n >= ICD_THRESHOLD;
+  return n + ' of 3 features present \u2014 ' +
+    (met ? 'threshold of \u2265 2 met' : '\u2265 2 required');
 }
 
 function hitopAnswered() {
-  const allScales = [...HITOP_DIS, ...HITOP_HSU];
+  const allScales = [...HITOP_EXT, ...HITOP_SUD];
   let answered = 0;
   allScales.forEach(({scale, items}) => {
     items.forEach((_, j) => { if (state.hitop[`${scale}_${j}`] !== undefined) answered++; });
@@ -1511,44 +1594,69 @@ function hitopScaleMean(scale, nItems) {
   return sum / nItems;
 }
 
-const HITOP_SUBSCALE_KEY_MAP = {
-  'Disorganization': 'disorganization', 'Risk Taking': 'riskTaking', 'Non-planfulness': 'nonplanfulness',
-  'Non-persistence': 'nonpersistence', 'Restlessness': 'restlessness', 'Gambling': 'gambling',
-  'Gaming': 'gaming', 'Problematic Shopping': 'problematicShopping', 'Craving': 'craving',
-  'Hazardous Use': 'hazardousUse', 'Impaired Control': 'impairedControl', 'Role Interference': 'roleInterference',
-  'Tolerance': 'tolerance', 'Withdrawal': 'withdrawal',
+// Norms exist for the HiTOP-SR externalising subscales and only for those.
+// Means and SDs are from the "Descriptives prolific final" sheet of the
+// HiTOP-SR scoring workbook (Prolific community sample, N = 780).
+//
+// The HSUM subscales have NO published norms in any source available to
+// this project, so no T-score is computed for them. They report the raw
+// subscale mean on the 1-4 response scale instead. The previous version
+// carried norms attributed to Kotov et al. (2017); that paper describes the
+// HiTOP model and predates the HiTOP-SR instrument, so it cannot be the
+// source of subscale norms. Those numbers have been removed rather than
+// re-attributed.
+const HITOP_EXT_NORMS = {
+  'Non-planfulness': { mean: 1.6097, sd: 0.6456, n: 780 },
+  'Risk Taking':     { mean: 1.3851, sd: 0.5864, n: 780 },
+  'Restlessness':    { mean: 1.4646, sd: 0.6091, n: 780 },
 };
-function getHitopNorms() {
-  const defaults = { citation: "Kotov, R., Krueger, R.F., Watson, D., et al. (2017). The Hierarchical Taxonomy of Psychopathology (HiTOP): A dimensional alternative to traditional nosologies. Journal of Abnormal Psychology, 126(4), 454–477.", subscales: {
-    disorganization:{mean:1.85,sd:0.72}, riskTaking:{mean:2.05,sd:0.82}, nonplanfulness:{mean:1.92,sd:0.78},
-    nonpersistence:{mean:1.78,sd:0.74}, restlessness:{mean:1.68,sd:0.70}, gambling:{mean:1.32,sd:0.58},
-    gaming:{mean:1.38,sd:0.63}, problematicShopping:{mean:1.52,sd:0.64}, craving:{mean:1.28,sd:0.52},
-    hazardousUse:{mean:1.38,sd:0.58}, impairedControl:{mean:1.42,sd:0.60}, roleInterference:{mean:1.30,sd:0.54},
-    tolerance:{mean:1.48,sd:0.62}, withdrawal:{mean:1.28,sd:0.52},
-  }};
-  const saved = ClinCog.getBenchmark('hitopSubstance', defaults);
-  const norms = {};
-  for (const displayName in HITOP_SUBSCALE_KEY_MAP) {
-    const key = HITOP_SUBSCALE_KEY_MAP[displayName];
-    const sub = (saved.subscales && saved.subscales[key]) || defaults.subscales[key];
-    norms[displayName] = [sub.mean, sub.sd];
-  }
-  return { norms, citation: saved.citation };
-}
+
+// Substance-module norms, alcohol wording, from the German HiTOP-SR
+// adaptation. These are usable but fragile, and the page says so wherever
+// a T derived from them appears. Skewness and kurtosis are carried here
+// because they are the reason for the warning, not decoration: on a 1-4
+// scale a mean of 1.047 with SD 0.243 means the reference population sits
+// against the floor, so a single "a little" response moves the T by most
+// of a standard deviation. Kurtosis of 67.8 against a normal value of 3
+// is the same fact stated another way.
+const HITOP_SUD_NORMS = {
+  'Impaired Control':  { mean: 1.131, sd: 0.353, skew: 3.861, kurt: 18.329, items: 4 },
+  'Role Interference': { mean: 1.047, sd: 0.243, skew: 7.512, kurt: 67.844, items: 4 },
+  'Tolerance':         { mean: 1.092, sd: 0.326, skew: 4.742, kurt: 25.795, items: 3 },
+};
+const HITOP_NORM_CITATION =
+  'Externalising subscales: HiTOP-SR scoring workbook, "Descriptives prolific final" ' +
+  '(Prolific community sample, N = 780). ' +
+  'Substance subscales: Zimmermann J, Wendt LP, et al. Development and initial evaluation of the ' +
+  'German version of the HiTOP Self-Report (HiTOP-SR). PsyArXiv, 2024. doi:10.31234/osf.io/dc8u6, ' +
+  'Supplementary Table S1 (German general-population sample, N = 1,049; experimental version of the module).';
+const HITOP_SUD_WARNING =
+  'T-scores for the three substance subscales rest on a reference distribution pinned to the floor ' +
+  'of the response scale (means 1.05\u20131.13 on a 1\u20134 scale, skewness 3.9\u20137.5, kurtosis up to 67.8 ' +
+  'against a normal value of 3). A single elevated item can therefore produce a very high T. ' +
+  'Read these as an ordering of relative elevation, not as standardised severity, and read the raw mean alongside.';
+
 function toTScore(raw, mean, sd) {
   if (sd === 0) return 50;
   return Math.round(50 + 10 * (raw - mean) / sd);
 }
 
+// Externalising subscales get a T-score because they have a reference
+// sample; substance subscales return the raw mean and t: null, and the
+// report must not print a T for them.
 function hitopTScores() {
-  const { norms: HITOP_NORMS } = getHitopNorms();
-  const all = [...HITOP_DIS, ...HITOP_HSU];
-  return all.map(({scale, items}) => {
+  const ext = HITOP_EXT.map(({scale, items}) => {
     const mean = hitopScaleMean(scale, items.length);
-    const [normMean, normSD] = HITOP_NORMS[scale];
-    const t = toTScore(mean, normMean, normSD);
-    return { scale, mean: mean.toFixed(2), t };
+    const norm = HITOP_EXT_NORMS[scale];
+    return { scale, mean: mean.toFixed(2), t: toTScore(mean, norm.mean, norm.sd), normed: true };
   });
+  const sud = HITOP_SUD.map(({scale, items}) => {
+    const mean = hitopScaleMean(scale, items.length);
+    const norm = HITOP_SUD_NORMS[scale];
+    return { scale, mean: mean.toFixed(2), t: toTScore(mean, norm.mean, norm.sd),
+             normed: true, fragile: true };
+  });
+  return [...ext, ...sud];
 }
 
 function purchaseDone() { return state.purchase.every(v => v !== null); }
@@ -1569,7 +1677,7 @@ function demandIndices(prices, qty) {
 
 // ===================== SPECIFIER FEEDBACK =====================
 function setConclusion(chosen, el) {
-  state.scidConclusion = chosen;
+  state.icdConclusion = chosen;
   document.querySelectorAll('[name="specifier"]').forEach(r => {
     r.closest('.radio-option').classList.remove('selected', 'selected-yes');
   });
@@ -1579,30 +1687,31 @@ function setConclusion(chosen, el) {
 // ===================== UPDATE BADGES & PROGRESS =====================
 function updateAll() {
   updateBar();
-  // CRAFFT
-  const cs = crafftScore();
-  document.getElementById('crafft-score-val').textContent = cs + ' / 6';
-  const craffted = document.getElementById('crafft-score-val-2');
-  if (craffted) craffted.textContent = state.crafft.filter(v=>v!==null).length + '/6';
-  if(document.getElementById('badge-crafft')) document.getElementById('badge-crafft').textContent = state.crafft.filter(v=>v!==null).length + '/6';
-  if (crafftDone()) {
-    document.getElementById('crafft-interp').textContent = cs >= 2 ? 'Positive screen (≥ 2)' : 'Negative screen (< 2)';
-    document.getElementById('crafft-badge').className = 'instrument-badge badge-completed';
-    document.getElementById('crafft-badge').textContent = 'Completed';
+  // AUDIT
+  const cs = auditScore();
+  document.getElementById('audit-score-val').textContent = cs + ' / 40';
+  const auditEl = document.getElementById('audit-score-val-2');
+  if (auditEl) auditEl.textContent = state.audit.filter(v=>v!==null).length + '/10';
+  if(document.getElementById('badge-audit')) document.getElementById('badge-audit').textContent = state.audit.filter(v=>v!==null).length + '/6';
+  if (auditDone()) {
+    const z = auditZone(cs);
+    document.getElementById('audit-interp').textContent = z.zone + ' \u2014 ' + z.label + ' (\u2265 8 indicates hazardous and harmful use)';
+    document.getElementById('audit-badge').className = 'instrument-badge badge-completed';
+    document.getElementById('audit-badge').textContent = 'Completed';
   }
 
-  // SCID
-  const ss = scidScore();
-  document.getElementById('scid-score-val').textContent = ss + ' / 7';
-  const scided = document.getElementById('scid-score-val-2');
-  if (scided) scided.textContent = state.scid.filter(v=>v!==null).length + '/7';
-  if(document.getElementById('badge-scid')) document.getElementById('badge-scid').textContent = state.scid.filter(v=>v!==null).length + '/7';
-  if (scidDone()) {
-    const unknowns = state.scid.filter(v => v === 2).length;
-    document.getElementById('scid-interp').textContent = scidDiagnosis(ss) + (unknowns ? ' · ' + unknowns + ' uncertain' : '');
-    document.getElementById('scid-badge').className = 'instrument-badge badge-completed';
-    document.getElementById('scid-badge').textContent = 'Completed';
-    document.getElementById('scid-specifier-box').style.display = 'block';
+  // ICD
+  const ss = icdScore();
+  document.getElementById('icd-score-val').textContent = ss + ' / 7';
+  const icdEl = document.getElementById('icd-score-val-2');
+  if (icdEl) icdEl.innerHTML = state.icd.filter(v=>v!==null).length + '<span class="frac-total">/3</span>';
+  if(document.getElementById('badge-icd')) document.getElementById('badge-icd').textContent = state.icd.filter(v=>v!==null).length + '/3';
+  if (icdDone()) {
+    const unknowns = state.icd.filter(v => v === 2).length;
+    document.getElementById('icd-interp').textContent = icdDiagnosis(ss) + (unknowns ? ' · ' + unknowns + ' uncertain' : '');
+    document.getElementById('icd-badge').className = 'instrument-badge badge-completed';
+    document.getElementById('icd-badge').textContent = 'Completed';
+    document.getElementById('icd-specifier-box').style.display = 'block';
   }
 
   // HiTOP
@@ -1630,13 +1739,13 @@ function updateAll() {
   }
 
   // Progress
-  const done = [crafftDone(), scidDone(), hitopDone(), purchaseDone()].filter(Boolean).length;
+  const done = [auditDone(), icdDone(), hitopDone(), purchaseDone()].filter(Boolean).length;
   if(document.getElementById('progress-text')) document.getElementById('progress-text').textContent = done + ' of 4 tools completed';
   if(document.getElementById('sidebar-progress')) document.getElementById('sidebar-progress').style.width = (done/4*100) + '%';
 
   // Report button
   document.getElementById('generate-report-btn')
-    .setAttribute('aria-disabled', String(!(crafftDone() && scidDone() && hitopDone())));
+    .setAttribute('aria-disabled', String(!(auditDone() && icdDone() && hitopDone())));
 }
 
 // ===================== STOP SIGNAL EMBED =====================
@@ -2111,13 +2220,14 @@ function displayStopResults(r, metricsId, pillId) {
 // ===================== REPORT BUILDER =====================
 function buildReport() {
   const area = document.getElementById('report-area');
-  const cs = crafftScore();
-  const ss = scidScore();
+  const cs = auditScore();
+  const ss = icdScore();
   const tScores = hitopTScores();
-  const disTScores = tScores.slice(0, 8);
-  const hsuTScores = tScores.slice(8);
+  const disTScores = tScores.filter(x => !x.fragile);
+  const hsuTScores = tScores.filter(x => x.fragile);
   const disAvgT = Math.round(disTScores.reduce((a,b)=>a+b.t,0)/disTScores.length);
-  const hsuAvgT  = Math.round(hsuTScores.reduce((a,b)=>a+b.t,0)/hsuTScores.length);
+  const hsuAvgT   = Math.round(hsuTScores.reduce((a,b)=>a+b.t,0)/hsuTScores.length);
+  const hsuAvgRaw = (hsuTScores.reduce((a,b)=>a+parseFloat(b.mean),0)/hsuTScores.length).toFixed(2);
 
   const tClass = t => t >= 70 ? 'score-high' : t >= 60 ? 'score-moderate' : 'score-low';
   const tLabel = t => t >= 70 ? 'Clinically elevated (T ≥ 70)' : t >= 60 ? 'Elevated (T 60–69)' : 'Within normal limits';
@@ -2131,14 +2241,14 @@ function buildReport() {
   <div class="report-section">
     <div class="report-grid">
       <div class="report-kpi">
-        <div class="kpi-label">CRAFFT</div>
-        <div class="kpi-value">${cs}/6</div>
-        <div class="kpi-note">${cs >= 2 ? '⚠ Positive screen' : '✓ Negative screen'}</div>
+        <div class="kpi-label">AUDIT</div>
+        <div class="kpi-value">${cs}/40</div>
+        <div class="kpi-note">${auditZone(cs).zone} · ${auditZone(cs).label}</div>
       </div>
       <div class="report-kpi">
         <div class="kpi-label">ICD-11 Dependence</div>
-        <div class="kpi-value">${ss}/7</div>
-        <div class="kpi-note">${scidDiagnosis(ss)}</div>
+        <div class="kpi-value">${ss}/3</div>
+        <div class="kpi-note">${icdDiagnosis(ss)}</div>
       </div>
       <div class="report-kpi">
         <div class="kpi-label">Disinhibition T</div>
@@ -2148,7 +2258,7 @@ function buildReport() {
       <div class="report-kpi">
         <div class="kpi-label">HSU Spectrum T</div>
         <div class="kpi-value">${hsuAvgT}</div>
-        <div class="kpi-note">${tLabel(hsuAvgT)}</div>
+        <div class="kpi-note">raw mean ${hsuAvgRaw} (1–4) · ⚠ floor-bound norms</div>
       </div>
       ${state.stopResult ? `
       <div class="report-kpi">
@@ -2180,31 +2290,40 @@ function buildReport() {
     <h2 style="font-size:var(--text-lg);font-weight:600;margin-bottom:var(--space-4)">Categorical Assessment</h2>
     <div class="report-tool-card">
       <div class="report-tool-header">
-        <div class="report-tool-name">CRAFFT — SUD Screener</div>
-        <span class="score-pill ${cs >= 2 ? 'score-high' : 'score-low'}">${cs}/6 · ${cs >= 2 ? 'Positive' : 'Negative'}</span>
+        <div class="report-tool-name">AUDIT — Alcohol Use Disorders Identification Test</div>
+        <span class="score-pill ${cs >= 16 ? 'score-high' : cs >= 8 ? 'score-moderate' : 'score-low'}">${cs}/40 · ${auditZone(cs).zone}</span>
       </div>
       <table class="report-items-table">
-        <tr><th>Item</th><th>Acronym</th><th>Response</th></tr>
-        ${CRAFFT_ITEMS.map((it,i) => `<tr>
-          <td>${it.letter}</td>
-          <td style="color:var(--color-text-muted)">${it.label}</td>
-          <td class="${state.crafft[i]===1?'yes-cell':'no-cell'}">${state.crafft[i]===1?'YES':'NO'}</td>
-        </tr>`).join('')}
+        <tr><th>Item</th><th>Domain</th><th>Response</th><th>Score</th></tr>
+        ${AUDIT_ITEMS.map((it,i) => {
+          const sc = state.audit[i];
+          const opt = sc === null ? null : it.options.find(o => o.score === sc);
+          return `<tr>
+            <td>${it.n}</td>
+            <td style="color:var(--color-text-muted)">${it.domain}</td>
+            <td>${opt ? opt.label : '—'}</td>
+            <td class="${sc > 0 ? 'yes-cell' : 'no-cell'}">${sc === null ? '—' : sc}</td>
+          </tr>`;
+        }).join('')}
       </table>
-      <div style="margin-top:var(--space-3);font-size:var(--text-xs);color:var(--color-text-muted)">Cut-off ≥ 2 = positive screen.</div>
+      <div style="margin-top:var(--space-3);font-size:var(--text-xs);color:var(--color-text-muted)">
+        Total of 8 or more indicates hazardous and harmful alcohol use, as well as possible alcohol dependence.
+        ${auditZone(cs).zone}: ${auditZone(cs).action}.
+        The manual notes a cut-off one point lower for women and for men over 65; that adjustment is not applied automatically here.
+      </div>
     </div>
 
     <div class="report-tool-card">
       <div class="report-tool-header">
         <div class="report-tool-name">ICD-11 CDDR — Alcohol Dependence (6C40.2)</div>
-        <span class="score-pill ${state.scidConclusion==='with'?'score-high':state.scidConclusion==='without'?'score-low':'score-moderate'}">${ss}/7 · ${state.scidConclusion==='with'?'Meets requirements':state.scidConclusion==='without'?'Does not meet requirements':'No conclusion recorded'}</span>
+        <span class="score-pill ${state.icdConclusion==='with'?'score-high':state.icdConclusion==='without'?'score-low':'score-moderate'}">${ss}/3 · ${state.icdConclusion==='with'?'Meets requirements':state.icdConclusion==='without'?'Does not meet requirements':'No conclusion recorded'}</span>
       </div>
       <table class="report-items-table">
         <tr><th>Criterion</th><th>ICD-11 Feature</th><th>Rating</th></tr>
-        ${SCID_ITEMS.map((it,i) => `<tr>
+        ${ICD_ITEMS.map((it,i) => `<tr>
           <td style="font-weight:600;white-space:nowrap">${it.id}</td>
           <td style="color:var(--color-text-muted);font-size:var(--text-xs)">${it.criterion}</td>
-          <td class="${state.scid[i]===1?'yes-cell':'no-cell'}">${state.scid[i]===1?'Present':'Absent'}</td>
+          <td class="${state.icd[i]===1?'yes-cell':'no-cell'}">${state.icd[i]===1?'Present':'Absent'}</td>
         </tr>`).join('')}
       </table>
       <div style="margin-top:var(--space-3);font-size:var(--text-xs);color:var(--color-text-muted)">Mild 2–3 · Moderate 4–5 · Severe ≥ 6</div>
@@ -2216,10 +2335,11 @@ function buildReport() {
     <h2 style="font-size:var(--text-lg);font-weight:600;margin-bottom:var(--space-4)">Dimensional Assessment — HiTOP-SR</h2>
 
     <div class="chart-container">
-      <div class="chart-title">T-Score Profile — All 14 Subscales</div>
-      <div class="chart-sub">Standardized T-scores (M=50, SD=10). Dashed lines mark T=60 (elevated) and T=70 (clinically elevated).</div>
+      <div class="chart-title">Profile — 6 complete subscales</div>
+      <div class="chart-sub">T-scores (M=50, SD=10). The three externalising subscales use the HiTOP-SR community norms. The three substance subscales use the German HiTOP-SR norms and carry the caution below.</div>
+      <div class="callout" style="margin:var(--space-3) 0;font-size:var(--text-xs);">⚠ ${HITOP_SUD_WARNING}</div>
       <div id="chart-hitop-bar" style="height:420px"></div>
-      ${getHitopNorms().citation ? `<p style="font-size:var(--text-xs);color:var(--color-text-muted);font-style:italic;margin-top:var(--space-2);">Source: ${getHitopNorms().citation}</p>` : ''}
+      <p style="font-size:var(--text-xs);color:var(--color-text-muted);font-style:italic;margin-top:var(--space-2);">Source: ${HITOP_NORM_CITATION}</p>
     </div>
 
     <div class="chart-container">
@@ -2295,7 +2415,7 @@ function buildReport() {
   area.innerHTML = html;
 
   // Build formulation textboxes
-  buildFormulationBoxes(cs, ss, disAvgT, hsuAvgT, di);
+  buildFormulationBoxes(cs, ss, disAvgT, hsuAvgT, hsuAvgRaw, di);
 
   // Render charts after DOM is ready
   requestAnimationFrame(() => {
@@ -2307,7 +2427,7 @@ function buildReport() {
 }
 
 // ===================== FORMULATION TEXTBOXES =====================
-function buildFormulationBoxes(cs, ss, disAvgT, hsuAvgT, di) {
+function buildFormulationBoxes(cs, ss, disAvgT, hsuAvgT, hsuAvgRaw, di) {
   const container = document.getElementById('formulation-boxes');
   if (!container) return;
 
@@ -2316,15 +2436,15 @@ function buildFormulationBoxes(cs, ss, disAvgT, hsuAvgT, di) {
 
   const boxes = [
     {
-      id: 'fb-crafft',
-      label: 'CRAFFT — Screening Result',
-      meta: 'Score ' + cs + '/6 · ' + (cs >= 2 ? 'Positive screen' : 'Negative screen'),
-      hint: 'What does a score of ' + cs + '/6 indicate clinically? What is the significance of a positive screen at this threshold? What follow-up is warranted?'
+      id: 'fb-audit',
+      label: 'AUDIT — Screening Result',
+      meta: 'Total ' + cs + '/40 · ' + auditZone(cs).zone + ' · ' + auditZone(cs).label,
+      hint: 'What does a total of ' + cs + '/40 indicate? The AUDIT separates hazardous use, dependence symptoms and harmful use across its three domains \u2014 which of them is driving Jordan\u2019s score, and what follow-up is warranted?'
     },
     {
-      id: 'fb-scid',
+      id: 'fb-icd',
       label: 'ICD-11 CDDR — Alcohol Dependence',
-      meta: ss + ' of 7 features endorsed · ' + scidDiagnosis(ss),
+      meta: icdDiagnosis(ss),
       hint: 'Describe the pattern of endorsed features. Is the core triad (impaired control, priority, persistence despite harm) present? Do the physiological features (tolerance, withdrawal) add anything the triad alone would not capture?'
     },
     {
@@ -2336,7 +2456,7 @@ function buildFormulationBoxes(cs, ss, disAvgT, hsuAvgT, di) {
     {
       id: 'fb-hsu',
       label: 'HiTOP — Harmful Substance Use Spectrum',
-      meta: 'Spectrum average T = ' + hsuAvgT + (hsuAvgT >= 70 ? ' · Clinically elevated' : hsuAvgT >= 60 ? ' · Elevated' : ' · Within normal limits'),
+      meta: 'Spectrum average T = ' + hsuAvgT + ' \u00b7 raw mean ' + hsuAvgRaw + ' (1\u20134) \u00b7 \u26a0 floor-bound reference distribution',
       hint: 'Summarise the HSU T-score. Which subscales (Craving, Hazardous Use, Impaired Control, Role Interference, Tolerance, Withdrawal) are most clinically relevant? How do they map onto the ICD-11 dependence features?'
     }
   ];
@@ -2470,7 +2590,10 @@ function renderHitopHist(disT, hsuT) {
 
   const data = [
     ...makeSubplot('Disinhibited Externalizing', disT, t.primary, 'x domain', 'y domain', 1),
-    ...makeSubplot('Harmful Substance Use', hsuT, t.blue, 'x2 domain', 'y2 domain', 2)
+    // The reference curve drawn here is a normal distribution, which the
+    // substance norms are not. The panel is kept because the comparison is
+    // still informative, and the caption above it says what it is not.
+    ...(hsuT === null ? [] : makeSubplot('Harmful Substance Use', hsuT, t.blue, 'x2 domain', 'y2 domain', 2))
   ];
 
   const shapeForAxis = (xref, yref, color) => [
@@ -2655,8 +2778,8 @@ function renderDemandCurve() {
 // [data-theme="dark"] block near the top) - nothing further needed here.
 
 // ===================== INIT =====================
-buildCrafft();
-buildScid();
+buildAudit();
+buildIcd();
 buildHitop();
 buildPurchase();
 loadStopSignal();

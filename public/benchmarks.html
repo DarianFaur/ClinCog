@@ -93,20 +93,6 @@
 // ============================================================
 const TEST_DEFS = [
   {
-    id: "bdi",
-    title: "BDI-II — Beck Depression Inventory",
-    usedIn: [{ name: "Darren", color: "var(--domain-mood)" }],
-    defaults: {
-      mean: 10, sd: 7, threshold: 63,
-      citation: "Beck, A.T., Steer, R.A., & Brown, G.K. (1996). Manual for the Beck Depression Inventory-II. San Antonio, TX: Psychological Corporation."
-    },
-    params: [
-      { key: "mean", label: "Community mean (M)" },
-      { key: "sd", label: "Standard deviation (SD)" },
-      { key: "threshold", label: "Clinically elevated (T ≥)" },
-    ]
-  },
-  {
     id: "hitopDepression",
     title: "HiTOP-SR — Depression Distress Subfactor",
     usedIn: [{ name: "Darren", color: "var(--domain-mood)" }],
@@ -123,65 +109,6 @@ const TEST_DEFS = [
     ]
   },
   {
-    id: "staiState",
-    title: "STAI-Y — State Anxiety Scale",
-    usedIn: [{ name: "Alex", color: "var(--domain-anxiety)" }],
-    defaults: {
-      mean: 37, sd: 10.5, threshold: 60,
-      citation: "Spielberger, C.D., Gorsuch, R.L., Lushene, R., Vagg, P.R., & Jacobs, G.A. (1983). Manual for the State-Trait Anxiety Inventory. Palo Alto, CA: Consulting Psychologists Press."
-    },
-    params: [
-      { key: "mean", label: "Community mean (M)" },
-      { key: "sd", label: "Standard deviation (SD)" },
-      { key: "threshold", label: "Clinically elevated (T ≥)" },
-    ]
-  },
-  {
-    id: "staiTrait",
-    title: "STAI-Y — Trait Anxiety Scale",
-    usedIn: [{ name: "Alex", color: "var(--domain-anxiety)" }],
-    defaults: {
-      mean: 36, sd: 9.8, threshold: 60,
-      citation: "Spielberger, C.D., Gorsuch, R.L., Lushene, R., Vagg, P.R., & Jacobs, G.A. (1983). Manual for the State-Trait Anxiety Inventory. Palo Alto, CA: Consulting Psychologists Press."
-    },
-    params: [
-      { key: "mean", label: "Community mean (M)" },
-      { key: "sd", label: "Standard deviation (SD)" },
-      { key: "threshold", label: "Clinically elevated (T ≥)" },
-    ]
-  },
-  {
-    id: "hitopAnxiety",
-    title: "HiTOP-SR — Anxiety Subfactors",
-    usedIn: [{ name: "Alex", color: "var(--domain-anxiety)" }],
-    defaults: {
-      fearItemMean: 1.75, fearItemSD: 1.237, fearTotalMean: 14, fearTotalSD: 3.5,
-      distItemMean: 2.0, distItemSD: 0.9,
-      disinItemMean: 2.0, disinItemSD: 0.9,
-      threshold: 60,
-      citation: "Kotov, R., Krueger, R.F., Watson, D., et al. (2017). The Hierarchical Taxonomy of Psychopathology (HiTOP): A dimensional alternative to traditional nosologies. Journal of Abnormal Psychology, 126(4), 454–477."
-    },
-    subgroups: [
-      { label: "Fear Subfactor (4 subscales · 8 items)", params: [
-        { key: "fearItemMean", label: "Per-item mean" },
-        { key: "fearItemSD", label: "Per-item SD" },
-        { key: "fearTotalMean", label: "Subfactor total mean" },
-        { key: "fearTotalSD", label: "Subfactor total SD" },
-      ]},
-      { label: "Distress Subfactor (per item)", params: [
-        { key: "distItemMean", label: "Per-item mean" },
-        { key: "distItemSD", label: "Per-item SD" },
-      ]},
-      { label: "Disinhibited Externalizing (per item)", params: [
-        { key: "disinItemMean", label: "Per-item mean" },
-        { key: "disinItemSD", label: "Per-item SD" },
-      ]},
-      { label: "Shared threshold", params: [
-        { key: "threshold", label: "Clinically elevated (T ≥)" },
-      ]},
-    ]
-  },
-  {
     id: "dotProbe",
     title: "Dot-Probe Task — Reaction Time Norms",
     usedIn: [{ name: "Alex", color: "var(--domain-anxiety)" }],
@@ -195,37 +122,6 @@ const TEST_DEFS = [
       { key: "anxietyMean", label: "Threat-trial mean (ms)" },
       { key: "anxietySD", label: "Threat-trial SD (ms)" },
     ]
-  },
-  {
-    id: "hitopSubstance",
-    title: "HiTOP-SR — Substance Use Spectra",
-    usedIn: [{ name: "Jordan", color: "var(--domain-substance)" }],
-    defaults: {
-      citation: "Kotov, R., Krueger, R.F., Watson, D., et al. (2017). The Hierarchical Taxonomy of Psychopathology (HiTOP): A dimensional alternative to traditional nosologies. Journal of Abnormal Psychology, 126(4), 454–477.",
-      subscales: {
-        disorganization:      { mean: 1.85, sd: 0.72 },
-        riskTaking:            { mean: 2.05, sd: 0.82 },
-        nonplanfulness:        { mean: 1.92, sd: 0.78 },
-        nonpersistence:        { mean: 1.78, sd: 0.74 },
-        restlessness:          { mean: 1.68, sd: 0.70 },
-        gambling:              { mean: 1.32, sd: 0.58 },
-        gaming:                { mean: 1.38, sd: 0.63 },
-        problematicShopping:   { mean: 1.52, sd: 0.64 },
-        craving:               { mean: 1.28, sd: 0.52 },
-        hazardousUse:          { mean: 1.38, sd: 0.58 },
-        impairedControl:       { mean: 1.42, sd: 0.60 },
-        roleInterference:      { mean: 1.30, sd: 0.54 },
-        tolerance:             { mean: 1.48, sd: 0.62 },
-        withdrawal:            { mean: 1.28, sd: 0.52 },
-      }
-    },
-    subscaleLabels: {
-      disorganization: "Disorganization", riskTaking: "Risk Taking", nonplanfulness: "Non-planfulness",
-      nonpersistence: "Non-persistence", restlessness: "Restlessness", gambling: "Gambling",
-      gaming: "Gaming", problematicShopping: "Problematic Shopping", craving: "Craving",
-      hazardousUse: "Hazardous Use", impairedControl: "Impaired Control", roleInterference: "Role Interference",
-      tolerance: "Tolerance", withdrawal: "Withdrawal",
-    }
   },
 ];
 

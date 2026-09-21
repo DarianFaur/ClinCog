@@ -483,6 +483,28 @@ export default {
       return unauthorizedResponse();
     }
 
+    // ---- Licensed instruments ----------------------------------------------
+    // The SPIN is used under a written licence that allows it only in a
+    // secure electronic format, never where the public can reach it. Its
+    // items live in the SPIN_CONTENT secret, not in the repository, and this
+    // route serves them only on the password-protected seminar subdomain.
+    // The Basic Auth check above has already run for that hostname.
+    // Anywhere else it answers 404 rather than 403, so the public instance
+    // does not advertise that restricted content exists.
+    if (url.pathname === "/api/restricted/spin" && request.method === "GET") {
+      if (url.hostname !== STUDENT_HOSTNAME || !env.SPIN_CONTENT) {
+        return new Response("Not found", { status: 404 });
+      }
+      return new Response(env.SPIN_CONTENT, {
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          // never cached by a shared cache, never indexed
+          "Cache-Control": "private, no-store",
+          "X-Robots-Tag": "noindex, nofollow, noarchive",
+        },
+      });
+    }
+
     const match = url.pathname.match(/^\/api\/chat\/([a-z]+)$/);
     const clientIp = request.headers.get("CF-Connecting-IP");
 
@@ -595,7 +617,16 @@ export default {
     }
 
     // Anything else (the pages, CSS, JS) is served as a static file from /public.
-    return env.ASSETS.fetch(request);
+    const asset = await env.ASSETS.fetch(request);
+    // The seminar subdomain carries licensed material, so nothing on it may
+    // be indexed. Basic Auth already keeps crawlers out; this makes the
+    // intent explicit to any that authenticate or follow a leaked link.
+    if (url.hostname === STUDENT_HOSTNAME) {
+      const headers = new Headers(asset.headers);
+      headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+      return new Response(asset.body, { status: asset.status, statusText: asset.statusText, headers });
+    }
+    return asset;
   },
 };
 

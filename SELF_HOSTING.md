@@ -308,6 +308,20 @@ won't return search results.
 
 ---
 
+## Restricted instruments
+
+Some instruments can only be used under a licence that forbids public
+distribution. ClinCog handles these without putting them in the repository:
+the Worker serves them from a secret, only on a password-protected hostname,
+and the page that uses them contains no licensed text — on any other instance
+the request returns 404 and that section of the page never appears.
+
+The original deployment uses this for the SPIN (Social Phobia Inventory).
+**Your copy will not include it**, and nothing breaks without it. If you
+obtain your own written licence for the SPIN, you supply its content as the
+`SPIN_CONTENT` secret and set `STUDENT_HOSTNAME` in `worker.js` to your own
+password-protected hostname. Do not commit licensed content to your fork.
+
 ## If something goes wrong
 
 - **"command not found" on any command** — close and reopen the

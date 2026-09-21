@@ -1,0 +1,54 @@
+ClinCog — content license
+=========================
+
+Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+(CC BY-NC-SA 4.0)
+
+Copyright (c) 2026 Darian Faur
+
+Full legal text: https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
+Human-readable summary: https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+
+WHAT THIS COVERS
+----------------
+
+The original written material in this repository:
+
+  * the four clinical vignettes (Dennis, Darren, Alex, Jordan) and the case
+    files the simulated patients are grounded in;
+  * the author's commentary on diagnostic criteria — every line marked with
+    the "↳" symbol in the evaluation pages;
+  * the instructional and explanatory text: the overview pages, the
+    interpretation questions, the reflection prompts, the resource pages
+    (cognitive tests, CDDR guide, ICD-11 glossary), and the help and about
+    pages;
+  * the fictional test results attributed to the four patients.
+
+You may share and adapt this material, including for your own teaching, as
+long as you give credit, do not use it commercially, and license your
+adaptations under the same terms.
+
+
+WHAT THIS DOES NOT COVER
+------------------------
+
+Source code — see LICENSE (MIT).
+
+Third-party clinical instruments and classification text reproduced in this
+repository — see THIRD_PARTY_NOTICES.md. Those materials are under their own
+licenses, which are more restrictive than this one. In particular, the WHO
+CDDR text and the HiTOP-SR items are NoDerivatives licensed: they may be
+redistributed verbatim but not altered. Nothing in this content license
+grants you any right over them.
+
+
+A NOTE ON "NONCOMMERCIAL"
+-------------------------
+
+Creative Commons defines noncommercial as "not primarily intended for or
+directed towards commercial advantage or monetary compensation". Teaching a
+university course — including a fee-paying one — is normally within that
+definition. Selling this material, bundling it into a paid product, or using
+it in advertising is not. If your situation is unclear, ask rather than
+assume: darian.faur@e-uvt.ro

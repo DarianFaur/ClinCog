@@ -103,16 +103,41 @@ Cloudflare Workers (compute + static assets + native rate limiting) ·
 Anthropic, Google Gemini, and OpenAI APIs (model calls) · WHO ICD-11 API
 (diagnosis search) · Cloudflare Turnstile (bot verification).
 
-## License and attribution
+## Licensing
 
-Diagnostic criteria in the evaluation pages are reproduced verbatim from
-WHO's *Clinical Descriptions and Diagnostic Requirements for ICD-11
-(CDDR)*, licensed CC BY-NC-ND 3.0 IGO. ICD-11 classification content is
-licensed CC BY-ND 3.0 IGO. See the relevant evaluation page for full
-citation.
+**Open source code, with clinical content under open non-commercial licenses.**
 
-Originally built by Darian Faur (FPSE, UVT Timișoara) for the
-*Introduction to Clinical Cognitive Science* seminar. If you deploy your
-own instance, the code carries no restriction on doing so — see
-`SELF_HOSTING.md` — attribution in your own deployment's About page is
-appreciated but not required.
+| What | License |
+|---|---|
+| Source code — HTML, CSS, JavaScript, Worker, config | [MIT](LICENSE) |
+| Vignettes, commentary, instructional text | [CC BY-NC-SA 4.0](LICENSE-CONTENT) |
+| Clinical instruments and classification text | their own terms — see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) |
+
+The three are separate on purpose. You can take the code and build something
+else with it under MIT. You can adapt the vignettes for your own teaching if
+you keep them non-commercial and share alike. You cannot relicense the WHO
+CDDR text or the HiTOP-SR items, because they are NoDerivatives licensed and
+belong to their publishers — ClinCog reproduces them verbatim under their
+terms and passes those terms on to you.
+
+`THIRD_PARTY_NOTICES.md` lists every reproduced instrument with its source and
+licence: CDDR, ICD-11 classification, HiTOP-SR and its substance-use module,
+PHQ-9, GAD-7, AUDIT, the dot-probe word list, Inter, DM Mono, Plotly, and the
+WHO ICD-11 embedded classification widget. It also records which instruments
+were deliberately removed for being proprietary, so nobody adds them back by
+accident.
+
+**Not endorsed by anyone.** ClinCog is not approved, endorsed or reviewed by
+the World Health Organization, and is not affiliated with MATRICS/MCCB or with
+Cambridge Cognition (CANTAB). The cognitive tasks are re-implementations of
+published paradigms written for this project, not the original batteries.
+
+**Educational use only. Not for assessing real people.** Nothing this platform
+produces has diagnostic standing.
+
+## Attribution
+
+Built by Darian Faur (FPSE, UVT Timișoara) for the *Introduction to Clinical
+Cognitive Science* seminar. If you deploy your own instance — see
+`SELF_HOSTING.md` — attribution on your About page is appreciated but not
+required by the MIT license. The CC BY-NC-SA content does require attribution.

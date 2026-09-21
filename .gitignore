@@ -1,1 +1,6 @@
 .dev.vars
+# Licensed content that must never be published. The SPIN is used under a
+# written licence that restricts it to the password-protected seminar
+# subdomain; its items are supplied to the Worker as a secret and must not
+# be committed. See the "Restricted instruments" section of SELF_HOSTING.md.
+restricted/
