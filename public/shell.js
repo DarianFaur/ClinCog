@@ -149,6 +149,13 @@
   contentEl.removeAttribute("id"); // avoid a duplicate #shell-content once moved
   contentEl.classList.add("shell-content-inner");
 
+  // One line on every page. Placed after the content so it never shifts the
+  // page on load, and kept in the shell so no page can forget it.
+  const footer = document.createElement("footer");
+  footer.className = "shell-footer";
+  footer.innerHTML = 'For educational use only. Not for assessing real people. <a href="/about.html">About ClinCog</a>';
+  frame.querySelector("#shell-body").appendChild(footer);
+
   promoteTopbarTitle();
 
   // ---- icons --------------------------------------------------------------

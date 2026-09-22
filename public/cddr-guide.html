@@ -114,7 +114,9 @@
 
 </div>
 
-<script src="/theme-init.js"></script>
+<!-- theme-init.js is already loaded in <head>, where it must run before
+     the first paint; the second copy here was a duplicate request. -->
+
 <script src="/storage.js"></script>
 <script>window.CLINCOG_SHELL = { activeNav: "cddr-guide", breadcrumb: [{ label: "CDDR criteria guide" }] };</script>
 <script src="/shell.js?v=2"></script>

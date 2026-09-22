@@ -286,3 +286,15 @@ html[data-shell-sidebar="drawer"]:not(.shell-ready) #shell-content { --boot-side
    handover from the boot band to the real sidebar animates from 0. */
 html:not(.shell-ready) .shell-sidebar,
 html:not(.shell-ready) .shell-main { transition: none !important; }
+
+/* Global disclaimer, rendered by shell.js under every page's content. */
+.shell-footer {
+  max-width: var(--shell-content-max, 1100px);
+  margin: var(--sp-8) auto 0;
+  padding: var(--sp-5) var(--sp-5) calc(var(--sp-6) + env(safe-area-inset-bottom, 0px));
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  text-align: center;
+  box-shadow: inset 0 1px 0 var(--border);
+}
+.shell-footer a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }

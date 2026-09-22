@@ -31,6 +31,15 @@
   .ct-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
   .ct-section-sub { font-size: var(--text-sm); color: var(--text-tertiary); margin: 4px 0 var(--sp-5) 20px; }
   .ct-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); margin: var(--sp-4) 0; }
+  /* On narrow phones the table keeps its natural width and scrolls inside its
+     own container, so words stay whole and the page itself never scrolls sideways. */
+  /* Long URLs and DOIs in the reference lists may break across lines on narrow
+     phones; ordinary words are unaffected, since break-word only breaks a run
+     that cannot fit on a line of its own. */
+  li, li a { overflow-wrap: break-word; }
+  .ct-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: var(--sp-4) 0; contain: inline-size; }
+  .ct-table-wrap > .ct-table { margin: 0; }
+  @media (max-width: 413px) { .ct-table th, .ct-table td { padding-left: 8px; padding-right: 8px; } }
   .ct-table th { text-align: left; padding: 8px 10px 10px; border-bottom: none; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: .06em; font-weight: 500; font-size: var(--text-xs); }
   .ct-table td { padding: 10px; border-bottom: none; box-shadow: inset 0 -1px 0 var(--border); vertical-align: top; }
   .ct-table tr:last-child td { box-shadow: none; }
@@ -77,7 +86,7 @@
       <p class="text-secondary" style="margin:0 0 10px;">The MCCB was developed by the NIMH-funded <strong>Measurement and Treatment Research to Improve Cognition in Schizophrenia (MATRICS)</strong> initiative to give clinical trials a standard, psychometrically vetted way to measure cognitive change in schizophrenia. A committee evaluated more than 90 candidate tests across seven cognitive domains, narrowed these to a 20-test beta battery, and then selected the final 10 tests based on test–retest reliability, practicality, and tolerability data from 176 people with schizophrenia.</p>
 
       <div class="ct-subhead">The seven domains and ten tests</div>
-      <table class="ct-table">
+      <div class="ct-table-wrap"><table class="ct-table">
         <thead><tr><th>Domain</th><th>Test</th><th></th></tr></thead>
         <tbody>
           <tr><td rowspan="3">Speed of Processing</td><td>Trail Making Test, Part A</td><td><span class="used" style="background:var(--domain-psychosis-soft);color:var(--domain-psychosis-ink);">used in Dennis</span></td></tr>
@@ -91,7 +100,7 @@
           <tr><td>Reasoning &amp; Problem Solving</td><td>Neuropsychological Assessment Battery, Mazes</td><td></td></tr>
           <tr><td>Social Cognition</td><td>MSCEIT, Managing Emotions branch</td><td></td></tr>
         </tbody>
-      </table>
+      </table></div>
 
       <div class="ct-subhead">Scoring</div>
       <p class="text-secondary" style="margin:0;">Each test's raw score is converted to an age- and (where applicable) gender-corrected <strong>T-score (M = 50, SD = 10)</strong> against a community normative sample, then combined into the seven domain scores and an overall composite. There is no fixed minimum/maximum — T-scores are continuous.</p>
@@ -307,7 +316,7 @@
       <p class="text-secondary" style="margin:0 0 10px;">A hypothetical purchase task asks how many standard drinks the respondent would buy and consume at each of a series of escalating prices (from free up to a price high enough that consumption drops to zero). Plotting consumption against price produces an individual demand curve, adapted for alcohol specifically by Murphy &amp; MacKillop (2006) from the general hypothetical-purchase-task framework of Jacobs &amp; Bickel (1999).</p>
 
       <div class="ct-subhead">The demand-curve indices</div>
-      <table class="ct-table">
+      <div class="ct-table-wrap"><table class="ct-table">
         <thead><tr><th>Index</th><th>What it captures</th></tr></thead>
         <tbody>
           <tr><td>Intensity (Q0)</td><td>Consumption when price = 0 — demand at no constraint</td></tr>
@@ -316,7 +325,7 @@
           <tr><td>Pmax</td><td>The price at which Omax occurs — where demand shifts from inelastic to elastic</td></tr>
           <tr><td>Elasticity (α)</td><td>Derived rate at which consumption falls as price rises, from the exponentiated demand equation</td></tr>
         </tbody>
-      </table>
+      </table></div>
       <p class="text-secondary" style="margin:0;">Higher Q0, higher Omax, and a later (higher-price) breakpoint or Pmax all indicate a stronger reinforcing value of alcohol for that individual — i.e., alcohol is harder to "price out" of their behaviour.</p>
 
       <div class="ct-note">In the original validation (267 college student drinkers), demand-curve indices derived from the Alcohol Purchase Task were well described by an exponential demand equation and correlated with independent measures of drinking quantity and alcohol-related problems, supporting the task as a brief, non-invasive proxy for a costly laboratory self-administration paradigm (Murphy &amp; MacKillop, 2006).</div>
@@ -332,7 +341,9 @@
 
 </div>
 
-<script src="/theme-init.js"></script>
+<!-- theme-init.js is already loaded in <head>, where it must run before
+     the first paint; the second copy here was a duplicate request. -->
+
 <script>window.CLINCOG_SHELL = { activeNav: "cognitive-tests", breadcrumb: [{ label: "Cognitive tests" }] };</script>
 <script src="/shell.js?v=2"></script>
 <script src="/a11y.js"></script>

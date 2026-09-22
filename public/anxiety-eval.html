@@ -641,6 +641,74 @@ canvas{width:100%;height:auto;display:block}
 .likert label .num { border-radius: var(--radius-md); width: 40px; height: 40px; border-width: 1.5px; }
 .likert label:has(input:checked) .num { background: var(--accent-bg); border-color: var(--teal); color: var(--teal); }
 
+
+/* Patient-results table, same rules as the schizophrenia case so all four
+   cognitive layers share one format. */
+.session-head {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: var(--sp-3) var(--sp-6);
+  background: var(--bg-surface-alt); border-radius: var(--radius-md);
+  padding: var(--sp-4) var(--sp-5); margin-bottom: var(--sp-4);
+}
+.session-head .kv-row { font-size: var(--text-sm); line-height: 1.5; }
+.session-head .kv-key { color: var(--text-tertiary); }
+.session-head .kv-val { color: var(--text-primary); font-weight: 600; }
+.ctab-wrap { margin: var(--sp-5) 0; }
+.ctab-wrap { border-radius: var(--radius-md); overflow: hidden; background: var(--bg-surface); }
+/* The results table used to be styled like a lab printout: navy header
+   band, white type on it, and a grid of hairlines between every cell.
+   It now follows the same rules as every other table in the app -
+   no outer border, an uppercase label row instead of a coloured band,
+   and one inset hairline between rows. */
+.ctab { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: var(--text-sm); font-family: var(--font-sans); border: none; }
+.ctab td { overflow-wrap: break-word; hyphens: auto; padding-left: 8px; padding-right: 8px; }
+.ctab th { overflow-wrap: normal; hyphens: none; letter-spacing: .02em; padding-left: 8px; padding-right: 8px; }
+.ctab th:nth-child(1), .ctab td:nth-child(1) { width: 28%; }
+.ctab th:nth-child(2), .ctab td:nth-child(2) { width: 13%; }
+.ctab th:nth-child(3), .ctab td:nth-child(3) { width: 14%; }
+.ctab th:nth-child(4), .ctab td:nth-child(4) { width: 19%; }
+.ctab th:nth-child(5), .ctab td:nth-child(5) { width: 12%; }
+.ctab th:nth-child(6), .ctab td:nth-child(6) { width: 14%; }
+/* The grouping row spans the table and must not inherit a column width. */
+.ctab .tr-head td { width: auto !important; }
+.ctab thead tr { background: transparent; }
+.ctab thead th {
+  padding: 10px 12px; color: var(--text-tertiary); text-align: left;
+  font-size: var(--text-xs); font-weight: 500; letter-spacing: .06em;
+  text-transform: uppercase; border: none;
+}
+.ctab .tr-head td {
+  background: var(--bg-surface-alt); font-weight: 600; font-size: var(--text-sm);
+  color: var(--text-primary); padding: 9px 12px; border: none; letter-spacing: -.008em;
+}
+.ctab tbody tr { border: none; box-shadow: inset 0 -1px 0 var(--border); }
+.ctab tbody tr:last-child { box-shadow: none; }
+.ctab td { padding: 10px 12px; color: var(--text-primary); vertical-align: middle; border: none; font-variant-numeric: tabular-nums; }
+.ctab .mn { font-style: italic; color: var(--text-secondary); padding-left: 22px !important; }
+.ctab .imp { color: var(--danger); font-weight: 600; }
+.ctab .brd { color: var(--warning); font-weight: 600; }
+/* Score strip, rebuilt on the dashboard's progress track: a pill-shaped
+   rail with the remainder hatched rather than flat, the normal range
+   shown as a soft accent band, and the mean marked by a hairline. */
+.ss-chart { width: 100%; min-width: 40px; max-width: 132px; height: 16px; position: relative; }
+.ss-bg {
+  width: 100%; height: 10px; border-radius: var(--radius-pill);
+  position: relative; top: 3px; overflow: hidden;
+  background: repeating-linear-gradient(-45deg, var(--border) 0 5px, var(--bg-surface-alt) 5px 10px);
+}
+.ss-norm { position: absolute; left: 25%; width: 50%; height: 100%; background: var(--accent-soft); }
+.ss-fill { position: absolute; left: 0; height: 100%; border-radius: var(--radius-pill); background: var(--accent); }
+.ss-fill.imp { background: var(--danger); }
+.ss-fill.brd { background: var(--warning); }
+.ss-mid { position: absolute; left: 50%; top: 1px; width: 2px; height: 14px; border-radius: 1px; background: var(--text-tertiary); }
+.report-sec .ctab-wrap, .report-sec .scroll-x { overflow-x: auto; }
+/* Optional student task, visually subordinate to the graded material above it. */
+.try-task { margin-top: var(--sp-7); background: var(--bg-surface-alt); border-radius: var(--radius-md); padding: var(--sp-4) var(--sp-5); }
+.try-task > summary { cursor: pointer; font-weight: 600; font-size: var(--text-base); color: var(--text-primary); list-style: none; }
+.try-task > summary::-webkit-details-marker { display: none; }
+.try-task > summary::before { content: "\25B8"; display: inline-block; margin-right: 8px; transition: transform var(--duration-hover) var(--ease-standard); }
+.try-task[open] > summary::before { transform: rotate(90deg); }
+.try-task > summary span { display: block; font-weight: 400; font-size: var(--text-xs); color: var(--text-tertiary); margin: 2px 0 0 18px; }
 </style>
 </head>
 <body>
@@ -711,31 +779,34 @@ canvas{width:100%;height:auto;display:block}
   <p class="vignette-page-sub">Read the case carefully before administering the assessment tools.</p>
 
   <div class="vignette-card">
-    <div class="vignette-card-name">Alex, 24</div>
-    <div class="vignette-card-meta">Undergraduate student · Referred by general practitioner</div>
-    <div class="vignette-card-divider"></div>
-
-    <div class="vignette-section">
-      <div class="vignette-section-title">Presentation</div>
-      <p>Alex is a 24-year-old undergraduate student referred by their general practitioner following persistent difficulties with academic performance and social engagement. Alex describes a longstanding pattern &mdash; dating back to early adolescence &mdash; of intense fear in situations where they might be observed or evaluated by others. In seminar settings, Alex sits near the door and rarely contributes to discussion, convinced that any comment they make will sound foolish. When called upon unexpectedly, Alex reports immediate physical symptoms: rapid heartbeat, flushed cheeks, and a sensation of the throat closing up. Following such episodes, Alex ruminates for several hours, replaying what was said and cataloguing perceived failures in tone, word choice, and facial expression.</p>
+      <div class="vignette-card-name">Alex, 24</div>
+      <div class="vignette-card-meta">Undergraduate student · Referred by general practitioner</div>
+      <div class="vignette-card-divider"></div>
+      <!-- Generated from vignettes.json, the single source for this case. The side
+           panel and the chat patient read the same text; edit it there, not here. -->
+      <div class="vignette-body" id="vignette-body" data-case="anxiety">
+        <div class="vignette-section">
+          <div class="vignette-section-title">Presentation</div>
+          <p>Alex is a 24-year-old undergraduate student referred by their general practitioner because of long-standing difficulties with studying and with other people. In the first session Alex sits near the door, keeps their coat on and speaks quietly, glancing up only briefly, and asks at the start whether the session is being recorded. “I know it sounds silly,” Alex says, “but I just feel like everyone is watching me.”</p>
+        </div>
+        <div class="vignette-section">
+          <div class="vignette-section-title">History</div>
+          <p>Alex remembers feeling this way since early adolescence, when reading aloud in class made them feel sick for days beforehand. The fear has been present without a break for at least three years and became much worse after Alex started university. Alex has always explained it as shyness and has never asked for help before. A school counsellor once described Alex as “just quiet”, and Alex accepted that.</p>
+        </div>
+        <div class="vignette-section">
+          <div class="vignette-section-title">Current difficulties</div>
+          <p>Alex feels intense fear in situations where others might observe or judge them: speaking in seminars, eating in the canteen, making phone calls or meeting new people. In seminars Alex rarely speaks, convinced that anything they say will sound foolish. When called on unexpectedly, their heart races, their face turns red and their throat feels tight. Afterwards Alex goes over the conversation for hours, picking apart their tone, words and expression. Alex watches other people’s faces closely for signs of boredom or disapproval. The physical symptoms happen only in social situations: Alex has never had a sudden attack of fear out of the blue, and is comfortable in crowds, lifts and public transport as long as no one expects them to talk. Alex worries about exams and money, as most students do, but says these worries feel manageable. Alex recognises that the fear is out of proportion: “People probably aren’t paying that much attention to me, but knowing that doesn’t help.”</p>
+        </div>
+        <div class="vignette-section">
+          <div class="vignette-section-title">Daily life and relationships</div>
+          <p>Alex has turned down two part-time job offers in the past year because both involved working with customers. Last month Alex left a university networking event after forty minutes, shaking and close to tears, and went home without speaking to anyone. Alex has cancelled plans with friends several times, blaming headaches, and their grades have dropped because seminar participation counts towards assessment. Alex has two close friends from school and feels at ease with them, and lives with a flatmate but avoids the shared kitchen when others are there.</p>
+        </div>
+        <div class="vignette-section">
+          <div class="vignette-section-title">Background</div>
+          <p>Alex has no significant medical history and takes no medication. They drink rarely, at most one drink at a party, and do not use drugs. There is no history of unusual perceptual experiences. Alex describes their mood as “a bit low” and links this directly to feeling left out; sleep and appetite are normal, and they still enjoy reading and gaming alone. Their mother is described as “quite anxious too”. During the interview Alex is tense and makes little eye contact; their speech is quiet but coherent, and they understand that the fear is excessive.</p>
+        </div>
+      </div>
     </div>
-
-    <div class="vignette-section">
-      <div class="vignette-section-title">Avoidance &amp; Social Functioning</div>
-      <p>Social occasions outside the university are managed through avoidance. Alex has declined two part-time job offers in the past year, both of which required customer-facing interaction, and has cancelled plans with friends on multiple occasions citing vague physical complaints.</p>
-      <div class="vignette-highlight">A recent departmental networking event was attended only because a close friend agreed to stand nearby throughout; even so, Alex left after forty minutes, reporting sustained distress and a sense of not belonging anywhere in the room.</div>
-    </div>
-
-    <div class="vignette-section">
-      <div class="vignette-section-title">Insight &amp; Differential History</div>
-      <p>Alex acknowledges that the fear is probably excessive &mdash; "I know people aren't actually watching me that closely, but it doesn't help" &mdash; but has not previously sought professional support, attributing the difficulties to shyness or personality. There is no history of panic attacks in non-social contexts, no current psychotic symptoms, and no substance use that would account for the presentation. Alex reports the difficulties have been consistently present for at least three years and have worsened markedly since beginning university.</p>
-    </div>
-
-    <div class="vignette-section">
-      <div class="vignette-section-title">Mental State Examination</div>
-      <p>On mental state examination, Alex appeared neatly dressed but visibly tense during the interview, making limited eye contact and speaking quietly. Affect was restricted but reactive; mood was described as low-moderate, largely secondary to the social difficulties rather than representing an independent depressive episode. There was no evidence of thought disorder or perceptual abnormality. Insight was good.</p>
-    </div>
-  </div>
 
   <div class="btn-row">
     <button class="btn btn-secondary" onclick="goTo(1)">← Back</button>
@@ -849,6 +920,28 @@ canvas{width:100%;height:auto;display:block}
           <div class="rating-btn"><input type="radio" name="cddr_f" id="cddr_fn" value="-" onchange="scidChange()"><label for="cddr_fn">&minus;</label></div>
           <div class="rating-btn"><input type="radio" name="cddr_f" id="cddr_fu" value="?" onchange="scidChange()"><label for="cddr_fu">?</label></div>
         </div>
+      </div>
+    </div>
+
+    <div class="callout" style="font-size:.76rem;line-height:1.6;margin-top:20px;">
+      Diagnostic criteria reproduced verbatim from: World Health Organization. <em>Clinical descriptions and diagnostic requirements for ICD-11 mental, behavioural and neurodevelopmental disorders (CDDR)</em>. Geneva: WHO; 2024. Text licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/3.0/igo/" target="_blank" rel="noopener">CC BY-NC-ND 3.0 IGO</a>. ICD-11 classification content licensed under CC BY-ND 3.0 IGO. Lines marked ↳ are the author’s commentary, not WHO text.
+    </div>
+
+  </div><!-- /scid-items -->
+
+  <!-- Diagnostic conclusion. Restored: it was removed by mistake in an earlier
+       edit, which left the step-3 gate requiring a value nothing could set. -->
+  <div class="diag-section">
+    <h3>Diagnostic Conclusion</h3>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:18px">Based on your item ratings above, select the most appropriate diagnostic outcome.</p>
+    <div class="diag-opts">
+      <div class="diag-opt">
+        <input type="radio" name="diagnosis" id="d1" value="SAD" onchange="diagChange()">
+        <label for="d1">Meets diagnostic requirements for Social Anxiety Disorder (6B04)</label>
+      </div>
+      <div class="diag-opt">
+        <input type="radio" name="diagnosis" id="d3" value="none" onchange="diagChange()">
+        <label for="d3">Does not meet diagnostic requirements for Social Anxiety Disorder (6B04)</label>
       </div>
     </div>
   </div>
@@ -1093,6 +1186,7 @@ canvas{width:100%;height:auto;display:block}
       </div>
     </div>
   </div>
+  </div>
 
 
   <div class="btn-row">
@@ -1116,8 +1210,57 @@ canvas{width:100%;height:auto;display:block}
   <h1 class="page-title">Dot-probe Task</h1>
   <p class="page-tagline">Attentional bias and implicit threat processing</p>
 
-  <p style="font-size:14px;color:var(--muted);max-width:580px;margin-bottom:28px">Complete the dot-probe experiment embedded below to generate your own reaction time data. The task measures attentional bias: are you faster to detect probes that replace threat-related words compared to neutral words? After completing the task, record your mean reaction times and answer the interpretation questions.</p>
+  <p style="font-size:var(--text-base);color:var(--muted);max-width:var(--measure);margin-bottom:24px">
+    Alex completed a dot-probe task using socially threatening words. Read the results below, then answer the
+    interpretation questions. The questions are about Alex, not about you.</p>
 
+  <!-- Alex's results. Fictional, built from the vignette, in the same format as
+       the other cases. The z-scores are part of the case: they were not computed
+       from a published normative sample, and no such sample is implied. -->
+  <div class="session-head">
+    <div class="kv-row"><span class="kv-key">Subject ID:</span> <span class="kv-val">AX</span></div>
+    <div class="kv-row"><span class="kv-key">Age:</span> <span class="kv-val">24</span></div>
+    <div class="kv-row"><span class="kv-key">Session start time:</span> <span class="kv-val">March 14, 2026 · 11:05 AM</span></div>
+    <div class="kv-row"><span class="kv-key">Task:</span> <span class="kv-val">Dot-probe, social-threat words</span></div>
+  </div>
+  <div class="ctab-wrap">
+    <table class="ctab">
+      <thead><tr><th>Test / Measure</th><th>Raw score</th><th>Standard score (z)</th><th>Standard score chart</th><th>Percentile</th><th>Domain</th></tr></thead>
+      <tbody id="alex-cog-rows"></tbody>
+    </table>
+  </div>
+  <div class="callout" style="margin-bottom:28px;font-size:var(--text-sm)">
+    <strong>Fictional results.</strong> These values belong to the case. The z-scores are part of the case and were not
+    computed from a published normative sample. For the bias index, positive values mean attention moved toward threat.
+    For comparison, the group values reported by MacLeod, Mathews and Tata (1986) are +91 ms for anxious patients and
+    −49 ms for controls (computed from their Table 3 with the bias equation on p. 18, sign reversed so that
+    attention toward threat is positive).
+  </div>
+
+  <h3 style="margin-bottom:16px;">Interpretation Questions</h3>
+  <div class="dp-questions">
+    <div class="dp-q">
+      <label><span>Question 1</span>
+        How do Alex’s results connect to the vignette? Which behaviours described there can be explained in terms
+        of an attentional bias toward social threat — and which cannot?</label>
+      <textarea id="dp-q3" rows="5" placeholder="Your interpretation…" oninput="dpAnswers()"></textarea>
+    </div>
+    <div class="dp-q">
+      <label><span>Question 2</span>
+        Alex’s overall reaction time is within the average range while the bias index is elevated. What does that
+        combination tell you that the ICD-11 criteria or the GAD-7 alone could not?</label>
+      <textarea id="dp-q4" rows="5" placeholder="Your interpretation…" oninput="dpAnswers()"></textarea>
+    </div>
+  </div>
+
+  <!-- Optional, ungraded. The student's own run never reaches the report and is
+       never compared with Alex. -->
+  <details class="try-task">
+    <summary>Try the task yourself <span>optional · not graded · not part of the report</span></summary>
+      <p style="margin:10px 0 0;font-size:var(--text-xs);color:var(--text-tertiary)">Paradigm after: MacLeod, C., Mathews, A., &amp; Tata, P. (1986). Attentional bias in emotional disorders. <em>Journal of Abnormal Psychology</em>, 95(1), 15–20.</p>
+    <p style="font-size:var(--text-sm);color:var(--muted);margin:12px 0 16px;max-width:var(--measure)">
+      This is a re-implementation of the dot-probe paradigm written for this platform, Running it shows you what Alex experienced. Your own numbers stay on this screen: they are not saved to
+      the report and are not compared with Alex’s.</p>
   <div class="dp-frame-wrap">
     <canvas id="dp-canvas" width="720" height="420" style="display:block;width:100%;background:#000;border-radius:var(--radius-md)"></canvas>
     <div id="dp-controls" style="display:flex;gap:12px;align-items:center;padding:14px 16px;flex-wrap:wrap">
@@ -1133,44 +1276,7 @@ canvas{width:100%;height:auto;display:block}
   </div>
 
 
-  <!-- Questions -->
-  <div class="dp-questions">
-    <hr style="border:none;border-top:1px solid var(--border);margin:40px 0 36px">
-    <h2 style="font-size:22px;font-weight:600;margin-bottom:24px">Record Your Results</h2>
-
-    <div class="dp-q">
-      <label>
-        <span>Question 1</span>
-        What was your mean reaction time in the <strong>neutral</strong> trials?
-      </label>
-      <input type="number" id="dp-neutral-rt" min="100" max="2000" placeholder="e.g. 412" oninput="dpChange()"> <span style="font-family:var(--mono);font-size:12px;color:var(--muted)">ms</span>
-    </div>
-
-    <div class="dp-q">
-      <label>
-        <span>Question 2</span>
-        What was your mean reaction time in the <strong>anxiety / threat</strong> trials?
-      </label>
-      <input type="number" id="dp-anxiety-rt" min="100" max="2000" placeholder="e.g. 389" oninput="dpChange()"> <span style="font-family:var(--mono);font-size:12px;color:var(--muted)">ms</span>
-    </div>
-
-    <div class="dp-q" style="margin-top:32px">
-      <label>
-        <span>Question 3</span>
-        How do these findings connect to the Alex vignette? Which behaviours described can now be explained neuropsychologically in terms of attentional bias?
-      </label>
-      <textarea id="dp-q3" rows="5" placeholder="Your interpretation…" oninput="dpChange()"></textarea>
-    </div>
-
-    <div class="dp-q">
-      <label>
-        <span>Question 4</span>
-        What does the cognitive layer add that the ICD-11 criteria or the GAD-7 alone could not reveal? What aspects of Alex's anxiety become visible only through implicit task data?
-      </label>
-      <textarea id="dp-q4" rows="5" placeholder="Your interpretation…" oninput="dpChange()"></textarea>
-    </div>
-
-  </div>
+  </details>
 
   <div class="btn-row">
     <button class="btn btn-secondary" onclick="goTo(4)">← Back</button>
@@ -1200,7 +1306,7 @@ canvas{width:100%;height:auto;display:block}
 
   <div class="reflect-block" id="reflect-block">
     <h3>What changed in your understanding?</h3>
-    <p class="reflect-note">You approached Alex from three perspectives — a categorical diagnosis, a dimensional profile, and a cognitive task you completed yourself. Write a few sentences on what exploring the case this way taught you, then mark it complete.</p>
+    <p class="reflect-note">You approached Alex from three perspectives — a categorical diagnosis, a dimensional profile, and Alex’s results on a cognitive task. Write a few sentences on what exploring the case this way taught you, then mark it complete.</p>
     <textarea id="reflect-text" placeholder="What did looking at Alex's case from three angles add to your understanding?"></textarea>
     <div id="reflect-done" style="display:none;"></div>
     <button class="btn btn-primary" id="reflect-btn" onclick="completeCase()">Complete case →</button>
@@ -1389,6 +1495,20 @@ function scidChange() {
 function diagChange() {
   const sel = document.querySelector('input[name="diagnosis"]:checked');
   if (sel) S.diag = sel.value;
+}
+
+// Restored. It was deleted by mistake together with the STAI handlers that
+// sat next to it, which left every HiTOP answer on this page unrecorded.
+function hitopChange(key, val) {
+  S.hitop[key] = val;
+  updateScoreBar();
+}
+
+function dpAnswers() {
+  S.dp.q3 = document.getElementById('dp-q3').value.trim();
+  S.dp.q4 = document.getElementById('dp-q4').value.trim();
+  const el = document.getElementById('dpCount');
+  if (el) el.textContent = ((S.dp.q3 ? 1 : 0) + (S.dp.q4 ? 1 : 0)) + '/2';
 }
 
 function gad7Change() {
@@ -1677,11 +1797,10 @@ window.addEventListener('resize', () => {
   });
 });
 
-const VIGNETTE_HTML_ALEX = `
-  <p>Alex is a 24-year-old undergraduate student referred by their general practitioner following persistent difficulties with academic performance and social engagement. Alex describes a longstanding pattern &mdash; dating back to early adolescence &mdash; of intense fear in situations where they might be observed or evaluated by others. In seminar settings, Alex sits near the door and rarely contributes to discussion, convinced that any comment they make will sound foolish. When called upon unexpectedly, Alex reports immediate physical symptoms: rapid heartbeat, flushed cheeks, and a sensation of the throat closing up. Following such episodes, Alex ruminates for several hours, replaying what was said and cataloguing perceived failures in tone, word choice, and facial expression.</p>
-  <p>Social occasions outside the university are managed through avoidance. Alex has declined two part-time job offers in the past year, both of which required customer-facing interaction, and has cancelled plans with friends on multiple occasions citing vague physical complaints. A recent departmental networking event was attended only because a close friend agreed to stand nearby throughout; even so, Alex left after forty minutes, reporting sustained distress and a sense of not belonging anywhere in the room.</p>
-  <p>Alex acknowledges that the fear is probably excessive &mdash; &ldquo;I know people aren&rsquo;t actually watching me that closely, but it doesn&rsquo;t help&rdquo; &mdash; but has not previously sought professional support, attributing the difficulties to shyness or personality. There is no history of panic attacks in non-social contexts, no current psychotic symptoms, and no substance use that would account for the presentation. Alex reports the difficulties have been consistently present for at least three years and have worsened markedly since beginning university.</p>
-  <p>On mental state examination, Alex appeared neatly dressed but visibly tense during the interview, making limited eye contact and speaking quietly. Affect was restricted but reactive; mood was described as low-moderate, largely secondary to the social difficulties rather than representing an independent depressive episode. There was no evidence of thought disorder or perceptual abnormality. Insight was good.</p>`;
+// Read from the vignette card on this page, which is generated from
+// vignettes.json. It used to be a second hand-written copy of the text,
+// free to drift from the one students read.
+const VIGNETTE_HTML_ALEX = (document.getElementById('vignette-body') || {}).innerHTML || '';
 
 function fullContextExtrasHtml() {
   return `
@@ -1737,7 +1856,7 @@ function scoringMiniHtml(pageId) {
   }
   if (pageId === "ctx-p5") {
     return `<div class="mini-stats">
-      <div class="mini-stat"><div class="mini-stat-num" id="dpCount">0/4</div><div class="mini-stat-lbl">responses</div></div>
+      <div class="mini-stat"><div class="mini-stat-num" id="dpCount">0/2</div><div class="mini-stat-lbl">answers</div></div>
     </div>`;
   }
   return '';
@@ -1799,17 +1918,11 @@ function validate(page) {
     return false;
   }
   if (page === 5) {
-    S.dp.neutral = parseFloat(document.getElementById('dp-neutral-rt').value) || null;
-    S.dp.anxiety = parseFloat(document.getElementById('dp-anxiety-rt').value) || null;
     S.dp.q3 = document.getElementById('dp-q3').value.trim();
     S.dp.q4 = document.getElementById('dp-q4').value.trim();
-    const rtLeft = (S.dp.neutral ? 0 : 1) + (S.dp.anxiety ? 0 : 1);
     const qLeft = (S.dp.q3 ? 0 : 1) + (S.dp.q4 ? 0 : 1);
-    if (!rtLeft && !qLeft) return true;
-    ClinCogToast.gate([
-      { n: rtLeft, label: 'reaction-time field', plural: 'reaction-time fields' },
-      { n: qLeft, label: 'interpretation answer', plural: 'interpretation answers' }
-    ]);
+    if (!qLeft) return true;
+    ClinCogToast.gate([{ n: qLeft, label: 'interpretation answer', plural: 'interpretation answers' }]);
     return false;
   }
   return true;
@@ -1921,6 +2034,41 @@ const DP_NEUTRAL = ['Cardboard','Typewriter','Bookshelf','Cabinet','Shelf','Note
   'Thermometer','Container','Telephone','Bicycle','Keyboard','Calendar','Cupboard',
   'Ladder','Drawers','Stationery'];
 
+
+// Alex's cognitive results. Fictional, written for this case from the
+// vignette: social-evaluative fear and post-event rumination, no panic outside
+// social situations, so an attentional bias toward social threat with
+// otherwise ordinary processing speed. The bias index uses the same sum form
+// and sign as the MacLeod et al. (1986) reference values shown beside it, so
+// the two can be compared directly: (probe away from threat - probe at
+// threat), summed over the upper and lower positions. With a mean of 527 ms
+// at the threat location and 555 ms away from it, that is about 28 ms per
+// position, 56 ms in total. The z-scores are part of the fiction.
+const ALEX_COG = [
+  { group:'Processing speed', rows:[
+    { measure:'Dot-probe \u2014 mean RT, neutral\u2013neutral trials', raw:'541 ms', z:-0.15, pct:44, domain:'Processing speed' } ] },
+  { group:'Attentional bias', rows:[
+    { measure:'Dot-probe \u2014 bias index, social-threat words', raw:'+56 ms', z:1.72, pct:96, domain:'Attentional bias', elevated:true } ] },
+];
+function renderAlexCog() {
+  const body = document.getElementById('alex-cog-rows');
+  if (!body) return;
+  const w = z => Math.max(2, Math.min(98, ((z + 3) / 6) * 100));
+  body.innerHTML = ALEX_COG.map(g =>
+    `<tr class="tr-head"><td colspan="6">${g.group}</td></tr>` +
+    g.rows.map(r => {
+      const cls = r.elevated ? 'imp' : '';
+      const sign = r.z > 0 ? '+' : r.z < 0 ? '\u2212' : '';
+      return `<tr><td class="mn">${r.measure}</td><td>${r.raw}</td>` +
+             `<td class="${cls}">${sign}${Math.abs(r.z).toFixed(2)}</td>` +
+             `<td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div>` +
+             `<div class="ss-fill ${cls}" style="width:${w(r.z)}%"></div><div class="ss-mid"></div></div></div></td>` +
+             `<td>${r.pct}%</td><td>${r.domain}</td></tr>`;
+    }).join('')
+  ).join('');
+}
+document.addEventListener('DOMContentLoaded', renderAlexCog);
+
 const DotProbe = {
   W:720, H:420,
   FIX_MS:500, PAIR_MS:500, ITI_MS:1000, GAP_MS:25,
@@ -2019,8 +2167,14 @@ const DotProbe = {
     const cell=(tp,pp)=>this._mean(crit.filter(d=>d.threatPos===tp && d.probePos===pp).map(d=>d.rt));
     const uu=cell('upper','upper'), lu=cell('lower','upper');
     const ll=cell('lower','lower'), ul=cell('upper','lower');
-    // Bias index exactly as defined in the paper (p. 18): faster probe
-    // detection where a threat word had just been is a positive score.
+    // Bias index from the paper (p. 18) WITH THE SIGN REVERSED. The paper's
+    // literal equation, (upper probe after upper threat - upper probe after
+    // lower threat) + (lower probe after lower threat - lower probe after
+    // upper threat), comes out negative when attention moves toward threat:
+    // applied to Table 3 it gives -91.11 ms for the anxious group and +49.12
+    // ms for controls. Here it is negated so that attention toward threat is
+    // positive, which is the convention most later dot-probe work uses.
+    // Reference values in this convention: +91 ms anxious, -49 ms controls.
     const bias = [uu,lu,ll,ul].every(v=>v!==null)
       ? Math.round((lu - uu) + (ul - ll)) : null;
     const congruent = this._mean(crit.filter(d=>d.threatPos===d.probePos).map(d=>d.rt));
@@ -2033,17 +2187,15 @@ const DotProbe = {
   _finish(){
     window.removeEventListener('keydown',this._key);
     const r=this._results();
-    S.dpTask=r;
+    // Kept on the task object only: the student's run is not part of the report.
+    this.lastResult=r;
     this._bg(); this._text('Done',this.H/2-14,24,'#8ae5b0');
-    this._text('Your numbers are filled in below.',this.H/2+18,15,'#888');
+    this._text('Your numbers stay on this screen only.',this.H/2+18,15,'#888');
     document.getElementById('dp-status').textContent =
       r.bias===null ? 'Too many missed trials to compute a bias score.'
                     : `Bias index ${r.bias} ms · ${r.misses} missed trial(s)`;
     document.getElementById('dp-start').disabled=false;
     document.getElementById('dp-start').textContent='Run again';
-    const cong=document.getElementById('dp-neutral-rt'), incong=document.getElementById('dp-anxiety-rt');
-    if(cong && r.congruent!==null) cong.value=r.congruent;
-    if(incong && r.incongruent!==null) incong.value=r.incongruent;
     if(typeof updateNav==='function') updateNav();
   },
 };
@@ -2080,13 +2232,9 @@ const fearSubscales = [
 const HITOP_NORM_CITATION =
   'HiTOP-SR scoring workbook, "Descriptives prolific final" (Prolific community sample, N = 780).';
 
-const dpCite = "MacLeod, C., Mathews, A., & Tata, P. (1986). Attentional bias in emotional disorders. Journal of Abnormal Psychology, 95(1), 15–20.";
 
 function getFreshNorms() {
-  const dp = ClinCog.getBenchmark('dotProbe', {neutralMean:410, neutralSD:60, anxietyMean:400, anxietySD:60, citation:dpCite});
   return {
-    dpNeutralM: dp.neutralMean, dpNeutralSD: dp.neutralSD,
-    dpAnxietyM: dp.anxietyMean, dpAnxietySD: dp.anxietySD, dpCitation: dp.citation,
   };
 }
 
@@ -2241,56 +2389,29 @@ function calcFearTotal() {
 }
 
 function buildSection4() {
-  const NORMS = getFreshNorms();
-  const nRT = S.dp.neutral;
-  const aRT = S.dp.anxiety;
-  const nZ = (nRT - NORMS.dpNeutralM) / NORMS.dpNeutralSD;
-  const aZ = (aRT - NORMS.dpAnxietyM) / NORMS.dpAnxietySD;
-
-  function barColor(z) {
-    if (z <= -1.5) return 'bar-red';
-    if (z <= -1.0) return 'bar-amber';
-    return 'bar-green';
-  }
-  function barWidth(z) {
-    // Map z from -3 to +3 → 0% to 100%, centred at 50%
-    const pct = Math.max(0, Math.min(100, (z + 3) / 6 * 100));
-    return pct;
-  }
-
+  // Alex's results only. The student's own run of the task is never read here.
+  const rows = ALEX_COG.flatMap(g => g.rows).map(r =>
+    `<tr><td>${r.measure}</td><td>${r.raw}</td><td>${r.z > 0 ? '+' : r.z < 0 ? '\u2212' : ''}${Math.abs(r.z).toFixed(2)}</td><td>${r.pct}%</td></tr>`
+  ).join('');
   return `<div class="report-section">
-    <div class="report-section-title">Section 4 — Dot-probe Task · Attentional Bias</div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:20px">Z-scores relative to population norms. Negative Z = faster-than-average RT = vigilance toward that trial type.</p>
-
-    <div class="dp-bar-group">
-      <div class="dp-bar-item">
-        <span class="dp-bar-name">Neutral trials</span>
-        <div class="dp-bar-track">
-          <div class="dp-bar-fill ${barColor(nZ)}" style="width:${barWidth(nZ)}%"></div>
-        </div>
-        <span class="dp-bar-z" style="color:${nZ<=-1.5?'var(--danger)':nZ<=-1.0?'var(--warning)':'#22c55e'}">${nZ.toFixed(2)}</span>
-      </div>
-      <div class="dp-bar-item">
-        <span class="dp-bar-name">Anxiety trials</span>
-        <div class="dp-bar-track">
-          <div class="dp-bar-fill ${barColor(aZ)}" style="width:${barWidth(aZ)}%"></div>
-        </div>
-        <span class="dp-bar-z" style="color:${aZ<=-1.5?'var(--danger)':aZ<=-1.0?'var(--warning)':'#22c55e'}">${aZ.toFixed(2)}</span>
-      </div>
-    </div>
-    <p style="font-size:12px;color:var(--muted);font-family:var(--mono);margin-bottom:4px">Raw: Neutral = ${nRT} ms &nbsp;·&nbsp; Anxiety = ${aRT} ms &nbsp;·&nbsp; Bias index (neutral−anxiety) = ${(nRT-aRT).toFixed(0)} ms</p>
-    <div style="font-size:11px;color:var(--text-tertiary);font-family:var(--mono);margin-bottom:28px">
-      <span style="margin-right:16px;color:var(--danger)">■ Z ≤ −1.5 elevated vigilance</span>
-      <span style="margin-right:16px;color:var(--warning)">■ Z −1.5 to −1.0 borderline</span>
-      <span style="color:#22c55e">■ Z > −1.0 within normal</span>
-    </div>
+    <div class="report-section-title">Section 4 \u2014 Dot-probe Task \u00b7 Attentional Bias</div>
+    <table class="dp-ref" style="max-width:none">
+      <tr><td><strong>Measure</strong></td><td><strong>Raw</strong></td><td><strong>z</strong></td><td><strong>%ile</strong></td></tr>
+      ${rows}
+    </table>
+    <p style="font-size:11px;color:var(--text-tertiary);margin:8px 0 6px">
+      Fictional results written for this case; the z-scores are part of the case, not computed from a published
+      normative sample. Reference values from MacLeod, Mathews and Tata (1986), same sign convention:
+      +91 ms anxious patients, \u221249 ms controls.</p>
+    <p style="font-size:11px;color:var(--text-tertiary);margin:0 0 24px">
+      If you ran the task yourself, your result is not included here and is not compared with Alex\u2019s.</p>
 
     <div class="interp-block">
-      <p class="interp-q-label">Q3 — Neuropsychological connection to vignette</p>
+      <p class="interp-q-label">Q1 — Alex’s results and the vignette</p>
       <div class="interp-text">${escHtml(S.dp.q3)}</div>
     </div>
     <div class="interp-block" style="margin-top:20px">
-      <p class="interp-q-label">Q4 — What the cognitive layer adds</p>
+      <p class="interp-q-label">Q2 — What the cognitive layer adds</p>
       <div class="interp-text">${escHtml(S.dp.q4)}</div>
     </div>
   </div>`;

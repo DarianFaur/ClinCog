@@ -182,7 +182,9 @@
 
 </div>
 
-<script src="/theme-init.js"></script>
+<!-- theme-init.js is already loaded in <head>, where it must run before
+     the first paint; the second copy here was a duplicate request. -->
+
 <script>window.CLINCOG_SHELL = { activeNav: "icd-glossary", breadcrumb: [{ label: "ICD-11 glossary" }] };</script>
 <script src="/shell.js?v=2"></script>
 <script src="/a11y.js"></script>

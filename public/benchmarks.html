@@ -92,37 +92,6 @@
 // 14 separate subscales) renders as a compact table instead.
 // ============================================================
 const TEST_DEFS = [
-  {
-    id: "hitopDepression",
-    title: "HiTOP-SR — Depression Distress Subfactor",
-    usedIn: [{ name: "Darren", color: "var(--domain-mood)" }],
-    defaults: {
-      subMean: 3.0, subSD: 1.5, totalMean: 18, totalSD: 3.67, threshold: 65,
-      citation: "Kotov, R., Krueger, R.F., Watson, D., et al. (2017). The Hierarchical Taxonomy of Psychopathology (HiTOP): A dimensional alternative to traditional nosologies. Journal of Abnormal Psychology, 126(4), 454–477."
-    },
-    params: [
-      { key: "subMean", label: "Per-subscale mean (2 items)" },
-      { key: "subSD", label: "Per-subscale SD" },
-      { key: "totalMean", label: "Distress total mean" },
-      { key: "totalSD", label: "Distress total SD (pooled)" },
-      { key: "threshold", label: "Clinically elevated (T ≥)" },
-    ]
-  },
-  {
-    id: "dotProbe",
-    title: "Dot-Probe Task — Reaction Time Norms",
-    usedIn: [{ name: "Alex", color: "var(--domain-anxiety)" }],
-    defaults: {
-      neutralMean: 410, neutralSD: 60, anxietyMean: 400, anxietySD: 60,
-      citation: "MacLeod, C., Mathews, A., & Tata, P. (1986). Attentional bias in emotional disorders. Journal of Abnormal Psychology, 95(1), 15–20."
-    },
-    params: [
-      { key: "neutralMean", label: "Neutral-trial mean (ms)" },
-      { key: "neutralSD", label: "Neutral-trial SD (ms)" },
-      { key: "anxietyMean", label: "Threat-trial mean (ms)" },
-      { key: "anxietySD", label: "Threat-trial SD (ms)" },
-    ]
-  },
 ];
 
 function flashSaved() {
@@ -249,6 +218,23 @@ function resetAll() {
 
 function renderAll() {
   const container = document.getElementById('tests-container');
+  // Every value that used to be editable here either had no verifiable
+  // source or has moved into the evaluation pages as a fixed published norm
+  // with its citation. Editable norms invite exactly the unsourced numbers
+  // the Phase 1-2 audit removed, so the page now explains that instead.
+  if (!TEST_DEFS.length) {
+    container.innerHTML = `<div class="card" style="padding:28px">
+      <div class="text-card-title">No editable norms</div>
+      <p style="margin:10px 0 0;color:var(--text-secondary);line-height:1.65;max-width:var(--measure)">
+        Every norm ClinCog uses is now a published value fixed in the code, with its source shown
+        next to it in each case report: HiTOP-SR community norms, the German HiTOP-SR norms for the
+        substance module, PHQ-9 and GAD-7 severity bands, AUDIT risk zones and the SPIN manual bands.
+        Earlier versions let instructors edit means and standard deviations here; several of those
+        values had no verifiable source, so the option has been removed. The full list of sources is
+        in <code>THIRD_PARTY_NOTICES.md</code> in the repository.</p>
+    </div>`;
+    return;
+  }
   container.innerHTML = TEST_DEFS.map(renderTest).join('');
   syncInputValues(container);
   container.querySelectorAll('.bm-citation-field textarea').forEach(autoResizeTextarea);

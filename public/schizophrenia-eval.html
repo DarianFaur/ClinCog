@@ -598,6 +598,14 @@ textarea.interp:focus { outline: 2px solid var(--accent); outline-offset: -2px; 
 .likert label .num { border-radius: var(--radius-md); width: 40px; height: 40px; border: none; font-size: var(--text-sm); font-weight: 600; }
 .likert label:has(input:checked) .num { background: var(--domain-psychosis); border-color: var(--domain-psychosis); color: #fff; }
 
+
+/* Optional student task, visually subordinate to the graded material above it. */
+.try-task { margin-top: var(--sp-7); background: var(--bg-surface-alt); border-radius: var(--radius-md); padding: var(--sp-4) var(--sp-5); }
+.try-task > summary { cursor: pointer; font-weight: 600; font-size: var(--text-base); color: var(--text-primary); list-style: none; }
+.try-task > summary::-webkit-details-marker { display: none; }
+.try-task > summary::before { content: "\25B8"; display: inline-block; margin-right: 8px; transition: transform var(--duration-hover) var(--ease-standard); }
+.try-task[open] > summary::before { transform: rotate(90deg); }
+.try-task > summary span { display: block; font-weight: 400; font-size: var(--text-xs); color: var(--text-tertiary); margin: 2px 0 0 18px; }
 </style>
 </head>
 <body>
@@ -635,22 +643,29 @@ textarea.interp:focus { outline: 2px solid var(--accent); outline-offset: -2px; 
       <div class="vignette-card-name">Dennis, 25</div>
       <div class="vignette-card-meta">College student · First psychiatric contact</div>
       <div class="vignette-card-divider"></div>
-      <div class="vignette-section">
-        <div class="vignette-section-title">Presentation</div>
-        <p>Dennis, a 25-year-old college student, had always been known for his academic excellence and enthusiasm for learning. Over the past year, his friends and family began noticing subtle but concerning changes. He became increasingly withdrawn, spending long hours alone in his room, barely engaging in conversations, and showing little interest in activities he once enjoyed. His once vibrant personality dulled, and his academic performance declined significantly &mdash; his professors noted he struggled to concentrate, and his work became disorganized, often incomplete or lacking coherence when submitted at all. His hygiene deteriorated, with unwashed clothes and an unkempt appearance becoming the norm. His family initially attributed these changes to academic stress.</p>
-      </div>
-      <div class="vignette-section">
-        <div class="vignette-section-title">Acute Psychotic Symptoms</div>
-        <p>In recent weeks, Dennis&rsquo;s condition escalated dramatically. One evening, his parents found him pacing frantically around the house, muttering to himself and casting nervous glances at the windows. When asked what was wrong, he responded cryptically, insisting that government agents had planted cameras in their home to monitor him. At times he would burst into laughter for no apparent reason or engage in heated arguments with unseen entities, spending hours responding to voices no one else could hear.</p>
-        <div class="vignette-highlight">He became increasingly agitated, accusing his family of conspiring against him, and refused to eat food prepared by his mother, convinced it was poisoned.</div>
-      </div>
-      <div class="vignette-section">
-        <div class="vignette-section-title">Behavioral &amp; Speech Changes</div>
-        <p>His speech became erratic, often shifting from one topic to another without any logical connection &mdash; he would start a sentence but lose his train of thought midway, jumping to unrelated subjects. His family grew deeply concerned when he began wandering the streets at night, dressed in mismatched clothes, gesturing wildly at invisible figures. On one occasion, he was found standing motionless in the backyard, staring at the sky, whispering about secret messages hidden in the stars.</p>
-      </div>
-      <div class="vignette-section">
-        <div class="vignette-section-title">Presenting Crisis</div>
-        <p>Dennis&rsquo;s deteriorating condition reached a critical point when he attempted to barricade himself in his room, convinced that shadowy figures were coming to take him away. This is his first psychiatric contact.</p>
+      <!-- Generated from vignettes.json, the single source for this case. The side
+           panel and the chat patient read the same text; edit it there, not here. -->
+      <div class="vignette-body" id="vignette-body" data-case="schizophrenia">
+        <div class="vignette-section">
+          <div class="vignette-section-title">Presentation</div>
+          <p>Dennis is a 25-year-old college student. His parents bring him to the emergency department after he pushes his desk and bed against his bedroom door and refuses to come out, saying that people are coming to take him away. This is his first contact with mental health services. In the interview he sits close to the wall, answers slowly and keeps glancing at the window. “They planted cameras,” he says. “Nobody believes me.”</p>
+        </div>
+        <div class="vignette-section">
+          <div class="vignette-section-title">History</div>
+          <p>Until about a year ago Dennis was a strong student who enjoyed his courses and saw friends regularly. Over the following months he gradually withdrew. He spent most of his time alone in his room, stopped replying to friends and lost interest in things he used to enjoy, including running. His grades fell, and lecturers described his late assignments as disorganised and hard to follow. He showered less often and wore the same clothes for days. His family put this down to stress. About six weeks ago the picture changed more sharply.</p>
+        </div>
+        <div class="vignette-section">
+          <div class="vignette-section-title">Current difficulties</div>
+          <p>Dennis is convinced that government agents have placed cameras in the family home to monitor him, and he now suspects that his parents know about it. Most days he hears two male voices commenting on what he does; he answers them aloud, sometimes angrily, and at times smiles at something no one else has heard. He says his thoughts “don’t feel private anymore”, but he struggles to explain what he means. When he talks, he often drifts from one topic to another and loses the thread mid-sentence. His parents have found him outside late at night in mismatched clothes, talking to himself, and once standing still in the garden for a long time, looking at the sky. He shows little emotion, even when describing his fears, and says he feels “nothing much” about his studies or his friends. He has not harmed himself or anyone else.</p>
+        </div>
+        <div class="vignette-section">
+          <div class="vignette-section-title">Daily life and relationships</div>
+          <p>Dennis has stopped attending classes and has not submitted any work this term. He sleeps at irregular hours and eats only when his mother brings food to his room. He no longer answers his phone. His relationship with his parents has become strained: he is guarded with them, refuses meals he has not seen being prepared, and last week accused his father of “working with them”. His younger sister says he used to be the person she talked to most, and that she misses him.</p>
+        </div>
+        <div class="vignette-section">
+          <div class="vignette-section-title">Background</div>
+          <p>Dennis has no previous psychiatric history and no significant medical illness. He does not drink alcohol, and his family knows of no drug use. A urine drug screen taken in the emergency department is negative, and routine blood tests and a neurological examination are normal. He takes no regular medication. A maternal uncle was treated for “a breakdown” in his twenties, but the family knows little about it. Dennis agrees to stay for assessment only after he is told that the door of his room can stay open.</p>
+        </div>
       </div>
     </div>
     <div class="nav-row">
@@ -756,27 +771,33 @@ textarea.interp:focus { outline: 2px solid var(--accent); outline-offset: -2px; 
       </div>
     </div>
 
-    <div class="sec-label hitop-scale">Thought Disorder — Dissociation</div>
+    <div class="sec-label hitop-scale">Thought Disorder — Reality Distortion</div>
     <div class="hitop-block">
       <div class="hitop-pair">
-        <div class="hitop-item"><span class="hitop-item-text">I had the experience that everything suddenly seemed unfamiliar and I forgot where I was.</span><div class="likert"><label><input type="radio" name="ds1" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="ds1" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="ds1" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="ds1" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
-        <div class="hitop-item"><span class="hitop-item-text">I felt like I no longer existed.</span><div class="likert"><label><input type="radio" name="ds2" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="ds2" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="ds2" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="ds2" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
-        <div class="hitop-item"><span class="hitop-item-text">I had blank spells or periods of missing time.</span><div class="likert"><label><input type="radio" name="ds3" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="ds3" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="ds3" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="ds3" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
-        <div class="hitop-item"><span class="hitop-item-text">I felt that things around me were not real.</span><div class="likert"><label><input type="radio" name="ds4" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="ds4" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="ds4" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="ds4" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
-        <div class="hitop-item"><span class="hitop-item-text">I felt like I was outside of my body.</span><div class="likert"><label><input type="radio" name="ds5" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="ds5" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="ds5" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="ds5" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
-        <div class="hitop-item"><span class="hitop-item-text">I had trouble telling whether something really happened or I just imagined it.</span><div class="likert"><label><input type="radio" name="ds6" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="ds6" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="ds6" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="ds6" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I could control things with my mind.</span><div class="likert"><label><input type="radio" name="rd1" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="rd1" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="rd1" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="rd1" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I thought it may be possible for other people to read my mind, or for me to read other's minds.</span><div class="likert"><label><input type="radio" name="rd2" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="rd2" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="rd2" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="rd2" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I believed other people could actually hear my thoughts.</span><div class="likert"><label><input type="radio" name="rd3" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="rd3" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="rd3" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="rd3" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">Special messages were written in papers or announced on TV just for me.</span><div class="likert"><label><input type="radio" name="rd4" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="rd4" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="rd4" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="rd4" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I thought I was the only one chosen by God for a special role.</span><div class="likert"><label><input type="radio" name="rd5" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="rd5" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="rd5" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="rd5" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I experienced strange sights or sounds.</span><div class="likert"><label><input type="radio" name="rd6" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="rd6" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="rd6" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="rd6" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I smelled things that were not actually there.</span><div class="likert"><label><input type="radio" name="rd7" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="rd7" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="rd7" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="rd7" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I saw things that were not really there.</span><div class="likert"><label><input type="radio" name="rd8" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="rd8" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="rd8" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="rd8" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I saw a person but then realized it was just a shadow.</span><div class="likert"><label><input type="radio" name="rd9" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="rd9" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="rd9" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="rd9" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I heard things that no one else could hear.</span><div class="likert"><label><input type="radio" name="rd10" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="rd10" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="rd10" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="rd10" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I had a sensation that something was crawling under my skin.</span><div class="likert"><label><input type="radio" name="rd11" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="rd11" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="rd11" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="rd11" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
       </div>
     </div>
-
-    <div class="sec-label hitop-scale">Thought Disorder — Fantasy Proneness</div>
+    <div class="sec-label hitop-scale">Thought Disorder — Mistrust</div>
     <div class="hitop-block">
       <div class="hitop-pair">
-        <div class="hitop-item"><span class="hitop-item-text">I was prone to daydreaming.</span><div class="likert"><label><input type="radio" name="fp1" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="fp1" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="fp1" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="fp1" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
-        <div class="hitop-item"><span class="hitop-item-text">My fantasies felt very real to me.</span><div class="likert"><label><input type="radio" name="fp2" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="fp2" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="fp2" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="fp2" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
-        <div class="hitop-item"><span class="hitop-item-text">I wished I lived in my fantasies instead of real life.</span><div class="likert"><label><input type="radio" name="fp3" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="fp3" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="fp3" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="fp3" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
-        <div class="hitop-item"><span class="hitop-item-text">My mind wandered far away from the present.</span><div class="likert"><label><input type="radio" name="fp4" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="fp4" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="fp4" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="fp4" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
-        <div class="hitop-item"><span class="hitop-item-text">My imagination held my attention for hours.</span><div class="likert"><label><input type="radio" name="fp5" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="fp5" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="fp5" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="fp5" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
-        <div class="hitop-item"><span class="hitop-item-text">I lost myself in a fictional character.</span><div class="likert"><label><input type="radio" name="fp6" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="fp6" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="fp6" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="fp6" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">People were basically selfish with little concern for others.</span><div class="likert"><label><input type="radio" name="mt1" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="mt1" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="mt1" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="mt1" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">Others could not be trusted.</span><div class="likert"><label><input type="radio" name="mt2" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="mt2" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="mt2" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="mt2" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I believed that if you are not careful, other people will take advantage of you.</span><div class="likert"><label><input type="radio" name="mt3" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="mt3" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="mt3" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="mt3" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">Most people were just out for themselves.</span><div class="likert"><label><input type="radio" name="mt4" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="mt4" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="mt4" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="mt4" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">Some people were out to harm me.</span><div class="likert"><label><input type="radio" name="mt5" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="mt5" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="mt5" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="mt5" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">People talked behind my back.</span><div class="likert"><label><input type="radio" name="mt6" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="mt6" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="mt6" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="mt6" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I was very suspicious of other people.</span><div class="likert"><label><input type="radio" name="mt7" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="mt7" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="mt7" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="mt7" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I felt that other persons were acting against me.</span><div class="likert"><label><input type="radio" name="mt8" value="1" onchange="calcHiTOP()"><span class="num">1</span></label><label><input type="radio" name="mt8" value="2" onchange="calcHiTOP()"><span class="num">2</span></label><label><input type="radio" name="mt8" value="3" onchange="calcHiTOP()"><span class="num">3</span></label><label><input type="radio" name="mt8" value="4" onchange="calcHiTOP()"><span class="num">4</span></label></div></div>
       </div>
     </div>
     </div>
@@ -811,7 +832,7 @@ textarea.interp:focus { outline: 2px solid var(--accent); outline-offset: -2px; 
       <table class="ctab">
         <thead>
           <tr>
-            <th style="width:30%">Test / Measure</th><th style="width:14%">Raw score</th><th style="width:14%">Standard score (T)</th><th style="width:24%">Standard score chart</th><th style="width:9%">Percentile</th><th style="width:9%">Domain</th>
+            <th style="width:30%">Test / Measure</th><th style="width:14%">Raw score</th><th style="width:14%">Standard score (z)</th><th style="width:24%">Standard score chart</th><th style="width:9%">Percentile</th><th style="width:9%">Domain</th>
           </tr>
         </thead>
         <tbody>
@@ -824,7 +845,7 @@ textarea.interp:focus { outline: 2px solid var(--accent); outline-offset: -2px; 
     </div>
 
     <div class="callout" style="margin-bottom:28px;font-size:.8rem;">
-      The shaded green band = normal range (±1 SD). Bars left of centre line = below average. Red = significantly impaired; amber = borderline.<br><br>
+      <strong>Fictional results.</strong> These values belong to the case; the z-scores (mean 0, SD 1) are part of the case and were not computed from a published normative sample. The shaded green band = normal range (±1 SD). Bars left of centre line = below average. Red = significantly impaired; amber = borderline.<br><br>
       <strong>Trail Making Test (Part A)</strong> — connect numbered circles in ascending order as quickly as possible; a pure measure of visuomotor processing speed, frequently slowed in first-episode psychosis independent of task complexity.<br>
       <strong>Letter–Number Span</strong> — hold and mentally reorder increasingly long strings of letters and numbers; taps working memory capacity, one of the most consistently impaired domains in schizophrenia.
     </div>
@@ -835,6 +856,21 @@ textarea.interp:focus { outline: 2px solid var(--accent); outline-offset: -2px; 
       <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">2. How do these deficits connect to the vignette? Which of Dennis's difficulties — academic decline, disorganized speech, losing his train of thought — can now be explained neuropsychologically?</label><textarea class="interp" id="cog2" oninput="tick()" placeholder="Link test data to Dennis's academic and functional decline…"></textarea></div>
       <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">3. What does the cognitive layer add that ICD-11 categories or the HiTOP-SR alone could not reveal?</label><textarea class="interp" id="cog3" oninput="tick()" placeholder="Mechanisms, functional prognosis, treatment implications…"></textarea></div>
     </div>
+    <!-- Optional, ungraded. The student’s own runs never reach the report and
+         are never compared with the patient. -->
+    <details class="try-task">
+      <summary>Try the tasks yourself <span>optional · not graded · not part of the report</span></summary>
+      <p style="font-size:var(--text-sm);color:var(--text-secondary);margin:0 0 4px;max-width:var(--measure)"><strong>A single session is not a measurement.</strong> Scores from one run have low reliability for an individual and no diagnostic value; treat them as an illustration of the task, not as a result about you.</p>
+
+      <p style="font-size:var(--text-sm);color:var(--text-secondary);margin:12px 0 4px;max-width:var(--measure)">Open re-implementations written for this platform, after the published trail-making and letter–number sequencing paradigms. They are not the MATRICS Consensus Cognitive Battery and reproduce none of its items, timings, scoring or norms. Your results stay on this screen: they are not saved, not added to the report and not compared with the patient’s.</p>
+      <h4 style="margin:18px 0 8px;font-size:var(--text-base)">Trail-making, part A style</h4>
+      <p style="margin:0 0 10px;font-size:var(--text-xs);color:var(--text-tertiary)">Paradigm after: Reitan, R. M. (1958). Validity of the Trail Making Test as an indicator of organic brain damage. <em>Perceptual and Motor Skills</em>, 8(3), 271–276. doi:10.2466/pms.1958.8.3.271</p>
+      <div data-try-task="tmt"></div>
+      <h4 style="margin:18px 0 8px;font-size:var(--text-base)">Letter–number sequencing</h4>
+      <p style="margin:0 0 10px;font-size:var(--text-xs);color:var(--text-tertiary)">Paradigm after: Gold, J. M., Carpenter, C., Randolph, C., Goldberg, T. E., &amp; Weinberger, D. R. (1997). Auditory working memory and Wisconsin Card Sorting Test performance in schizophrenia. <em>Archives of General Psychiatry</em>, 54(2), 159–165.</p>
+      <div data-try-task="lns"></div>
+    </details>
+
     <div class="nav-row">
       <button class="btn btn-secondary" onclick="go(3)">← HiTOP-SR</button>
       <button class="btn btn-primary" onclick="valMATRICS()">Generate Report →</button>
@@ -864,17 +900,18 @@ textarea.interp:focus { outline: 2px solid var(--accent); outline-offset: -2px; 
     <div class="report-sec">
       <h3>Layer 2 — Dimensional<br><span class="report-sec-sub">HiTOP-SR</span></h3>
       <table class="ht-table">
-        <thead><tr><th>Subscale</th><th>Spectrum</th><th>Raw</th><th>Range</th><th>Profile</th></tr></thead>
+        <thead><tr><th>Subscale</th><th>Spectrum</th><th>Raw</th><th>T</th><th>Profile</th></tr></thead>
         <tbody id="r-ht-body"></tbody>
       </table>
-      <p style="font-size:.7rem;color:var(--ink3);margin-top:10px;">Raw totals shown — each subscale's item count sets its possible range (1–4 scale). No population norms attached; compare relative elevation across subscales, not against a normed population.</p>
+      <p style="font-size:.7rem;color:var(--ink3);margin-top:10px;">T-scores (M = 50, SD = 10) against per-subscale community norms. ⚠ Reality Distortion has a reference mean near the floor of the scale, so a single endorsed item produces a high T; read it as presence of the experience rather than graded severity.</p>
+      <p style="font-size:.68rem;color:var(--ink3);margin-top:2px;font-style:italic;">Source: HiTOP-SR scoring workbook, “Descriptives prolific final” (Prolific community sample, N = 780).</p>
     </div>
 
     <div class="report-sec">
       <h3>Layer 3 — Dimensional–Cognitive<br><span class="report-sec-sub">MATRICS</span></h3>
       <div class="ctab-wrap">
         <table class="ctab" style="font-size:.72rem;">
-          <thead><tr><th>Measure</th><th>Raw</th><th>Std</th><th>Chart</th><th>%ile</th></tr></thead>
+          <thead><tr><th>Measure</th><th>Raw</th><th>z</th><th>Chart</th><th>%ile</th></tr></thead>
           <tbody>
             <tr class="tr-head"><td colspan="5">Speed of Processing</td></tr>
             <tr><td class="mn">TMT — Part A</td><td>96s</td><td class="imp">−1.85</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill imp" style="width:20%"></div><div class="ss-mid"></div></div></div></td><td>3%</td></tr>
@@ -891,7 +928,7 @@ textarea.interp:focus { outline: 2px solid var(--accent); outline-offset: -2px; 
     <hr />
     <div class="reflect-block" id="reflect-block">
       <h3>What changed in your understanding?</h3>
-      <p class="reflect-note">You approached Dennis from three perspectives — a categorical diagnosis, a dimensional profile, and a cognitive task. Write a few sentences on what exploring the case this way taught you, then mark it complete.</p>
+      <p class="reflect-note">You approached Dennis from three perspectives — a categorical diagnosis, a dimensional profile, and Dennis’s results on a cognitive task. Write a few sentences on what exploring the case this way taught you, then mark it complete.</p>
       <textarea id="reflect-text" placeholder="What did looking at Dennis's case from three angles add to your understanding?"></textarea>
       <div id="reflect-done" style="display:none;"></div>
       <button class="btn btn-primary" id="reflect-btn" onclick="completeCase()">Complete case →</button>
@@ -1115,7 +1152,7 @@ function fullContextExtrasHtml() {
     <div class="ctx-card"><div class="ctx-card-body">
       <div class="ctx-patient-name">Dennis, 25</div>
       <div class="ctx-patient-meta">College student · First psychiatric contact</div>
-      <div class="ctx-patient-complaint">Brought in by family after attempting to barricade himself in his room, convinced shadowy figures were coming to take him away.</div>
+      <div class="ctx-patient-complaint">Brought in by his parents after barricading himself in his room, saying that people were coming to take him away.</div>
     </div></div>
     <div class="ctx-card" data-role="vignette">
       <div class="ctx-card-header">
@@ -1145,11 +1182,10 @@ function fullContextExtrasHtml() {
     </div></div>`;
 }
 
-const VIGNETTE_HTML = `
-  <p>Dennis, a 25-year-old college student, had always been known for his academic excellence and enthusiasm for learning. Over the past year, his friends and family began noticing subtle but concerning changes. He became increasingly withdrawn, spending long hours alone in his room, barely engaging in conversations, and showing little interest in activities he once enjoyed. His once vibrant personality dulled, and his academic performance declined significantly &mdash; his professors noted he struggled to concentrate, and his work became disorganized, often incomplete or lacking coherence when submitted at all. His hygiene deteriorated, with unwashed clothes and an unkempt appearance becoming the norm. His family initially attributed these changes to academic stress.</p>
-  <p>In recent weeks, Dennis&rsquo;s condition escalated dramatically. One evening, his parents found him pacing frantically around the house, muttering to himself and casting nervous glances at the windows. When asked what was wrong, he responded cryptically, insisting that government agents had planted cameras in their home to monitor him. He became increasingly agitated, accusing his family of conspiring against him, and refused to eat food prepared by his mother, convinced it was poisoned. At times he would burst into laughter for no apparent reason or engage in heated arguments with unseen entities, spending hours responding to voices no one else could hear.</p>
-  <p>His speech became erratic, often shifting from one topic to another without any logical connection &mdash; he would start a sentence but lose his train of thought midway, jumping to unrelated subjects. His family grew deeply concerned when he began wandering the streets at night, dressed in mismatched clothes, gesturing wildly at invisible figures. On one occasion, he was found standing motionless in the backyard, staring at the sky, whispering about secret messages hidden in the stars.</p>
-  <p>Dennis&rsquo;s deteriorating condition reached a critical point when he attempted to barricade himself in his room, convinced that shadowy figures were coming to take him away. This is his first psychiatric contact.</p>`;
+// Read from the vignette card on this page, which is generated from
+// vignettes.json. It used to be a second hand-written copy of the text,
+// free to drift from the one students read.
+const VIGNETTE_HTML = (document.getElementById('vignette-body') || {}).innerHTML || '';
 
 const FULL_CONTEXT_IDS = ["ctx-pg2", "ctx-pg3", "ctx-pg4"];
 
@@ -1236,7 +1272,7 @@ function stepFraction() {
     return done / 9;
   }
   if (cur === 3) {
-    const names = ['ra1','ra2','ra3','ra4','ra5','sa1','sa2','sa3','sa4','sa5','ds1','ds2','ds3','ds4','ds5','ds6','fp1','fp2','fp3','fp4','fp5','fp6'];
+    const names = HITOP_SCZ_NAMES;
     let done = 0;
     names.forEach(n => { if (document.querySelector('input[name="'+n+'"]:checked')) done++; });
     return done / names.length;
@@ -1258,7 +1294,7 @@ function tick() {
     if (el) el.textContent = done + '/2';
   }
   if (cur === 3) {
-    const names = ['ra1','ra2','ra3','ra4','ra5','sa1','sa2','sa3','sa4','sa5','ds1','ds2','ds3','ds4','ds5','ds6','fp1','fp2','fp3','fp4','fp5','fp6'];
+    const names = HITOP_SCZ_NAMES;
     let done = 0;
     names.forEach(n => { if (document.querySelector('input[name="'+n+'"]:checked')) done++; });
     const el = document.getElementById('hitopCount');
@@ -1296,6 +1332,32 @@ function countCddr() {
   document.getElementById('cddrCoreStatus').style.fontWeight = symptomCriterionMet ? '600' : '400';
   tick();
 }
+// HiTOP-SR subscales for this case, all complete. Detachment keeps its
+// two subscales; the Thought Disorder spectrum now uses Reality Distortion
+// and Mistrust, the two subscales of that spectrum that bear on a first
+// psychotic episode, in place of Dissociation and Fantasy Proneness.
+// Spectrum assignment from the workbook sheet "HiTOP-SR Rationally
+// Organized". Norms are per-item means on the 1-4 scale from "Descriptives
+// prolific final" (Prolific community sample, N = 780), mapped through the
+// "variable name" column of "HiTOP-SR Alphabetical".
+//
+// Reality Distortion has a reference mean of 1.19 (SD 0.37): most of the
+// community sample endorses none of it, so a single item rated above
+// "not at all" gives a high T. The report flags it.
+const HITOP_SCZ = [
+  { n:'Restricted Affectivity', spec:'Detachment',       names:['ra1','ra2','ra3','ra4','ra5'], mean:1.7991, sd:0.7164, floor:false },
+  { n:'Social Aloofness',       spec:'Detachment',       names:['sa1','sa2','sa3','sa4','sa5'], mean:2.4932, sd:0.8989, floor:false },
+  { n:'Reality Distortion',     spec:'Thought Disorder', names:['rd1', 'rd2', 'rd3', 'rd4', 'rd5', 'rd6', 'rd7', 'rd8', 'rd9', 'rd10', 'rd11'], mean:1.1915, sd:0.3720, floor:true },
+  { n:'Mistrust',               spec:'Thought Disorder', names:['mt1', 'mt2', 'mt3', 'mt4', 'mt5', 'mt6', 'mt7', 'mt8'], mean:2.1358, sd:0.8400, floor:false },
+];
+const HITOP_SCZ_NAMES = HITOP_SCZ.flatMap(s => s.names);
+const HITOP_SCZ_CITATION =
+  'HiTOP-SR scoring workbook, "Descriptives prolific final" (Prolific community sample, N = 780).';
+function hitopSczT(scale, raw) {
+  const n = scale.names.length;
+  return Math.round(50 + ((raw - scale.mean * n) / (scale.sd * Math.sqrt(n))) * 10);
+}
+
 function calcHiTOP() { tick(); }
 
 function valSCID() {
@@ -1314,7 +1376,7 @@ function valSCID() {
   ]);
 }
 function valHiTOP() {
-  const names = ['ra1','ra2','ra3','ra4','ra5','sa1','sa2','sa3','sa4','sa5','ds1','ds2','ds3','ds4','ds5','ds6','fp1','fp2','fp3','fp4','fp5','fp6'];
+  const names = HITOP_SCZ_NAMES;
   const left = names.filter(n => !document.querySelector('input[name="'+n+'"]:checked')).length;
   if (!left) { go(4); return; }
   ClinCogToast.gate([{ n: left, label: 'HiTOP-SR item', plural: 'HiTOP-SR items' }]);
@@ -1378,19 +1440,20 @@ function buildReport() {
     }
   }
 
-  const scales = [
-    { n:'Restricted Affectivity', spec:'Detachment', names:['ra1','ra2','ra3','ra4','ra5'] },
-    { n:'Social Aloofness', spec:'Detachment', names:['sa1','sa2','sa3','sa4','sa5'] },
-    { n:'Dissociation', spec:'Thought Disorder', names:['ds1','ds2','ds3','ds4','ds5','ds6'] },
-    { n:'Fantasy Proneness', spec:'Thought Disorder', names:['fp1','fp2','fp3','fp4','fp5','fp6'] }
-  ];
+  // T-scores against the per-subscale community norms. The previous version
+  // labelled each subscale Low / Low-moderate / Moderate / High by the share
+  // of its possible range that was used (25/50/75 %). Those cut-offs had no
+  // source; they described the scale, not the patient's standing.
   let html = '';
-  for (const s of scales) {
+  for (const s of HITOP_SCZ) {
     const tot = sumScale(s.names);
-    const max = s.names.length * 4, min = s.names.length * 1;
-    const pctOfRange = Math.round(((tot - min) / (max - min)) * 100);
-    const label = pctOfRange >= 75 ? 'High' : pctOfRange >= 50 ? 'Moderate' : pctOfRange >= 25 ? 'Low-moderate' : 'Low';
-    html += '<tr><td>' + s.n + '</td><td>' + s.spec + '</td><td class="ht-n">' + tot + '</td><td class="ht-n">' + min + '\u2013' + max + '</td><td><div class="mini-bar"><div class="mini-fill" style="width:' + pctOfRange + '%"></div></div> <span style="font-size:.75rem;color:var(--ink3)">' + label + '</span></td></tr>';
+    const t = hitopSczT(s, tot);
+    const w = Math.max(2, Math.min(100, ((t - 30) / 50) * 100));
+    const col = t >= 65 ? 'var(--danger)' : t >= 60 ? 'var(--warning)' : 'var(--accent)';
+    html += '<tr><td>' + s.n + (s.floor ? ' \u26a0' : '') + '</td><td>' + s.spec +
+            '</td><td class="ht-n">' + tot + '</td><td class="ht-n">' + t +
+            '</td><td><div class="mini-bar"><div class="mini-fill" style="width:' + w + '%;background:' + col +
+            '"></div></div></td></tr>';
   }
   document.getElementById('r-ht-body').innerHTML = html;
 
@@ -1462,5 +1525,6 @@ function updateHelperFabVisibility() {
 }
 initHelperFab();
 </script>
+<script src="/try-tasks.js"></script>
 </body>
 </html>

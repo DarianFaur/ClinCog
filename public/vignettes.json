@@ -1,0 +1,103 @@
+{
+  "_note": "Single source for the four case vignettes. The evaluation pages, their side panels, the chat case summaries and the simulated patient in worker.js all read this file, so edit a vignette here and nowhere else. Written to the 15 recommendations of Evans et al. (2015), Table 1: identical five-section structure, present tense for the current picture and past tense for history, 485-500 words each. Exception to recommendation 8 (balance of gender and age): the current four patients are three men and one gender-neutral patient aged 24-34; the author will balance this in patients added later.",
+  "schizophrenia": {
+    "name": "Dennis",
+    "sections": [
+      {
+        "title": "Presentation",
+        "text": "Dennis is a 25-year-old college student. His parents bring him to the emergency department after he pushes his desk and bed against his bedroom door and refuses to come out, saying that people are coming to take him away. This is his first contact with mental health services. In the interview he sits close to the wall, answers slowly and keeps glancing at the window. “They planted cameras,” he says. “Nobody believes me.”"
+      },
+      {
+        "title": "History",
+        "text": "Until about a year ago Dennis was a strong student who enjoyed his courses and saw friends regularly. Over the following months he gradually withdrew. He spent most of his time alone in his room, stopped replying to friends and lost interest in things he used to enjoy, including running. His grades fell, and lecturers described his late assignments as disorganised and hard to follow. He showered less often and wore the same clothes for days. His family put this down to stress. About six weeks ago the picture changed more sharply."
+      },
+      {
+        "title": "Current difficulties",
+        "text": "Dennis is convinced that government agents have placed cameras in the family home to monitor him, and he now suspects that his parents know about it. Most days he hears two male voices commenting on what he does; he answers them aloud, sometimes angrily, and at times smiles at something no one else has heard. He says his thoughts “don’t feel private anymore”, but he struggles to explain what he means. When he talks, he often drifts from one topic to another and loses the thread mid-sentence. His parents have found him outside late at night in mismatched clothes, talking to himself, and once standing still in the garden for a long time, looking at the sky. He shows little emotion, even when describing his fears, and says he feels “nothing much” about his studies or his friends. He has not harmed himself or anyone else."
+      },
+      {
+        "title": "Daily life and relationships",
+        "text": "Dennis has stopped attending classes and has not submitted any work this term. He sleeps at irregular hours and eats only when his mother brings food to his room. He no longer answers his phone. His relationship with his parents has become strained: he is guarded with them, refuses meals he has not seen being prepared, and last week accused his father of “working with them”. His younger sister says he used to be the person she talked to most, and that she misses him."
+      },
+      {
+        "title": "Background",
+        "text": "Dennis has no previous psychiatric history and no significant medical illness. He does not drink alcohol, and his family knows of no drug use. A urine drug screen taken in the emergency department is negative, and routine blood tests and a neurological examination are normal. He takes no regular medication. A maternal uncle was treated for “a breakdown” in his twenties, but the family knows little about it. Dennis agrees to stay for assessment only after he is told that the door of his room can stay open."
+      }
+    ]
+  },
+  "depression": {
+    "name": "Darren",
+    "sections": [
+      {
+        "title": "Presentation",
+        "text": "Darren is a 34-year-old high school English teacher. His general practitioner refers him after two weeks of sick leave. This is his first contact with mental health services. He arrives on time, neatly but carelessly dressed, and speaks slowly and quietly, often pausing before he answers. Asked how he is, he says: “What’s the point? Nothing I do matters.”"
+      },
+      {
+        "title": "History",
+        "text": "Darren was a well-liked teacher, known for lively lessons and a quick sense of humour. About two months ago, after a difficult term, he began to feel flat and tired for most of the day, nearly every day, and over the following weeks this deepened. He missed several grading deadlines and, three weeks ago, walked out of a lesson halfway through, close to tears. Since then he has been calling in sick. He has never had a period of unusually high mood, reduced need for sleep or overactivity, and describes himself as “always the steady one”."
+      },
+      {
+        "title": "Current difficulties",
+        "text": "Most mornings Darren lies in bed for hours after the alarm, feeling numb. Books and running, which he used to love, “feel like nothing now”. He falls asleep easily but wakes around four and cannot get back to sleep, going over his failures, real and imagined. He has little appetite, often skips meals, and his clothes have become loose. He says his mind is “in fog”: planning a simple meal or an email to his head of department feels impossible, and he cannot decide what to do first. He feels he has let his students and colleagues down and calls himself “a fraud”. He sees no future in which things improve. Small things make him irritable, which surprises him, and at other times he feels nothing at all. Colleagues have noticed that he moves and speaks more slowly than before."
+      },
+      {
+        "title": "Daily life and relationships",
+        "text": "Darren lives alone. He has stopped replying to colleagues’ messages and has cancelled his weekly call with his sister, telling people he is busy with marking. He spends most days on the couch with the television on, not really watching it. He still showers and dresses every morning, “because otherwise I’d have nothing left”. Shopping, bills and household tasks are piling up."
+      },
+      {
+        "title": "Background",
+        "text": "Darren has no previous psychiatric history and no significant medical illness; recent blood tests, including thyroid function, are normal. He drinks one or two glasses of wine at weekends and does not use drugs. His mother was treated for depression when he was a teenager. Over the past month he has increasingly thought that everyone would be better off if he were gone. Last week, for the first time, he thought about how he might end his life; the thought frightened him, and he has told no one. On one occasion he pressed his fingernails into his forearm until it hurt, saying only that it made “the noise inside” quieter for a moment. He accepts an urgent follow-up appointment and agrees to a safety plan."
+      }
+    ]
+  },
+  "anxiety": {
+    "name": "Alex",
+    "sections": [
+      {
+        "title": "Presentation",
+        "text": "Alex is a 24-year-old undergraduate student referred by their general practitioner because of long-standing difficulties with studying and with other people. In the first session Alex sits near the door, keeps their coat on and speaks quietly, glancing up only briefly, and asks at the start whether the session is being recorded. “I know it sounds silly,” Alex says, “but I just feel like everyone is watching me.”"
+      },
+      {
+        "title": "History",
+        "text": "Alex remembers feeling this way since early adolescence, when reading aloud in class made them feel sick for days beforehand. The fear has been present without a break for at least three years and became much worse after Alex started university. Alex has always explained it as shyness and has never asked for help before. A school counsellor once described Alex as “just quiet”, and Alex accepted that."
+      },
+      {
+        "title": "Current difficulties",
+        "text": "Alex feels intense fear in situations where others might observe or judge them: speaking in seminars, eating in the canteen, making phone calls or meeting new people. In seminars Alex rarely speaks, convinced that anything they say will sound foolish. When called on unexpectedly, their heart races, their face turns red and their throat feels tight. Afterwards Alex goes over the conversation for hours, picking apart their tone, words and expression. Alex watches other people’s faces closely for signs of boredom or disapproval. The physical symptoms happen only in social situations: Alex has never had a sudden attack of fear out of the blue, and is comfortable in crowds, lifts and public transport as long as no one expects them to talk. Alex worries about exams and money, as most students do, but says these worries feel manageable. Alex recognises that the fear is out of proportion: “People probably aren’t paying that much attention to me, but knowing that doesn’t help.”"
+      },
+      {
+        "title": "Daily life and relationships",
+        "text": "Alex has turned down two part-time job offers in the past year because both involved working with customers. Last month Alex left a university networking event after forty minutes, shaking and close to tears, and went home without speaking to anyone. Alex has cancelled plans with friends several times, blaming headaches, and their grades have dropped because seminar participation counts towards assessment. Alex has two close friends from school and feels at ease with them, and lives with a flatmate but avoids the shared kitchen when others are there."
+      },
+      {
+        "title": "Background",
+        "text": "Alex has no significant medical history and takes no medication. They drink rarely, at most one drink at a party, and do not use drugs. There is no history of unusual perceptual experiences. Alex describes their mood as “a bit low” and links this directly to feeling left out; sleep and appetite are normal, and they still enjoy reading and gaming alone. Their mother is described as “quite anxious too”. During the interview Alex is tense and makes little eye contact; their speech is quiet but coherent, and they understand that the fear is excessive."
+      }
+    ]
+  },
+  "addiction": {
+    "name": "Jordan",
+    "sections": [
+      {
+        "title": "Presentation",
+        "text": "Jordan is a 25-year-old software engineer. He refers himself after a formal performance review in which his manager noted missed deadlines, late starts and a clear drop in the quality of his work over the past six months. He works from home most days. He is articulate and friendly but plays the problem down: “Everyone in my job drinks to unwind. I just need to dial it back a little.” He rates his motivation to change at five out of ten."
+      },
+      {
+        "title": "History",
+        "text": "Jordan began drinking at university, at 18, mostly at weekends. His drinking increased during his first job and, over the past fourteen months, has become daily. He tried to stop three times in the past year: after an argument with his partner, after a blood test showed abnormal liver results, and once on his own initiative. None of these attempts lasted more than five days, and each time he was soon drinking as much as before, or more."
+      },
+      {
+        "title": "Current difficulties",
+        "text": "Jordan now drinks four or five cans of beer on weeknights, starting within an hour of finishing work, and ten or more drinks on each weekend day. He usually intends to stop after two or three but keeps going until he falls asleep or runs out. He needs about twice as much alcohol as eighteen months ago to feel relaxed. On mornings without alcohol his hands shake, he sweats and feels restless, and these symptoms ease within half an hour of his first drink; on three or four mornings a week he now drinks before his first video call. He sometimes cannot remember the end of an evening and often wakes feeling ashamed. During the day he finds it hard to sit through long meetings and thinks about his first drink for much of the afternoon."
+      },
+      {
+        "title": "Daily life and relationships",
+        "text": "Jordan has missed four deadlines in the past three months and has received a written warning. He has stopped going to the climbing club he attended three times a week and has turned down several invitations from colleagues. His partner of three years has told him she will leave if nothing changes, and she now sleeps in the spare room. On several occasions Jordan has driven to the shop to buy more alcohol after drinking, saying it was “only five minutes down the road”. He has had no accidents or injuries so far."
+      },
+      {
+        "title": "Background",
+        "text": "Jordan has had no previous psychiatric treatment. He says his mood is fine when he is not drinking, but he feels irritable, sleeps badly and struggles to concentrate on days when he drinks less. He does not use other drugs. His father drank heavily but was never assessed. After the abnormal liver test his general practitioner advised him to cut down. Jordan knows that the results are probably related to his drinking but has not gone back since. He says he has come mainly to keep his job."
+      }
+    ]
+  }
+}

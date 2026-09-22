@@ -143,8 +143,41 @@ not part of the validated stimulus set. The implementation is original code.
 
 ### Stop-signal task — `addiction-eval.html`
 
-Original implementation of the standard stop-signal paradigm. Not derived from
-any commercial battery.
+Original implementation, after the stop-signal paradigm of Logan, G. D., &
+Cowan, W. B. (1984). On the ability to inhibit thought and action: A theory of
+an act of control. *Psychological Review*, 91(3), 295–327.
+doi:10.1037/0033-295X.91.3.295. Not derived from any commercial battery.
+
+### "Try the tasks yourself" — `try-tasks.js`
+
+Four optional, ungraded tasks on the Dennis and Darren cognitive pages:
+trail-making (part A style), letter–number sequencing, spatial working memory
+and the Tower of London. All four are original code written for this project.
+They follow the general design of the published paradigms but reproduce no
+MCCB or CANTAB item, stimulus, timing, scoring rule or norm. The letter–number
+task is presented on screen rather than read aloud, and the Tower of London is
+the move-by-move version, not CANTAB's One Touch Stockings; both differences
+are stated on the page. A student's results are never stored, sent, added to
+the report or compared with the patient.
+
+The trail-making task places its circles at random positions on every run, so
+it does not reproduce the layout of the standard Trail Making Test forms.
+
+Paradigms, verified against the published record:
+
+* Trail-making — Reitan, R. M. (1958). Validity of the Trail Making Test as an
+  indicator of organic brain damage. *Perceptual and Motor Skills*, 8(3),
+  271–276. doi:10.2466/pms.1958.8.3.271
+* Letter–number sequencing — Gold, J. M., Carpenter, C., Randolph, C.,
+  Goldberg, T. E., & Weinberger, D. R. (1997). Auditory working memory and
+  Wisconsin Card Sorting Test performance in schizophrenia. *Archives of
+  General Psychiatry*, 54(2), 159–165.
+* Spatial working memory — Owen, A. M., Downes, J. J., Sahakian, B. J.,
+  Polkey, C. E., & Robbins, T. W. (1990). Planning and spatial working memory
+  following frontal lobe lesions in man. *Neuropsychologia*, 28(10), 1021–1034.
+* Tower of London — Shallice, T. (1982). Specific impairments of planning.
+  *Philosophical Transactions of the Royal Society of London B*, 298(1089),
+  199–209. doi:10.1098/rstb.1982.0082
 
 ### MATRICS / MCCB and CANTAB
 

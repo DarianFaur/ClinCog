@@ -17,113 +17,28 @@
 // different audiences (the student reads the HTML version; the model reads
 // this one as its only source of truth).
 
-const VIGNETTES = {
-
-  schizophrenia: {
-    name: "Dennis",
-    text: `
-Dennis is a 25-year-old college student, brought in by his family after they
-found him attempting to barricade himself in his bedroom, convinced shadowy
-figures were coming to take him away. This is his first psychiatric contact.
-Known for academic excellence, he began withdrawing roughly a year ago -
-spending long hours alone, losing interest in things he once enjoyed, and
-letting his hygiene slip (unwashed clothes, unkempt appearance). His grades
-declined sharply; professors noted he struggled to concentrate and that his
-written work, when submitted at all, was disorganized and lacked coherence.
-His family initially attributed this to academic stress. In recent weeks his
-condition escalated: his parents found him pacing the house at night,
-muttering to himself and glancing nervously at the windows, insisting
-government agents had planted cameras to monitor him and that his family was
-conspiring against him. He refuses food his mother prepares, convinced it is
-poisoned. He has been observed laughing suddenly for no apparent reason and
-arguing with people who are not there, and spends hours responding to voices
-no one else can hear. His speech often shifts abruptly between unrelated
-topics mid-sentence, losing his train of thought partway through. He has
-been seen wandering the streets at night in mismatched clothing, gesturing
-at unseen figures, and was once found standing motionless in the backyard,
-staring at the sky and whispering about secret messages hidden in the stars.
-`.trim(),
-  },
-
-  depression: {
-    name: "Darren",
-    text: `
-Darren is a 34-year-old high school English teacher, in his first psychiatric
-contact. For several weeks he has struggled to get out of bed most mornings,
-lying there numb for hours. Once known for energetic lectures, he now dreads
-facing his students and says things like "nothing I do matters." He has
-withdrawn from colleagues, stopped cooking regularly (skipping meals or
-eating whatever needs no decision), and lost weight without trying. His
-sleep is restless and unrefreshing; his mind "goes blank" when trying to
-plan even simple tasks, which he describes as "trying to think through fog."
-He occasionally has a fleeting hour of restless agitation before returning
-to flatness, and small comments from colleagues can make his chest tighten
-with irritation, which surprises him. In the past few weeks he has
-increasingly thought that everyone around him would be better off if he
-disappeared. Last week, for the first time, he briefly considered how he
-might act on that thought - frightened enough to stop, but not enough to
-tell anyone. On one occasion he pressed his nails hard into his forearm,
-not fully understanding why, only that it made the internal noise quieter
-for a moment. At school he has missed several grading deadlines and once
-walked out of class mid-lesson, overwhelmed and on the verge of tears.
-`.trim(),
-  },
-
-  anxiety: {
-    name: "Alex",
-    text: `
-Alex is a 24-year-old undergraduate student, referred by their GP after
-persistent difficulties with academic performance and social engagement.
-Alex describes a longstanding pattern, dating back to early adolescence, of
-intense fear in situations where they might be observed or evaluated by
-others. In seminars, Alex sits near the door and rarely contributes,
-convinced any comment will sound foolish; when called on unexpectedly, Alex
-reports a racing heart, flushed cheeks, and a sensation of the throat
-closing up, followed by hours of replaying what was said afterward. Social
-occasions outside university are managed through avoidance: Alex has
-declined two customer-facing part-time jobs in the past year and cancelled
-plans with friends citing vague physical complaints. At a recent networking
-event, attended only because a friend stood nearby the whole time, Alex left
-after forty minutes feeling distressed and out of place. Alex knows the fear
-is "probably excessive" but has always attributed it to shyness or
-personality, and has never sought help before. There is no history of panic
-attacks outside social contexts, no substance use, and no psychotic
-symptoms. The difficulties have been present for at least three years and
-have worsened noticeably since starting university.
-`.trim(),
-  },
-
-  addiction: {
-    name: "Jordan",
-    text: `
-Jordan is a 25-year-old software engineer, self-referred after a formal
-performance review noted missed sprint deadlines, late arrivals, and
-declining code quality over six months. Jordan is intelligent and
-self-aware but minimizes concern ("I work in a high-stress environment,
-everyone on my team drinks after deploys - I just need to dial it back"),
-rating motivation to change 5/10. Drinking began at university (18) and
-escalated in his first engineering job (20-22) to manage social anxiety at
-networking events. Over the past 14 months it has become daily: 4-5 drinks
-on weeknights, 10-14 on weekend days, usually starting within an hour of
-finishing work from home. He keeps a small cooler under his standing desk
-"so he doesn't have to keep getting up." He has tried to stop three times
-in the past year (after a partner confrontation, a health scare, and a bet
-with a colleague), none lasting beyond five days before returning to his
-previous intake, often exceeding it. On abstinent days he gets a fine hand
-tremor, sweating, and severe insomnia, resolving within 20-30 minutes of
-his first drink; he opens a beer before his first morning call about 3-4
-days a week. Tolerance has roughly doubled versus 18 months ago. He has
-missed four sprint deadlines this quarter and received one written warning,
-withdrawn from his climbing gym, declined team social events, and his
-partner of three years has issued an ultimatum and is sleeping in the
-spare room. He has driven to restock alcohol while over the legal limit on
-several occasions. He reports frequent intrusive urges to drink during the
-workday, irritability, and difficulty concentrating, worse on low-intake
-days. No prior psychiatric treatment; his father was a heavy drinker.
-`.trim(),
-  },
-
-};
+// ---- Case files --------------------------------------------------------------
+// The simulated patient is grounded in exactly the vignette students read.
+// Both come from public/vignettes.json; the Worker fetches it from its own
+// static assets rather than keeping a copy, because the copy it used to keep
+// had drifted into a different, shorter text for every case.
+let _vignetteCache = null;
+async function loadVignettes(env, requestUrl) {
+  if (_vignetteCache) return _vignetteCache;
+  const res = await env.ASSETS.fetch(new Request(new URL('/vignettes.json', requestUrl)));
+  if (!res.ok) throw new Error('vignettes.json unavailable: ' + res.status);
+  const data = await res.json();
+  const out = {};
+  for (const [id, v] of Object.entries(data)) {
+    if (id.startsWith('_') || !v || !Array.isArray(v.sections)) continue;
+    out[id] = {
+      name: v.name,
+      text: v.sections.map(sec => sec.title.toUpperCase() + '\n' + sec.text).join('\n\n'),
+    };
+  }
+  _vignetteCache = out;
+  return out;
+}
 
 // ---- System prompt builder --------------------------------------------------
 
@@ -510,7 +425,16 @@ export default {
 
     if (match && request.method === "POST") {
       const moduleId = match[1];
-      const vignette = VIGNETTES[moduleId];
+      let vignettes;
+      try {
+        vignettes = await loadVignettes(env, request.url);
+      } catch (e) {
+        return new Response(JSON.stringify({ text: "Case file unavailable." }), {
+          status: 503,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      const vignette = vignettes[moduleId];
       if (!vignette) {
         return new Response(JSON.stringify({ text: "Unknown case." }), {
           status: 404,

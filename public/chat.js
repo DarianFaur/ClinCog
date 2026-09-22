@@ -26,6 +26,36 @@
   // as a Cloudflare secret on the Worker, never in this file).
   const TURNSTILE_SITE_KEY = "0x4AAAAAAEnj-1VYzxHm_t9H";
 
+  // The case summary and the full vignette come from vignettes.json, the same
+  // file the Worker grounds the simulated patient in. The summary used to be
+  // a separately written paraphrase that had picked up details the vignette
+  // does not contain. The static text in the page is the Presentation section
+  // as a fallback if the fetch fails.
+  fetch('/vignettes.json', { cache: 'no-cache' })
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+      const v = data && data[moduleId];
+      if (!v || !Array.isArray(v.sections)) return;
+      const pres = v.sections.find(s => s.title === 'Presentation');
+      const sumEl = document.getElementById('case-summary');
+      if (sumEl && pres) sumEl.textContent = pres.text;
+      const fullEl = document.getElementById('case-full');
+      if (fullEl) {
+        fullEl.textContent = '';
+        v.sections.forEach(sec => {
+          const h = document.createElement('div');
+          h.className = 'vignette-section-title';
+          h.style.cssText = 'font-size:var(--text-xs);font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-secondary);margin:14px 0 4px;';
+          h.textContent = sec.title;
+          const p = document.createElement('p');
+          p.style.cssText = 'margin:0;line-height:1.7;';
+          p.textContent = sec.text;
+          fullEl.append(h, p);
+        });
+      }
+    })
+    .catch(() => {});
+
   let history = ClinCog.getHistory(moduleId);
 
   const chatDiv = document.getElementById("chat");

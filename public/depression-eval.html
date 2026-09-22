@@ -613,6 +613,14 @@ html[data-theme="dark"] .band.b-sev  { color: var(--danger); }
 .likert label .num { border-radius: var(--radius-md); width: 40px; height: 40px; border: none; font-size: var(--text-sm); font-weight: 600; }
 .likert label:has(input:checked) .num { background: var(--domain-mood); border-color: var(--domain-mood); color: #fff; }
 
+
+/* Optional student task, visually subordinate to the graded material above it. */
+.try-task { margin-top: var(--sp-7); background: var(--bg-surface-alt); border-radius: var(--radius-md); padding: var(--sp-4) var(--sp-5); }
+.try-task > summary { cursor: pointer; font-weight: 600; font-size: var(--text-base); color: var(--text-primary); list-style: none; }
+.try-task > summary::-webkit-details-marker { display: none; }
+.try-task > summary::before { content: "\25B8"; display: inline-block; margin-right: 8px; transition: transform var(--duration-hover) var(--ease-standard); }
+.try-task[open] > summary::before { transform: rotate(90deg); }
+.try-task > summary span { display: block; font-weight: 400; font-size: var(--text-xs); color: var(--text-tertiary); margin: 2px 0 0 18px; }
 </style>
 </head>
 <body>
@@ -628,6 +636,7 @@ html[data-theme="dark"] .band.b-sev  { color: var(--danger); }
   <div class="eval-layout two-col">
     <aside class="eval-context" id="ctx-pg0"></aside>
     <div class="eval-work" style="max-width:900px;">
+    <div class="content-note" role="note" style="border-left:3px solid var(--warning);background:var(--bg-surface-alt);padding:14px 16px;border-radius:var(--radius-md);margin:0 0 24px;font-size:var(--text-sm);line-height:1.65;max-width:var(--measure);"><strong>Content note.</strong> This case describes depression with thoughts of death and suicide, including a first thought about how he might end his life, and an episode of self-harm. If this is difficult material for you right now, you can pause and come back later, or speak to the seminar instructor. If you are struggling yourself: in an emergency, call <strong>112</strong>. The Romanian Suicide Prevention Alliance (Alianța Română de Prevenție a Suicidului) offers free, confidential support by phone at <strong>0800 801 200</strong> (Friday to Sunday, 19:00–07:00) and by email at <a href="mailto:sos@antisuicid.ro">sos@antisuicid.ro</a> at any time.</div>
     <div class="eyebrow">Seminar Activity · Depression Module</div>
     <h1>Three Ways to<br><em>Evaluate</em> Depression</h1>
     <p class="lead" style="max-width:var(--measure);">You will read a clinical vignette and evaluate the same patient through three different conceptual frameworks. The lens shapes what you see.</p>
@@ -652,26 +661,29 @@ html[data-theme="dark"] .band.b-sev  { color: var(--danger); }
       <div class="vignette-card-name">Darren, 34</div>
       <div class="vignette-card-meta">High school English teacher · First psychiatric contact</div>
       <div class="vignette-card-divider"></div>
-      <div class="vignette-section">
-        <div class="vignette-section-title">Presentation</div>
-        <p>Darren, a 34-year-old high school English teacher, has been struggling to get out of bed most mornings. Over the past few weeks, he stares at the ceiling after the alarm rings &mdash; numb &mdash; often lying there for hours before dragging himself to the couch. Once known for his energetic lectures and quick wit, he now dreads the thought of facing his students. "What's the point?" he mutters. "They're not learning anything from me anyway. Nothing I do matters."</p>
-      </div>
-      <div class="vignette-section">
-        <div class="vignette-section-title">Mood &amp; Affective Symptoms</div>
-        <p>His colleagues have grown concerned, though he rarely responds to their messages anymore. He tells them he's overwhelmed with grading, but even small interactions feel like too much. Some days, a colleague's offhand comment in the hallway is enough to make his chest tighten with irritation &mdash; a reaction that surprises even him, since he'd never been quick to anger before. Other times, he feels nothing at all. His moods shift without warning: some mornings there is a fleeting hour of restless agitation before the flatness returns.</p>
-      </div>
-      <div class="vignette-section">
-        <div class="vignette-section-title">Cognitive &amp; Functional Changes</div>
-        <p>He's stopped cooking, skipping meals entirely or eating whatever requires no decision. His clothes hang looser now, though he hasn't noticed. When he tries to plan even a simple task &mdash; what to eat, what to say to his department head &mdash; his mind goes blank, the thoughts sliding away before he can hold onto them. He described it recently as trying to think through fog.</p>
-      </div>
-      <div class="vignette-section">
-        <div class="vignette-section-title">Sleep &amp; Risk History</div>
-        <p>When Darren does sleep, it's restless, full of strange half-waking dreams. On other nights he lies awake for hours, his mind circling through failures both real and imagined, unable to find a way out of the loop. He wakes unrefreshed every morning. Lately he's been thinking more and more about how everyone around him would simply be better off if he disappeared. The thoughts come and go, but they are starting to stay longer. Last week, for the first time, he found himself considering how he might act on them &mdash; a thought that frightened him enough to stop, but not enough to tell anyone. On one occasion, he pressed his nails hard into his forearm, not quite understanding why, only that the sharpness made the internal noise quieter for a moment.</p>
-      </div>
-      <div class="vignette-section">
-        <div class="vignette-section-title">Presenting Crisis</div>
-        <p>At school, he has missed several grading deadlines and once walked out of class mid-lesson, overwhelmed and on the verge of tears. Since then he has been calling in sick, unable to face another day.</p>
-        <div class="vignette-highlight">His department head tried to check in afterward, but Darren could only apologize quietly, his gaze fixed on the floor.</div>
+      <!-- Generated from vignettes.json, the single source for this case. The side
+           panel and the chat patient read the same text; edit it there, not here. -->
+      <div class="vignette-body" id="vignette-body" data-case="depression">
+        <div class="vignette-section">
+          <div class="vignette-section-title">Presentation</div>
+          <p>Darren is a 34-year-old high school English teacher. His general practitioner refers him after two weeks of sick leave. This is his first contact with mental health services. He arrives on time, neatly but carelessly dressed, and speaks slowly and quietly, often pausing before he answers. Asked how he is, he says: “What’s the point? Nothing I do matters.”</p>
+        </div>
+        <div class="vignette-section">
+          <div class="vignette-section-title">History</div>
+          <p>Darren was a well-liked teacher, known for lively lessons and a quick sense of humour. About two months ago, after a difficult term, he began to feel flat and tired for most of the day, nearly every day, and over the following weeks this deepened. He missed several grading deadlines and, three weeks ago, walked out of a lesson halfway through, close to tears. Since then he has been calling in sick. He has never had a period of unusually high mood, reduced need for sleep or overactivity, and describes himself as “always the steady one”.</p>
+        </div>
+        <div class="vignette-section">
+          <div class="vignette-section-title">Current difficulties</div>
+          <p>Most mornings Darren lies in bed for hours after the alarm, feeling numb. Books and running, which he used to love, “feel like nothing now”. He falls asleep easily but wakes around four and cannot get back to sleep, going over his failures, real and imagined. He has little appetite, often skips meals, and his clothes have become loose. He says his mind is “in fog”: planning a simple meal or an email to his head of department feels impossible, and he cannot decide what to do first. He feels he has let his students and colleagues down and calls himself “a fraud”. He sees no future in which things improve. Small things make him irritable, which surprises him, and at other times he feels nothing at all. Colleagues have noticed that he moves and speaks more slowly than before.</p>
+        </div>
+        <div class="vignette-section">
+          <div class="vignette-section-title">Daily life and relationships</div>
+          <p>Darren lives alone. He has stopped replying to colleagues’ messages and has cancelled his weekly call with his sister, telling people he is busy with marking. He spends most days on the couch with the television on, not really watching it. He still showers and dresses every morning, “because otherwise I’d have nothing left”. Shopping, bills and household tasks are piling up.</p>
+        </div>
+        <div class="vignette-section">
+          <div class="vignette-section-title">Background</div>
+          <p>Darren has no previous psychiatric history and no significant medical illness; recent blood tests, including thyroid function, are normal. He drinks one or two glasses of wine at weekends and does not use drugs. His mother was treated for depression when he was a teenager. Over the past month he has increasingly thought that everyone would be better off if he were gone. Last week, for the first time, he thought about how he might end his life; the thought frightened him, and he has told no one. On one occasion he pressed his fingernails into his forearm until it hurt, saying only that it made “the noise inside” quieter for a moment. He accepts an urgent follow-up appointment and agrees to a safety plan.</p>
+        </div>
       </div>
     </div>
     <div class="nav-row">
@@ -845,20 +857,46 @@ html[data-theme="dark"] .band.b-sev  { color: var(--danger); }
       <div class="hitop-pair">
         <div class="hitop-item"><span class="hitop-item-text">I struggled to think clearly.</span><div class="likert"><label><input type="radio" name="hcp1" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hcp1" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hcp1" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hcp1" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
         <div class="hitop-item"><span class="hitop-item-text">My mind felt mixed up.</span><div class="likert"><label><input type="radio" name="hcp2" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hcp2" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hcp2" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hcp2" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I was easily distracted.</span><div class="likert"><label><input type="radio" name="hcp3" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hcp3" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hcp3" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hcp3" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I had trouble remembering things.</span><div class="likert"><label><input type="radio" name="hcp4" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hcp4" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hcp4" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hcp4" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">My thoughts kept jumping from one thing to another.</span><div class="likert"><label><input type="radio" name="hcp5" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hcp5" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hcp5" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hcp5" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
       </div>
     </div>
     <div class="hitop-block">
       <div class="hitop-scale-name">Distress–Dysphoria</div>
       <div class="hitop-pair">
         <div class="hitop-item"><span class="hitop-item-text">Nothing seemed interesting to me.</span><div class="likert"><label><input type="radio" name="hdd1" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hdd1" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hdd1" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hdd1" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
-        <div class="hitop-item"><span class="hitop-item-text">I felt hopeless about the future.</span><div class="likert"><label><input type="radio" name="hdd2" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hdd2" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hdd2" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hdd2" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I didn't get excited about very much.</span><div class="likert"><label><input type="radio" name="hdd2" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hdd2" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hdd2" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hdd2" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I didn't experience the joy and pleasure that most other people do.</span><div class="likert"><label><input type="radio" name="hdd3" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hdd3" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hdd3" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hdd3" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I was overwhelmed by anxiety.</span><div class="likert"><label><input type="radio" name="hdd4" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hdd4" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hdd4" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hdd4" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I felt nervous and on edge.</span><div class="likert"><label><input type="radio" name="hdd5" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hdd5" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hdd5" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hdd5" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I felt very stressed.</span><div class="likert"><label><input type="radio" name="hdd6" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hdd6" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hdd6" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hdd6" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I felt hopeless about the future.</span><div class="likert"><label><input type="radio" name="hdd7" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hdd7" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hdd7" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hdd7" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I felt worthless.</span><div class="likert"><label><input type="radio" name="hdd8" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hdd8" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hdd8" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hdd8" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I felt depressed.</span><div class="likert"><label><input type="radio" name="hdd9" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hdd9" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hdd9" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hdd9" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I felt down and discouraged.</span><div class="likert"><label><input type="radio" name="hdd10" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hdd10" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hdd10" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hdd10" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">Took a lot of effort to get going.</span><div class="likert"><label><input type="radio" name="hdd11" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hdd11" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hdd11" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hdd11" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I had very little energy.</span><div class="likert"><label><input type="radio" name="hdd12" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hdd12" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hdd12" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hdd12" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I felt worn out.</span><div class="likert"><label><input type="radio" name="hdd13" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hdd13" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hdd13" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hdd13" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I was disgusted with myself.</span><div class="likert"><label><input type="radio" name="hdd14" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hdd14" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hdd14" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hdd14" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I blamed myself for things.</span><div class="likert"><label><input type="radio" name="hdd15" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hdd15" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hdd15" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hdd15" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I was ashamed of myself.</span><div class="likert"><label><input type="radio" name="hdd16" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hdd16" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hdd16" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hdd16" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
       </div>
     </div>
     <div class="hitop-block">
       <div class="hitop-scale-name">Emotionality</div>
       <div class="hitop-pair">
         <div class="hitop-item"><span class="hitop-item-text">My moods were intense and unpredictable.</span><div class="likert"><label><input type="radio" name="hem1" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hem1" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hem1" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hem1" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
-        <div class="hitop-item"><span class="hitop-item-text">I was easily annoyed.</span><div class="likert"><label><input type="radio" name="hem2" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hem2" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hem2" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hem2" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">My mood changed suddenly for no good reason.</span><div class="likert"><label><input type="radio" name="hem2" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hem2" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hem2" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hem2" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I quickly went from being sad to being happy.</span><div class="likert"><label><input type="radio" name="hem3" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hem3" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hem3" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hem3" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I got angry about small things.</span><div class="likert"><label><input type="radio" name="hem4" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hem4" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hem4" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hem4" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I got so angry that I yelled or screamed.</span><div class="likert"><label><input type="radio" name="hem5" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hem5" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hem5" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hem5" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I had angry outbursts.</span><div class="likert"><label><input type="radio" name="hem6" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hem6" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hem6" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hem6" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">My temper scared people.</span><div class="likert"><label><input type="radio" name="hem7" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hem7" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hem7" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hem7" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I was easily annoyed.</span><div class="likert"><label><input type="radio" name="hem8" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hem8" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hem8" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hem8" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I was grouchy.</span><div class="likert"><label><input type="radio" name="hem9" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hem9" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hem9" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hem9" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I was very irritable.</span><div class="likert"><label><input type="radio" name="hem10" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hem10" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hem10" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hem10" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">Minor frustrations really upset me.</span><div class="likert"><label><input type="radio" name="hem11" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hem11" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hem11" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hem11" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
       </div>
     </div>
     <div class="hitop-block">
@@ -866,20 +904,28 @@ html[data-theme="dark"] .band.b-sev  { color: var(--danger); }
       <div class="hitop-pair">
         <div class="hitop-item"><span class="hitop-item-text">I slept very poorly.</span><div class="likert"><label><input type="radio" name="hin1" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hin1" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hin1" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hin1" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
         <div class="hitop-item"><span class="hitop-item-text">I had trouble staying asleep.</span><div class="likert"><label><input type="radio" name="hin2" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hin2" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hin2" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hin2" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I woke up early and could not get back to sleep.</span><div class="likert"><label><input type="radio" name="hin3" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hin3" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hin3" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hin3" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I had trouble falling asleep.</span><div class="likert"><label><input type="radio" name="hin4" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hin4" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hin4" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hin4" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
       </div>
     </div>
-    <div class="hitop-block" style="border-left:2px solid var(--warn);padding-left:12px;margin-left:-14px;">
+    <div class="hitop-block" style="border-left:2px solid var(--warn);padding-left:12px;">
       <div class="hitop-scale-name">Non-Suicidal Self-Injury (NSSI) ⚠</div>
       <div class="hitop-pair">
-        <div class="hitop-item"><span class="hitop-item-text">I cut myself on purpose.</span><div class="likert"><label><input type="radio" name="hns1" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hns1" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hns1" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hns1" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I bit myself on purpose.</span><div class="likert"><label><input type="radio" name="hns1" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hns1" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hns1" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hns1" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
         <div class="hitop-item"><span class="hitop-item-text">I hurt myself on purpose.</span><div class="likert"><label><input type="radio" name="hns2" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hns2" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hns2" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hns2" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I felt an urge to hurt myself (cut, burn, bite, etc.).</span><div class="likert"><label><input type="radio" name="hns3" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hns3" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hns3" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hns3" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I cut myself on purpose.</span><div class="likert"><label><input type="radio" name="hns4" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hns4" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hns4" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hns4" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">At times, I just wanted to feel pain.</span><div class="likert"><label><input type="radio" name="hns5" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hns5" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hns5" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hns5" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I intentionally scratched my skin so severely that it started bleeding.</span><div class="likert"><label><input type="radio" name="hns6" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hns6" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hns6" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hns6" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
       </div>
     </div>
-    <div class="hitop-block" style="border-left:2px solid var(--warn);padding-left:12px;margin-left:-14px;">
+    <div class="hitop-block" style="border-left:2px solid var(--warn);padding-left:12px;">
       <div class="hitop-scale-name">Suicidality ⚠</div>
       <div class="hitop-pair">
         <div class="hitop-item"><span class="hitop-item-text">I thought a lot about death.</span><div class="likert"><label><input type="radio" name="hsu1" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hsu1" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hsu1" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hsu1" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
         <div class="hitop-item"><span class="hitop-item-text">I worked on a plan to kill myself.</span><div class="likert"><label><input type="radio" name="hsu2" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hsu2" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hsu2" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hsu2" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I thought about killing myself.</span><div class="likert"><label><input type="radio" name="hsu3" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hsu3" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hsu3" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hsu3" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
+        <div class="hitop-item"><span class="hitop-item-text">I tried to kill myself.</span><div class="likert"><label><input type="radio" name="hsu4" value="1" onchange="tick()"><span class="num">1</span><span class="lbl">Not at all</span></label><label><input type="radio" name="hsu4" value="2" onchange="tick()"><span class="num">2</span><span class="lbl">A little</span></label><label><input type="radio" name="hsu4" value="3" onchange="tick()"><span class="num">3</span><span class="lbl">Moderately</span></label><label><input type="radio" name="hsu4" value="4" onchange="tick()"><span class="num">4</span><span class="lbl">A lot</span></label></div></div>
       </div>
     </div>
     </div>
@@ -906,7 +952,7 @@ html[data-theme="dark"] .band.b-sev  { color: var(--danger); }
     <div class="session-head">
       <div class="kv-row"><span class="kv-key">Subject ID:</span> <span class="kv-val">DM</span></div>
       <div class="kv-row"><span class="kv-key">Sex:</span> <span class="kv-val">M</span></div>
-      <div class="kv-row"><span class="kv-key">Session start time:</span> <span class="kv-val">March 14, 2025 · 10:22 AM</span></div>
+      <div class="kv-row"><span class="kv-key">Session start time:</span> <span class="kv-val">March 14, 2026 · 10:22 AM</span></div>
       <div class="kv-row"><span class="kv-key">Subjects:</span> <span class="kv-val">Subject: Depression</span></div>
       <div class="kv-row"><span class="kv-key">Age:</span> <span class="kv-val">34</span></div>
     </div>
@@ -943,6 +989,21 @@ html[data-theme="dark"] .band.b-sev  { color: var(--danger); }
       <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">2. How do these deficits connect to the vignette? Which of Darren's behaviours can now be explained neuropsychologically?</label><textarea class="interp" id="cog2" oninput="tick()" placeholder="Link test data to Darren's difficulties at work, indecisiveness, inability to plan…"></textarea></div>
       <div><label style="display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;">3. What does the cognitive layer add that ICD-11 categories or the PHQ-9 alone could not reveal?</label><textarea class="interp" id="cog3" oninput="tick()" placeholder="Mechanisms, treatment implications, prognosis…"></textarea></div>
     </div>
+    <!-- Optional, ungraded. The student’s own runs never reach the report and
+         are never compared with the patient. -->
+    <details class="try-task">
+      <summary>Try the tasks yourself <span>optional · not graded · not part of the report</span></summary>
+      <p style="font-size:var(--text-sm);color:var(--text-secondary);margin:0 0 4px;max-width:var(--measure)"><strong>A single session is not a measurement.</strong> Scores from one run have low reliability for an individual and no diagnostic value; treat them as an illustration of the task, not as a result about you.</p>
+
+      <p style="font-size:var(--text-sm);color:var(--text-secondary);margin:12px 0 4px;max-width:var(--measure)">Open re-implementations written for this platform, after the published spatial working memory and Tower of London paradigms. They are not CANTAB tasks and reproduce none of its stimuli, timings, scoring or norms. Your results stay on this screen: they are not saved, not added to the report and not compared with the patient’s.</p>
+      <h4 style="margin:18px 0 8px;font-size:var(--text-base)">Spatial working memory</h4>
+      <p style="margin:0 0 10px;font-size:var(--text-xs);color:var(--text-tertiary)">Paradigm after: Owen, A. M., Downes, J. J., Sahakian, B. J., Polkey, C. E., &amp; Robbins, T. W. (1990). Planning and spatial working memory following frontal lobe lesions in man. <em>Neuropsychologia</em>, 28(10), 1021–1034.</p>
+      <div data-try-task="swm"></div>
+      <h4 style="margin:18px 0 8px;font-size:var(--text-base)">Tower of London</h4>
+      <p style="margin:0 0 10px;font-size:var(--text-xs);color:var(--text-tertiary)">Paradigm after: Shallice, T. (1982). Specific impairments of planning. <em>Philosophical Transactions of the Royal Society of London B</em>, 298(1089), 199–209. doi:10.1098/rstb.1982.0082</p>
+      <div data-try-task="tol"></div>
+    </details>
+
     <div class="nav-row">
       <button class="btn btn-secondary" onclick="go(3)">← PHQ-9 &amp; HiTOP</button>
       <button class="btn btn-primary" onclick="valCANTAB()">Generate Report →</button>
@@ -992,8 +1053,7 @@ html[data-theme="dark"] .band.b-sev  { color: var(--danger); }
         <thead><tr><th>Subscale</th><th>Raw</th><th>T</th><th>%ile</th><th>Profile</th></tr></thead>
         <tbody id="r-ht-body"></tbody>
       </table>
-      <p id="ht-norm-text" style="font-size:.72rem;color:var(--ink3);margin-top:6px;">Community norms (M=3.0, SD=1.5 per 2-item subscale) · T≥65 = clinically elevated</p>
-      <canvas id="plot-ht" style="width:100%;height:140px;margin-top:16px;display:block;"></canvas>
+      <p id="ht-norm-text" style="font-size:.72rem;color:var(--ink3);margin-top:6px;"></p>
       <p id="ht-total-norm-text" style="font-size:.72rem;color:var(--ink3);margin-top:4px;">Distress total = sum of 6 subscales (range 12–48) · M<sub>total</sub>=18, SD<sub>total</sub>≈3.67</p>
       <p id="ht-citation-text" style="font-size:.68rem;color:var(--ink3);margin-top:2px;font-style:italic;"></p>
     </div>
@@ -1024,7 +1084,7 @@ html[data-theme="dark"] .band.b-sev  { color: var(--danger); }
     <hr />
     <div class="reflect-block" id="reflect-block">
       <h3>What changed in your understanding?</h3>
-      <p class="reflect-note">You approached Darren from three perspectives — a categorical diagnosis, a dimensional profile, and a cognitive task you completed yourself. Write a few sentences on what exploring the case this way taught you, then mark it complete.</p>
+      <p class="reflect-note">You approached Darren from three perspectives — a categorical diagnosis, a dimensional profile, and Darren’s results on a cognitive task. Write a few sentences on what exploring the case this way taught you, then mark it complete.</p>
       <textarea id="reflect-text" placeholder="What did looking at Darren's case from three angles add to your understanding?"></textarea>
       <div id="reflect-done" style="display:none;"></div>
       <button class="btn btn-primary" id="reflect-btn" onclick="completeCase()">Complete case →</button>
@@ -1224,12 +1284,10 @@ window.addEventListener('resize', () => {
   });
 });
 
-const VIGNETTE_HTML = `
-  <p>Darren, a 34-year-old high school English teacher, has been struggling to get out of bed most mornings. Over the past few weeks, he stares at the ceiling after the alarm rings &mdash; numb &mdash; often lying there for hours before dragging himself to the couch. Once known for his energetic lectures and quick wit, he now dreads the thought of facing his students. "What's the point?" he mutters. "They're not learning anything from me anyway. Nothing I do matters."</p>
-  <p>His colleagues have grown concerned, though he rarely responds to their messages anymore. He tells them he's overwhelmed with grading, but even small interactions feel like too much. Some days, a colleague's offhand comment in the hallway is enough to make his chest tighten with irritation &mdash; a reaction that surprises even him, since he'd never been quick to anger before. Other times, he feels nothing at all. His moods shift without warning: some mornings there is a fleeting hour of restless agitation before the flatness returns.</p>
-  <p>He's stopped cooking, skipping meals entirely or eating whatever requires no decision. His clothes hang looser now, though he hasn't noticed. When he tries to plan even a simple task &mdash; what to eat, what to say to his department head &mdash; his mind goes blank, the thoughts sliding away before he can hold onto them. He described it recently as trying to think through fog.</p>
-  <p>When Darren does sleep, it's restless, full of strange half-waking dreams. On other nights he lies awake for hours, his mind circling through failures both real and imagined, unable to find a way out of the loop. He wakes unrefreshed every morning. Lately he's been thinking more and more about how everyone around him would simply be better off if he disappeared. The thoughts come and go, but they are starting to stay longer. Last week, for the first time, he found himself considering how he might act on them &mdash; a thought that frightened him enough to stop, but not enough to tell anyone. On one occasion, he pressed his nails hard into his forearm, not quite understanding why, only that the sharpness made the internal noise quieter for a moment.</p>
-  <p>At school, he has missed several grading deadlines and once walked out of class mid-lesson, overwhelmed and on the verge of tears. His department head tried to check in afterward, but Darren could only apologize quietly, his gaze fixed on the floor. Since then he has been calling in sick, unable to face another day.</p>`;
+// Read from the vignette card on this page, which is generated from
+// vignettes.json. It used to be a second hand-written copy of the text,
+// free to drift from the one students read.
+const VIGNETTE_HTML = (document.getElementById('vignette-body') || {}).innerHTML || '';
 
 function fullContextExtrasHtml() {
   return `
@@ -1281,7 +1339,7 @@ function scoringMiniHtml(pageId) {
   if (pageId === "ctx-pg3") {
     return `<div class="mini-stats">
       <div class="mini-stat"><div class="mini-stat-num" id="phqScoreMini">0</div><div class="mini-stat-lbl">PHQ-9 total</div></div>
-      <div class="mini-stat"><div class="mini-stat-num"><span id="hitopCount">0</span>/6</div><div class="mini-stat-lbl">HiTOP</div></div>
+      <div class="mini-stat"><div class="mini-stat-num frac"><span id="hitopCount">0</span><span class="frac-total">/46</span></div><div class="mini-stat-lbl">HiTOP items</div></div>
     </div>
     <span id="phqItemCount" style="display:none;"></span>`;
   }
@@ -1320,10 +1378,8 @@ function stepFraction() {
   if (cur === 3) {
     let phqDone = 0;
     for (let i=1;i<=9;i++) { if (document.querySelector(`input[name="phq${i}"]:checked`)) phqDone++; }
-    const subs=[['hcp1','hcp2'],['hdd1','hdd2'],['hem1','hem2'],['hin1','hin2'],['hns1','hns2'],['hsu1','hsu2']];
-    let hitopDone = 0;
-    subs.forEach(p => { if (document.querySelector(`input[name="${p[0]}"]:checked`) && document.querySelector(`input[name="${p[1]}"]:checked`)) hitopDone++; });
-    return (phqDone + hitopDone) / 15;
+    let hitopDone = HITOP_DEP_KEYS.filter(k => document.querySelector(`input[name="${k}"]:checked`)).length;
+    return (phqDone + hitopDone) / (9 + HITOP_DEP_KEYS.length);
   }
   if (cur === 4) {
     let done = 0;
@@ -1340,9 +1396,7 @@ function tick(){
   if (cur === 3) {
     let phqDone = 0;
     for (let i=1;i<=9;i++) { if (document.querySelector(`input[name="phq${i}"]:checked`)) phqDone++; }
-    const subs=[['hcp1','hcp2'],['hdd1','hdd2'],['hem1','hem2'],['hin1','hin2'],['hns1','hns2'],['hsu1','hsu2']];
-    let hitopDone = 0;
-    subs.forEach(p => { if (document.querySelector(`input[name="${p[0]}"]:checked`) && document.querySelector(`input[name="${p[1]}"]:checked`)) hitopDone++; });
+    let hitopDone = HITOP_DEP_KEYS.filter(k => document.querySelector(`input[name="${k}"]:checked`)).length;
     const phqEl = document.getElementById('phqItemCount');
     if (phqEl) phqEl.innerHTML = phqDone + '<span class="of"> / 9</span>';
     const htEl = document.getElementById('hitopCount');
@@ -1445,9 +1499,8 @@ function calcPHQ(){
 function valPHQ(){
   let phqLeft=0;
   for(let i=1;i<=9;i++)if(!document.querySelector(`input[name="phq${i}"]:checked`))phqLeft++;
-  const subs=[['hcp1','hcp2'],['hdd1','hdd2'],['hem1','hem2'],['hin1','hin2'],['hns1','hns2'],['hsu1','hsu2']];
   let hitopLeft=0;
-  for(const p of subs)for(const n of p)if(!document.querySelector(`input[name="${n}"]:checked`))hitopLeft++;
+  for(const n of HITOP_DEP_KEYS)if(!document.querySelector(`input[name="${n}"]:checked`))hitopLeft++;
   if(!phqLeft&&!hitopLeft){go(4);return;}
   ClinCogToast.gate([
     {n:phqLeft,label:'PHQ-9 item',plural:'PHQ-9 items'},
@@ -1462,9 +1515,37 @@ function valCANTAB(){
 
 function erf(x){const a=[0.254829592,-0.284496736,1.421413741,-1.453152027,1.061405429],p=0.3275911,s=x<0?-1:1;x=Math.abs(x);const t=1/(1+p*x);return s*(1-(((((a[4]*t+a[3])*t)+a[2])*t+a[1])*t+a[0])*t*Math.exp(-x*x));}
 function tPct(t){return Math.max(1,Math.min(99,Math.round(0.5*(1+erf(((t-50)/10)/Math.sqrt(2)))*100)));}
-function getBenchmark_hitopDep(){ return ClinCog.getBenchmark('hitopDepression', {subMean:3.0, subSD:1.5, totalMean:18, totalSD:3.67, threshold:65, citation:"Kotov, R., Krueger, R.F., Watson, D., et al. (2017). The Hierarchical Taxonomy of Psychopathology (HiTOP): A dimensional alternative to traditional nosologies. Journal of Abnormal Psychology, 126(4), 454–477."}); }
-function rawToT_ht(r){const b=getBenchmark_hitopDep();return Math.round(50+((r-b.subMean)/b.subSD)*10);}
-function rawToT_htTotal(r){const b=getBenchmark_hitopDep();return Math.round(50+((r-b.totalMean)/b.totalSD)*10);}
+// HiTOP-SR Distress subscales, complete (46 items). Norms are per-item
+// means on the 1-4 scale from the HiTOP-SR scoring workbook, sheet
+// "Descriptives prolific final" (Prolific community sample, N = 772-780).
+// Each subscale is mapped to its descriptive variable through the
+// workbook's own "variable name" column (sheet "HiTOP-SR Alphabetical"):
+// Cognitive Problems -> CogDisorg, Distress-Dysphoria -> Distress.
+//
+// Replaces a single shared norm (M = 3.0, SD = 1.5 "per 2-item subscale")
+// attributed to Kotov et al. (2017). That paper predates the HiTOP-SR, the
+// values match no subscale in the published descriptives, and applying one
+// pair to six subscales whose observed means run from 1.18 to 2.32 cannot
+// be right.
+//
+// NSSI and Suicidality have reference means close to the floor of the
+// scale (1.18 and 1.36), so a single endorsed item produces a large T. They
+// are flagged and the report says so.
+const HITOP_DEP = [
+  { n:'Cognitive Problems', k:['hcp1', 'hcp2', 'hcp3', 'hcp4', 'hcp5'], mean:1.9743, sd:0.819, floor:false },
+  { n:'Distress–Dysphoria', k:['hdd1', 'hdd2', 'hdd3', 'hdd4', 'hdd5', 'hdd6', 'hdd7', 'hdd8', 'hdd9', 'hdd10', 'hdd11', 'hdd12', 'hdd13', 'hdd14', 'hdd15', 'hdd16'], mean:2.1919, sd:0.8719, floor:false },
+  { n:'Emotionality', k:['hem1', 'hem2', 'hem3', 'hem4', 'hem5', 'hem6', 'hem7', 'hem8', 'hem9', 'hem10', 'hem11'], mean:1.6983, sd:0.6626, floor:false },
+  { n:'Insomnia', k:['hin1', 'hin2', 'hin3', 'hin4'], mean:2.3249, sd:0.9305, floor:false },
+  { n:'NSSI', k:['hns1', 'hns2', 'hns3', 'hns4', 'hns5', 'hns6'], mean:1.1794, sd:0.394, floor:true },
+  { n:'Suicidality', k:['hsu1', 'hsu2', 'hsu3', 'hsu4'], mean:1.3631, sd:0.5317, floor:true }
+];
+const HITOP_DEP_KEYS = HITOP_DEP.flatMap(s => s.k);
+const HITOP_DEP_CITATION =
+  'HiTOP-SR scoring workbook, "Descriptives prolific final" (Prolific community sample, N = 772–780).';
+function hitopDepT(scale, raw){
+  const n = scale.k.length;
+  return Math.round(50 + ((raw - scale.mean * n) / (scale.sd * Math.sqrt(n))) * 10);
+}
 function sevPill(t){
   if(t<50)return '<span class="sev-pill sp-min">Below average (T &lt; 50)</span>';
   if(t<57)return '<span class="sev-pill sp-mild">Mild (T 50–56)</span>';
@@ -1611,23 +1692,26 @@ function buildReport(){
   document.getElementById('r-phq-sev').textContent = answered === 9 ? phqBand(raw).label : '\u2014';
   document.getElementById('r-phq-mk').style.left = Math.max(0, Math.min(100, (raw / 27) * 100)) + '%';
 
-  const scales=[{n:'Cognitive Problems',k:['hcp1','hcp2']},{n:'Distress–Dysphoria',k:['hdd1','hdd2']},{n:'Emotionality',k:['hem1','hem2']},{n:'Insomnia',k:['hin1','hin2']},{n:'NSSI',k:['hns1','hns2']},{n:'Suicidality',k:['hsu1','hsu2']}];
-  let html='', htTotalRaw=0;
+  const scales=HITOP_DEP;
+  let html='';
   for(const s of scales){
     let tot=0;for(const k of s.k){const v=document.querySelector(`input[name="${k}"]:checked`);if(v)tot+=+v.value;}
-    htTotalRaw+=tot;
-    const tsc=rawToT_ht(tot),pct=tPct(tsc);
+    const tsc=hitopDepT(s,tot),pct=tPct(tsc);
     const w=Math.max(2,Math.min(100,((tsc-30)/50)*100));
     const col=tsc>=65?'var(--danger)':tsc>=57?'var(--warning)':tsc>=50?'var(--warning)':'var(--accent)';
     const tc=tsc>=65?'color:var(--danger);':tsc>=57?'color:var(--warning);':'';
-    html+=`<tr><td>${s.n}</td><td class="ht-n">${tot}</td><td class="ht-t" style="${tc}">${tsc}</td><td class="ht-n">${pct}th</td><td><div class="mini-bar"><div class="mini-fill" style="width:${w}%;background:${col};"></div></div></td></tr>`;
+    html+=`<tr><td>${s.n}${s.floor?' ⚠':''}</td><td class="ht-n">${tot}</td><td class="ht-t" style="${tc}">${tsc}</td><td class="ht-n">${pct}th</td><td><div class="mini-bar"><div class="mini-fill" style="width:${w}%;background:${col};"></div></div></td></tr>`;
   }
   document.getElementById('r-ht-body').innerHTML=html;
   {
-    const bmk=getBenchmark_hitopDep();
-    document.getElementById('ht-norm-text').textContent=`Community norms (M=${bmk.subMean}, SD=${bmk.subSD} per 2-item subscale, 1–4 scale) · T≥${bmk.threshold} = clinically elevated`;
-    document.getElementById('ht-total-norm-text').innerHTML=`Distress total = sum of 6 subscale scores (range 12–48) · M<sub>total</sub>=${bmk.totalMean}, SD<sub>total</sub>≈${bmk.totalSD} (pooled)`;
-    document.getElementById('ht-citation-text').textContent=bmk.citation?('Source: '+bmk.citation):'';
+    document.getElementById('ht-norm-text').textContent =
+      'Each subscale is compared with its own community norm (per-item means on the 1\u20134 scale). ' +
+      '\u26a0 NSSI and Suicidality have reference means near the floor of the scale, so a single ' +
+      'endorsed item produces a high T; read those two as presence of the behaviour, not as graded severity.';
+    const tt = document.getElementById('ht-total-norm-text');
+    if (tt) tt.textContent = 'No spectrum total is reported: the six subscales have different lengths ' +
+      'and different norms, and no published norm exists for their sum.';
+    document.getElementById('ht-citation-text').textContent = 'Source: ' + HITOP_DEP_CITATION;
   }
 
   document.getElementById('r-cog1').textContent=document.getElementById('cog1').value.trim()||'Not answered.';
@@ -1635,7 +1719,6 @@ function buildReport(){
 
   // Draw plots after a brief delay to ensure layout is settled
   setTimeout(() => {
-    drawNormPlot('plot-ht', rawToT_htTotal(htTotalRaw), 'HiTOP Distress Total');
   }, 80);
 }
 
@@ -1705,5 +1788,6 @@ function updateHelperFabVisibility() {
   if (!hasCards) document.getElementById('helper-fab-menu')?.classList.remove('open');
 }
 </script>
+<script src="/try-tasks.js"></script>
 </body>
 </html>
