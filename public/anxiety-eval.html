@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="/tokens.css">
 <link rel="stylesheet" href="/components.css">
 <link rel="stylesheet" href="/shell.css">
+<link rel="stylesheet" href="/report.css">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -257,8 +258,10 @@ canvas{width:100%;height:auto;display:block}
 /* Print */
 @media print{
   #nav,#score-bar,.btn-row{display:none!important}
-  .page{display:block!important}
-  #p4 .page-inner{padding-top:56px}
+  /* Only the step on screen is printed; this used to force every step
+     visible, so printing the report produced the whole workbook. */
+  .page:not(.active){display:none!important}
+  .page.active{display:block!important}
 }
 /* Error */
 .field-error{border-color:var(--danger)!important}
@@ -702,13 +705,6 @@ canvas{width:100%;height:auto;display:block}
 .ss-fill.brd { background: var(--warning); }
 .ss-mid { position: absolute; left: 50%; top: 1px; width: 2px; height: 14px; border-radius: 1px; background: var(--text-tertiary); }
 .report-sec .ctab-wrap, .report-sec .scroll-x { overflow-x: auto; }
-/* Optional student task, visually subordinate to the graded material above it. */
-.try-task { margin-top: var(--sp-7); background: var(--bg-surface-alt); border-radius: var(--radius-md); padding: var(--sp-4) var(--sp-5); }
-.try-task > summary { cursor: pointer; font-weight: 600; font-size: var(--text-base); color: var(--text-primary); list-style: none; }
-.try-task > summary::-webkit-details-marker { display: none; }
-.try-task > summary::before { content: "\25B8"; display: inline-block; margin-right: 8px; transition: transform var(--duration-hover) var(--ease-standard); }
-.try-task[open] > summary::before { transform: rotate(90deg); }
-.try-task > summary span { display: block; font-weight: 400; font-size: var(--text-xs); color: var(--text-tertiary); margin: 2px 0 0 18px; }
 </style>
 </head>
 <body>
@@ -989,12 +985,12 @@ canvas{width:100%;height:auto;display:block}
 
   <!-- RESTRICTED INSTRUMENT
        Filled only when /api/restricted/spin answers, which it does only on
-       the password-protected seminar subdomain. This markup and the script
+       the password-protected restricted instance. This markup and the script
        that fills it contain no licensed content: on the public instance the
        request returns 404 and this section never appears. -->
   <section id="restricted-spin" class="restricted-instrument" hidden>
     <div class="part-header" style="margin-top:40px">
-      <div class="part-tag">Part A2 &middot; seminar only</div>
+      <div class="part-tag">Part A2 &middot; licensed instance only</div>
       <div class="part-title" id="rs-title"></div>
     </div>
     <p class="rs-copyright" id="rs-copyright"></p>
@@ -1232,8 +1228,8 @@ canvas{width:100%;height:auto;display:block}
   <div class="callout" style="margin-bottom:28px;font-size:var(--text-sm)">
     <strong>Fictional results.</strong> These values belong to the case. The z-scores are part of the case and were not
     computed from a published normative sample. For the bias index, positive values mean attention moved toward threat.
-    For comparison, the group values reported by MacLeod, Mathews and Tata (1986) are +91 ms for anxious patients and
-    −49 ms for controls (computed from their Table 3 with the bias equation on p. 18, sign reversed so that
+    For comparison, the group values reported by MacLeod, Mathews and Tata (1986) are <span id="dp-ref-anx">+91 ms</span> for anxious patients and
+    <span id="dp-ref-ctl">−49 ms</span> for controls (computed from their Table 3 with the bias equation on p. 18, sign reversed so that
     attention toward threat is positive).
   </div>
 
@@ -1256,7 +1252,16 @@ canvas{width:100%;height:auto;display:block}
   <!-- Optional, ungraded. The student's own run never reaches the report and is
        never compared with Alex. -->
   <details class="try-task">
-    <summary>Try the task yourself <span>optional · not graded · not part of the report</span></summary>
+    <summary>
+        <span class="try-task-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l6 3.5-6 3.5z" fill="currentColor" stroke="none"/></svg></span>
+        <span class="try-task-copy">
+          <span class="try-task-title">Try the task yourself</span>
+          <span class="try-task-sub">Run the dot-probe Alex completed — 48 trials, about two minutes.</span>
+          <span class="try-task-badges"><span class="badge badge-neutral">Optional</span><span class="badge badge-neutral">Not graded</span><span class="badge badge-neutral">Never in the report</span></span>
+        </span>
+        <span class="try-task-cta"><span class="cta-open">Try it yourself</span><span class="cta-close">Hide the task</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+      </summary>
+      <div class="try-task-body">
       <p style="margin:10px 0 0;font-size:var(--text-xs);color:var(--text-tertiary)">Paradigm after: MacLeod, C., Mathews, A., &amp; Tata, P. (1986). Attentional bias in emotional disorders. <em>Journal of Abnormal Psychology</em>, 95(1), 15–20.</p>
     <p style="font-size:var(--text-sm);color:var(--muted);margin:12px 0 16px;max-width:var(--measure)">
       This is a re-implementation of the dot-probe paradigm written for this platform, Running it shows you what Alex experienced. Your own numbers stay on this screen: they are not saved to
@@ -1276,7 +1281,8 @@ canvas{width:100%;height:auto;display:block}
   </div>
 
 
-  </details>
+        </div>
+    </details>
 
   <div class="btn-row">
     <button class="btn btn-secondary" onclick="goTo(4)">← Back</button>
@@ -1293,7 +1299,23 @@ canvas{width:100%;height:auto;display:block}
 <div id="p6" class="page">
 <div class="eval-layout two-col">
   <aside class="eval-context" id="ctx-p6"></aside>
-  <div class="eval-work" style="max-width:1700px;">
+  <div class="eval-work report-doc" style="max-width:1700px;">
+    <div class="report-head">
+      <div>
+        <h2 class="report-head-title">Case report — Alex, 24</h2>
+        <div class="report-head-meta">
+          <span><strong>Social anxiety</strong></span>
+          <span>Prepared by <strong id="rh-student-p6">—</strong></span>
+          <span id="rh-date-p6"></span>
+        </div>
+      </div>
+      <button type="button" class="report-print-btn" onclick="window.print()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v7H6z"/></svg>
+        Print or save as PDF
+      </button>
+    </div>
+    <p class="print-only" style="font-size:9pt;color:#555;margin:0 0 6mm">ClinCog — teaching platform. Fictional case. For educational use only; not for assessing real people.</p>
+
 
   <p style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--domain-anxiety-ink);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px">Comparative Report</p>
   <h1 class="page-title">Evaluation Summary</h1>
@@ -1324,6 +1346,7 @@ canvas{width:100%;height:auto;display:block}
 
 <script>window.CLINCOG_SHELL = { autoCollapse: true, activeCaseId: "anxiety", breadcrumb: [{ label: "Dashboard", href: "/dashboard.html" }, { label: "Cases", href: "/dashboard.html" }, { label: "Alex", href: "/anxiety-chat.html" }, { label: "Evaluation" }] };</script>
 <script src="/storage.js"></script>
+<script src="/norms.js"></script>
 <script src="/icons.js"></script>
 <script src="/shell.js?v=2"></script>
 <script src="/toast.js"></script>
@@ -1571,6 +1594,10 @@ function tToPercentile(t) { return normalCDF((t-50)/10)*100; }
 // ═══════════════════════════════════════════════
 function stepClick(n) { if (n <= S.maxPage) goTo(n); }
 function goTo(n) {
+  // Record how far the student has got, so the dashboard can show the
+  // stage instead of a bare "evaluation reached" flag.
+  try { const _st = {3: 'icd', 4: 'dimensional', 5: 'cognitive', 6: 'report'}[n]; if (_st) ClinCog.setStage('anxiety', _st); } catch (e) {}
+
   document.getElementById('p'+S.page).classList.remove('active');
   S.page = n;
   if (n > S.maxPage) S.maxPage = n;
@@ -1931,11 +1958,11 @@ function validate(page) {
 
 
 // ═══════════════════════════════════════════════
-// RESTRICTED INSTRUMENT (seminar subdomain only)
+// RESTRICTED INSTRUMENT (restricted instance only)
 // ═══════════════════════════════════════════════
 // Generic renderer. It holds no item text, no anchors, no scoring rules and
 // no severity labels: everything comes from the server, and only the
-// password-protected seminar subdomain will send it. On the public instance
+// password-protected restricted instance will send it. On the public instance
 // the fetch returns 404, RestrictedSPIN.available stays false, and every
 // piece of code below that touches the scale does nothing.
 const RestrictedSPIN = {
@@ -2067,7 +2094,12 @@ function renderAlexCog() {
     }).join('')
   ).join('');
 }
-document.addEventListener('DOMContentLoaded', renderAlexCog);
+document.addEventListener('DOMContentLoaded', () => {
+  renderAlexCog();
+  const r = dotProbeRefs();
+  const a = document.getElementById('dp-ref-anx'); if (a) a.textContent = r.anxious;
+  const c = document.getElementById('dp-ref-ctl'); if (c) c.textContent = r.control;
+});
 
 const DotProbe = {
   W:720, H:420,
@@ -2229,6 +2261,19 @@ const fearSubscales = [
   { key: ['panic1','panic2','panic3','panic4','panic5'], label: 'Panic' },
 ];
 
+// Instructor overrides. The published values above are the defaults; the
+// benchmarks page stores an override in this browser, and it is applied here
+// so an edited norm actually changes the T-scores the student sees.
+(function applyNormOverrides() {
+  // storage.js declares ClinCog with const, which does not become a
+  // window property, so it has to be tested by name.
+  if (typeof ClinCog === 'undefined' || !window.CLINCOG_NORMS) return;
+  const stored = ClinCog.getBenchmark('hitopFear', window.CLINCOG_NORMS['hitopFear']);
+  const subs = stored && stored.subscales;
+  if (!subs) return;
+  Object.keys(HITOP_FEAR_NORMS).forEach(k => { const v = subs[k]; if (v) HITOP_FEAR_NORMS[k] = { mean: +v.mean, sd: +v.sd }; });
+})();
+
 const HITOP_NORM_CITATION =
   'HiTOP-SR scoring workbook, "Descriptives prolific final" (Prolific community sample, N = 780).';
 
@@ -2272,8 +2317,8 @@ function buildSection1() {
                   : 'No conclusion recorded';
   const badgeCls = diagMet ? 'diag-pos' : S.diag === 'none' ? 'diag-neg' : 'diag-neutral';
 
-  return `<div class="report-section">
-    <div class="report-section-title">Section 1 — ICD-11 / CDDR · Social Anxiety Disorder</div>
+  return `<div class="rpt-section">
+    <div class="rpt-section-head"><span class="rpt-num">01</span><div><h3 class="rpt-section-title">Categorical</h3><p class="rpt-section-sub">ICD-11 diagnostic requirements (CDDR) for social anxiety disorder (6B04)</p></div></div>
     <div class="diag-badge ${badgeCls}">${diagLabel}</div>
     <div class="count-strip">
       <div class="count-cell"><span class="count-num">${plus}/6</span><span class="count-desc">Criteria present (a–e)</span></div>
@@ -2292,8 +2337,8 @@ function buildSection2() {
   // No T-score. The GAD-7 form supplied for this project gives the items,
   // the anchors and the severity bands; it gives no normative mean or SD,
   // so there is no reference distribution to standardise against.
-  return `<div class="report-section">
-    <div class="report-section-title">Section 2 — GAD-7 · Generalized Anxiety Disorder-7</div>
+  return `<div class="rpt-section">
+    <div class="rpt-section-head"><span class="rpt-num">02</span><div><h3 class="rpt-section-title">Dimensional — severity</h3><p class="rpt-section-sub">GAD-7</p></div></div>
 
     <div class="score-display">
       <span class="score-big">${raw === null ? '—' : raw}</span>
@@ -2340,8 +2385,8 @@ function buildSection3() {
   const fearSevLbl = fearT >= 60 ? 'Elevated'  : fearT >= 55 ? 'Borderline' : 'Within range';
 
 
-  return `<div class="report-section">
-    <div class="report-section-title">Section 3 — HiTOP Subfactors</div>
+  return `<div class="rpt-section">
+    <div class="rpt-section-head"><span class="rpt-num">03</span><div><h3 class="rpt-section-title">Dimensional — profile</h3><p class="rpt-section-sub">HiTOP-SR Fear subscales</p></div></div>
 
     <h3 style="font-family:var(--serif);font-size:17px;font-weight:400;font-style:italic;margin-bottom:12px">Fear Subfactor</h3>
     <table class="hitop-table">
@@ -2388,13 +2433,21 @@ function calcFearTotal() {
   return fearKeys.reduce((s,k)=>s+(S.hitop[k]||0),0);
 }
 
+function dotProbeRefs() {
+  const d = (typeof ClinCog !== "undefined" && window.CLINCOG_NORMS)
+    ? ClinCog.getBenchmark("dotProbe", window.CLINCOG_NORMS.dotProbe)
+    : { anxiousBias: 91, controlBias: -49 };
+  const f = v => (v > 0 ? "+" : v < 0 ? "\u2212" : "") + Math.abs(+v) + " ms";
+  return { anxious: f(d.anxiousBias), control: f(d.controlBias) };
+}
+
 function buildSection4() {
   // Alex's results only. The student's own run of the task is never read here.
   const rows = ALEX_COG.flatMap(g => g.rows).map(r =>
     `<tr><td>${r.measure}</td><td>${r.raw}</td><td>${r.z > 0 ? '+' : r.z < 0 ? '\u2212' : ''}${Math.abs(r.z).toFixed(2)}</td><td>${r.pct}%</td></tr>`
   ).join('');
-  return `<div class="report-section">
-    <div class="report-section-title">Section 4 \u2014 Dot-probe Task \u00b7 Attentional Bias</div>
+  return `<div class="rpt-section">
+    <div class="rpt-section-head"><span class="rpt-num">04</span><div><h3 class="rpt-section-title">Cognitive</h3><p class="rpt-section-sub">Alex’s results on the dot-probe task</p></div></div>
     <table class="dp-ref" style="max-width:none">
       <tr><td><strong>Measure</strong></td><td><strong>Raw</strong></td><td><strong>z</strong></td><td><strong>%ile</strong></td></tr>
       ${rows}
@@ -2402,7 +2455,7 @@ function buildSection4() {
     <p style="font-size:11px;color:var(--text-tertiary);margin:8px 0 6px">
       Fictional results written for this case; the z-scores are part of the case, not computed from a published
       normative sample. Reference values from MacLeod, Mathews and Tata (1986), same sign convention:
-      +91 ms anxious patients, \u221249 ms controls.</p>
+      ${dotProbeRefs().anxious} anxious patients, ${dotProbeRefs().control} controls.</p>
     <p style="font-size:11px;color:var(--text-tertiary);margin:0 0 24px">
       If you ran the task yourself, your result is not included here and is not compared with Alex\u2019s.</p>
 
@@ -2578,6 +2631,21 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
     this.closePath();
   };
 }
+</script>
+<script>
+// Report header: the student's name and today's date, filled in here so the
+// printed sheet says who produced it and when.
+(function fillReportHead() {
+  const set = () => {
+    document.querySelectorAll('[id^="rh-student-"]').forEach(el => {
+      el.textContent = (typeof ClinCog !== 'undefined' && ClinCog.getName && ClinCog.getName()) || '\u2014';
+    });
+    document.querySelectorAll('[id^="rh-date-"]').forEach(el => {
+      el.textContent = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+    });
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', set); else set();
+})();
 </script>
 </body>
 </html>

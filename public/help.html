@@ -57,7 +57,7 @@
 
   <div class="card" style="margin-bottom:var(--sp-4);"><div class="card-body">
     <div class="help-section-title"><span class="help-num">4</span><span class="text-card-title">Your progress is saved automatically</span></div>
-    <p class="text-secondary" style="margin:0;">Every conversation is saved as you go. Close the tab, come back tomorrow, and you'll find each case exactly where you left it. Want a clean slate on a case? Open it and click "Restart this interview."</p>
+    <p class="text-secondary" style="margin:0;">Every conversation is saved as you go. Close the tab, come back tomorrow, and you'll find each case exactly where you left it. If you want a clean slate, <a href="/dashboard.html">Restart all progress</a> on the dashboard clears every case at once; there is no way to wipe a single interview by accident.</p>
     <div class="help-note">This all happens in this specific browser, on this specific device. Switching browsers (e.g. Chrome → Safari) or devices starts that case fresh — so stick to one browser and one device for the whole term.</div>
     <p class="text-secondary" style="margin:var(--sp-4) 0 0;">If you do need to change device, or you are about to clear your browsing data, go to <a href="/progress.html">My progress</a> and use <strong>Download backup</strong>. That gives you a small file holding every conversation, rating and reflection; <strong>Restore from a file</strong> on the other machine puts it all back. The file never contains API keys, so it is safe to email to yourself.</p>
   </div></div>
@@ -67,7 +67,7 @@
     <ul class="help-list">
       <li>Refresh the page before assuming something's wrong — most display hiccups clear on reload.</li>
       <li>If a chat reply fails, it won't count against your 20 exchanges — just try again.</li>
-      <li>Still stuck? <a href="/contact.html">Write to the person who runs the seminar</a> &mdash; say which case and which step you were on.</li>
+      <li>Still stuck? <a href="/contact.html">Write to the person who maintains this platform</a> &mdash; say which case and which step you were on.</li>
       <li>Before clearing your browsing data or reinstalling a browser, take a backup from <a href="/progress.html">My progress</a>. Clearing site data erases everything ClinCog has stored, and there is no copy on any server.</li>
     </ul>
   </div></div>
@@ -75,10 +75,10 @@
   <div class="card" style="margin-bottom:var(--sp-4);" id="privacy"><div class="card-body">
     <div class="help-section-title"><span class="help-num">6</span><span class="text-card-title">What happens to what you type</span></div>
     <p class="text-secondary" style="margin:0 0 var(--sp-3);">Your name, your ratings, your reflections and a copy of your conversations are kept only in this browser, on this device. None of it is stored on a ClinCog server.</p>
-    <p class="text-secondary" style="margin:0 0 var(--sp-3);"><strong>The chat is the exception.</strong> Each message you send to a patient &mdash; together with the earlier messages in that conversation and the case vignette &mdash; goes through ClinCog&rsquo;s server to the company whose language model plays the patient. ClinCog&rsquo;s server passes it on without keeping a copy, and your name is not sent. Which company that is depends on where you use ClinCog: Anthropic (Claude) on the seminar site, uvt.clincog.net; Google (Gemini) on the public site, clincog.net; and, on a copy adopted by an instructor with their own key, whichever of Anthropic, Google or OpenAI that instructor chose.</p>
+    <p class="text-secondary" style="margin:0 0 var(--sp-3);"><strong>The chat is the exception.</strong> Each message you send to a patient &mdash; together with the earlier messages in that conversation and the case vignette &mdash; goes through ClinCog&rsquo;s server to the company whose language model plays the patient. ClinCog&rsquo;s server passes it on without keeping a copy, and your name is not sent. Which company that is depends on where you use ClinCog: Anthropic (Claude) on a course instance such as uvt.clincog.net; Google (Gemini) on the public site, clincog.net; and, on a copy adopted by an instructor with their own key, whichever of Anthropic, Google or OpenAI that instructor chose.</p>
     <p class="text-secondary" style="margin:0 0 var(--sp-3);">Under the terms that apply to how ClinCog uses them, none of the three uses these conversations to train its models. Each keeps them for a limited time to detect misuse: OpenAI for up to 30 days, Google for a limited period, and Anthropic for up to two years if a conversation is flagged for breaking its usage policy.</p>
     <p class="text-secondary" style="margin:0 0 var(--sp-3);"><strong>So treat the chat as a place other people could read.</strong> Don&rsquo;t type real names, details about real people, or anything about your own health. The patients are fictional; keep everything you write about them fictional too.</p>
-    <p class="text-secondary" style="margin:0;">Two smaller things. To block automated abuse, requests pass through Cloudflare, which checks your IP address and a bot-protection token; neither is passed to the language-model companies. And messages sent from the <a href="/contact.html">Contact</a> page are delivered by email to the seminar instructor.</p>
+    <p class="text-secondary" style="margin:0;">Two smaller things. To block automated abuse, requests pass through Cloudflare, which checks your IP address and a bot-protection token; neither is passed to the language-model companies. And messages sent from the <a href="/contact.html">Contact</a> page are delivered by email to your instructor.</p>
   </div></div>
 
   <div class="card" style="margin-bottom:var(--sp-4);" id="instructor-section"><div class="card-body">
@@ -89,7 +89,7 @@
 
   <div class="card" style="display:none;margin-bottom:var(--sp-4);" id="student-redirect-section"><div class="card-body">
     <div class="help-section-title"><span class="help-num">7</span><span class="text-card-title">Using your own API keys</span></div>
-    <p class="text-secondary" style="margin:0;">This is the seminar version of ClinCog, running on the instructor's own credentials — there's nothing to configure here. If you're an instructor looking to adopt the platform with your own API keys for your own class, visit <a href="https://clincog.net/adopt.html">clincog.net</a> and follow the instructions there.</p>
+    <p class="text-secondary" style="margin:0;">This is a course instance of ClinCog, running on the instructor's own credentials — there's nothing to configure here. If you're an instructor looking to adopt the platform with your own API keys for your own class, visit <a href="https://clincog.net/adopt.html">clincog.net</a> and follow the instructions there.</p>
   </div></div>
 
 </div>

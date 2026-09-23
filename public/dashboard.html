@@ -52,13 +52,15 @@
   .continue-hero-progress .progress-fill { background: var(--domain-color, var(--accent)); }
   @media (max-width: 768px) { .continue-hero { grid-template-columns: 1fr; text-align: left; } .continue-hero-mark { display: none; } }
 
-  .dash-grid-cases { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--sp-5); margin-bottom: var(--sp-6); }
-  @media (max-width: 900px) { .dash-grid-cases { grid-template-columns: 1fr; } }
+  .dash-grid-cases { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-5); margin-bottom: var(--sp-6); }
+  /* minmax(0, 1fr) lets a track shrink below its content's minimum width;
+     plain 1fr kept the cards at 312px on a 320px phone. */
+  @media (max-width: 900px) { .dash-grid-cases { grid-template-columns: minmax(0, 1fr); } }
 
   /* Three separate surfaces, not one wide card split by hairlines - a
      divided card reads as a table, three cards read as data blocks. */
-  .stat-card-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-4); margin-bottom: var(--sp-7); }
-  @media (max-width: 900px) { .stat-card-row { grid-template-columns: 1fr; gap: var(--sp-3); } }
+  .stat-card-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-4); margin-bottom: var(--sp-7); }
+  @media (max-width: 900px) { .stat-card-row { grid-template-columns: minmax(0, 1fr); gap: var(--sp-3); } }
 
   /* .grid-2-col now lives in components.css - shared with progress.html */
 
@@ -194,9 +196,9 @@
           <div class="text-secondary" style="font-size:var(--text-xs);">${current.age} · ${current.role}</div>
           <div class="continue-hero-quote">${current.quote}</div>
           <div class="continue-hero-progress">
-            <span class="text-label" style="white-space:nowrap;">Conceptualization</span>
-            <div class="progress-track hatched"><div class="progress-fill" style="width:${Math.round(s.conceptPct * 100)}%"></div></div>
-            <span class="progress-pct">${Math.round(s.conceptPct * 100)}%</span>
+            <span class="text-label" style="white-space:nowrap;">${s.stageLabel}</span>
+            <div class="progress-track hatched"><div class="progress-fill" style="width:${s.pct}%"></div></div>
+            <span class="progress-pct">${s.pct}%</span>
           </div>
           <a class="btn btn-primary" href="${nextHref}">${nextLabel} →</a>
         </div>
@@ -289,9 +291,9 @@
         </div>
         <div class="case-card-grid">
           <div class="case-card-grid-item"><span class="val">${s.exchanges}</span><span class="lbl">Messages exchanged</span></div>
-          <div class="case-card-grid-item"><span class="val">${s.state === "not-started" ? "—" : (s.evalReached ? "Reached" : "In chat")}</span><span class="lbl">Stage</span></div>
+          <div class="case-card-grid-item"><span class="val">${s.state === "not-started" ? "—" : s.stageLabel}</span><span class="lbl">Stage</span></div>
         </div>
-        <div class="progress-row"><div class="progress-track hatched slim"><div class="progress-fill" style="width:${Math.round(s.conceptPct*100)}%;background:var(${DOMAIN_VAR[m.id]})"></div></div><span class="progress-pct">${Math.round(s.conceptPct*100)}%</span></div>
+        <div class="progress-row"><div class="progress-track hatched slim"><div class="progress-fill" style="width:${s.pct}%;background:var(${DOMAIN_VAR[m.id]})"></div></div><span class="progress-pct">${s.pct}%</span></div>
         <div class="case-card-footer">
           <a class="btn btn-secondary" href="${m.chat}">Conceptualize</a>
           <a class="btn ${evalDisabled ? 'btn-secondary' : 'btn-primary'}" href="${m.eval}" ${evalDisabled ? 'aria-disabled="true" onclick="return false;" style="opacity:.5;cursor:not-allowed;"' : ''}>Evaluate</a>

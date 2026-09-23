@@ -67,10 +67,43 @@ const ClinCog = {
   // ---- evaluation progress: written by each eval page the moment a
   // student reaches its Report screen. This is the only honest signal
   // we have that the evaluation was substantially worked through. ----
+  // ---- stage within a case ------------------------------------------
+  // The dashboard used to know only "evaluation reached", a flag set when
+  // the student opened the report, and it drew a percentage from the
+  // number of chat exchanges alone (exchanges / 20), so a finished case
+  // could sit at 35% forever. Progress is now the furthest stage reached.
+  STAGES: [
+    { id: "not-started", label: "Not started",      pct: 0 },
+    { id: "interview",   label: "Interview",        pct: 20 },
+    { id: "icd",         label: "ICD-11 criteria",  pct: 40 },
+    { id: "dimensional", label: "Dimensional",      pct: 60 },
+    { id: "cognitive",   label: "Cognitive task",   pct: 80 },
+    { id: "report",      label: "Report",           pct: 95 },
+    { id: "complete",    label: "Complete",         pct: 100 },
+  ],
+  stageKey(moduleId) {
+    return `clincog_stage_${moduleId}`;
+  },
+  stageIndex(id) {
+    const i = this.STAGES.findIndex(s => s.id === id);
+    return i < 0 ? 0 : i;
+  },
+  setStage(moduleId, stageId) {
+    // only ever moves forward, so going back to re-read a step does not
+    // make the dashboard say the student has lost ground
+    const current = localStorage.getItem(this.stageKey(moduleId)) || "not-started";
+    if (this.stageIndex(stageId) <= this.stageIndex(current)) return;
+    localStorage.setItem(this.stageKey(moduleId), stageId);
+  },
+  getStage(moduleId) {
+    return localStorage.getItem(this.stageKey(moduleId)) || "not-started";
+  },
+
   evalKey(moduleId) {
     return `clincog_eval_${moduleId}`;
   },
   markEvalReached(moduleId) {
+    this.setStage(moduleId, "report");
     if (this.getEvalStatus(moduleId)) return; // don't overwrite an earlier timestamp
     localStorage.setItem(this.evalKey(moduleId), JSON.stringify({ reachedAt: Date.now() }));
   },
@@ -129,13 +162,31 @@ const ClinCog = {
     const exchanges = Math.floor(history.length / 2);
     const evalReached = !!this.getEvalStatus(moduleId);
     const complete = this.getCaseComplete(moduleId);
+
+    // Derive the stage from what actually exists, then take whichever is
+    // furthest: the stored marker, or what the data implies. A case
+    // completed before stages were recorded still reads as complete.
+    let stageId = this.getStage(moduleId);
+    if (exchanges > 0 && this.stageIndex(stageId) < this.stageIndex("interview")) stageId = "interview";
+    if (evalReached && this.stageIndex(stageId) < this.stageIndex("report")) stageId = "report";
+    if (complete) stageId = "complete";
+
+    const stage = this.STAGES[this.stageIndex(stageId)];
+    let pct = stage.pct;
+    // within the interview, creep from 20 to 40 with the conversation
+    if (stage.id === "interview") pct = Math.min(38, 20 + exchanges * 3);
+
     let state = "not-started";
     if (complete) state = "complete";
-    else if (exchanges > 0 || evalReached) state = "in-progress";
+    else if (exchanges > 0 || evalReached || stage.id !== "not-started") state = "in-progress";
+
     return {
       state,               // "not-started" | "in-progress" | "complete"
-      exchanges,           // real count of chat exchanges (0-10)
-      conceptPct: Math.min(exchanges / 20, 1),
+      exchanges,           // real count of chat exchanges
+      stage: stage.id,
+      stageLabel: complete ? "Complete" : stage.label,
+      pct,                 // 0-100, whole case
+      conceptPct: Math.min(exchanges / 8, 1),  // interview depth only
       evalReached,
       complete: !!complete,
     };
@@ -159,6 +210,7 @@ const ClinCog = {
     for (const m of this.MODULES) {
       this.clearHistory(m.id);
       localStorage.removeItem(this.evalKey(m.id));
+      localStorage.removeItem(this.stageKey(m.id));
       localStorage.removeItem(this.completeKey(m.id));
       localStorage.removeItem(this.hypothesisKey(m.id));
     }

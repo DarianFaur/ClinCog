@@ -1,0 +1,229 @@
+/* ClinCog — report presentation and print layout.
+   ------------------------------------------------------------------
+   Loaded by the four evaluation pages. On screen it gives the report a
+   document-like frame and a consistent rhythm between sections; in print it
+   produces an A4 document containing the report and nothing else: no
+   sidebar, no top bar, no navigation, no rating controls, no optional task.
+
+   The four reports are built differently (two are written in HTML, two are
+   generated in JavaScript), so this file styles the structures they share
+   rather than imposing one markup on all of them. */
+
+/* ---------- screen ---------- */
+.report-doc { --report-measure: 1180px; }
+
+.report-head {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: var(--sp-5); flex-wrap: wrap;
+  padding-bottom: var(--sp-5); margin-bottom: var(--sp-6);
+  box-shadow: inset 0 -1px 0 var(--border);
+}
+.report-head-title { font-size: var(--text-xl); font-weight: 600; color: var(--text-primary); margin: 0; }
+.report-head-meta {
+  display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-5); margin-top: var(--sp-2);
+  font-size: var(--text-sm); color: var(--text-secondary);
+}
+.report-head-meta span strong { color: var(--text-primary); font-weight: 600; }
+.report-print-btn {
+  display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
+  padding: 10px 16px; border: 1px solid var(--border); border-radius: var(--radius-pill);
+  background: var(--bg-surface); color: var(--text-primary);
+  font-size: var(--text-sm); font-weight: 600; cursor: pointer;
+  transition: border-color var(--duration-hover) var(--ease-standard),
+              box-shadow var(--duration-hover) var(--ease-standard);
+}
+.report-print-btn:hover { border-color: var(--accent); box-shadow: var(--shadow-sm); }
+.report-print-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Only shown on paper. */
+.print-only { display: none; }
+
+/* ---------- print ---------- */
+@page {
+  size: A4;
+  margin: 16mm 14mm 18mm;
+}
+
+@media print {
+  /* Everything that is not the report itself. */
+  .shell-sidebar, .shell-topbar, .shell-footer, .shell-scrim,
+  .eval-context, .eval-rail, .eval-steps, .helper-fab, .a11y-fab, .a11y-panel,
+  .cc-toast, .cc-toast-host, .nav-row, .btn-row, .report-print-btn,
+  /* the step progress bar, which otherwise prints across the header */
+  #bar, #bar-fill, .eval-progress, #score-bar,
+  /* the accessibility widget is identified by id, not class */
+  #ccg-fab-toggle, #ccg-fab-panel, #ccg-fab-backdrop,
+  details.try-task, .chat-fullscreen-btn, .content-note {
+    display: none !important;
+  }
+
+  html, body { background: #fff !important; }
+  html { zoom: 1 !important; }
+
+  /* The shell centres and constrains the page; on paper the sheet is the
+     page, so those constraints are dropped. */
+  .shell-frame, .shell-body, .shell-content, .shell-content-inner,
+  .eval-layout, .eval-work, .report-doc {
+    display: block !important;
+    max-width: none !important; width: auto !important;
+    margin: 0 !important; padding: 0 !important;
+    box-shadow: none !important; background: transparent !important;
+  }
+
+  /* Multi-column report grids become one column: three columns of tables at
+     70 mm each are unreadable on paper. */
+  .report-cols, .report-col-stack { display: block !important; }
+  .report-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 4mm !important; }
+  /* Small summary cards read fine two-up on paper and save a lot of height. */
+  .kpi-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 4mm !important; }
+  .report-cols > *, .kpi-grid > * { margin-bottom: 5mm !important; }
+
+  .print-only { display: block; }
+
+  /* Keep small blocks whole, but let long sections flow across sheets:
+     forcing every section to stay intact left pages nearly empty. */
+  .kpi-card, .t-row, .ctab-wrap, .chart-container, .formulation-box {
+    break-inside: avoid; page-break-inside: avoid;
+  }
+  .report-sec, .report-section, .report-tool-card, .interp-block {
+    break-inside: auto;
+  }
+  /* Charts are sized for a screen; on paper they only need to be legible. */
+  .chart-container { margin: 4mm 0 !important; }
+  .chart-container { padding: 3mm !important; }
+  .chart-container canvas, .chart-container .js-plotly-plot,
+  .chart-container > div { max-height: 46mm !important; }
+  .report-doc canvas { max-height: 46mm !important; height: auto !important; }
+  thead { display: table-header-group; }
+  tr, img, canvas, svg { break-inside: avoid; page-break-inside: avoid; }
+  h1, h2, h3, .report-sec-title, .report-section-title { break-after: avoid; page-break-after: avoid; }
+
+  /* Ink-friendly surfaces, with the colour that carries meaning kept. */
+  .card, .report-sec, .report-section, .report-tool-card, .kpi-card,
+  .chart-container, .ctab-wrap, .t-row {
+    background: #fff !important;
+    box-shadow: none !important;
+    border: 1px solid #d4d4d8 !important;
+  }
+  .badge, .score-pill, .severity-pill, .band, .ss-fill, .mini-fill, .t-marker {
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+
+  canvas, svg, img, table { max-width: 100% !important; }
+  a[href]::after { content: ""; }
+
+  /* Room under the running head of each printed page. */
+  .report-doc { font-size: 10.5pt; line-height: 1.5; color: #111; }
+  .report-doc h1 { font-size: 16pt; }
+  .report-doc h2, .report-doc .report-sec-title { font-size: 12.5pt; }
+  .report-doc h3 { font-size: 11pt; }
+  .report-doc .ctab, .report-doc table { font-size: 9.5pt; }
+}
+
+/* =================================================================
+   Report components, shared by all four cases.
+   The four reports were built separately and looked it: different
+   section headers, different table treatments, different spacing.
+   These classes are the common vocabulary; each report uses them so
+   the four read as one document type on screen and on paper.
+   ================================================================= */
+/* One column, one comfortable measure. The four reports used to fan out
+   into two or three narrow columns, which made a long clinical document
+   hard to follow: the eye had to jump columns mid-section. */
+.rpt { display: flex; flex-direction: column; gap: var(--sp-6); }
+.report-doc { max-width: 1040px !important; }
+.report-doc .report-cols,
+.report-doc .report-col-stack,
+.report-doc #report-area,
+.report-doc .report-grid-cols { display: flex !important; flex-direction: column; gap: var(--sp-6); columns: auto !important; }
+
+/* --- summary strip: the few numbers that answer "what happened" --- */
+.rpt-summary {
+  display: grid; gap: var(--sp-3);
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+.rpt-metric {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: var(--sp-4) var(--sp-5);
+}
+.rpt-metric-label {
+  font-size: var(--text-xs); font-weight: 600; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--text-secondary);
+}
+.rpt-metric-value {
+  margin-top: 6px; font-size: var(--text-metric-size); font-weight: 600;
+  line-height: 1.05; color: var(--text-primary); font-variant-numeric: tabular-nums;
+}
+.rpt-metric-note { margin-top: 4px; font-size: var(--text-xs); color: var(--text-secondary); }
+
+/* --- section --- */
+.rpt-section {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden;
+}
+.rpt-section-head {
+  display: flex; align-items: baseline; gap: var(--sp-4);
+  padding: var(--sp-5) var(--sp-5) var(--sp-4);
+  box-shadow: inset 0 -1px 0 var(--border);
+}
+.rpt-num {
+  flex: 0 0 auto; font-family: var(--font-mono); font-size: var(--text-sm);
+  font-weight: 600; color: var(--text-tertiary);
+}
+.rpt-section-title {
+  /* the pages style h3 as an uppercase eyebrow; a section title here is a
+     title, so those rules are neutralised rather than inherited */
+  margin: 0; font-size: var(--text-lg); font-weight: 600; color: var(--text-primary);
+  text-transform: none; letter-spacing: normal; font-family: inherit; line-height: 1.25;
+}
+.rpt-section-sub { margin: 2px 0 0; font-size: var(--text-sm); color: var(--text-secondary); text-transform: none; letter-spacing: normal; }
+.rpt-section-body { padding: var(--sp-5); display: flex; flex-direction: column; gap: var(--sp-4); }
+/* Sections that keep their original inner markup (no explicit body wrapper)
+   still need the same inset as the ones that have one. */
+.rpt-section > :not(.rpt-section-head):not(.rpt-section-body) { padding-left: var(--sp-5); padding-right: var(--sp-5); }
+.rpt-section > .rpt-section-head + :not(.rpt-section-body) { padding-top: var(--sp-5); }
+.rpt-section > :last-child:not(.rpt-section-body) { padding-bottom: var(--sp-5); }
+
+/* --- verdict line: the conclusion a section reaches --- */
+.rpt-verdict {
+  display: flex; align-items: center; gap: var(--sp-3);
+  padding: var(--sp-4); border-radius: var(--radius-md);
+  background: var(--bg-surface-alt); font-size: var(--text-base);
+}
+.rpt-verdict strong { font-weight: 600; }
+.rpt-verdict.is-pos { background: var(--accent-soft); color: var(--accent-ink); }
+.rpt-verdict.is-neg { background: var(--bg-surface-alt); color: var(--text-secondary); }
+
+/* --- tables --- */
+.rpt-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+.rpt-table th {
+  text-align: left; font-size: var(--text-xs); font-weight: 600; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--text-secondary);
+  padding: 0 var(--sp-3) var(--sp-2) 0; box-shadow: inset 0 -1px 0 var(--border);
+}
+.rpt-table td { padding: var(--sp-3) var(--sp-3) var(--sp-3) 0; box-shadow: inset 0 -1px 0 var(--border); vertical-align: top; }
+.rpt-table tr:last-child td { box-shadow: none; }
+.rpt-table .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rpt-table-wrap { overflow-x: auto; }
+
+/* --- the student's own words --- */
+.rpt-answer { border-left: 2px solid var(--border); padding-left: var(--sp-4); }
+.rpt-answer-q { font-size: var(--text-sm); font-weight: 600; color: var(--text-primary); margin: 0 0 4px; }
+.rpt-answer-a { margin: 0; font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.7; white-space: pre-wrap; }
+.rpt-answer-a:empty::before { content: "Not answered."; font-style: italic; color: var(--text-tertiary); }
+
+/* --- source line under a block --- */
+.rpt-source { margin: 0; font-size: var(--text-xs); color: var(--text-tertiary); font-style: italic; }
+.rpt-note { margin: 0; font-size: var(--text-xs); color: var(--text-secondary); line-height: 1.6; }
+
+@media print {
+  .rpt { gap: 6mm; display: block !important; }
+  .rpt > * { margin-bottom: 6mm; }
+  .rpt-summary { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 4mm !important; }
+  .rpt-section { break-inside: auto; border: 1px solid #d4d4d8 !important; }
+  .rpt-section-head { break-after: avoid; page-break-after: avoid; padding: 4mm !important; }
+  .rpt-section-body { padding: 4mm !important; gap: 3mm !important; }
+  .rpt-metric { padding: 3mm !important; }
+  .rpt-verdict { break-inside: avoid; }
+  .rpt-table { font-size: 9.5pt; }
+}

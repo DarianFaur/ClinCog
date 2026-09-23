@@ -63,7 +63,10 @@
   const input = document.getElementById("chat-input");
   const sendBtn = document.getElementById("chat-send");
   const statusDiv = document.getElementById("chat-status");
-  const restartBtn = document.getElementById("chat-restart");
+  // The per-case restart was removed: a student can reset everything from
+  // the dashboard, and wiping one interview mid-course was an easy way to
+  // lose work by accident. The button no longer exists in the markup.
+  const restartBtn = null;
 
   // ---- Student model choice (uvt.clincog.net only): a small, optional
   // toggle between Haiku (fast) and Sonnet (more thoughtful replies).

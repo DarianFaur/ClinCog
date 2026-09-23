@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="/tokens.css">
 <link rel="stylesheet" href="/components.css">
 <link rel="stylesheet" href="/shell.css">
+<link rel="stylesheet" href="/report.css">
 <style>
 /* Colors now alias the shared tokens.css system (loaded via <link>
    below) instead of defining their own - every var(--ink)/var(--surface)
@@ -555,7 +556,10 @@ textarea.interp:focus { outline: 2px solid var(--accent); outline-offset: -2px; 
 }
 @media print {
   .eval-topbar, #bar, .nav-row { display: none !important; }
-  .page { display: block !important; }
+  /* Only the step on screen is printed. This used to force every step
+     visible, so printing the report produced the whole workbook. */
+  .page:not(.on) { display: none !important; }
+  .page.on { display: block !important; }
 }
 
 
@@ -599,13 +603,6 @@ textarea.interp:focus { outline: 2px solid var(--accent); outline-offset: -2px; 
 .likert label:has(input:checked) .num { background: var(--domain-psychosis); border-color: var(--domain-psychosis); color: #fff; }
 
 
-/* Optional student task, visually subordinate to the graded material above it. */
-.try-task { margin-top: var(--sp-7); background: var(--bg-surface-alt); border-radius: var(--radius-md); padding: var(--sp-4) var(--sp-5); }
-.try-task > summary { cursor: pointer; font-weight: 600; font-size: var(--text-base); color: var(--text-primary); list-style: none; }
-.try-task > summary::-webkit-details-marker { display: none; }
-.try-task > summary::before { content: "\25B8"; display: inline-block; margin-right: 8px; transition: transform var(--duration-hover) var(--ease-standard); }
-.try-task[open] > summary::before { transform: rotate(90deg); }
-.try-task > summary span { display: block; font-weight: 400; font-size: var(--text-xs); color: var(--text-tertiary); margin: 2px 0 0 18px; }
 </style>
 </head>
 <body>
@@ -859,7 +856,16 @@ textarea.interp:focus { outline: 2px solid var(--accent); outline-offset: -2px; 
     <!-- Optional, ungraded. The student’s own runs never reach the report and
          are never compared with the patient. -->
     <details class="try-task">
-      <summary>Try the tasks yourself <span>optional · not graded · not part of the report</span></summary>
+      <summary>
+        <span class="try-task-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l6 3.5-6 3.5z" fill="currentColor" stroke="none"/></svg></span>
+        <span class="try-task-copy">
+          <span class="try-task-title">Try the tasks yourself</span>
+          <span class="try-task-sub">Run open versions of the two paradigms behind Dennis’s results — about five minutes.</span>
+          <span class="try-task-badges"><span class="badge badge-neutral">Optional</span><span class="badge badge-neutral">Not graded</span><span class="badge badge-neutral">Never in the report</span></span>
+        </span>
+        <span class="try-task-cta"><span class="cta-open">Try it yourself</span><span class="cta-close">Hide the task</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+      </summary>
+      <div class="try-task-body">
       <p style="font-size:var(--text-sm);color:var(--text-secondary);margin:0 0 4px;max-width:var(--measure)"><strong>A single session is not a measurement.</strong> Scores from one run have low reliability for an individual and no diagnostic value; treat them as an illustration of the task, not as a result about you.</p>
 
       <p style="font-size:var(--text-sm);color:var(--text-secondary);margin:12px 0 4px;max-width:var(--measure)">Open re-implementations written for this platform, after the published trail-making and letter–number sequencing paradigms. They are not the MATRICS Consensus Cognitive Battery and reproduce none of its items, timings, scoring or norms. Your results stay on this screen: they are not saved, not added to the report and not compared with the patient’s.</p>
@@ -869,6 +875,7 @@ textarea.interp:focus { outline: 2px solid var(--accent); outline-offset: -2px; 
       <h4 style="margin:18px 0 8px;font-size:var(--text-base)">Letter–number sequencing</h4>
       <p style="margin:0 0 10px;font-size:var(--text-xs);color:var(--text-tertiary)">Paradigm after: Gold, J. M., Carpenter, C., Randolph, C., Goldberg, T. E., &amp; Weinberger, D. R. (1997). Auditory working memory and Wisconsin Card Sorting Test performance in schizophrenia. <em>Archives of General Psychiatry</em>, 54(2), 159–165.</p>
       <div data-try-task="lns"></div>
+          </div>
     </details>
 
     <div class="nav-row">
@@ -882,61 +889,115 @@ textarea.interp:focus { outline: 2px solid var(--accent); outline-offset: -2px; 
 <div class="page" id="pg5">
   <div class="eval-layout two-col">
     <aside class="eval-context" id="ctx-pg5"></aside>
-    <div class="eval-work" style="max-width:1700px;">
-    <div class="eyebrow">Comparative Evaluation Report</div>
-    <h2 style="margin-bottom:4px;">Dennis, 25</h2>
-    <p style="color:var(--ink3);font-size:.85rem;margin-bottom:8px;">College student · Generated from your responses</p>
-    <hr />
-
-    <div class="report-cols">
-    <div class="report-sec">
-      <h3>Layer 1 — Categorical<br><span class="report-sec-sub">ICD-11 / CDDR</span></h3>
-      <div id="r-dx"></div>
-      <div class="count-row" id="r-counts" style="margin-top:12px;"></div>
-      <div class="cpills" id="r-pills" style="margin-top:10px;"></div>
-      <div id="r-hypothesis" style="margin-top:20px;"></div>
-    </div>
-
-    <div class="report-sec">
-      <h3>Layer 2 — Dimensional<br><span class="report-sec-sub">HiTOP-SR</span></h3>
-      <table class="ht-table">
-        <thead><tr><th>Subscale</th><th>Spectrum</th><th>Raw</th><th>T</th><th>Profile</th></tr></thead>
-        <tbody id="r-ht-body"></tbody>
-      </table>
-      <p style="font-size:.7rem;color:var(--ink3);margin-top:10px;">T-scores (M = 50, SD = 10) against per-subscale community norms. ⚠ Reality Distortion has a reference mean near the floor of the scale, so a single endorsed item produces a high T; read it as presence of the experience rather than graded severity.</p>
-      <p style="font-size:.68rem;color:var(--ink3);margin-top:2px;font-style:italic;">Source: HiTOP-SR scoring workbook, “Descriptives prolific final” (Prolific community sample, N = 780).</p>
-    </div>
-
-    <div class="report-sec">
-      <h3>Layer 3 — Dimensional–Cognitive<br><span class="report-sec-sub">MATRICS</span></h3>
-      <div class="ctab-wrap">
-        <table class="ctab" style="font-size:.72rem;">
-          <thead><tr><th>Measure</th><th>Raw</th><th>z</th><th>Chart</th><th>%ile</th></tr></thead>
-          <tbody>
-            <tr class="tr-head"><td colspan="5">Speed of Processing</td></tr>
-            <tr><td class="mn">TMT — Part A</td><td>96s</td><td class="imp">−1.85</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill imp" style="width:20%"></div><div class="ss-mid"></div></div></div></td><td>3%</td></tr>
-            <tr class="tr-head"><td colspan="5">Working Memory</td></tr>
-            <tr><td class="mn">Letter–Number Span</td><td>7</td><td class="brd">−1.30</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill brd" style="width:29%"></div><div class="ss-mid"></div></div></div></td><td>9%</td></tr>
-          </tbody>
-        </table>
+    <div class="eval-work report-doc" style="max-width:1700px;">
+    <div class="report-head">
+      <div>
+        <h2 class="report-head-title">Case report — Dennis, 25</h2>
+        <div class="report-head-meta">
+          <span><strong>Schizophrenia / psychosis</strong></span>
+          <span>Prepared by <strong id="rh-student-pg5">—</strong></span>
+          <span id="rh-date-pg5"></span>
+        </div>
       </div>
-      <div class="interp-block"><div class="q">Pattern of impairment</div><p id="r-cog1" style="white-space:pre-wrap;"></p></div>
-      <div class="interp-block"><div class="q">Connection to vignette</div><p id="r-cog2" style="white-space:pre-wrap;"></p></div>
+      <button type="button" class="report-print-btn" onclick="window.print()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v7H6z"/></svg>
+        Print or save as PDF
+      </button>
     </div>
-    </div>
+    <p class="print-only" style="font-size:9pt;color:#555;margin:0 0 6mm">ClinCog — teaching platform. Fictional case. For educational use only; not for assessing real people.</p>
 
-    <hr />
-    <div class="reflect-block" id="reflect-block">
-      <h3>What changed in your understanding?</h3>
+    <div class="rpt">
+
+      <section class="rpt-section">
+        <div class="rpt-section-head">
+          <span class="rpt-num">01</span>
+          <div>
+            <h3 class="rpt-section-title">Categorical</h3>
+            <p class="rpt-section-sub">ICD-11 diagnostic requirements (CDDR) for schizophrenia (6A20)</p>
+          </div>
+        </div>
+        <div class="rpt-section-body">
+          <div id="r-dx"></div>
+          <div class="count-row" id="r-counts"></div>
+          <div class="cpills" id="r-pills"></div>
+          <div id="r-hypothesis"></div>
+        </div>
+      </section>
+
+      <section class="rpt-section">
+        <div class="rpt-section-head">
+          <span class="rpt-num">02</span>
+          <div>
+            <h3 class="rpt-section-title">Dimensional</h3>
+            <p class="rpt-section-sub">HiTOP-SR — Detachment and Thought Disorder subscales</p>
+          </div>
+        </div>
+        <div class="rpt-section-body">
+          <div class="rpt-table-wrap">
+            <table class="rpt-table ht-table">
+              <thead><tr><th>Subscale</th><th>Spectrum</th><th class="num">Raw</th><th class="num">T</th><th>Profile</th></tr></thead>
+              <tbody id="r-ht-body"></tbody>
+            </table>
+          </div>
+          <p class="rpt-note">T-scores (M = 50, SD = 10) against per-subscale community norms. ⚠ Reality Distortion has a
+            reference mean near the floor of the scale, so a single endorsed item produces a high T; read it as presence
+            of the experience rather than graded severity.</p>
+          <p class="rpt-source">Source: HiTOP-SR scoring workbook, “Descriptives prolific final” (Prolific community sample, N = 780).</p>
+        </div>
+      </section>
+
+      <section class="rpt-section">
+        <div class="rpt-section-head">
+          <span class="rpt-num">03</span>
+          <div>
+            <h3 class="rpt-section-title">Cognitive</h3>
+            <p class="rpt-section-sub">Dennis’s results on tasks from the MATRICS domains</p>
+          </div>
+        </div>
+        <div class="rpt-section-body">
+          <div class="ctab-wrap">
+            <table class="ctab" style="font-size:.72rem;">
+              <thead><tr><th>Measure</th><th>Raw</th><th>z</th><th>Chart</th><th>%ile</th></tr></thead>
+              <tbody>
+                <tr class="tr-head"><td colspan="5">Speed of Processing</td></tr>
+                <tr><td class="mn">TMT — Part A</td><td>96s</td><td class="imp">−1.85</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill imp" style="width:20%"></div><div class="ss-mid"></div></div></div></td><td>3%</td></tr>
+                <tr class="tr-head"><td colspan="5">Working Memory</td></tr>
+                <tr><td class="mn">Letter–Number Span</td><td>7</td><td class="brd">−1.30</td><td><div class="ss-chart"><div class="ss-bg"><div class="ss-norm"></div><div class="ss-fill brd" style="width:28%"></div><div class="ss-mid"></div></div></div></td><td>9%</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="rpt-note"><strong>Fictional results.</strong> These values belong to the case; the z-scores (mean 0, SD 1)
+            are part of the case and were not computed from a published normative sample.</p>
+          <div class="rpt-answer">
+            <p class="rpt-answer-q">Pattern of impairment</p>
+            <p class="rpt-answer-a" id="r-cog1"></p>
+          </div>
+          <div class="rpt-answer">
+            <p class="rpt-answer-q">Connection to the vignette</p>
+            <p class="rpt-answer-a" id="r-cog2"></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="rpt-section reflect-block" id="reflect-block">
+        <div class="rpt-section-head">
+          <span class="rpt-num">04</span>
+          <div>
+            <h3 class="rpt-section-title">What changed in your understanding?</h3>
+            <p class="rpt-section-sub">Your reflection on the three lenses</p>
+          </div>
+        </div>
+        <div class="rpt-section-body">
       <p class="reflect-note">You approached Dennis from three perspectives — a categorical diagnosis, a dimensional profile, and Dennis’s results on a cognitive task. Write a few sentences on what exploring the case this way taught you, then mark it complete.</p>
       <textarea id="reflect-text" placeholder="What did looking at Dennis's case from three angles add to your understanding?"></textarea>
       <div id="reflect-done" style="display:none;"></div>
       <button class="btn btn-primary" id="reflect-btn" onclick="completeCase()">Complete case →</button>
-    </div>
-    <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;padding-top:20px;">
-      <button class="btn btn-secondary" onclick="window.print()">Print</button>
+        </div>
+      </section>
+
+    </div><!-- /.rpt -->
+    <div class="nav-row" style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;padding-top:20px;">
       <button class="btn btn-secondary" onclick="go(1)">← Vignette</button>
-      <button class="btn btn-secondary" onclick="go(0)">↺ Start over</button>
     </div>
     </div>
   </div>
@@ -945,6 +1006,7 @@ textarea.interp:focus { outline: 2px solid var(--accent); outline-offset: -2px; 
 
 <script>window.CLINCOG_SHELL = { autoCollapse: true, activeCaseId: "schizophrenia", breadcrumb: [{ label: "Dashboard", href: "/dashboard.html" }, { label: "Cases", href: "/dashboard.html" }, { label: "Dennis", href: "/schizophrenia-chat.html" }, { label: "Evaluation" }] };</script>
 <script src="/storage.js"></script>
+<script src="/norms.js"></script>
 <script src="/icons.js"></script>
 <script src="/shell.js?v=2"></script>
 <script src="/toast.js"></script>
@@ -1248,6 +1310,10 @@ function stepClick(n) {
   if (n <= maxStepReached) go(n);
 }
 function go(n) {
+  // Record how far the student has got, so the dashboard can show the
+  // stage instead of a bare "evaluation reached" flag.
+  try { const _st = {2: 'icd', 3: 'dimensional', 4: 'cognitive', 5: 'report'}[n]; if (_st) ClinCog.setStage('schizophrenia', _st); } catch (e) {}
+
   document.getElementById('pg'+cur).classList.remove('on');
   cur = n;
   if (n > maxStepReached) maxStepReached = n;
@@ -1350,6 +1416,19 @@ const HITOP_SCZ = [
   { n:'Reality Distortion',     spec:'Thought Disorder', names:['rd1', 'rd2', 'rd3', 'rd4', 'rd5', 'rd6', 'rd7', 'rd8', 'rd9', 'rd10', 'rd11'], mean:1.1915, sd:0.3720, floor:true },
   { n:'Mistrust',               spec:'Thought Disorder', names:['mt1', 'mt2', 'mt3', 'mt4', 'mt5', 'mt6', 'mt7', 'mt8'], mean:2.1358, sd:0.8400, floor:false },
 ];
+// Instructor overrides. The published values above are the defaults; the
+// benchmarks page stores an override in this browser, and it is applied here
+// so an edited norm actually changes the T-scores the student sees.
+(function applyNormOverrides() {
+  // storage.js declares ClinCog with const, which does not become a
+  // window property, so it has to be tested by name.
+  if (typeof ClinCog === 'undefined' || !window.CLINCOG_NORMS) return;
+  const stored = ClinCog.getBenchmark('hitopScz', window.CLINCOG_NORMS['hitopScz']);
+  const subs = stored && stored.subscales;
+  if (!subs) return;
+  HITOP_SCZ.forEach(s => { const v = subs[s.n]; if (v) { s.mean = +v.mean; s.sd = +v.sd; } });
+})();
+
 const HITOP_SCZ_NAMES = HITOP_SCZ.flatMap(s => s.names);
 const HITOP_SCZ_CITATION =
   'HiTOP-SR scoring workbook, "Descriptives prolific final" (Prolific community sample, N = 780).';
@@ -1526,5 +1605,20 @@ function updateHelperFabVisibility() {
 initHelperFab();
 </script>
 <script src="/try-tasks.js"></script>
+<script>
+// Report header: the student's name and today's date, filled in here so the
+// printed sheet says who produced it and when.
+(function fillReportHead() {
+  const set = () => {
+    document.querySelectorAll('[id^="rh-student-"]').forEach(el => {
+      el.textContent = (typeof ClinCog !== 'undefined' && ClinCog.getName && ClinCog.getName()) || '\u2014';
+    });
+    document.querySelectorAll('[id^="rh-date-"]').forEach(el => {
+      el.textContent = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+    });
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', set); else set();
+})();
+</script>
 </body>
 </html>

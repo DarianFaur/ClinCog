@@ -17,6 +17,7 @@
 <link rel="stylesheet" href="/tokens.css">
 <link rel="stylesheet" href="/components.css">
 <link rel="stylesheet" href="/shell.css">
+<link rel="stylesheet" href="/report.css">
 <style>
 :root { color-scheme: light; }
 [data-theme="dark"] { color-scheme: dark; }
@@ -613,13 +614,6 @@ body.mobile-mode .sst-kbd-hint{display:none;}
 .ss-fill.brd { background: var(--warning); }
 .ss-mid { position: absolute; left: 50%; top: 1px; width: 2px; height: 14px; border-radius: 1px; background: var(--text-tertiary); }
 .report-sec .ctab-wrap, .report-sec .scroll-x { overflow-x: auto; }
-/* Optional student task, visually subordinate to the graded material above it. */
-.try-task { margin-top: var(--sp-7); background: var(--bg-surface-alt); border-radius: var(--radius-md); padding: var(--sp-4) var(--sp-5); }
-.try-task > summary { cursor: pointer; font-weight: 600; font-size: var(--text-base); color: var(--text-primary); list-style: none; }
-.try-task > summary::-webkit-details-marker { display: none; }
-.try-task > summary::before { content: "\25B8"; display: inline-block; margin-right: 8px; transition: transform var(--duration-hover) var(--ease-standard); }
-.try-task[open] > summary::before { transform: rotate(90deg); }
-.try-task > summary span { display: block; font-weight: 400; font-size: var(--text-xs); color: var(--text-tertiary); margin: 2px 0 0 18px; }
 
 /* Report tables fit the column instead of pushing past it on narrow phones. */
 .report-items-table { width: 100%; table-layout: fixed; }
@@ -641,7 +635,7 @@ body.mobile-mode .sst-kbd-hint{display:none;}
   <div class="eval-layout two-col">
   <aside class="eval-context" data-for-view="intro"></aside>
   <div class="eval-work" style="max-width:640px;">
-    <div class="content-note" role="note" style="border-left:3px solid var(--warning);background:var(--bg-surface-alt);padding:14px 16px;border-radius:var(--radius-md);margin:0 0 24px;font-size:var(--text-sm);line-height:1.65;max-width:var(--measure);"><strong>Content note.</strong> This case describes alcohol dependence, including withdrawal, drinking in the morning and driving after drinking. If this is difficult material for you right now, you can pause and come back later, or speak to the seminar instructor.</div>
+    <div class="content-note" role="note" style="border-left:3px solid var(--warning);background:var(--bg-surface-alt);padding:14px 16px;border-radius:var(--radius-md);margin:0 0 24px;font-size:var(--text-sm);line-height:1.65;max-width:var(--measure);"><strong>Content note.</strong> This case describes alcohol dependence, including withdrawal, drinking in the morning and driving after drinking. If this is difficult material for you right now, you can pause and come back later, or speak to your instructor.</div>
     <p style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--domain-substance-ink);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px;">Seminar Activity · Addiction Module</p>
     <h1 style="font-size:2.35rem;font-weight:700;letter-spacing:-.01em;line-height:1.15;margin-bottom:16px;">Three Ways to Evaluate<br>Substance Use</h1>
     <p style="font-size:16px;line-height:1.7;color:var(--color-text-muted);max-width:560px;margin-bottom:32px;">You will read a clinical vignette and evaluate the same patient through three different conceptual frameworks. The lens shapes what you see.</p>
@@ -881,7 +875,16 @@ body.mobile-mode .sst-kbd-hint{display:none;}
   <!-- Optional, ungraded. The student's own run never reaches the report and is
        never compared with Jordan. -->
   <details class="try-task">
-    <summary>Try the stop-signal task yourself <span>optional · not graded · not part of the report</span></summary>
+    <summary>
+        <span class="try-task-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l6 3.5-6 3.5z" fill="currentColor" stroke="none"/></svg></span>
+        <span class="try-task-copy">
+          <span class="try-task-title">Try the task yourself</span>
+          <span class="try-task-sub">Run the stop-signal task Jordan completed — about three minutes.</span>
+          <span class="try-task-badges"><span class="badge badge-neutral">Optional</span><span class="badge badge-neutral">Not graded</span><span class="badge badge-neutral">Never in the report</span></span>
+        </span>
+        <span class="try-task-cta"><span class="cta-open">Try it yourself</span><span class="cta-close">Hide the task</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+      </summary>
+      <div class="try-task-body">
       <p style="font-size:var(--text-sm);color:var(--text-secondary);margin:0 0 4px;max-width:var(--measure)"><strong>A single session is not a measurement.</strong> Scores from one run have low reliability for an individual and no diagnostic value; treat them as an illustration of the task, not as a result about you.</p>
 
     <p style="font-size:var(--text-sm);color:var(--text-secondary);margin:12px 0 16px;max-width:var(--measure)">
@@ -980,7 +983,8 @@ body.mobile-mode .sst-kbd-hint{display:none;}
     </div>
   </div>
 
-  </details>
+        </div>
+    </details>
 
   <div style="display:flex;gap:var(--space-3);margin-top:var(--space-4);">
     <button class="btn-secondary" onclick="showView('hitop')">← HiTOP-SR</button>
@@ -994,7 +998,23 @@ body.mobile-mode .sst-kbd-hint{display:none;}
 <div class="view" id="view-report">
   <div class="eval-layout two-col">
   <aside class="eval-context" data-for-view="report"></aside>
-  <div class="eval-work" style="max-width:1700px;">
+  <div class="eval-work report-doc" style="max-width:1700px;">
+    <div class="report-head">
+      <div>
+        <h2 class="report-head-title">Case report — Jordan, 25</h2>
+        <div class="report-head-meta">
+          <span><strong>Substance use</strong></span>
+          <span>Prepared by <strong id="rh-student-view-report">—</strong></span>
+          <span id="rh-date-view-report"></span>
+        </div>
+      </div>
+      <button type="button" class="report-print-btn" onclick="window.print()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v7H6z"/></svg>
+        Print or save as PDF
+      </button>
+    </div>
+    <p class="print-only" style="font-size:9pt;color:#555;margin:0 0 6mm">ClinCog — teaching platform. Fictional case. For educational use only; not for assessing real people.</p>
+
   <div class="page-header">
     <h1>Assessment Report</h1>
     <p>Integrated multi-method profile — for educational use only. All data are session-only and not stored.</p>
@@ -1016,6 +1036,7 @@ body.mobile-mode .sst-kbd-hint{display:none;}
 
 <script>window.CLINCOG_SHELL = { autoCollapse: true, activeCaseId: "addiction", breadcrumb: [{ label: "Dashboard", href: "/dashboard.html" }, { label: "Cases", href: "/dashboard.html" }, { label: "Jordan", href: "/addiction-chat.html" }, { label: "Evaluation" }] };</script>
 <script src="/storage.js"></script>
+<script src="/norms.js"></script>
 <script src="/icons.js"></script>
 <script src="/shell.js?v=2"></script>
 <script src="/toast.js"></script>
@@ -1220,6 +1241,10 @@ function syncMobileNav(viewId){
 
 let maxViewIndexReached = 0;
 function showView(id) {
+  // Jordan's case recorded no progress at all until now.
+  try { const _st = { audit:'icd', icd:'icd', hitop:'dimensional', ana:'cognitive', report:'report' }[id];
+        if (_st) ClinCog.setStage('addiction', _st); } catch (e) {}
+
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-' + id).classList.add('active');
   document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
@@ -1735,6 +1760,18 @@ const HITOP_SUD_NORMS = {
   'Role Interference': { mean: 1.047, sd: 0.243, skew: 7.512, kurt: 67.844, items: 4 },
   'Tolerance':         { mean: 1.092, sd: 0.326, skew: 4.742, kurt: 25.795, items: 3 },
 };
+// Instructor overrides, as on the other cases: the published values above are
+// the defaults, and an edit on the benchmarks page is applied here.
+(function applyNormOverrides() {
+  // storage.js declares ClinCog with const, which does not become a
+  // window property, so it has to be tested by name.
+  if (typeof ClinCog === 'undefined' || !window.CLINCOG_NORMS) return;
+  const ext = ClinCog.getBenchmark('hitopExt', window.CLINCOG_NORMS.hitopExt);
+  const sud = ClinCog.getBenchmark('hitopSud', window.CLINCOG_NORMS.hitopSud);
+  if (ext && ext.subscales) Object.keys(HITOP_EXT_NORMS).forEach(k => { const v = ext.subscales[k]; if (v) HITOP_EXT_NORMS[k] = { mean: +v.mean, sd: +v.sd, n: HITOP_EXT_NORMS[k].n }; });
+  if (sud && sud.subscales) Object.keys(HITOP_SUD_NORMS).forEach(k => { const v = sud.subscales[k]; if (v) HITOP_SUD_NORMS[k] = Object.assign({}, HITOP_SUD_NORMS[k], { mean: +v.mean, sd: +v.sd }); });
+})();
+
 const HITOP_NORM_CITATION =
   'Externalising subscales: HiTOP-SR scoring workbook, "Descriptives prolific final" ' +
   '(Prolific community sample, N = 780). ' +
@@ -2383,9 +2420,9 @@ function buildReport() {
   <div class="report-cols">
   <div class="report-section">
     <h2 style="font-size:var(--text-lg);font-weight:600;margin-bottom:var(--space-4)">Categorical Assessment</h2>
-    <div class="report-tool-card">
+    <div class="rpt-section report-tool-card">
       <div class="report-tool-header">
-        <div class="report-tool-name">AUDIT — Alcohol Use Disorders Identification Test</div>
+        <div class="rpt-section-head" style="padding:0 0 var(--sp-4);box-shadow:inset 0 -1px 0 var(--border);"><span class="rpt-num">01</span><div><h3 class="rpt-section-title">Categorical — screening</h3><p class="rpt-section-sub">AUDIT (WHO), 10 items</p></div></div>
         <span class="score-pill ${cs >= 16 ? 'score-high' : cs >= 8 ? 'score-moderate' : 'score-low'}">${cs}/40 · ${auditZone(cs).zone}</span>
       </div>
       <table class="report-items-table">
@@ -2408,9 +2445,9 @@ function buildReport() {
       </div>
     </div>
 
-    <div class="report-tool-card">
+    <div class="rpt-section report-tool-card">
       <div class="report-tool-header">
-        <div class="report-tool-name">ICD-11 CDDR — Alcohol Dependence (6C40.2)</div>
+        <div class="rpt-section-head" style="padding:0 0 var(--sp-4);box-shadow:inset 0 -1px 0 var(--border);"><span class="rpt-num">02</span><div><h3 class="rpt-section-title">Categorical — diagnosis</h3><p class="rpt-section-sub">ICD-11 essential features for alcohol dependence</p></div></div>
         <span class="score-pill ${state.icdConclusion==='with'?'score-high':state.icdConclusion==='without'?'score-low':'score-moderate'}">${ss}/3 · ${state.icdConclusion==='with'?'Meets requirements':state.icdConclusion==='without'?'Does not meet requirements':'No conclusion recorded'}</span>
       </div>
       <table class="report-items-table">
@@ -2473,8 +2510,8 @@ function buildReport() {
       <div class="chart-sub">Log–linear plot of quantity consumed as a function of price per standard drink. Key demand indices: Q0 = free consumption; Omax = maximum expenditure; Pmax = price at Omax; Breakpoint = first price at Q=0.</div>
       <div id="chart-demand" style="height:380px"></div>
     </div>
-    <div class="report-tool-card">
-      <div class="report-tool-header"><div class="report-tool-name">Demand Indices</div></div>
+    <div class="rpt-section report-tool-card">
+      <div class="report-tool-header"><div class="rpt-section-head" style="padding:0 0 var(--sp-4);box-shadow:inset 0 -1px 0 var(--border);"><span class="rpt-num">03</span><div><h3 class="rpt-section-title">Cognitive — alcohol demand</h3><p class="rpt-section-sub">Hypothetical purchase task indices</p></div></div></div>
       <table class="report-items-table">
         <tr><th>Index</th><th>Value</th><th>Interpretation</th></tr>
         <tr><td><strong>Q0</strong></td><td>${di.Q0} drinks</td><td style="color:var(--color-text-muted);font-size:var(--text-xs)">Intensity — consumption at zero cost; reflects baseline motivation</td></tr>
@@ -2852,6 +2889,21 @@ initHelperFab();
 // Stop-signal base64 constant
 // STOP_SIGNAL_B64 removed — using inline SST
 
+</script>
+<script>
+// Report header: the student's name and today's date, filled in here so the
+// printed sheet says who produced it and when.
+(function fillReportHead() {
+  const set = () => {
+    document.querySelectorAll('[id^="rh-student-"]').forEach(el => {
+      el.textContent = (typeof ClinCog !== 'undefined' && ClinCog.getName && ClinCog.getName()) || '\u2014';
+    });
+    document.querySelectorAll('[id^="rh-date-"]').forEach(el => {
+      el.textContent = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+    });
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', set); else set();
+})();
 </script>
 </body>
 </html>

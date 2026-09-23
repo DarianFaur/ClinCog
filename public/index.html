@@ -10,7 +10,43 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/favicon-180.png">
 
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
 <link rel="stylesheet" href="/styles.css">
+<style>
+  /* The splash used to carry its own copy of the palette, which is why it
+     drifted from the app. It now takes the real tokens and only maps the
+     legacy variable names this page's rules still use. */
+  :root {
+    --bg: var(--bg-app);
+    --surface: var(--bg-surface);
+    --surface-sunken: var(--bg-surface-alt);
+    --line: var(--border);
+    --ink: var(--text-primary);
+    --ink-muted: var(--text-secondary);
+    --ink-faint: var(--text-tertiary);
+    --brand: var(--accent);
+    --brand-ink: var(--accent-ink);
+    --sans: var(--font-sans);
+    --mono: var(--font-mono);
+  }
+  /* styles.css also has a dark block of its own, with a bluish surface;
+     that selector is more specific than :root, so the mapping is repeated
+     here to keep the splash on the app's warm dark grey. */
+  html[data-theme="dark"] {
+    --bg: var(--bg-app);
+    --surface: var(--bg-surface);
+    --surface-sunken: var(--bg-surface-alt);
+    --line: var(--border);
+    --ink: var(--text-primary);
+    --ink-muted: var(--text-secondary);
+    --ink-faint: var(--text-tertiary);
+    --brand: var(--accent);
+    --brand-ink: var(--accent-ink);
+  }
+  body { background: var(--bg-app); color: var(--text-primary); }
+  .splash-card { border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
+</style>
 <script>
   // If this student already has a name saved on this device, skip the
   // gate entirely and go straight to the dashboard - before anything

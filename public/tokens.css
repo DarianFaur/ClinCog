@@ -127,10 +127,13 @@
 
 :root {
   /* ---- Neutrals (light) ---- */
-  --bg-app: #f6f5f3;
+  /* White page. The warm off-white this replaced was what separated the
+     white cards from the page; cards now carry a hairline border instead,
+     and the neutral greys below keep panels from reading as cream. */
+  --bg-app: #ffffff;
   --bg-surface: #ffffff;
-  --bg-surface-alt: #f1efec;
-  --border: #e6e3de;
+  --bg-surface-alt: #f4f4f5;
+  --border: #e4e4e7;
   --text-primary: #1a1a1a;
   --text-secondary: #6e6a64;
   /* Darkened from #a09a92, which measured 2.79:1 against the page and
@@ -181,9 +184,13 @@
   --domain-mood-soft: rgba(154,128,189,.14);
   --domain-mood-ink: #705892;
 
-  --domain-anxiety: #59987c;
-  --domain-anxiety-soft: rgba(89,152,124,.14);
-  --domain-anxiety-ink: #306e55;
+  /* Alex's colour was a green 7 ΔE from the theme accent, so the case
+     colour and the app's generic accent were the same colour in practice.
+     Moved to a blue at the same lightness: ≥ 35 ΔE from the accent and
+     from every other case. */
+  --domain-anxiety: #3d98bf;
+  --domain-anxiety-soft: rgba(61,152,191,.14);
+  --domain-anxiety-ink: #247da4;
 
   --domain-substance: #ab8546;
   --domain-substance-soft: rgba(171,133,70,.14);
@@ -306,9 +313,9 @@ html[data-theme="dark"] {
   --domain-mood-soft: rgba(195,172,225,.16);
   --domain-mood-ink: #dec9f8;
 
-  --domain-anxiety: #83c3a6;
-  --domain-anxiety-soft: rgba(131,195,166,.16);
-  --domain-anxiety-ink: #a2dec2;
+  --domain-anxiety: #71cdf5;
+  --domain-anxiety-soft: rgba(113,205,245,.16);
+  --domain-anxiety-ink: #9bf2ff;
 
   --domain-substance: #d2b180;
   --domain-substance-soft: rgba(210,177,128,.16);
@@ -356,9 +363,9 @@ html[data-theme="dark"] {
     --domain-mood: #c3ace1;
     --domain-mood-soft: rgba(195,172,225,.16);
     --domain-mood-ink: #dec9f8;
-    --domain-anxiety: #83c3a6;
-    --domain-anxiety-soft: rgba(131,195,166,.16);
-    --domain-anxiety-ink: #a2dec2;
+    --domain-anxiety: #71cdf5;
+    --domain-anxiety-soft: rgba(113,205,245,.16);
+    --domain-anxiety-ink: #9bf2ff;
     --domain-substance: #d2b180;
     --domain-substance-soft: rgba(210,177,128,.16);
     --domain-substance-ink: #eccda2;

@@ -40,9 +40,11 @@ body {
 --------------------------------------------------------------- */
 .card {
   background: var(--bg-surface);
-  border: none;
+  /* On a white page the shadow alone no longer separates a white card from
+     its background, so the card gets a hairline of its own. */
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-xs);
   transition: transform var(--duration-hover) var(--ease-standard),
               box-shadow var(--duration-hover) var(--ease-standard);
 }
@@ -182,7 +184,21 @@ body {
    Case card - the dashboard's centerpiece
 --------------------------------------------------------------- */
 .case-card { padding: 28px; display: flex; flex-direction: column; gap: var(--sp-5); cursor: default; }
-.case-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+/* A touch more lift on hover: the old -2px was barely perceptible on a
+   white page. Transform and shadow both animate, and the border warms to
+   the case's own colour. Respects reduced-motion below. */
+.case-card { transition: transform var(--duration-hover) var(--ease-standard),
+             box-shadow var(--duration-hover) var(--ease-standard),
+             border-color var(--duration-hover) var(--ease-standard); }
+.case-card:hover {
+  transform: translateY(-5px) scale(1.008);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--domain-color, var(--accent));
+}
+.case-card:active { transform: translateY(-2px) scale(1.002); }
+@media (prefers-reduced-motion: reduce) {
+  .case-card, .case-card:hover, .case-card:active { transform: none; transition: none; }
+}
 .case-card-top { display: flex; align-items: flex-start; gap: var(--sp-3); }
 .case-card-icon {
   width: 44px; height: 44px; border-radius: var(--radius-md); flex-shrink: 0;
@@ -593,3 +609,65 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .cc-toast { transition: none; translate: none; }
 }
+
+/* ---------------------------------------------------------------
+   "Try the task yourself" — the entry point to the optional, ungraded
+   cognitive demos. It used to be a bare <details> whose triangle read as
+   a stray bullet and invited nothing. It is still a <details>, so it stays
+   keyboard- and screen-reader-friendly, but the summary is drawn as a card
+   with a clear call to action.
+   --------------------------------------------------------------- */
+.try-task { margin-top: var(--sp-7); }
+.try-task > summary {
+  display: flex; align-items: center; gap: var(--sp-4);
+  padding: var(--sp-5); cursor: pointer; list-style: none;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  transition: border-color var(--duration-hover) var(--ease-standard),
+              box-shadow var(--duration-hover) var(--ease-standard),
+              background var(--duration-hover) var(--ease-standard);
+}
+.try-task > summary::-webkit-details-marker,
+.try-task > summary::marker { display: none; content: ""; }
+.try-task > summary:hover { border-color: var(--accent); box-shadow: var(--shadow-sm); }
+.try-task > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.try-task[open] > summary {
+  border-bottom-left-radius: 0; border-bottom-right-radius: 0;
+  border-bottom-color: transparent; background: var(--bg-surface-alt);
+}
+.try-task-icon {
+  flex: 0 0 auto; width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--accent-soft); color: var(--accent-ink);
+}
+.try-task-copy { flex: 1 1 auto; min-width: 0; }
+.try-task-title { display: block; font-weight: 600; font-size: var(--text-base); color: var(--text-primary); }
+.try-task-sub { display: block; margin-top: 2px; font-size: var(--text-sm); color: var(--text-secondary); }
+.try-task-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: var(--sp-3); }
+/* The neutral badge's fill matches the open card, so these get an outline
+   of their own instead of disappearing into it. */
+.try-task-badges .badge { background: transparent; box-shadow: inset 0 0 0 1px var(--border); color: var(--text-secondary); }
+.try-task-cta {
+  flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border-radius: var(--radius-pill);
+  background: var(--ink); color: var(--ink-text);
+  font-size: var(--text-sm); font-weight: 600; white-space: nowrap;
+}
+.try-task-cta svg { transition: transform var(--duration-hover) var(--ease-standard); }
+.try-task[open] .try-task-cta { background: var(--bg-surface); color: var(--text-primary); box-shadow: inset 0 0 0 1px var(--border); }
+.try-task[open] .try-task-cta svg { transform: rotate(180deg); }
+.try-task[open] .try-task-cta .cta-open,
+.try-task:not([open]) .try-task-cta .cta-close { display: none; }
+.try-task-body {
+  border: 1px solid var(--border); border-top: none;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  padding: var(--sp-5);
+}
+@media (max-width: 640px) {
+  .try-task > summary { flex-wrap: wrap; }
+  .try-task-cta { width: 100%; justify-content: center; }
+}
+
+.continue-hero { transition: transform var(--duration-hover) var(--ease-standard), box-shadow var(--duration-hover) var(--ease-standard); }
+.continue-hero:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+@media (prefers-reduced-motion: reduce) { .continue-hero, .continue-hero:hover { transform: none; transition: none; } }

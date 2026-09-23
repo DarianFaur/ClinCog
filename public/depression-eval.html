@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="/tokens.css">
 <link rel="stylesheet" href="/components.css">
 <link rel="stylesheet" href="/shell.css">
+<link rel="stylesheet" href="/report.css">
 <style>
 /* Colors now alias the shared tokens.css system (loaded via <link>
    below) instead of defining their own - every var(--ink)/var(--surface)
@@ -535,7 +536,10 @@ textarea.interp:focus { outline: 2px solid var(--accent); outline-offset: -2px; 
 }
 @media print {
   .eval-topbar, #bar, .nav-row { display: none !important; }
-  .page { display: block !important; }
+  /* Only the step on screen is printed. This used to force every step
+     visible, so printing the report produced the whole workbook. */
+  .page:not(.on) { display: none !important; }
+  .page.on { display: block !important; }
 }
 
 
@@ -614,13 +618,6 @@ html[data-theme="dark"] .band.b-sev  { color: var(--danger); }
 .likert label:has(input:checked) .num { background: var(--domain-mood); border-color: var(--domain-mood); color: #fff; }
 
 
-/* Optional student task, visually subordinate to the graded material above it. */
-.try-task { margin-top: var(--sp-7); background: var(--bg-surface-alt); border-radius: var(--radius-md); padding: var(--sp-4) var(--sp-5); }
-.try-task > summary { cursor: pointer; font-weight: 600; font-size: var(--text-base); color: var(--text-primary); list-style: none; }
-.try-task > summary::-webkit-details-marker { display: none; }
-.try-task > summary::before { content: "\25B8"; display: inline-block; margin-right: 8px; transition: transform var(--duration-hover) var(--ease-standard); }
-.try-task[open] > summary::before { transform: rotate(90deg); }
-.try-task > summary span { display: block; font-weight: 400; font-size: var(--text-xs); color: var(--text-tertiary); margin: 2px 0 0 18px; }
 </style>
 </head>
 <body>
@@ -636,7 +633,7 @@ html[data-theme="dark"] .band.b-sev  { color: var(--danger); }
   <div class="eval-layout two-col">
     <aside class="eval-context" id="ctx-pg0"></aside>
     <div class="eval-work" style="max-width:900px;">
-    <div class="content-note" role="note" style="border-left:3px solid var(--warning);background:var(--bg-surface-alt);padding:14px 16px;border-radius:var(--radius-md);margin:0 0 24px;font-size:var(--text-sm);line-height:1.65;max-width:var(--measure);"><strong>Content note.</strong> This case describes depression with thoughts of death and suicide, including a first thought about how he might end his life, and an episode of self-harm. If this is difficult material for you right now, you can pause and come back later, or speak to the seminar instructor. If you are struggling yourself: in an emergency, call <strong>112</strong>. The Romanian Suicide Prevention Alliance (Alianța Română de Prevenție a Suicidului) offers free, confidential support by phone at <strong>0800 801 200</strong> (Friday to Sunday, 19:00–07:00) and by email at <a href="mailto:sos@antisuicid.ro">sos@antisuicid.ro</a> at any time.</div>
+    <div class="content-note" role="note" style="border-left:3px solid var(--warning);background:var(--bg-surface-alt);padding:14px 16px;border-radius:var(--radius-md);margin:0 0 24px;font-size:var(--text-sm);line-height:1.65;max-width:var(--measure);"><strong>Content note.</strong> This case describes depression with thoughts of death and suicide, including a first thought about how he might end his life, and an episode of self-harm. If this is difficult material for you right now, you can pause and come back later. If you are struggling yourself, please reach out to someone you trust or to a local mental health or crisis service.</div>
     <div class="eyebrow">Seminar Activity · Depression Module</div>
     <h1>Three Ways to<br><em>Evaluate</em> Depression</h1>
     <p class="lead" style="max-width:var(--measure);">You will read a clinical vignette and evaluate the same patient through three different conceptual frameworks. The lens shapes what you see.</p>
@@ -992,7 +989,16 @@ html[data-theme="dark"] .band.b-sev  { color: var(--danger); }
     <!-- Optional, ungraded. The student’s own runs never reach the report and
          are never compared with the patient. -->
     <details class="try-task">
-      <summary>Try the tasks yourself <span>optional · not graded · not part of the report</span></summary>
+      <summary>
+        <span class="try-task-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l6 3.5-6 3.5z" fill="currentColor" stroke="none"/></svg></span>
+        <span class="try-task-copy">
+          <span class="try-task-title">Try the tasks yourself</span>
+          <span class="try-task-sub">Run open versions of the two paradigms behind Darren’s results — about six minutes.</span>
+          <span class="try-task-badges"><span class="badge badge-neutral">Optional</span><span class="badge badge-neutral">Not graded</span><span class="badge badge-neutral">Never in the report</span></span>
+        </span>
+        <span class="try-task-cta"><span class="cta-open">Try it yourself</span><span class="cta-close">Hide the task</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+      </summary>
+      <div class="try-task-body">
       <p style="font-size:var(--text-sm);color:var(--text-secondary);margin:0 0 4px;max-width:var(--measure)"><strong>A single session is not a measurement.</strong> Scores from one run have low reliability for an individual and no diagnostic value; treat them as an illustration of the task, not as a result about you.</p>
 
       <p style="font-size:var(--text-sm);color:var(--text-secondary);margin:12px 0 4px;max-width:var(--measure)">Open re-implementations written for this platform, after the published spatial working memory and Tower of London paradigms. They are not CANTAB tasks and reproduce none of its stimuli, timings, scoring or norms. Your results stay on this screen: they are not saved, not added to the report and not compared with the patient’s.</p>
@@ -1002,6 +1008,7 @@ html[data-theme="dark"] .band.b-sev  { color: var(--danger); }
       <h4 style="margin:18px 0 8px;font-size:var(--text-base)">Tower of London</h4>
       <p style="margin:0 0 10px;font-size:var(--text-xs);color:var(--text-tertiary)">Paradigm after: Shallice, T. (1982). Specific impairments of planning. <em>Philosophical Transactions of the Royal Society of London B</em>, 298(1089), 199–209. doi:10.1098/rstb.1982.0082</p>
       <div data-try-task="tol"></div>
+          </div>
     </details>
 
     <div class="nav-row">
@@ -1016,23 +1023,39 @@ html[data-theme="dark"] .band.b-sev  { color: var(--danger); }
 <div class="page" id="pg5">
   <div class="eval-layout two-col">
     <aside class="eval-context" id="ctx-pg5"></aside>
-    <div class="eval-work" style="max-width:1700px;">
+    <div class="eval-work report-doc" style="max-width:1700px;">
+    <div class="report-head">
+      <div>
+        <h2 class="report-head-title">Case report — Darren, 34</h2>
+        <div class="report-head-meta">
+          <span><strong>Depression</strong></span>
+          <span>Prepared by <strong id="rh-student-pg5">—</strong></span>
+          <span id="rh-date-pg5"></span>
+        </div>
+      </div>
+      <button type="button" class="report-print-btn" onclick="window.print()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v7H6z"/></svg>
+        Print or save as PDF
+      </button>
+    </div>
+    <p class="print-only" style="font-size:9pt;color:#555;margin:0 0 6mm">ClinCog — teaching platform. Fictional case. For educational use only; not for assessing real people.</p>
+
     <div class="eyebrow">Comparative Evaluation Report</div>
     <h2 style="margin-bottom:4px;">Darren, 34</h2>
     <p style="color:var(--ink3);font-size:.85rem;margin-bottom:8px;">High school English teacher · Generated from your responses</p>
     <hr />
 
-    <div class="report-cols">
-    <div class="report-sec">
-      <h3>Layer 1 — Categorical<br><span class="report-sec-sub">ICD-11 / CDDR</span></h3>
+    <div class="rpt">
+    <div class="rpt-section">
+      <div class="rpt-section-head"><span class="rpt-num">01</span><div><h3 class="rpt-section-title">Categorical</h3><p class="rpt-section-sub">ICD-11 diagnostic requirements (CDDR) for a depressive episode (6A70)</p></div></div>
       <div id="r-dx"></div>
       <div class="count-row" id="r-counts" style="margin-top:12px;"></div>
       <div class="cpills" id="r-pills" style="margin-top:10px;"></div>
     </div>
 
     <div class="report-col-stack">
-    <div class="report-sec">
-      <h3>Layer 2a — Dimensional<br><span class="report-sec-sub">PHQ-9</span></h3>
+    <div class="rpt-section">
+      <div class="rpt-section-head"><span class="rpt-num">02</span><div><h3 class="rpt-section-title">Dimensional — severity</h3><p class="rpt-section-sub">PHQ-9</p></div></div>
       <div class="t-row">
         <div class="t-big" id="r-phq-raw">—</div>
         <div class="t-meta">
@@ -1047,8 +1070,8 @@ html[data-theme="dark"] .band.b-sev  { color: var(--danger); }
       <p style="font-size:.68rem;color:var(--ink3);margin-top:2px;font-style:italic;">Source: Kroenke K, Spitzer RL, Williams JBW. The PHQ-9: validity of a brief depression severity measure. <em>J Gen Intern Med</em>. 2001;16(9):606–613 (severity levels, Table 2, p. 608; cut points, p. 611).</p>
     </div>
 
-    <div class="report-sec">
-      <h3>Layer 2b — Dimensional<br><span class="report-sec-sub">HiTOP Distress Subfactor</span></h3>
+    <div class="rpt-section">
+      <div class="rpt-section-head"><span class="rpt-num">03</span><div><h3 class="rpt-section-title">Dimensional — profile</h3><p class="rpt-section-sub">HiTOP-SR Distress subscales</p></div></div>
       <table class="ht-table">
         <thead><tr><th>Subscale</th><th>Raw</th><th>T</th><th>%ile</th><th>Profile</th></tr></thead>
         <tbody id="r-ht-body"></tbody>
@@ -1059,8 +1082,8 @@ html[data-theme="dark"] .band.b-sev  { color: var(--danger); }
     </div>
     </div>
 
-    <div class="report-sec">
-      <h3>Layer 3 — Dimensional–Cognitive<br><span class="report-sec-sub">CANTAB</span></h3>
+    <div class="rpt-section">
+      <div class="rpt-section-head"><span class="rpt-num">04</span><div><h3 class="rpt-section-title">Cognitive</h3><p class="rpt-section-sub">Darren’s results on tasks from the CANTAB domains</p></div></div>
       <div class="ctab-wrap">
         <table class="ctab" style="font-size:.7rem;">
           <thead><tr><th>Measure</th><th>Std</th><th>Chart</th><th>Better</th><th>G/B</th></tr></thead>
@@ -1079,20 +1102,17 @@ html[data-theme="dark"] .band.b-sev  { color: var(--danger); }
       <div class="interp-block"><div class="q">Pattern of impairment</div><p id="r-cog1" style="white-space:pre-wrap;"></p></div>
       <div class="interp-block"><div class="q">Connection to vignette</div><p id="r-cog2" style="white-space:pre-wrap;"></p></div>
     </div>
-    </div>
-
-    <hr />
-    <div class="reflect-block" id="reflect-block">
-      <h3>What changed in your understanding?</h3>
+    <div class="rpt-section reflect-block" id="reflect-block">
+      <div class="rpt-section-head"><span class="rpt-num">05</span><div><h3 class="rpt-section-title">What changed in your understanding?</h3><p class="rpt-section-sub">Your reflection on the three lenses</p></div></div>
       <p class="reflect-note">You approached Darren from three perspectives — a categorical diagnosis, a dimensional profile, and Darren’s results on a cognitive task. Write a few sentences on what exploring the case this way taught you, then mark it complete.</p>
       <textarea id="reflect-text" placeholder="What did looking at Darren's case from three angles add to your understanding?"></textarea>
       <div id="reflect-done" style="display:none;"></div>
       <button class="btn btn-primary" id="reflect-btn" onclick="completeCase()">Complete case →</button>
     </div>
-    <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;padding-top:20px;">
+    </div><!-- /.rpt -->
+    <div class="nav-row" style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;padding-top:20px;">
       <button class="btn btn-secondary" onclick="window.print()">Print</button>
       <button class="btn btn-secondary" onclick="go(1)">← Vignette</button>
-      <button class="btn btn-secondary" onclick="go(0)">↺ Start over</button>
     </div>
     </div>
   </div>
@@ -1101,6 +1121,7 @@ html[data-theme="dark"] .band.b-sev  { color: var(--danger); }
 
 <script>window.CLINCOG_SHELL = { autoCollapse: true, activeCaseId: "depression", breadcrumb: [{ label: "Dashboard", href: "/dashboard.html" }, { label: "Cases", href: "/dashboard.html" }, { label: "Darren", href: "/depression-chat.html" }, { label: "Evaluation" }] };</script>
 <script src="/storage.js"></script>
+<script src="/norms.js"></script>
 <script src="/icons.js"></script>
 <script src="/shell.js?v=2"></script>
 <script src="/toast.js"></script>
@@ -1364,7 +1385,11 @@ function paintContextPanels() {
 let cur=0;
 let maxStepReached=0;
 function stepClick(n) { if (n <= maxStepReached) go(n); }
-function go(n){document.getElementById('pg'+cur).classList.remove('on');cur=n;if(n>maxStepReached)maxStepReached=n;document.getElementById('pg'+cur).classList.add('on');window.scrollTo({top:0,behavior:'smooth'});tick();expandContextCardsByDefault();reapplyPin();updateHelperFabVisibility();document.querySelectorAll('.eval-layout').forEach(el=>el.classList.toggle('rail-compact',n===5));if(n===5){ClinCog.markEvalReached('depression');paintReflectState();}}
+function go(n){
+  // Record how far the student has got, so the dashboard can show the
+  // stage instead of a bare "evaluation reached" flag.
+  try { const _st = {2: 'icd', 3: 'dimensional', 4: 'cognitive', 5: 'report'}[n]; if (_st) ClinCog.setStage('depression', _st); } catch (e) {}
+document.getElementById('pg'+cur).classList.remove('on');cur=n;if(n>maxStepReached)maxStepReached=n;document.getElementById('pg'+cur).classList.add('on');window.scrollTo({top:0,behavior:'smooth'});tick();expandContextCardsByDefault();reapplyPin();updateHelperFabVisibility();document.querySelectorAll('.eval-layout').forEach(el=>el.classList.toggle('rail-compact',n===5));if(n===5){ClinCog.markEvalReached('depression');paintReflectState();}}
 
 function stepFraction() {
   if (cur === 2) {
@@ -1539,6 +1564,19 @@ const HITOP_DEP = [
   { n:'NSSI', k:['hns1', 'hns2', 'hns3', 'hns4', 'hns5', 'hns6'], mean:1.1794, sd:0.394, floor:true },
   { n:'Suicidality', k:['hsu1', 'hsu2', 'hsu3', 'hsu4'], mean:1.3631, sd:0.5317, floor:true }
 ];
+// Instructor overrides. The published values above are the defaults; the
+// benchmarks page stores an override in this browser, and it is applied here
+// so an edited norm actually changes the T-scores the student sees.
+(function applyNormOverrides() {
+  // storage.js declares ClinCog with const, which does not become a
+  // window property, so it has to be tested by name.
+  if (typeof ClinCog === 'undefined' || !window.CLINCOG_NORMS) return;
+  const stored = ClinCog.getBenchmark('hitopDep', window.CLINCOG_NORMS['hitopDep']);
+  const subs = stored && stored.subscales;
+  if (!subs) return;
+  HITOP_DEP.forEach(s => { const v = subs[s.n]; if (v) { s.mean = +v.mean; s.sd = +v.sd; } });
+})();
+
 const HITOP_DEP_KEYS = HITOP_DEP.flatMap(s => s.k);
 const HITOP_DEP_CITATION =
   'HiTOP-SR scoring workbook, "Descriptives prolific final" (Prolific community sample, N = 772–780).';
@@ -1789,5 +1827,20 @@ function updateHelperFabVisibility() {
 }
 </script>
 <script src="/try-tasks.js"></script>
+<script>
+// Report header: the student's name and today's date, filled in here so the
+// printed sheet says who produced it and when.
+(function fillReportHead() {
+  const set = () => {
+    document.querySelectorAll('[id^="rh-student-"]').forEach(el => {
+      el.textContent = (typeof ClinCog !== 'undefined' && ClinCog.getName && ClinCog.getName()) || '\u2014';
+    });
+    document.querySelectorAll('[id^="rh-date-"]').forEach(el => {
+      el.textContent = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+    });
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', set); else set();
+})();
+</script>
 </body>
 </html>

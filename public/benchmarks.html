@@ -79,6 +79,7 @@
 
 <script>window.CLINCOG_SHELL = { activeNav: "benchmarks", breadcrumb: [{ label: "Assessment benchmarks" }] };</script>
 <script src="/storage.js"></script>
+<script src="/norms.js"></script>
 <script src="/icons.js"></script>
 <script src="/shell.js?v=2"></script>
 <script src="/a11y.js"></script>
@@ -91,8 +92,21 @@
 // `subscales` array (used only by HiTOP-Substance, which scores
 // 14 separate subscales) renders as a compact table instead.
 // ============================================================
-const TEST_DEFS = [
-];
+// Built from norms.js, the same defaults the evaluation pages use, so the
+// form and the values in the cases cannot drift apart. Editing here stores an
+// override in this browser; Reset puts the published value back.
+const TEST_DEFS = Object.entries(window.CLINCOG_NORMS).map(([id, def]) => {
+  const base = { id, title: def.title, usedIn: def.usedIn, citationDefault: def.citation };
+  if (def.subscales) {
+    return Object.assign(base, {
+      subscaleLabels: Object.fromEntries(Object.keys(def.subscales).map(k => [k, k])),
+      defaults: { subscales: JSON.parse(JSON.stringify(def.subscales)), citation: def.citation },
+    });
+  }
+  const defaults = { citation: def.citation };
+  def.params.forEach(p => { defaults[p.key] = def[p.key]; });
+  return Object.assign(base, { params: def.params, defaults });
+});
 
 function flashSaved() {
   const el = document.getElementById('save-status');

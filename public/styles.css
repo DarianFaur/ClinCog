@@ -39,7 +39,7 @@ html[data-theme="dark"] {
      the splash drifts away from the rest of the app. */
   --domain-psychosis: #bf768e;
   --domain-mood: #9a80bd;
-  --domain-anxiety: #59987c;
+  --domain-anxiety: #3d98bf;
   --domain-substance: #ab8546;
 
   --warn: #8b3a00;
@@ -85,7 +85,7 @@ html[data-theme="dark"] {
 
   --domain-psychosis: #eaa2b9;
   --domain-mood: #c3ace1;
-  --domain-anxiety: #83c3a6;
+  --domain-anxiety: #71cdf5;
   --domain-substance: #d2b180;
 
   --warn-bg: #2a1c10;
@@ -132,7 +132,7 @@ html, body { transition: background-color .25s ease, color .25s ease; }
 
     --domain-psychosis: #eaa2b9;
     --domain-mood: #c3ace1;
-    --domain-anxiety: #83c3a6;
+    --domain-anxiety: #71cdf5;
     --domain-substance: #d2b180;
 
     --warn-bg: #2a1c10;

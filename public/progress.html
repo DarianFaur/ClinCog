@@ -142,7 +142,7 @@
     const dateFmt = (t) => new Date(t).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 
     let badges = `<span class="badge badge-neutral">${s.exchanges} exchange${s.exchanges === 1 ? "" : "s"}</span>`;
-    if (evalStatus) badges += `<span class="badge badge-info">Reached evaluation · ${dateFmt(evalStatus.reachedAt)}</span>`;
+    if (evalStatus) badges += `<span class="badge badge-info">${s.stageLabel} · ${dateFmt(evalStatus.reachedAt)}</span>`;
     if (complete) badges += `<span class="badge badge-success">Completed · ${dateFmt(complete.completedAt)}</span>`;
 
     return `
@@ -250,7 +250,7 @@
             const bits = [];
             if (c.exchanges) bits.push(c.exchanges + (c.exchanges === 1 ? " message" : " messages"));
             if (c.complete) bits.push("case complete");
-            else if (c.evalReached) bits.push("evaluation reached");
+            else if (c.stage && c.stage !== "not-started") bits.push(c.stageLabel.toLowerCase());
             return '<li><span class="bk-case"></span><span class="bk-bits"></span></li>';
           }).join("")
         : "<li>No case activity in this file.</li>";
@@ -279,7 +279,7 @@
         const bits = [];
         if (c.exchanges) bits.push(c.exchanges + (c.exchanges === 1 ? " message" : " messages"));
         if (c.complete) bits.push("case complete");
-        else if (c.evalReached) bits.push("evaluation reached");
+        else if (c.stage && c.stage !== "not-started") bits.push(c.stageLabel.toLowerCase());
         li.querySelector(".bk-case").textContent = c.label;
         li.querySelector(".bk-bits").textContent = bits.join(" \u00b7 ");
       });
