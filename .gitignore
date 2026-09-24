@@ -1,6 +1,12 @@
 .dev.vars
 # Licensed content that must never be published. The SPIN is used under a
-# written licence that restricts it to the password-protected seminar
-# subdomain; its items are supplied to the Worker as a secret and must not
+# written licence that restricts it to one password-protected instance; its items are supplied to the Worker as a secret and must not
 # be committed. See the "Restricted instruments" section of SELF_HOSTING.md.
 restricted/
+
+# Wrangler's local cache. It holds the Cloudflare account id and name, and a
+# captured request trace with the IP geolocation and TLS fingerprints of
+# whoever last ran wrangler locally. None of it belongs in a public repo,
+# and a copy under public/ would be served to the world.
+.wrangler/
+public/.wrangler/

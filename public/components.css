@@ -671,3 +671,34 @@ body {
 .continue-hero { transition: transform var(--duration-hover) var(--ease-standard), box-shadow var(--duration-hover) var(--ease-standard); }
 .continue-hero:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
 @media (prefers-reduced-motion: reduce) { .continue-hero, .continue-hero:hover { transform: none; transition: none; } }
+
+/* ---------------------------------------------------------------
+   Rating controls, unified.
+   The four cases were built at different times and their answer
+   buttons had drifted apart: 40x40 with square corners in three of
+   them, 44x44 with rounded corners in the fourth, and font sizes
+   from 14 to 16px. They are one control now, at the 44px touch
+   target, whatever markup each page happens to use.
+   --------------------------------------------------------------- */
+.likert label,
+.rating-btn,
+.likert-buttons button,
+.option-row > * {
+  min-width: 44px; min-height: 44px;
+  /* explicit, because two of the pages redefine --radius-sm locally and
+     the controls would end up 6px on one case and 8px on the rest */
+  border-radius: 8px !important;
+  font-size: var(--text-sm) !important;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background var(--duration-hover) var(--ease-standard),
+              box-shadow var(--duration-hover) var(--ease-standard),
+              color var(--duration-hover) var(--ease-standard);
+}
+.likert label:focus-visible,
+.rating-btn:focus-visible,
+.likert-buttons button:focus-visible,
+.option-row > *:focus-visible,
+.likert input:focus-visible + span,
+.likert input:focus-visible ~ span {
+  outline: 2px solid var(--accent); outline-offset: 2px;
+}

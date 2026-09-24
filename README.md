@@ -1,6 +1,6 @@
 # ClinCog
 
-A teaching platform for *Introduction to Clinical Cognitive Science* seminars.
+A teaching platform for clinical psychology and psychopathology courses.
 Students work through the same clinical case three times, through three
 different lenses — categorical diagnosis, dimensional psychological profile,
 and cognitive task performance — to see how the framework you use changes
@@ -48,7 +48,7 @@ client-supplied key:
 |---|---|---|---|
 | Demo | `clincog.net` | Gemini (shared, rate-limited) | anyone trying the platform |
 | Adopted (BYOK) | `clincog.net` + saved key | Anthropic / Gemini / OpenAI, instructor's own | instructors using their own budget |
-| Seminar | `uvt.clincog.net`, password-gated | Anthropic (author's own key) | the author's own students |
+| Course instance | `uvt.clincog.net`, password-gated | Anthropic (author's own key) | the author's own students |
 
 If you want your own fully independent instance instead — your own
 Cloudflare account, your own domain, your own budget, nothing shared with
@@ -87,14 +87,14 @@ of this list scoped to a single self-hosted instance, which needs far
 fewer of these.
 
 ```
-ANTHROPIC_API_KEY          seminar tier (your own students)
+ANTHROPIC_API_KEY          course tier (your own students)
 ICD_CLIENT_ID
 ICD_CLIENT_SECRET
 GEMINI_API_KEY_DEMO         demo tier
 ICD_CLIENT_ID_DEMO
 ICD_CLIENT_SECRET_DEMO
 TURNSTILE_SECRET_KEY        bot verification, all tiers
-STUDENT_ACCESS_PASSWORD     gates the seminar subdomain
+STUDENT_ACCESS_PASSWORD     gates the course instance  
 ```
 
 ## Stack
@@ -137,7 +137,7 @@ produces has diagnostic standing.
 
 ## Attribution
 
-Built by Darian Faur (FPSE, UVT Timișoara) for the *Introduction to Clinical
-Cognitive Science* seminar. If you deploy your own instance — see
+Built by Darian Faur (FPSE, UVT Timișoara) for teaching clinical
+cognitive science; the platform itself is general-purpose. If you deploy your own instance — see
 `SELF_HOSTING.md` — attribution on your About page is appreciated but not
 required by the MIT license. The CC BY-NC-SA content does require attribution.

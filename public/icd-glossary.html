@@ -77,46 +77,200 @@
   <div id="gl-no-results" class="gl-no-results">No terms match that search.</div>
 
   <!-- ============ HOW ICD-11 IS BUILT ============ -->
-  <div class="gl-section" id="structure">
-    <div class="gl-section-head"><span class="gl-dot"></span><span class="text-card-title" style="font-size:var(--text-base);">How ICD-11 is built</span></div>
-    <div class="gl-section-sub">The classification's own architecture — foundation, linearizations, and how codes are assembled</div>
-
+  <div class="gl-section" id="thought">
+    <div class="gl-section-head"><span class="gl-dot"></span><span class="text-card-title" style="font-size:var(--text-base)">Thought and its content</span></div>
+    <div class="gl-section-sub">What the person believes and how the thinking is organised.</div>
     <div class="gl-term-list"><div>
-
-      <div class="gl-term" data-term="foundation component">
-        <div class="gl-term-name">Foundation Component</div>
-        <div class="gl-term-def">The entire WHO-FIC universe: a single, multidimensional collection of every disease, disorder, injury, sign, symptom, and related entity WHO maintains, with each entity allowed to sit under more than one parent at once (e.g., a condition that is both an infection and a brain disease). Every linearization — including MMS, the one most people mean when they say "ICD-11" — is generated from this one shared foundation.</div>
+      <div class="gl-term" data-term="delusion">
+        <div class="gl-term-name">Delusion</div>
+        <div class="gl-term-def">a belief that is demonstrably untrue or not shared by others, usually based on incorrect inference about external reality.</div>
       </div>
-
-      <div class="gl-term" data-term="linearization mms">
-        <div class="gl-term-name">Linearization</div>
-        <div class="gl-term-def">A single-parent, tabular-list "cut" through the Foundation, built for a specific purpose — the kind of flat, printable hierarchy classic ICD volumes always were. <strong>MMS</strong> (Mortality and Morbidity Statistics) is the primary linearization: the main, general-purpose version used for coding and statistical reporting worldwide, and what the ICD-11 API in this course's CDDR guide searches by default. Other linearizations exist for primary care, dermatology, and other specialties.</div>
+      <div class="gl-term" data-term="referential thinking">
+        <div class="gl-term-name">Referential thinking</div>
+        <div class="gl-term-def">ideation, not held with delusional intensity, that random or coincidental events are of particular and unusual significance to the person.</div>
       </div>
-
-      <div class="gl-term" data-term="stem code precoordination">
-        <div class="gl-term-name">Stem code / Precoordination</div>
-        <div class="gl-term-def">A stem code is a single, self-contained code that already bundles several pieces of clinical detail into one entity — e.g., a single code for "Adenocarcinoma of duodenum" that combines both the tissue type and the anatomical site. Building detail into one code like this is called precoordination.</div>
+      <div class="gl-term" data-term="suspiciousness">
+        <div class="gl-term-name">Suspiciousness</div>
+        <div class="gl-term-def">ideation in which the behaviour of others is viewed with anxiety, mistrust or hostility, and perceived as potentially threatening.</div>
       </div>
-
-      <div class="gl-term" data-term="extension code postcoordination">
-        <div class="gl-term-name">Extension code / Postcoordination</div>
-        <div class="gl-term-def">Postcoordination is combining two or more codes into one cluster to describe a case more precisely than a single stem code allows — e.g., adding laterality or severity onto a diagnosis. Extension codes are the add-on codes used to do this; ICD-11 is the first ICD revision built to support this natively.</div>
+      <div class="gl-term" data-term="paranoid ideation">
+        <div class="gl-term-name">Paranoid ideation</div>
+        <div class="gl-term-def">ideation, not held with delusional intensity, involving suspiciousness or beliefs of being harassed, persecuted or unfairly treated by others.</div>
       </div>
-
-      <div class="gl-term" data-term="grouping category residual other specified unspecified">
-        <div class="gl-term-name">Grouping category, and "other specified" / "unspecified"</div>
-        <div class="gl-term-def">Some entries in a linearization exist only to organize other entries underneath them (chapters and blocks) and cannot themselves be assigned as a diagnosis — these are grouping categories. Within most groupings, "other specified" and "unspecified" residual categories catch presentations that don't fit any named category, or where information is incomplete.</div>
+      <div class="gl-term" data-term="disorganized thinking">
+        <div class="gl-term-name">Disorganized thinking</div>
+        <div class="gl-term-def">a disturbance in the associative thought process, typically manifested in speech, in which the person shifts suddenly from one topic to another that is unrelated or minimally related to the first, and gives no indication of being aware of the disconnectedness or illogicality of their thinking.</div>
       </div>
-
+      <div class="gl-term" data-term="disorganized behaviour">
+        <div class="gl-term-name">Disorganized behaviour</div>
+        <div class="gl-term-def">behaviour including posture, gait and other activity that is unpredictable or not goal-directed (e.g.</div>
+      </div>
+      <div class="gl-term" data-term="thought withdrawal">
+        <div class="gl-term-name">Thought withdrawal</div>
+        <div class="gl-term-def">the experience that the person’s thoughts are being removed by an outside person or force.</div>
+      </div>
     </div></div>
-
-    <div class="gl-links" style="margin-top:14px;">
-      <a href="https://icd.who.int/en" target="_blank" rel="noopener">ICD-11 for Mortality and Morbidity Statistics — official browser</a>
-      <a href="https://icd.who.int/icdapi/docs/ContentModelGuide.pdf" target="_blank" rel="noopener">WHO-FIC Content Model Reference Guide (PDF)</a>
-    </div>
   </div>
 
-  <!-- ============ CDDR WRITE-UP STRUCTURE ============ -->
+  <div class="gl-section" id="affect">
+    <div class="gl-section-head"><span class="gl-dot"></span><span class="text-card-title" style="font-size:var(--text-base)">Affect and mood</span></div>
+    <div class="gl-section-sub">How feeling is experienced and how it shows.</div>
+    <div class="gl-term-list"><div>
+      <div class="gl-term" data-term="depressed mood">
+        <div class="gl-term-name">Depressed mood</div>
+        <div class="gl-term-def">a negative affective state characterized by low mood, sadness, emptiness, hopelessness or dejection.</div>
+      </div>
+      <div class="gl-term" data-term="elevated mood">
+        <div class="gl-term-name">Elevated mood</div>
+        <div class="gl-term-def">a positive mood state typically characterized by increased energy and self-esteem, which may be out of proportion to the individual’s life circumstances.</div>
+      </div>
+      <div class="gl-term" data-term="anhedonia">
+        <div class="gl-term-name">Anhedonia</div>
+        <div class="gl-term-def">an inability to experience pleasure from normally pleasurable activities.</div>
+      </div>
+      <div class="gl-term" data-term="irritability">
+        <div class="gl-term-name">Irritability</div>
+        <div class="gl-term-def">a mood state characterized by being easily annoyed and provoked to anger, out of proportion to the circumstances.</div>
+      </div>
+      <div class="gl-term" data-term="blunted affect">
+        <div class="gl-term-name">Blunted affect</div>
+        <div class="gl-term-def">a severe reduction in the expressive range and intensity of affect, but less than is observed in Flat affect.</div>
+      </div>
+      <div class="gl-term" data-term="flat affect">
+        <div class="gl-term-name">Flat affect</div>
+        <div class="gl-term-def">absence or near absence of any sign of affective expression.</div>
+      </div>
+      <div class="gl-term" data-term="labile affect">
+        <div class="gl-term-name">Labile affect</div>
+        <div class="gl-term-def">marked variability in emotional expression, with repeated, rapid and abrupt shifts.</div>
+      </div>
+      <div class="gl-term" data-term="constricted affect">
+        <div class="gl-term-name">Constricted affect</div>
+        <div class="gl-term-def">a marked reduction in the expressive range and intensity of affect, but less than is observed in Blunted affect.</div>
+      </div>
+      <div class="gl-term" data-term="inappropriate affect">
+        <div class="gl-term-name">Inappropriate affect</div>
+        <div class="gl-term-def">affective expression that is discordant with the content of the person’s speech or ideation, or incompatible with the demands of a particular situation.</div>
+      </div>
+      <div class="gl-term" data-term="apathy">
+        <div class="gl-term-name">Apathy</div>
+        <div class="gl-term-def">a reduction or lack of feeling, emotion, interest or concern – a state of indifference.</div>
+      </div>
+      <div class="gl-term" data-term="demoralization">
+        <div class="gl-term-name">Demoralization</div>
+        <div class="gl-term-def">loss of confidence in one’s ability to cope, with associated feelings of helplessness, hopelessness and discouragement.</div>
+      </div>
+      <div class="gl-term" data-term="hopelessness">
+        <div class="gl-term-name">Hopelessness</div>
+        <div class="gl-term-def">little or no belief in a positive future.</div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="gl-section" id="drive">
+    <div class="gl-section-head"><span class="gl-dot"></span><span class="text-card-title" style="font-size:var(--text-base)">Drive and psychomotor activity</span></div>
+    <div class="gl-section-sub">Motivation, movement and the pace of behaviour.</div>
+    <div class="gl-term-list"><div>
+      <div class="gl-term" data-term="avolition">
+        <div class="gl-term-name">Avolition</div>
+        <div class="gl-term-def">a general lack of drive, or lack of motivation to pursue meaningful goals (e.g. as evidenced by limited participation in work, school or socializing with others).</div>
+      </div>
+      <div class="gl-term" data-term="psychomotor agitation">
+        <div class="gl-term-name">Psychomotor agitation</div>
+        <div class="gl-term-def">excessive motor activity, usually manifested in purposeless behaviours such as fidgeting, shifting, fiddling, inability to sit or stand still, or wringing of the hands.</div>
+      </div>
+      <div class="gl-term" data-term="psychomotor retardation">
+        <div class="gl-term-name">Psychomotor retardation</div>
+        <div class="gl-term-def">a visible generalized slowing of movements and speech.</div>
+      </div>
+      <div class="gl-term" data-term="tiredness">
+        <div class="gl-term-name">Tiredness</div>
+        <div class="gl-term-def">a feeling of reduced alertness and an accompanying decrease in mental acuity, in some cases resulting in an impulse or tendency to fall asleep.</div>
+      </div>
+      <div class="gl-term" data-term="social withdrawal">
+        <div class="gl-term-name">Social withdrawal</div>
+        <div class="gl-term-def">a retreat from relationships and other social interactions.</div>
+      </div>
+      <div class="gl-term" data-term="mutism">
+        <div class="gl-term-name">Mutism</div>
+        <div class="gl-term-def">a lack of verbal output that may be generalized or restricted to specific situations.</div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="gl-section" id="anxiety">
+    <div class="gl-section-head"><span class="gl-dot"></span><span class="text-card-title" style="font-size:var(--text-base)">Anxiety and fear</span></div>
+    <div class="gl-section-sub">The terms that separate fear, anxiety and worry from one another.</div>
+    <div class="gl-term-list"><div>
+      <div class="gl-term" data-term="fear">
+        <div class="gl-term-name">Fear</div>
+        <div class="gl-term-def">an emotional response to perceived imminent threat or danger associated with urges to flee or fight.</div>
+      </div>
+      <div class="gl-term" data-term="anxiety">
+        <div class="gl-term-name">Anxiety</div>
+        <div class="gl-term-def">apprehensiveness or anticipation of future danger or misfortune accompanied by a feeling of worry, distress or somatic symptoms of tension.</div>
+      </div>
+      <div class="gl-term" data-term="worry">
+        <div class="gl-term-name">Worry</div>
+        <div class="gl-term-def">unpleasant thoughts that are difficult to control, related to anticipated potential negative events.</div>
+      </div>
+      <div class="gl-term" data-term="panic attack">
+        <div class="gl-term-name">Panic attack</div>
+        <div class="gl-term-def">a discrete episode of intense fear or apprehension accompanied by the rapid and concurrent onset of a number of characteristic symptoms.</div>
+      </div>
+      <div class="gl-term" data-term="avoidance behaviour">
+        <div class="gl-term-name">Avoidance behaviour</div>
+        <div class="gl-term-def">the act of keeping away from circumstances, situations or stimuli that cause anxiety or other negative emotions in the individual.</div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="gl-section" id="cognition">
+    <div class="gl-section-head"><span class="gl-dot"></span><span class="text-card-title" style="font-size:var(--text-base)">Cognition</span></div>
+    <div class="gl-section-sub">What the cognitive layer of each case is trying to measure.</div>
+    <div class="gl-term-list"><div>
+      <div class="gl-term" data-term="poor concentration">
+        <div class="gl-term-name">Poor concentration</div>
+        <div class="gl-term-def">difficulty focusing attention and sustaining the mental energy necessary to accomplish a task or goal.</div>
+      </div>
+      <div class="gl-term" data-term="distractibility">
+        <div class="gl-term-name">Distractibility</div>
+        <div class="gl-term-def">difficulty focusing on tasks, with attention being easily diverted by extraneous stimuli.</div>
+      </div>
+      <div class="gl-term" data-term="impaired executive functioning">
+        <div class="gl-term-name">Impaired executive functioning</div>
+        <div class="gl-term-def">impairment in higher-level cognitive abilities, such as planning, sequencing, concept formation, abstracting and decision-making.</div>
+      </div>
+      <div class="gl-term" data-term="perseveration">
+        <div class="gl-term-name">Perseveration</div>
+        <div class="gl-term-def">the persistent repetition of previously used words, phrases or details that are not responsive to the demands of the situation.</div>
+      </div>
+      <div class="gl-term" data-term="impaired abstract thinking">
+        <div class="gl-term-name">Impaired abstract thinking</div>
+        <div class="gl-term-def">an inability to use concepts and to make and understand generalizations, such as the identifying the properties or pattern shared by a variety of specific items or events.</div>
+      </div>
+      <div class="gl-term" data-term="impaired judgement">
+        <div class="gl-term-name">Impaired judgement</div>
+        <div class="gl-term-def">a deficit in the capacity to make sound, reasoned and responsible decisions.</div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="gl-section" id="risk">
+    <div class="gl-section-head"><span class="gl-dot"></span><span class="text-card-title" style="font-size:var(--text-base)">Risk</span></div>
+    <div class="gl-section-sub">Terms that carry clinical weight and are easy to use loosely.</div>
+    <div class="gl-term-list"><div>
+      <div class="gl-term" data-term="suicidal ideation">
+        <div class="gl-term-name">Suicidal ideation</div>
+        <div class="gl-term-def">thoughts, ideas or ruminations about the possibility of ending one’s life, ranging from thinking that one would be better off dead to formulation of elaborate plans.</div>
+      </div>
+      <div class="gl-term" data-term="non-suicidal self-injury">
+        <div class="gl-term-name">Non-suicidal self-injury</div>
+        <div class="gl-term-def">intentional self-inflicted injury to the body – most commonly cutting, scraping, burning, biting or hitting – with the expectation that the injury will lead to only minor physical harm.</div>
+      </div>
+    </div></div>
+  </div>
+
   <div class="gl-section" id="cddr-structure">
     <div class="gl-section-head"><span class="gl-dot"></span><span class="text-card-title" style="font-size:var(--text-base);">The parts of a CDDR diagnostic write-up</span></div>
     <div class="gl-section-sub">Every disorder in the CDDR manual is described using this same set of headings</div>
@@ -188,6 +342,13 @@
 <script>window.CLINCOG_SHELL = { activeNav: "icd-glossary", breadcrumb: [{ label: "ICD-11 glossary" }] };</script>
 <script src="/shell.js?v=2"></script>
 <script src="/a11y.js"></script>
+  <p style="font-size:var(--text-xs);color:var(--text-tertiary);line-height:1.7;margin:var(--sp-6) 0 0;">
+    Definitions in the clinical sections are reproduced from the symptom glossary of the World Health
+    Organization’s <em>Clinical descriptions and diagnostic requirements for ICD-11 mental, behavioural and
+    neurodevelopmental disorders</em> (Geneva: WHO; 2024), licensed under
+    <a href="https://creativecommons.org/licenses/by-nc-nd/3.0/igo/" target="_blank" rel="noopener">CC BY-NC-ND 3.0 IGO</a>.
+    Terms the manual does not define in that glossary are not listed here rather than paraphrased.
+  </p>
 <script>
 (function () {
   const input = document.getElementById('gl-search');

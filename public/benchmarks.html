@@ -56,6 +56,15 @@
   .bm-citation-field textarea { width: 100%; box-sizing: border-box; min-height: 56px; padding: 12px 14px; border: none; border-radius: var(--radius-md); font-family: var(--font-sans); font-size: var(--text-sm); color: var(--text-secondary); background: var(--bg-surface-alt); line-height: 1.65; resize: none; overflow: hidden; }
   .bm-citation-field textarea:focus { outline: 2px solid var(--accent); outline-offset: -2px; color: var(--text-primary); }
   .bm-citation-hint { font-size: var(--text-xs); color: var(--text-tertiary); margin-top: 6px; }
+
+/* At 320px the editable norm tables pushed past the page; they scroll
+   inside their own box instead, as the reference tables elsewhere do. */
+.bm-subscale-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.bm-subscale-table { min-width: 260px; }
+@media (max-width: 380px) {
+  .bm-subscale-table { font-size: var(--text-xs); }
+  .bm-subscale-table input[type="number"] { max-width: 72px; }
+}
 </style>
 </head>
 <body>
@@ -149,10 +158,10 @@ function renderTest(def) {
       </tr>`;
     }).join('');
     bodyHtml = `
-      <table class="bm-subscale-table">
+      <div class="bm-subscale-wrap"><table class="bm-subscale-table">
         <thead><tr><th>Subscale</th><th>Mean</th><th>SD</th></tr></thead>
         <tbody>${rows}</tbody>
-      </table>`;
+      </table></div>`;
   } else if (def.subgroups) {
     bodyHtml = def.subgroups.map(sg => `
       <div class="bm-subgroup-label">${sg.label}</div>
