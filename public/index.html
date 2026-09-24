@@ -6,46 +6,271 @@
 <script src="/theme-init.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ClinCog · Clinical Cognition — Conceptualization and Assessment</title>
+<meta name="description" content="An open teaching platform for clinical psychopathology: interview simulated patients, then apply ICD-11 criteria, dimensional questionnaires and a cognitive task to the same case.">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/favicon-180.png">
 
 <link rel="stylesheet" href="/tokens.css">
 <link rel="stylesheet" href="/components.css">
-<link rel="stylesheet" href="/styles.css">
 <style>
-  /* The splash used to carry its own copy of the palette, which is why it
-     drifted from the app. It now takes the real tokens and only maps the
-     legacy variable names this page's rules still use. */
-  :root {
-    --bg: var(--bg-app);
-    --surface: var(--bg-surface);
-    --surface-sunken: var(--bg-surface-alt);
-    --line: var(--border);
-    --ink: var(--text-primary);
-    --ink-muted: var(--text-secondary);
-    --ink-faint: var(--text-tertiary);
-    --brand: var(--accent);
-    --brand-ink: var(--accent-ink);
-    --sans: var(--font-sans);
-    --mono: var(--font-mono);
+  /* ============================================================
+     Landing gate.
+
+     Stylesheets deliberately match the dashboard: tokens.css +
+     components.css, nothing else. The old splash loaded styles.css
+     as well, and styles.css repaints .btn-primary as a green
+     gradient and .btn-secondary as an outlined pill - which is why
+     the first screen's buttons looked nothing like the buttons the
+     student meets one click later. Without it, .btn-primary is the
+     same near-black pill as "Start case" and "Evaluate".
+
+     Everything page-specific is scoped to .lp-* so it cannot collide
+     with shared rules, and every colour comes from tokens.css.
+     ============================================================ */
+  body {
+    background: var(--bg-app);
+    color: var(--text-primary);
+    margin: 0;
+    font-family: var(--font-sans);
   }
-  /* styles.css also has a dark block of its own, with a bluish surface;
-     that selector is more specific than :root, so the mapping is repeated
-     here to keep the splash on the app's warm dark grey. */
-  html[data-theme="dark"] {
-    --bg: var(--bg-app);
-    --surface: var(--bg-surface);
-    --surface-sunken: var(--bg-surface-alt);
-    --line: var(--border);
-    --ink: var(--text-primary);
-    --ink-muted: var(--text-secondary);
-    --ink-faint: var(--text-tertiary);
-    --brand: var(--accent);
-    --brand-ink: var(--accent-ink);
+  /* A single very quiet wash behind the headline. The panel carries
+     the visible gradient, so this stays near the threshold. */
+  .lp-page::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(900px 620px at 8% -12%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 70%);
   }
-  body { background: var(--bg-app); color: var(--text-primary); }
-  .splash-card { border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
+  .lp-page {
+    position: relative;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    padding: clamp(20px, 4vw, 48px);
+  }
+  .lp-inner {
+    position: relative;
+    margin: auto;
+    width: 100%;
+    max-width: 1140px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr);
+    gap: clamp(32px, 5vw, 72px);
+    align-items: center;
+    animation: lp-rise .55s cubic-bezier(.2,.8,.2,1) both;
+  }
+  @keyframes lp-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+  /* ---- left column ---- */
+  .lp-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: clamp(24px, 4vw, 38px);
+  }
+  .lp-brand img { width: 40px; height: auto; display: block; }
+  .lp-brand strong {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -.015em;
+    color: var(--text-primary);
+  }
+  /* Same treatment as the dashboard's "CONTINUE YOUR CASE · WEEK 1 ·
+     PSYCHOSIS" eyebrow: mono, uppercase, tracked, and muted rather
+     than accent-coloured. */
+  .lp-eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--text-eyebrow-size);
+    font-weight: var(--text-eyebrow-weight);
+    letter-spacing: var(--text-eyebrow-spacing);
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin: 0 0 14px;
+  }
+  .lp-title {
+    font-size: clamp(2rem, 1.35rem + 2.6vw, 3.25rem);
+    line-height: 1.08;
+    letter-spacing: -.028em;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 18px;
+  }
+  /* A deliberate line break in the headline, dropped on narrow
+     screens where the natural wrap reads better. */
+  .lp-break { display: block; }
+  @media (max-width: 760px) { .lp-break { display: none; } }
+  .lp-lead {
+    font-size: var(--text-lg);
+    line-height: 1.6;
+    color: var(--text-secondary);
+    max-width: 34em;
+    margin: 0 0 clamp(26px, 3.5vw, 36px);
+  }
+
+  /* ---- the name gate ----
+     The field copies the app's own text fields (benchmarks.html):
+     filled with --bg-surface-alt, no border, --radius-md, and an
+     inset accent outline on focus. The button is plain .btn
+     .btn-primary, so it is the same control as "Start case" on the
+     dashboard - no local overrides at all. */
+  .lp-form { display: flex; gap: var(--sp-3); max-width: 460px; align-items: stretch; }
+  .lp-form input {
+    flex: 1;
+    min-width: 0;
+    height: 44px;
+    box-sizing: border-box;
+    padding: 0 var(--sp-4);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-family: var(--font-sans);
+    background: var(--bg-surface-alt);
+    color: var(--text-primary);
+  }
+  .lp-form input::placeholder { color: var(--text-tertiary); }
+  /* Monochrome focus ring, matching the near-black of the Continue
+     button beside it rather than the accent. */
+  .lp-form input:focus {
+    outline: 2px solid var(--text-primary);
+    outline-offset: -2px;
+    background: var(--bg-surface);
+  }
+  .lp-gate-note {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    margin: 12px 0 0;
+    max-width: 44ch;
+  }
+  /* The secondary action is a real .btn-secondary, the same grey pill
+     as "Conceptualize" on a case card. Only the spacing is local. */
+  .lp-help { margin-top: clamp(22px, 3vw, 30px); }
+
+  /* ---- right column ----
+     Same construction as the dashboard's "Continue your case" hero: a
+     .card surface with a radial wash of the accent laid over it from
+     the top-right corner, and the brain mark as quiet decoration. The
+     hero keeps its wash at .07 because it sits among other cards; this
+     panel is the only large surface on the page, so it carries a
+     second stop and a little more opacity - still the same recipe and
+     the same colour, never a blue tint. */
+  .lp-panel {
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: clamp(28px, 3.4vw, 40px);
+    box-shadow: var(--shadow-sm);
+  }
+  /* The wash is strongest across the top, behind the mark, and is gone
+     before the list begins - a tint sitting under body text costs
+     contrast, and the smallest text here is 13px. */
+  .lp-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(158deg, color-mix(in srgb, var(--accent) 30%, transparent) 0%, transparent 46%),
+      radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 52%);
+  }
+  /* On the dark theme the same mix sits on a dark surface, where it
+     reads as grey haze rather than as a tint; halve it. */
+  html[data-theme="dark"] .lp-panel::before {
+    background:
+      linear-gradient(150deg, color-mix(in srgb, var(--accent) 13%, transparent) 0%, transparent 58%),
+      radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--accent) 11%, transparent), transparent 60%);
+  }
+  .lp-panel-mark {
+    position: relative;
+    display: block;
+    width: clamp(112px, 15vw, 148px);
+    height: auto;
+    margin: 0 auto clamp(24px, 3vw, 30px);
+    opacity: .85;
+  }
+  /* Hairline-separated rows rather than cards inside a card - nesting
+     surfaces here would read as a table. */
+  .lp-lenses { position: relative; display: grid; margin: 0; padding: 0; list-style: none; }
+  .lp-lens {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--sp-4);
+    align-items: start;
+    padding: var(--sp-4) 0;
+    border-top: 1px solid var(--border);
+  }
+  .lp-lens:first-child { border-top: none; padding-top: 0; }
+  .lp-lens:last-child { padding-bottom: 0; }
+  /* the dashboard's .lens-icon chip, with a number instead of a glyph */
+  .lp-lens-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-md);
+    background: var(--accent-soft);
+    /* the numeral is text, not an icon, so it takes the body ink
+       rather than --accent-ink, which would land near 3.9:1 */
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .lp-lens-title { font-size: var(--text-sm); font-weight: 600; color: var(--text-primary); margin: 0 0 3px; }
+  .lp-lens-desc { font-size: var(--text-xs); line-height: 1.55; color: var(--text-secondary); margin: 0; }
+
+  /* ---- footnotes, in normal flow so nothing can overlap ---- */
+  .lp-foot {
+    position: relative;
+    margin: clamp(32px, 4vw, 48px) auto 0;
+    width: 100%;
+    max-width: 1140px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 22px;
+    align-items: baseline;
+    font-size: var(--text-xs);
+    line-height: 1.5;
+    color: var(--text-tertiary);
+  }
+  .lp-foot p { margin: 0; max-width: 78ch; }
+  .lp-foot a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+  .lp-foot a:hover { color: var(--accent-ink); }
+
+  .lp-sr {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+
+  /* ---- stacked layout ---- */
+  @media (max-width: 900px) {
+    .lp-inner { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+    /* the form stays near the top; the panel follows it */
+    .lp-col-main { order: 1; }
+    .lp-panel { order: 2; }
+    .lp-panel-mark { width: 104px; margin-bottom: 22px; }
+    .lp-lead { font-size: var(--text-base); }
+  }
+  @media (max-width: 460px) {
+    /* stacked: the input must not keep flex:1, or a column flex
+       container resolves its basis against the height and collapses
+       the field to a sliver */
+    .lp-form { flex-direction: column; }
+    .lp-form input { flex: none; width: 100%; }
+    .lp-form .btn { width: 100%; justify-content: center; }
+    .lp-brand img { width: 34px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lp-inner { animation: none; }
+  }
 </style>
 <script>
   // If this student already has a name saved on this device, skip the
@@ -56,22 +281,69 @@
   }
 </script>
 </head>
-<body class="bg-mesh">
+<body>
 
-<main class="splash-page">
-  <div class="splash-card">
-  <img class="splash-mark" src="/brain-logo-full.png" alt="ClinCog" />
+<main class="lp-page">
+  <div class="lp-inner">
 
-  <h1>ClinCog</h1>
-  <p class="tagline">Clinical Cognition — Conceptualization &amp; Assessment</p>
+    <div class="lp-col-main">
+      <div class="lp-brand">
+        <img src="/brain-logo-full.png" alt="" />
+        <strong>ClinCog</strong>
+      </div>
 
-  <form class="splash-form" id="name-form">
-    <input id="name-input" type="text" placeholder="Your first name" autocomplete="off" autofocus />
-    <button type="submit" class="btn btn-primary">Continue</button>
-  </form>
+      <p class="lp-eyebrow">Clinical Cognition — Conceptualization &amp; Assessment</p>
 
-  <a class="splash-help" href="/help.html">Need help getting started?</a>
-  <p class="splash-privacy-note">Your progress is stored only in this browser — no account, no server-side records. Messages you send to simulated patients are processed by a third-party AI provider to generate responses; please don't enter real patient information.</p>
+      <h1 class="lp-title">Work a case the way <span class="lp-break"></span>clinicians actually do.</h1>
+
+      <p class="lp-lead">
+        An open teaching platform for clinical psychopathology. You interview simulated
+        patients, then bring three formal lenses to the same case — ICD-11 criteria,
+        dimensional questionnaires and a cognitive task — and write up what you found.
+      </p>
+
+      <form class="lp-form" id="name-form">
+        <label class="lp-sr" for="name-input">Your first name</label>
+        <input id="name-input" type="text" placeholder="Your first name" autocomplete="given-name" autofocus />
+        <button type="submit" class="btn btn-primary">Continue</button>
+      </form>
+      <p class="lp-gate-note">Your first name only labels your own work on this device. There is no account and nothing to sign up for.</p>
+
+      <a class="btn btn-secondary lp-help" href="/help.html">Need help getting started?</a>
+    </div>
+
+    <div class="lp-panel">
+      <img class="lp-panel-mark" src="/brain-logo-full.png" alt="" />
+      <ul class="lp-lenses">
+        <li class="lp-lens">
+          <span class="lp-lens-num">01</span>
+          <div>
+            <p class="lp-lens-title">Categorical</p>
+            <p class="lp-lens-desc">ICD-11 diagnostic criteria, reproduced verbatim, ask whether the case meets requirements for a named diagnosis.</p>
+          </div>
+        </li>
+        <li class="lp-lens">
+          <span class="lp-lens-num">02</span>
+          <div>
+            <p class="lp-lens-title">Dimensional</p>
+            <p class="lp-lens-desc">Standardized questionnaires place the case on continuous severity scales, independent of any single label.</p>
+          </div>
+        </li>
+        <li class="lp-lens">
+          <span class="lp-lens-num">03</span>
+          <div>
+            <p class="lp-lens-title">Cognitive</p>
+            <p class="lp-lens-desc">You complete a short cognitive task yourself, and connect that experience to the case's presentation.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="lp-foot">
+    <p>Progress is stored only in this browser — no account, no server-side records. Messages you send to simulated patients are processed by a third-party AI provider to generate responses; please don't enter real patient information.</p>
+    <p>For educational use only. Originally created at clincog.net. <a href="/about.html">About ClinCog</a></p>
   </div>
 </main>
 
@@ -87,6 +359,5 @@
 </script>
 
 <script src="/a11y.js"></script>
-<p class="start-disclaimer" style="position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));width:max-content;max-width:calc(100% - 160px);margin:0;text-align:center;font-size:12px;line-height:1.4;color:var(--text-tertiary);pointer-events:none;">For educational use only. Originally created at clincog.net.</p>
 </body>
 </html>
