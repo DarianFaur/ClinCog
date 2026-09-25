@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="color-scheme" content="light dark">
+<script src="/theme-init.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClinCog · Programming a cognitive task yourself</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/favicon-180.png">
+
+<link rel="preload" as="script" href="/shell.js?v=2">
+<link rel="preload" as="style" href="/shell.css">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
+<style>
+  /* Prose-heavy page: narrow the column so running text fills its box
+     instead of stopping short inside a wide one. */
+  :root { --shell-content-max: 1080px; }
+
+  .ct-section { margin-bottom: var(--sp-8); }
+  /* Every run of prose on this page caps at the reading measure. Before
+     this, the descriptive paragraphs ran the full content width. */
+  /* Only running body copy caps. Notes, captions and reference lists sit
+     inside a card that is already narrow, so capping them again strands
+     them at just over half the card's width. */
+  .ct-section > p { max-width: var(--measure); }
+  .ct-section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .ct-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .ct-section-sub { font-size: var(--text-sm); color: var(--text-tertiary); margin: 4px 0 var(--sp-5) 20px; }
+  .ct-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); margin: var(--sp-4) 0; }
+  /* On narrow phones the table keeps its natural width and scrolls inside its
+     own container, so words stay whole and the page itself never scrolls sideways. */
+  /* Long URLs and DOIs in the reference lists may break across lines on narrow
+     phones; ordinary words are unaffected, since break-word only breaks a run
+     that cannot fit on a line of its own. */
+  li, li a { overflow-wrap: break-word; }
+  .ct-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: var(--sp-4) 0; contain: inline-size; }
+  .ct-table-wrap > .ct-table { margin: 0; }
+  @media (max-width: 413px) { .ct-table th, .ct-table td { padding-left: 8px; padding-right: 8px; } }
+  .ct-table th { text-align: left; padding: 8px 10px 10px; border-bottom: none; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: .06em; font-weight: 500; font-size: var(--text-xs); }
+  .ct-table td { padding: 10px; border-bottom: none; box-shadow: inset 0 -1px 0 var(--border); vertical-align: top; }
+  .ct-table tr:last-child td { box-shadow: none; }
+  .ct-table .used { display: inline-block; margin-top: 3px; font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 999px; }
+  .ct-links { display: flex; flex-direction: column; gap: 6px; margin: 12px 0; }
+  .ct-links a { font-size: var(--text-sm); font-weight: 500; color: var(--accent-ink); text-decoration: none; }
+  .ct-links a:hover { text-decoration: underline; }
+  .ct-refs { margin: 10px 0 0; padding-left: 18px; font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.9; }
+  .ct-refs li { margin-bottom: 6px; }
+  .ct-note { margin-top: var(--sp-4); padding: var(--sp-4) var(--sp-5); background: var(--bg-surface-alt); border-radius: var(--radius-md); font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.7; }
+  .ct-subhead { font-size: var(--text-base); font-weight: 600; letter-spacing: -.008em; color: var(--text-primary); margin: var(--sp-6) 0 var(--sp-2); }
+  .ct-toc { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: var(--sp-6); }
+  .ct-toc a { font-size: var(--text-sm); font-weight: 500; padding: 8px 14px; border-radius: var(--radius-pill); border: none; background: var(--bg-surface); box-shadow: var(--shadow-xs); color: var(--text-secondary); text-decoration: none; transition: background var(--duration-hover) var(--ease-standard), color var(--duration-hover) var(--ease-standard); }
+  .ct-toc a:hover { background: var(--domain-anxiety-soft); color: var(--accent-ink); }
+
+  .ct-chart { margin: var(--sp-5) 0; }
+  .ct-chart svg { width: 100%; height: auto; display: block; }
+  .ct-chart-caption { font-size: var(--text-sm); color: var(--text-tertiary); margin-top: var(--sp-3); line-height: 1.65; }
+  .ct-chart-caption strong { color: var(--text-secondary); }
+  /* Back to the index - the topbar breadcrumb carries the same link, but
+     a reader who has scrolled to the bibliography should not have to
+     scroll back up to leave. */
+  .ct-back { display: inline-flex; align-items: center; gap: 8px; margin-top: var(--sp-7); }
+</style>
+</head>
+<body>
+
+<div id="shell-content">
+
+  <div class="ct-section-head"><span class="ct-dot" style="background:var(--accent);"></span><span class="text-card-title" style="font-size:var(--text-base);">Programming a cognitive task yourself</span></div>
+  <div class="ct-section-sub">Open platforms for building your own reaction-time tasks and questionnaires</div>
+
+    <div class="card"><div class="card-body">
+      <p class="text-secondary" style="margin:0 0 var(--sp-4);">
+        The batteries documented in this section are commercial or licence-restricted, and the versions inside ClinCog are
+        open re-implementations written for teaching. If you want to build a task of your own &ndash; for a class
+        demonstration, a bachelor&rsquo;s project or a study &ndash; you do not need either. Reaction-time paradigms of
+        exactly this kind can be written, run and analysed on free, open platforms.
+      </p>
+      <p class="text-secondary" style="margin:0 0 var(--sp-4);">
+        <a href="https://www.psytoolkit.org/" target="_blank" rel="noopener">PsyToolkit</a> is the one most students
+        start with. It is free, runs in the browser, and ships with a library of ready-made questionnaires and
+        reaction-time experiments &ndash; including dot-probe, stop-signal and trail-making style tasks &ndash; that you
+        can run as they are, read the code of, or modify into your own design. Its documentation is written for people
+        who have not programmed before, which is why it works as a teaching tool rather than only a research one.
+      </p>
+      <p class="text-secondary" style="margin:0 0 var(--sp-4);">
+        A word on responsibility: writing a task is the easy part. Deciding what a score means, whether a single session
+        can support that meaning, and what you are entitled to say about a person on the strength of it &ndash; that is
+        the part this course is about, and it does not change with the platform.
+      </p>
+      <p style="margin:0;font-size:var(--text-xs);color:var(--text-tertiary);line-height:1.8;">
+        PsyToolkit asks that both papers be cited in any work that uses it:<br>
+        Stoet, G. (2010). PsyToolkit &ndash; A software package for programming psychological experiments using Linux.
+        <em>Behavior Research Methods</em>, 42(4), 1096&ndash;1104.
+        <a href="https://doi.org/10.3758/BRM.42.4.1096" target="_blank" rel="noopener">https://doi.org/10.3758/BRM.42.4.1096</a><br>
+        Stoet, G. (2017). PsyToolkit: A novel web-based method for running online questionnaires and reaction-time
+        experiments. <em>Teaching of Psychology</em>, 44(1), 24&ndash;31.
+        <a href="https://doi.org/10.1177/0098628316677643" target="_blank" rel="noopener">https://doi.org/10.1177/0098628316677643</a>
+      </p>
+    </div></div>
+
+  <a class="btn btn-secondary ct-back" href="/cognitive-tests.html">&larr; All cognitive tasks</a>
+
+</div>
+
+<script>window.CLINCOG_SHELL = {
+  activeNav: "cognitive-tests",
+  breadcrumb: [{ label: "Cognitive tasks", href: "/cognitive-tests.html" }, { label: 'Build your own' }]
+};</script>
+<script src="/storage.js"></script>
+<script src="/icons.js"></script>
+<script src="/shell.js?v=2"></script>
+<script src="/a11y.js"></script>
+</body>
+</html>

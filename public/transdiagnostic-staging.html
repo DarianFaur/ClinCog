@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="color-scheme" content="light dark">
+<script src="/theme-init.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClinCog · Clinical staging</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/favicon-180.png">
+
+<link rel="preload" as="script" href="/shell.js?v=2">
+<link rel="preload" as="style" href="/shell.css">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
+<style>
+  /* Prose-heavy page: narrow the column so running text fills its box
+     instead of stopping short inside a wide one. */
+  :root { --shell-content-max: 1080px; }
+
+  .ct-section { margin-bottom: var(--sp-8); }
+  /* Every run of prose on this page caps at the reading measure. Before
+     this, the descriptive paragraphs ran the full content width. */
+  /* Only running body copy caps. Notes, captions and reference lists sit
+     inside a card that is already narrow, so capping them again strands
+     them at just over half the card's width. */
+  .ct-section > p { max-width: var(--measure); }
+  .ct-section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .ct-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .ct-section-sub { font-size: var(--text-sm); color: var(--text-tertiary); margin: 4px 0 var(--sp-5) 20px; }
+  .ct-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); margin: var(--sp-4) 0; }
+  /* On narrow phones the table keeps its natural width and scrolls inside its
+     own container, so words stay whole and the page itself never scrolls sideways. */
+  /* Long URLs and DOIs in the reference lists may break across lines on narrow
+     phones; ordinary words are unaffected, since break-word only breaks a run
+     that cannot fit on a line of its own. */
+  li, li a { overflow-wrap: break-word; }
+  .ct-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: var(--sp-4) 0; contain: inline-size; }
+  .ct-table-wrap > .ct-table { margin: 0; }
+  @media (max-width: 413px) { .ct-table th, .ct-table td { padding-left: 8px; padding-right: 8px; } }
+  .ct-table th { text-align: left; padding: 8px 10px 10px; border-bottom: none; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: .06em; font-weight: 500; font-size: var(--text-xs); }
+  .ct-table td { padding: 10px; border-bottom: none; box-shadow: inset 0 -1px 0 var(--border); vertical-align: top; }
+  .ct-table tr:last-child td { box-shadow: none; }
+  .ct-table .used { display: inline-block; margin-top: 3px; font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 999px; }
+  .ct-links { display: flex; flex-direction: column; gap: 6px; margin: 12px 0; }
+  .ct-links a { font-size: var(--text-sm); font-weight: 500; color: var(--accent-ink); text-decoration: none; }
+  .ct-links a:hover { text-decoration: underline; }
+  .ct-refs { margin: 10px 0 0; padding-left: 18px; font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.9; }
+  .ct-refs li { margin-bottom: 6px; }
+  .ct-note { margin-top: var(--sp-4); padding: var(--sp-4) var(--sp-5); background: var(--bg-surface-alt); border-radius: var(--radius-md); font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.7; }
+  .ct-subhead { font-size: var(--text-base); font-weight: 600; letter-spacing: -.008em; color: var(--text-primary); margin: var(--sp-6) 0 var(--sp-2); }
+  .ct-toc { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: var(--sp-6); }
+  .ct-toc a { font-size: var(--text-sm); font-weight: 500; padding: 8px 14px; border-radius: var(--radius-pill); border: none; background: var(--bg-surface); box-shadow: var(--shadow-xs); color: var(--text-secondary); text-decoration: none; transition: background var(--duration-hover) var(--ease-standard), color var(--duration-hover) var(--ease-standard); }
+  .ct-toc a:hover { background: var(--domain-anxiety-soft); color: var(--accent-ink); }
+
+  .ct-chart { margin: var(--sp-5) 0; }
+  .ct-chart svg { width: 100%; height: auto; display: block; }
+  .ct-chart-caption { font-size: var(--text-sm); color: var(--text-tertiary); margin-top: var(--sp-3); line-height: 1.65; }
+  .ct-chart-caption strong { color: var(--text-secondary); }
+  .ct-back { display: inline-flex; align-items: center; gap: 8px; margin-top: var(--sp-7); }
+  /* Reproduced figure: the frame and the credit line travel together, so
+     a licensed image can never end up on the page without its licence. */
+  .td-figure { margin: var(--sp-5) 0 0; }
+  .td-figure img {
+    display: block; width: 100%; height: auto;
+    border: 1px solid var(--border); border-radius: var(--radius-md);
+    background: #ffffff;
+  }
+  .td-figure figcaption {
+    margin-top: var(--sp-3); font-size: var(--text-xs); color: var(--text-tertiary); line-height: 1.7;
+  }
+  .td-figure figcaption a { color: inherit; }
+  .td-quote {
+    margin: var(--sp-4) 0; padding-left: var(--sp-5);
+    border-left: 3px solid var(--border);
+    color: var(--text-secondary); font-size: var(--text-sm); line-height: 1.75;
+  }
+  .td-quote cite { display: block; margin-top: 6px; font-style: normal; font-size: var(--text-xs); color: var(--text-tertiary); }
+  .td-matrix { width: 100%; border-collapse: separate; border-spacing: 4px; font-size: var(--text-xs); }
+  .td-matrix th { text-align: left; font-weight: 600; color: var(--text-secondary); padding: 6px 8px; }
+  .td-matrix th.td-unit { writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; font-weight: 500; color: var(--text-tertiary); padding: 8px 4px; }
+  .td-matrix td { background: var(--bg-surface-alt); border-radius: var(--radius-sm); height: 26px; }
+  .td-matrix tbody th { background: var(--accent-soft); border-radius: var(--radius-sm); color: var(--text-primary); }
+
+</style>
+</head>
+<body>
+
+<div id="shell-content">
+
+  <div class="ct-section" id="staging">
+    <div class="ct-section-head"><span class="ct-dot" style="background:var(--domain-substance);"></span><span class="text-card-title" style="font-size:var(--text-base);">Clinical staging</span></div>
+    <div class="ct-section-sub">Where a person sits along the course of an illness, rather than which category they fall into</div>
+
+    <div class="card"><div class="card-body">
+      <p class="text-secondary" style="margin:0 0 10px;">Clinical staging borrows from oncology and cardiology: the same diagnosis at an early stage and a late stage is not the same clinical problem, and should not attract the same treatment. Applied to mental health, it asks where someone is along a continuum of illness &ndash; at risk, first symptoms, first episode, recurrence, treatment resistance &ndash; and uses that position to choose the least intensive intervention likely to work, and to estimate prognosis.</p>
+
+      <div class="ct-note"><strong>Is there a standard body, like HiTOP or NIMH?</strong> No. Staging has no consortium, no official model and no canonical matrix. Several models have been proposed for schizophrenia alone &ndash; among them Fava and Kellner's, Lieberman's, Singh's, Agius's, Cosci's and Fountoulakis's &ndash; and reviews note that McGorry's model &ldquo;may be one of the most developed classifications&rdquo; with sub-stages that adapt to outpatient and inpatient settings (Hamieh et al., 2023). The staging work with the widest reach comes from Orygen and the Centre for Youth Mental Health in Melbourne; the stage definitions below are the ones used in that literature.</div>
+
+      <div class="ct-subhead">The stages</div>
+      <div class="ct-table-wrap"><table class="ct-table">
+        <thead><tr><th style="width:15%;">Stage</th><th>Definition</th></tr></thead>
+        <tbody>
+          <tr><td><strong>0</strong></td><td>Asymptomatic but at risk.</td></tr>
+          <tr><td><strong>1a</strong></td><td>Help-seeking with distress: mild or non-specific symptoms.</td></tr>
+          <tr><td><strong>1b</strong></td><td>Attenuated syndromes: moderate but sub-threshold symptoms, with some diagnostic specificity.</td></tr>
+          <tr><td><strong>2</strong></td><td>Full-threshold disorder &ndash; a first treated episode.</td></tr>
+          <tr><td><strong>3</strong></td><td>Recurrence or persistence.</td></tr>
+          <tr><td><strong>4</strong></td><td>Treatment resistance: unremitting illness in someone who has received mental health services for at least two years.</td></tr>
+        </tbody>
+      </table></div>
+      <p style="font-size:var(--text-xs);color:var(--text-tertiary);line-height:1.7;margin:var(--sp-3) 0 0;">Stage definitions as summarised in Eaton et al. (2023), <em>Nature Reviews Psychology</em>.</p>
+
+      <div class="ct-subhead">Staged care is not stepped care</div>
+      <p class="text-secondary" style="margin:0 0 10px;">The distinction matters clinically, and the review draws it sharply: stepped care &ldquo;responds belatedly to a relapse or worsening of a condition, whereas staged care &ndash; like cancer treatment &ndash; aims to pre-empt onset, progression and relapse&rdquo; (Eaton et al., 2023).</p>
+
+      <div class="ct-subhead">What the numbers look like</div>
+      <p class="text-secondary" style="margin:0 0 10px;">From the same review, drawing on clinical cohorts of young people attending low-entry-threshold youth mental health services:</p>
+      <div class="ct-table-wrap"><table class="ct-table">
+        <thead><tr><th>Finding</th><th>Figure</th></tr></thead>
+        <tbody>
+          <tr><td>Proportion at Stage 1a at first presentation</td><td>30&ndash;60%</td></tr>
+          <tr><td>Proportion at Stage 1b at first presentation</td><td>31&ndash;61%</td></tr>
+          <tr><td>Proportion at Stage 2 / Stages 3&ndash;4 at first presentation</td><td>4&ndash;9% / 3&ndash;5%</td></tr>
+          <tr><td>Inter-rater reliability of stage allocation</td><td>&kappa; = 0.71 (&ldquo;acceptable&rdquo;)</td></tr>
+          <tr><td>Transition from Stage 1b to Stage 2</td><td>~13&ndash;18%, about half of them within 12 months of baseline</td></tr>
+          <tr><td>Transition from Stage 1a straight to Stage 2</td><td>3% (less common)</td></tr>
+          <tr><td>Transition from Stage 1a to Stage 1b</td><td>about one third</td></tr>
+          <tr><td>Progression from Stage 2 to Stages 3&ndash;4 (mood and psychotic disorders)</td><td>about one third</td></tr>
+        </tbody>
+      </table></div>
+      <div class="ct-note">These are ranges across cohorts, not norms for an individual. A stage is a clinical judgement about a course, and the same caution applies as to every other measure in this application: one assessment, at one moment, does not establish a trajectory.</div>
+
+      <div class="ct-subhead">Three papers to start from</div>
+      <ul class="ct-refs">
+        <li><strong>Where staging sits among the alternatives.</strong> Eaton, N. R., Bringmann, L. F., Elmer, T., Fried, E. I., Forbes, M. K., Greene, A. L., Krueger, R. F., Kotov, R., McGorry, P. D., Mei, C., &amp; Waszczuk, M. A. (2023). A review of approaches and models in psychopathology conceptualization research. <em>Nature Reviews Psychology, 2</em>, 622&ndash;636. <a href="https://doi.org/10.1038/s44159-023-00218-4" target="_blank" rel="noopener">https://doi.org/10.1038/s44159-023-00218-4</a><br><span class="text-tertiary">Reviews transdiagnostic dimensional models, network approaches and clinical staging side by side &ndash; the single most useful entry point, and the source of the stage definitions and figures above.</span></li>
+        <li><strong>Can stages be derived from data rather than consensus?</strong> Ratheesh, A., Hammond, D., Gao, C., Marwaha, S., Thompson, A., Hartmann, J., Davey, C., Zammit, S., Berk, M., McGorry, P., &amp; Nelson, B. (2023). Empirically driven transdiagnostic stages in the development of mood, anxiety and psychotic symptoms in a cohort of youth followed from birth. <em>Translational Psychiatry, 13</em>, 103. <a href="https://doi.org/10.1038/s41398-023-02396-4" target="_blank" rel="noopener">https://doi.org/10.1038/s41398-023-02396-4</a><br><span class="text-tertiary">Uses the ALSPAC birth cohort &ndash; 3,269 young people with complete symptom-stage data, 64.3% female &ndash; and finds that Stage&nbsp;1b depressive, anxiety and psychotic stages are inter-related and share risk factors (female sex, emotional and behavioural difficulties in early adolescence, life events in late adolescence), while hypomania is not related to any of them. The authors conclude anxiety, psychotic and depressive symptoms could be combined into a single transdiagnostic stage in this cohort; hypomania could not.</span></li>
+        <li><strong>Does stage track clinical severity?</strong> Hamieh, F., Hallit, S., Haddad, C., Obeid, S., &amp; Kazour, F. (2023). Correlates of severity in a clinical staging model of schizophrenia: a cross-sectional study among 158 subjects. <em>BMC Psychiatry, 23</em>, 648. <a href="https://doi.org/10.1186/s12888-023-05144-6" target="_blank" rel="noopener">https://doi.org/10.1186/s12888-023-05144-6</a><br><span class="text-tertiary">158 inpatients, staged with the McGorry model: 43% at relapse (3b), 47.5% multiple relapses (3c), 9.5% persistent and severe illness (Stage&nbsp;4). Stage&nbsp;4 patients had longer hospitalisations, higher PANSS totals and subscales, higher chlorpromazine-equivalent doses and more antipsychotic trials; Stage&nbsp;3b patients had the highest mean GAF. Cross-sectional, single site, inpatients only &ndash; so it shows that stages separate on severity, not that staging predicts anything.</span></li>
+      </ul>
+
+      <div class="ct-subhead">Further reading</div>
+      <div class="ct-links">
+        <a href="https://www.nature.com/nature-index/topics/l4/clinical-staging-models-in-mental-health" target="_blank" rel="noopener">Nature Index &ndash; Clinical staging models in mental health (current papers on the topic)</a>
+      </div>
+    </div></div>
+  </div>
+
+  <a class="btn btn-secondary ct-back" href="/transdiagnostic.html">&larr; All transdiagnostic frameworks</a>
+
+</div>
+
+<script>window.CLINCOG_SHELL = {
+  activeNav: "transdiagnostic",
+  breadcrumb: [{ label: "Transdiagnostic frameworks", href: "/transdiagnostic.html" }, { label: 'Clinical staging' }]
+};</script>
+<script src="/storage.js"></script>
+<script src="/icons.js"></script>
+<script src="/shell.js?v=2"></script>
+<script src="/a11y.js"></script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="color-scheme" content="light dark">
+<script src="/theme-init.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClinCog · Dot-probe task</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/favicon-180.png">
+
+<link rel="preload" as="script" href="/shell.js?v=2">
+<link rel="preload" as="style" href="/shell.css">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
+<style>
+  /* Prose-heavy page: narrow the column so running text fills its box
+     instead of stopping short inside a wide one. */
+  :root { --shell-content-max: 1080px; }
+
+  .ct-section { margin-bottom: var(--sp-8); }
+  /* Every run of prose on this page caps at the reading measure. Before
+     this, the descriptive paragraphs ran the full content width. */
+  /* Only running body copy caps. Notes, captions and reference lists sit
+     inside a card that is already narrow, so capping them again strands
+     them at just over half the card's width. */
+  .ct-section > p { max-width: var(--measure); }
+  .ct-section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .ct-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .ct-section-sub { font-size: var(--text-sm); color: var(--text-tertiary); margin: 4px 0 var(--sp-5) 20px; }
+  .ct-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); margin: var(--sp-4) 0; }
+  /* On narrow phones the table keeps its natural width and scrolls inside its
+     own container, so words stay whole and the page itself never scrolls sideways. */
+  /* Long URLs and DOIs in the reference lists may break across lines on narrow
+     phones; ordinary words are unaffected, since break-word only breaks a run
+     that cannot fit on a line of its own. */
+  li, li a { overflow-wrap: break-word; }
+  .ct-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: var(--sp-4) 0; contain: inline-size; }
+  .ct-table-wrap > .ct-table { margin: 0; }
+  @media (max-width: 413px) { .ct-table th, .ct-table td { padding-left: 8px; padding-right: 8px; } }
+  .ct-table th { text-align: left; padding: 8px 10px 10px; border-bottom: none; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: .06em; font-weight: 500; font-size: var(--text-xs); }
+  .ct-table td { padding: 10px; border-bottom: none; box-shadow: inset 0 -1px 0 var(--border); vertical-align: top; }
+  .ct-table tr:last-child td { box-shadow: none; }
+  .ct-table .used { display: inline-block; margin-top: 3px; font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 999px; }
+  .ct-links { display: flex; flex-direction: column; gap: 6px; margin: 12px 0; }
+  .ct-links a { font-size: var(--text-sm); font-weight: 500; color: var(--accent-ink); text-decoration: none; }
+  .ct-links a:hover { text-decoration: underline; }
+  .ct-refs { margin: 10px 0 0; padding-left: 18px; font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.9; }
+  .ct-refs li { margin-bottom: 6px; }
+  .ct-note { margin-top: var(--sp-4); padding: var(--sp-4) var(--sp-5); background: var(--bg-surface-alt); border-radius: var(--radius-md); font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.7; }
+  .ct-subhead { font-size: var(--text-base); font-weight: 600; letter-spacing: -.008em; color: var(--text-primary); margin: var(--sp-6) 0 var(--sp-2); }
+  .ct-toc { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: var(--sp-6); }
+  .ct-toc a { font-size: var(--text-sm); font-weight: 500; padding: 8px 14px; border-radius: var(--radius-pill); border: none; background: var(--bg-surface); box-shadow: var(--shadow-xs); color: var(--text-secondary); text-decoration: none; transition: background var(--duration-hover) var(--ease-standard), color var(--duration-hover) var(--ease-standard); }
+  .ct-toc a:hover { background: var(--domain-anxiety-soft); color: var(--accent-ink); }
+
+  .ct-chart { margin: var(--sp-5) 0; }
+  .ct-chart svg { width: 100%; height: auto; display: block; }
+  .ct-chart-caption { font-size: var(--text-sm); color: var(--text-tertiary); margin-top: var(--sp-3); line-height: 1.65; }
+  .ct-chart-caption strong { color: var(--text-secondary); }
+  /* Back to the index - the topbar breadcrumb carries the same link, but
+     a reader who has scrolled to the bibliography should not have to
+     scroll back up to leave. */
+  .ct-back { display: inline-flex; align-items: center; gap: 8px; margin-top: var(--sp-7); }
+</style>
+</head>
+<body>
+
+<div id="shell-content">
+
+      <div class="ct-section-head"><span class="ct-dot" style="background:var(--domain-anxiety);"></span><span class="text-card-title" style="font-size:var(--text-base);">Dot-probe task</span></div>
+      <div class="ct-section-sub">Used in Alex's case (social anxiety) – attentional bias to threat</div>
+
+      <div class="card"><div class="card-body">
+        <p class="text-secondary" style="margin:0 0 10px;">The dot-probe paradigm was introduced by MacLeod, Mathews, &amp; Tata (1986) to measure where attention is drawn without relying on self-report. Two stimuli – words or faces, one neutral and one emotionally salient (e.g., threatening) – appear briefly side by side on screen, then both disappear and a small probe (a dot, or in later variants a letter) appears in the location where one of them had been. The respondent presses a button to indicate the probe's location as fast as possible.</p>
+
+        <div class="ct-subhead">Logic of the measure</div>
+        <p class="text-secondary" style="margin:0;">If attention was already drawn toward the emotional stimulus at the moment it disappeared, probes replacing it are detected faster than probes replacing the neutral stimulus. The <strong>attentional bias index</strong> is typically computed as the difference in reaction time between trials where the probe appears in the neutral-stimulus location versus the threat-stimulus location; a positive value indicates vigilance toward threat, a negative value indicates avoidance of it.</p>
+
+        <div class="ct-note">A systematic review of facial dot-probe studies in social anxiety found that socially anxious individuals reliably show heightened attention toward negative/angry faces compared with neutral faces, but no consistent bias for positive faces – i.e., the effect is specific to threat-relevant material, not a general attentional difference (Bantin et al., 2016).</div>
+
+        <div class="ct-subhead">Attentional bias to threat: anxious vs. non-anxious groups</div>
+        <div class="ct-chart">
+          <svg viewBox="0 0 500 190" role="img" aria-label="Overlapping distributions showing a medium effect size for attentional bias in anxiety">
+            <line x1="20" y1="150" x2="480" y2="150" stroke="var(--border)" stroke-width="1"/>
+            <path d="M 100,150 C 100,150 140,30 190,30 C 240,30 280,150 280,150 Z" fill="#8a97a8" opacity="0.55"/>
+            <path d="M 132,150 C 132,150 172,30 222,30 C 272,30 312,150 312,150 Z" fill="var(--domain-anxiety)" opacity="0.55"/>
+            <line x1="190" y1="30" x2="190" y2="165" stroke="#5b6472" stroke-width="1.5" stroke-dasharray="3 3"/>
+            <line x1="222" y1="30" x2="222" y2="165" stroke="var(--domain-anxiety-ink)" stroke-width="1.5" stroke-dasharray="3 3"/>
+            <text x="150" y="182" font-size="12" fill="#5b6472" text-anchor="middle">Non-anxious (n=1,768)</text>
+            <text x="290" y="182" font-size="12" fill="var(--domain-anxiety-ink)" text-anchor="middle">Anxious (n=2,263)</text>
+            <text x="380" y="60" font-size="14" font-weight="700" letter-spacing="-0.3" fill="var(--text-primary)">d = 0.45</text>
+            <text x="380" y="78" font-size="11" fill="var(--text-tertiary)">(medium effect)</text>
+          </svg>
+          <p class="ct-chart-caption">Distributions are illustrative (shifted by the reported effect size, not raw score data) – they show what a <strong>medium, Cohen's d = 0.45</strong> group difference actually looks like: real and reliable in aggregate across 172 studies, but with substantial overlap between individuals in each group. Bias toward threat is consistently higher in anxious samples, not an all-or-nothing marker. <strong>Source:</strong> Bar-Haim et al. (2007), meta-analysis of 172 studies, N=2,263 anxious vs. N=1,768 non-anxious.</p>
+        </div>
+
+        <div class="ct-subhead">A note on reliability</div>
+        <p class="text-secondary" style="margin:0;">Traditional reaction-time dot-probe indices have repeatedly been reported to have poor internal consistency and test–retest reliability across the wider attentional-bias literature – a methodological concern worth raising with students alongside the task itself, not a reason to discard the paradigm.</p>
+
+        <div class="ct-subhead">Selective bibliography</div>
+        <ul class="ct-refs">
+          <li>MacLeod, C., Mathews, A., &amp; Tata, P. (1986). Attentional bias in emotional disorders. <em>Journal of Abnormal Psychology, 95</em>(1), 15–20. <a href="https://doi.org/10.1037/0021-843X.95.1.15" target="_blank" rel="noopener">https://doi.org/10.1037/0021-843X.95.1.15</a></li>
+          <li>Bantin, T., Stevens, S., Gerlach, A.L., &amp; Hermann, C. (2016). What does the facial dot-probe task tell us about attentional processes in social anxiety? A systematic review. <em>Journal of Behavior Therapy and Experimental Psychiatry, 50</em>, 40–51. <a href="https://doi.org/10.1016/j.jbtep.2015.04.009" target="_blank" rel="noopener">https://doi.org/10.1016/j.jbtep.2015.04.009</a></li>
+          <li>Bar-Haim, Y., Lamy, D., Pergamin, L., Bakermans-Kranenburg, M.J., &amp; van IJzendoorn, M.H. (2007). Threat-related attentional bias in anxious and nonanxious individuals: A meta-analytic study. <em>Psychological Bulletin, 133</em>(1), 1–24. <a href="https://doi.org/10.1037/0033-2909.133.1.1" target="_blank" rel="noopener">https://doi.org/10.1037/0033-2909.133.1.1</a></li>
+        </ul>
+      </div></div>
+
+  <a class="btn btn-secondary ct-back" href="/cognitive-tests.html">&larr; All cognitive tasks</a>
+
+</div>
+
+<script>window.CLINCOG_SHELL = {
+  activeNav: "cognitive-tests",
+  breadcrumb: [{ label: "Cognitive tasks", href: "/cognitive-tests.html" }, { label: 'Dot-probe task' }]
+};</script>
+<script src="/storage.js"></script>
+<script src="/icons.js"></script>
+<script src="/shell.js?v=2"></script>
+<script src="/a11y.js"></script>
+</body>
+</html>

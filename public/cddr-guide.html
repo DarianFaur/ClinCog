@@ -57,30 +57,30 @@
 <div id="shell-content">
 
   <div style="margin-bottom:var(--sp-6);">
-    <p class="text-secondary" style="margin-top:var(--sp-3);">What the CDDR actually is, how it differs from the ICD-11 codes you might already know, and a live search tool — wired to the same WHO ICD-11 API credentials this course already has configured — so you can look up any diagnosis directly, not just the four covered by ClinCog's cases.</p>
+    <p class="text-secondary" style="margin-top:var(--sp-3);">What the CDDR actually is, how it differs from the ICD-11 codes you might already know, and a live search tool – wired to the same WHO ICD-11 API credentials this course already has configured – so you can look up any diagnosis directly, not just the four covered by ClinCog's cases.</p>
   </div>
 
   <!-- ============ WHAT IS CDDR ============ -->
   <div class="cg-section">
     <div class="card"><div class="card-body">
       <span class="text-card-title">What "CDDR" means</span>
-      <p class="text-secondary" style="margin:10px 0 0;">CDDR stands for <strong>Clinical Descriptions and Diagnostic Requirements for ICD-11 Mental, Behavioural and Neurodevelopmental Disorders</strong> — WHO's clinical diagnostic manual for this chapter of ICD-11, published as its own volume and launched globally on 8 March 2024. Every "Diagnostic criteria reproduced verbatim from World Health Organization…" block you see on the evaluation pages in this course is sourced from it.</p>
+      <p class="text-secondary" style="margin:10px 0 0;">CDDR stands for <strong>Clinical Descriptions and Diagnostic Requirements for ICD-11 Mental, Behavioural and Neurodevelopmental Disorders</strong> – WHO's clinical diagnostic manual for this chapter of ICD-11, published as its own volume and launched globally on 8 March 2024. Every "Diagnostic criteria reproduced verbatim from World Health Organization…" block you see on the evaluation pages in this course is sourced from it.</p>
 
-      <div class="cg-subhead">CDDR vs. MMS — two different things wearing the same code</div>
-      <p class="text-secondary" style="margin:0;">ICD-11 has two related but distinct layers for mental disorders. The <strong>MMS</strong> (linearization for Mortality and Morbidity Statistics) is the layer used for official coding and statistical reporting — each category gets a brief definition, just enough for classification. The <strong>CDDR</strong> is the clinical companion: for the same codes, it adds essential features, boundaries with normal variation (the diagnostic threshold), differential diagnosis, and how presentation shifts across development, gender, and culture. When you search a code below, what the ICD-11 API returns by default is the MMS entry — useful for confirming a code and its short definition, but it is <em>not</em> a substitute for reading the full CDDR text for that disorder before making a diagnostic judgment call.</p>
+      <div class="cg-subhead">CDDR vs. MMS – two different things wearing the same code</div>
+      <p class="text-secondary" style="margin:0;">ICD-11 has two related but distinct layers for mental disorders. The <strong>MMS</strong> (linearization for Mortality and Morbidity Statistics) is the layer used for official coding and statistical reporting – each category gets a brief definition, just enough for classification. The <strong>CDDR</strong> is the clinical companion: for the same codes, it adds essential features, boundaries with normal variation (the diagnostic threshold), differential diagnosis, and how presentation shifts across development, gender, and culture. When you search a code below, what the ICD-11 API returns by default is the MMS entry – useful for confirming a code and its short definition, but it is <em>not</em> a substitute for reading the full CDDR text for that disorder before making a diagnostic judgment call.</p>
 
       <div class="cg-note">ICD-11 itself was adopted by the World Health Assembly in May 2019 and became the reporting basis WHO member states use as of January 2022. The CDDR volume for the mental-disorders chapter followed in 2024 as a separate, far more detailed clinical publication built on that same classification.</div>
 
       <div class="cg-subhead">Official links</div>
       <div class="cg-links">
-        <a href="https://www.who.int/publications/i/item/9789240077263" target="_blank" rel="noopener">WHO — Clinical descriptions and diagnostic requirements for ICD-11 mental, behavioural and neurodevelopmental disorders (full manual)</a>
-        <a href="https://icd.who.int/en" target="_blank" rel="noopener">ICD-11 for Mortality and Morbidity Statistics — official browser</a>
+        <a href="https://www.who.int/publications/i/item/9789240077263" target="_blank" rel="noopener">WHO – Clinical descriptions and diagnostic requirements for ICD-11 mental, behavioural and neurodevelopmental disorders (full manual)</a>
+        <a href="https://icd.who.int/en" target="_blank" rel="noopener">ICD-11 for Mortality and Morbidity Statistics – official browser</a>
       </div>
 
       <div class="cg-subhead">Reference</div>
       <ul class="cg-refs">
         <li>World Health Organization. (2024). <em>Clinical descriptions and diagnostic requirements for ICD-11 mental, behavioural and neurodevelopmental disorders</em>. World Health Organization. https://iris.who.int/handle/10665/375767</li>
-        <li>Kestel, D., et al. (2024). Global launch of the ICD-11 Clinical Descriptions and Diagnostic Requirements (CDDR). <em>World Psychiatry, 23</em>(3), 429–430.</li>
+        <li>Kestel, D., &amp; Reed, G. M. (2024). Global launch of the ICD-11 Clinical Descriptions and Diagnostic Requirements (CDDR). <em>World Psychiatry, 23</em>(3), 310–311. <a href="https://doi.org/10.1002/wps.21223" target="_blank" rel="noopener">https://doi.org/10.1002/wps.21223</a></li>
       </ul>
     </div></div>
   </div>
@@ -89,26 +89,24 @@
   <div class="cg-section">
     <div class="card"><div class="card-body">
       <span class="text-card-title">Search ICD-11 directly</span>
-      <p class="text-secondary" style="margin:10px 0 14px;">This box talks to the real WHO ICD-11 API, through this app's own server — the same credentials already configured for it (see <code>worker.js</code>). Nothing you type here is sent anywhere except WHO's API.</p>
-
       <div id="icd-search-wrap">
         <input type="text" class="ctw-input" autocomplete="off" data-ctw-ino="1" placeholder="Type a diagnosis or a code, e.g. &quot;schizophrenia&quot; or &quot;6A20&quot;…">
         <div class="ctw-window" data-ctw-ino="1"></div>
       </div>
       <div id="icd-status"></div>
       <div id="icd-selected-box">
-        You selected: <span class="code" id="icd-selected-code"></span> — <span id="icd-selected-title"></span>
+        You selected: <span class="code" id="icd-selected-code"></span> – <span id="icd-selected-title"></span>
       </div>
 
-      <div class="cg-subhead">How to use it — quick tutorial</div>
+      <div class="cg-subhead">How to use it – quick tutorial</div>
       <ol class="cg-steps">
-        <li><strong>Type a term or a code.</strong> Either works — try a disorder name ("panic disorder"), a symptom ("insomnia"), or a code you already have ("6A70"). Results start appearing after a couple of characters.</li>
-        <li><strong>Read the result list carefully.</strong> ICD-11 is a fine-grained classification — a single search often returns the disorder itself, several more specific subtypes, and related-but-different categories side by side. The indentation in the results reflects the classification's hierarchy.</li>
+        <li><strong>Type a term or a code.</strong> Either works – try a disorder name ("panic disorder"), a symptom ("insomnia"), or a code you already have ("6A70"). Results start appearing after a couple of characters.</li>
+        <li><strong>Read the result list carefully.</strong> ICD-11 is a fine-grained classification – a single search often returns the disorder itself, several more specific subtypes, and related-but-different categories side by side. The indentation in the results reflects the classification's hierarchy.</li>
         <li><strong>Click a result to select it.</strong> Its code and title appear just below the search box, confirming exactly what you picked.</li>
-        <li><strong>Then go find the CDDR text for it.</strong> The search box gives you the code and the brief MMS definition — for the actual diagnostic write-up (essential features, thresholds, differential diagnosis) use that code to jump to the right page in the CDDR manual linked above, or in the official browser.</li>
+        <li><strong>Then go find the CDDR text for it.</strong> The search box gives you the code and the brief MMS definition – for the actual diagnostic write-up (essential features, thresholds, differential diagnosis) use that code to jump to the right page in the CDDR manual linked above, or in the official browser.</li>
       </ol>
 
-      <div class="cg-note">If the box stays empty after you type, the most likely cause is the token request to <code>/api/icd/token</code> failing — check that <code>ICD_CLIENT_ID</code> / <code>ICD_CLIENT_SECRET</code> (or the demo pair) are set as Worker secrets, and that you're not offline.</div>
+      <div class="cg-note">If the box stays empty after you type, check your connection and try again. Instructors running their own copy can set their WHO credentials on the <a href="/adopt.html">Adopt with your own keys</a> page.</div>
     </div></div>
   </div>
 
@@ -119,6 +117,7 @@
 
 <script src="/storage.js"></script>
 <script>window.CLINCOG_SHELL = { activeNav: "cddr-guide", breadcrumb: [{ label: "CDDR criteria guide" }] };</script>
+<script src="/icons.js"></script>
 <script src="/shell.js?v=2"></script>
 <script src="/a11y.js"></script>
 <!-- WHO ICD-11 Embedded Classification Tool (ECT) v1.8 -->
@@ -165,7 +164,7 @@
       return data.token;
     },
     selectedEntityFunction: (selectedEntity) => {
-      selectedCode.textContent = selectedEntity.code || '(no code — this entry may be a grouping category)';
+      selectedCode.textContent = selectedEntity.code || '(no code – this entry may be a grouping category)';
       selectedTitle.textContent = selectedEntity.title ? selectedEntity.title.replace(/<[^>]*>/g, '') : '';
       selectedBox.classList.add('on');
     },

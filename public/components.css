@@ -137,6 +137,25 @@ body {
 .badge-domain-substance { background: var(--domain-substance-soft); color: var(--domain-substance-ink); }
 .badge .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 
+/* Case-status badges. A green "Complete" next to Darren's purple card read
+   as two unrelated colour systems, so the three states are now three
+   strengths of the case's own colour, set per card as --case-color /
+   --case-ink. Contrast was checked for all four cases in both themes; the
+   weakest combination is 4.52:1.
+     not started - barely tinted, muted text
+     in progress - clearly tinted, full-strength text
+     complete    - the solid case colour, as strong as the progress bar
+   "Complete" fills with a colour that is mid-tone in light and pale in
+   dark, so its label cannot use --text-primary (which inverts with the
+   theme and would vanish on one of them). It takes the sidebar's fixed
+   dark instead - the same theme-invariant trick .btn-primary uses. */
+/* All three states share the palest tint - the one Not started had - and
+   the label alone carries the state. Three strengths of the same hue made
+   a grid of eight cards read as a colour chart. */
+.badge-case { background: color-mix(in srgb, var(--case-color) 8%, var(--bg-surface-alt)); color: var(--text-secondary); }
+.badge-case.is-progress { color: var(--text-primary); font-weight: 600; }
+.badge-case.is-complete { color: var(--case-ink, var(--text-primary)); font-weight: 600; }
+
 /* ---------------------------------------------------------------
    Button
 --------------------------------------------------------------- */
@@ -193,7 +212,10 @@ body {
 .case-card:hover {
   transform: translateY(-5px) scale(1.008);
   box-shadow: var(--shadow-lg);
-  border-color: var(--domain-color, var(--accent));
+  /* The case cards never set --domain-color, so this fell back to the
+     accent and every card outlined itself green on hover. A neutral
+     warm grey lifts the card without introducing a fifth colour. */
+  border-color: var(--text-tertiary);
 }
 .case-card:active { transform: translateY(-2px) scale(1.002); }
 @media (prefers-reduced-motion: reduce) {
@@ -668,8 +690,8 @@ body {
   .try-task-cta { width: 100%; justify-content: center; }
 }
 
-.continue-hero { transition: transform var(--duration-hover) var(--ease-standard), box-shadow var(--duration-hover) var(--ease-standard); }
-.continue-hero:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.continue-hero { transition: transform var(--duration-hover) var(--ease-standard), box-shadow var(--duration-hover) var(--ease-standard), border-color var(--duration-hover) var(--ease-standard); }
+.continue-hero:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--text-tertiary); }
 @media (prefers-reduced-motion: reduce) { .continue-hero, .continue-hero:hover { transform: none; transition: none; } }
 
 /* ---------------------------------------------------------------

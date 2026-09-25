@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="color-scheme" content="light dark">
+<script src="/theme-init.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClinCog · MATRICS Consensus Cognitive Battery (MCCB)</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/favicon-180.png">
+
+<link rel="preload" as="script" href="/shell.js?v=2">
+<link rel="preload" as="style" href="/shell.css">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
+<style>
+  /* Prose-heavy page: narrow the column so running text fills its box
+     instead of stopping short inside a wide one. */
+  :root { --shell-content-max: 1080px; }
+
+  .ct-section { margin-bottom: var(--sp-8); }
+  /* Every run of prose on this page caps at the reading measure. Before
+     this, the descriptive paragraphs ran the full content width. */
+  /* Only running body copy caps. Notes, captions and reference lists sit
+     inside a card that is already narrow, so capping them again strands
+     them at just over half the card's width. */
+  .ct-section > p { max-width: var(--measure); }
+  .ct-section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .ct-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .ct-section-sub { font-size: var(--text-sm); color: var(--text-tertiary); margin: 4px 0 var(--sp-5) 20px; }
+  .ct-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); margin: var(--sp-4) 0; }
+  /* On narrow phones the table keeps its natural width and scrolls inside its
+     own container, so words stay whole and the page itself never scrolls sideways. */
+  /* Long URLs and DOIs in the reference lists may break across lines on narrow
+     phones; ordinary words are unaffected, since break-word only breaks a run
+     that cannot fit on a line of its own. */
+  li, li a { overflow-wrap: break-word; }
+  .ct-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: var(--sp-4) 0; contain: inline-size; }
+  .ct-table-wrap > .ct-table { margin: 0; }
+  @media (max-width: 413px) { .ct-table th, .ct-table td { padding-left: 8px; padding-right: 8px; } }
+  .ct-table th { text-align: left; padding: 8px 10px 10px; border-bottom: none; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: .06em; font-weight: 500; font-size: var(--text-xs); }
+  .ct-table td { padding: 10px; border-bottom: none; box-shadow: inset 0 -1px 0 var(--border); vertical-align: top; }
+  .ct-table tr:last-child td { box-shadow: none; }
+  .ct-table .used { display: inline-block; margin-top: 3px; font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 999px; }
+  .ct-links { display: flex; flex-direction: column; gap: 6px; margin: 12px 0; }
+  .ct-links a { font-size: var(--text-sm); font-weight: 500; color: var(--accent-ink); text-decoration: none; }
+  .ct-links a:hover { text-decoration: underline; }
+  .ct-refs { margin: 10px 0 0; padding-left: 18px; font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.9; }
+  .ct-refs li { margin-bottom: 6px; }
+  .ct-note { margin-top: var(--sp-4); padding: var(--sp-4) var(--sp-5); background: var(--bg-surface-alt); border-radius: var(--radius-md); font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.7; }
+  .ct-subhead { font-size: var(--text-base); font-weight: 600; letter-spacing: -.008em; color: var(--text-primary); margin: var(--sp-6) 0 var(--sp-2); }
+  .ct-toc { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: var(--sp-6); }
+  .ct-toc a { font-size: var(--text-sm); font-weight: 500; padding: 8px 14px; border-radius: var(--radius-pill); border: none; background: var(--bg-surface); box-shadow: var(--shadow-xs); color: var(--text-secondary); text-decoration: none; transition: background var(--duration-hover) var(--ease-standard), color var(--duration-hover) var(--ease-standard); }
+  .ct-toc a:hover { background: var(--domain-anxiety-soft); color: var(--accent-ink); }
+
+  .ct-chart { margin: var(--sp-5) 0; }
+  .ct-chart svg { width: 100%; height: auto; display: block; }
+  .ct-chart-caption { font-size: var(--text-sm); color: var(--text-tertiary); margin-top: var(--sp-3); line-height: 1.65; }
+  .ct-chart-caption strong { color: var(--text-secondary); }
+  /* Back to the index - the topbar breadcrumb carries the same link, but
+     a reader who has scrolled to the bibliography should not have to
+     scroll back up to leave. */
+  .ct-back { display: inline-flex; align-items: center; gap: 8px; margin-top: var(--sp-7); }
+</style>
+</head>
+<body>
+
+<div id="shell-content">
+
+      <div class="ct-section-head"><span class="ct-dot" style="background:var(--domain-psychosis);"></span><span class="text-card-title" style="font-size:var(--text-base);">MATRICS Consensus Cognitive Battery (MCCB)</span></div>
+      <div class="ct-section-sub">Used in Dennis's case (psychosis) – Speed of Processing and Working Memory domains</div>
+
+      <div class="card"><div class="card-body">
+        <p class="text-secondary" style="margin:0 0 10px;">The MCCB was developed by the NIMH-funded <strong>Measurement and Treatment Research to Improve Cognition in Schizophrenia (MATRICS)</strong> initiative to give clinical trials a standard, psychometrically vetted way to measure cognitive change in schizophrenia. A committee evaluated more than 90 candidate tests across seven cognitive domains, narrowed these to a 20-test beta battery, and then selected the final 10 tests based on test–retest reliability, practicality, and tolerability data from 176 people with schizophrenia.</p>
+
+        <div class="ct-subhead">The seven domains and ten tests</div>
+        <div class="ct-table-wrap"><table class="ct-table">
+          <thead><tr><th>Domain</th><th>Test</th><th></th></tr></thead>
+          <tbody>
+            <tr><td rowspan="3">Speed of Processing</td><td>Trail Making Test, Part A</td><td><span class="used" style="background:var(--domain-psychosis-soft);color:var(--domain-psychosis-ink);">used in Dennis</span></td></tr>
+            <tr><td>BACS Symbol Coding</td><td></td></tr>
+            <tr><td>Category Fluency (animal naming)</td><td></td></tr>
+            <tr><td>Attention/Vigilance</td><td>Continuous Performance Test – Identical Pairs</td><td></td></tr>
+            <tr><td rowspan="2">Working Memory</td><td>Letter–Number Span</td><td><span class="used" style="background:var(--domain-psychosis-soft);color:var(--domain-psychosis-ink);">used in Dennis</span></td></tr>
+            <tr><td>Wechsler Memory Scale–III, Spatial Span</td><td></td></tr>
+            <tr><td>Verbal Learning</td><td>Hopkins Verbal Learning Test–Revised</td><td></td></tr>
+            <tr><td>Visual Learning</td><td>Brief Visuospatial Memory Test–Revised</td><td></td></tr>
+            <tr><td>Reasoning &amp; Problem Solving</td><td>Neuropsychological Assessment Battery, Mazes</td><td></td></tr>
+            <tr><td>Social Cognition</td><td>MSCEIT, Managing Emotions branch</td><td></td></tr>
+          </tbody>
+        </table></div>
+
+        <div class="ct-subhead">Scoring</div>
+        <p class="text-secondary" style="margin:0;">Each test's raw score is converted to an age- and (where applicable) gender-corrected <strong>T-score (M = 50, SD = 10)</strong> against a community normative sample, then combined into the seven domain scores and an overall composite. There is no fixed minimum/maximum – T-scores are continuous.</p>
+
+        <div class="ct-subhead">What the two tests used in this case measure</div>
+        <p class="text-secondary" style="margin:0;"><strong>Trail Making Test, Part A</strong> – connect numbered circles in ascending order as fast as possible; a relatively pure visuomotor processing-speed measure, one of the domains most consistently and severely impaired in first-episode and chronic psychosis. <strong>Letter–Number Span</strong> – an examiner reads a mixed string of letters and numbers aloud; the respondent must reorder and repeat back numbers first (ascending) then letters (alphabetically), taxing working-memory storage and manipulation together.</p>
+
+        <div class="ct-note">Speed of Processing is consistently reported as one of the most impaired MCCB domains in schizophrenia, with effect sizes in the large range in meta-analytic comparisons against healthy controls – larger, on average, than most other MCCB domains.</div>
+
+        <div class="ct-subhead">MCCB composite T-score, schizophrenia vs. healthy controls</div>
+        <div class="ct-chart">
+          <svg viewBox="0 0 500 260" role="img" aria-label="Bar chart comparing MCCB composite T-scores">
+            <line x1="60" y1="220" x2="460" y2="220" stroke="var(--border)" stroke-width="1"/>
+            <line x1="60" y1="20" x2="60" y2="220" stroke="var(--border)" stroke-width="1"/>
+            <!-- normative mean reference line, T=50 -->
+            <line x1="60" y1="77" x2="460" y2="77" stroke="var(--text-tertiary)" stroke-width="1" stroke-dasharray="4 4"/>
+            <text x="64" y="72" font-size="11" fill="var(--text-tertiary)" font-family="var(--font-sans)">T=50 (norm)</text>
+            <!-- y-axis ticks -->
+            <text x="52" y="224" font-size="11" fill="var(--text-tertiary)" text-anchor="end" font-family="var(--font-sans)">0</text>
+            <text x="52" y="124" font-size="11" fill="var(--text-tertiary)" text-anchor="end" font-family="var(--font-sans)">50</text>
+            <text x="52" y="24" font-size="11" fill="var(--text-tertiary)" text-anchor="end" font-family="var(--font-sans)">70</text>
+            <!-- bar: schizophrenia, T=35.13, SD=15.18, N=24 -->
+            <rect x="140" y="119.6" width="90" height="100.4" fill="var(--domain-psychosis)" rx="6"/>
+            <line x1="185" y1="76.3" x2="185" y2="163" stroke="var(--domain-psychosis-ink)" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="172" y1="76.3" x2="198" y2="76.3" stroke="var(--domain-psychosis-ink)" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="172" y1="163" x2="198" y2="163" stroke="var(--domain-psychosis-ink)" stroke-width="2.5" stroke-linecap="round"/>
+            <text x="185" y="108" font-size="14" font-weight="700" letter-spacing="-0.3" fill="var(--text-primary)" text-anchor="middle">35.1</text>
+            <text x="185" y="240" font-size="12" fill="var(--text-secondary)" text-anchor="middle">Schizophrenia</text>
+            <text x="185" y="253" font-size="10.5" fill="var(--text-tertiary)" text-anchor="middle">n=24</text>
+            <!-- bar: healthy controls, T=46.29, SD=12.42, N=24 -->
+            <rect x="290" y="87.7" width="90" height="132.3" fill="#8a97a8" rx="6"/>
+            <line x1="335" y1="52.3" x2="335" y2="123.2" stroke="#5b6472" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="322" y1="52.3" x2="348" y2="52.3" stroke="#5b6472" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="322" y1="123.2" x2="348" y2="123.2" stroke="#5b6472" stroke-width="2.5" stroke-linecap="round"/>
+            <text x="335" y="76" font-size="14" font-weight="700" letter-spacing="-0.3" fill="var(--text-primary)" text-anchor="middle">46.3</text>
+            <text x="335" y="240" font-size="12" fill="var(--text-secondary)" text-anchor="middle">Healthy controls</text>
+            <text x="335" y="253" font-size="10.5" fill="var(--text-tertiary)" text-anchor="middle">n=24</text>
+          </svg>
+          <p class="ct-chart-caption">MCCB composite T-score (mean ± SD), people with schizophrenia vs. matched healthy controls in a registered neuroimaging trial comparing schizophrenia and traumatic brain injury (both groups scored below the normative mean of 50, but schizophrenia notably more so). <strong>Source:</strong> VA Office of Research and Development. (2019, June&nbsp;24). <em>New applications of neuroplasticity biomarkers in veterans with traumatic brain injury or schizophrenia</em> (Identifier No. NCT03995368). ClinicalTrials.gov. <a href="https://clinicaltrials.gov/study/NCT03995368" target="_blank" rel="noopener">https://clinicaltrials.gov/study/NCT03995368</a></p>
+        </div>
+
+        <div class="ct-subhead">Official links</div>
+        <div class="ct-links">
+          <a href="https://www.matricsinc.org/mccb/" target="_blank" rel="noopener">MATRICS Assessment, Inc. – official MCCB page (licensing, kits, training)</a>
+          </div>
+
+        <div class="ct-subhead">Selective bibliography</div>
+        <ul class="ct-refs">
+          <li>Nuechterlein, K.H., Green, M.F., Kern, R.S., Baade, L.E., Barch, D.M., Cohen, J.D., Essock, S., Fenton, W.S., Frese, F.J. III, Gold, J.M., Goldberg, T., Heaton, R.K., Keefe, R.S.E., Kraemer, H., Mesholam-Gately, R., Seidman, L.J., Stover, E., Weinberger, D.R., Young, A.S., Zalcman, S., &amp; Marder, S.R. (2008). The MATRICS Consensus Cognitive Battery, part 1: Test selection, reliability, and validity. <em>American Journal of Psychiatry, 165</em>(2), 203–213. <a href="https://doi.org/10.1176/appi.ajp.2007.07010042" target="_blank" rel="noopener">https://doi.org/10.1176/appi.ajp.2007.07010042</a></li>
+          <li>Kern, R.S., Nuechterlein, K.H., Green, M.F., Baade, L.E., Fenton, W.S., Gold, J.M., Keefe, R.S.E., Mesholam-Gately, R., Mintz, J., Seidman, L.J., Stover, E., &amp; Marder, S.R. (2008). The MATRICS Consensus Cognitive Battery, part 2: Co-norming and standardization. <em>American Journal of Psychiatry, 165</em>(2), 214–220. <a href="https://doi.org/10.1176/appi.ajp.2007.07010043" target="_blank" rel="noopener">https://doi.org/10.1176/appi.ajp.2007.07010043</a></li>
+          <li>Green, M.F., Nuechterlein, K.H., Kern, R.S., Baade, L.E., Fenton, W.S., Gold, J.M., Keefe, R.S.E., Mesholam-Gately, R., Seidman, L.J., Stover, E., &amp; Marder, S.R. (2008). Functional co-primary measures for clinical trials in schizophrenia: Results from the MATRICS Psychometric and Standardization Study. <em>American Journal of Psychiatry, 165</em>(2), 221–228. <a href="https://doi.org/10.1176/appi.ajp.2007.07010089" target="_blank" rel="noopener">https://doi.org/10.1176/appi.ajp.2007.07010089</a></li>
+        </ul>
+      </div></div>
+
+  <a class="btn btn-secondary ct-back" href="/cognitive-tests.html">&larr; All cognitive tasks</a>
+
+</div>
+
+<script>window.CLINCOG_SHELL = {
+  activeNav: "cognitive-tests",
+  breadcrumb: [{ label: "Cognitive tasks", href: "/cognitive-tests.html" }, { label: 'MATRICS (MCCB)' }]
+};</script>
+<script src="/storage.js"></script>
+<script src="/icons.js"></script>
+<script src="/shell.js?v=2"></script>
+<script src="/a11y.js"></script>
+</body>
+</html>

@@ -22,6 +22,23 @@
   }
 </script>
 <style>
+/* Every colour on this page, softened.
+   The dashboard shows the whole palette at once - four case hues as icons,
+   progress bars and badges, plus the accent and the semantic colours in the
+   two donuts - and at full chroma the grid read as a colour chart. Each
+   value below keeps its lightness exactly, so every contrast ratio is
+   unchanged (measured, all within 0.02), and gives up 26% of its chroma.
+   Scoped to this page: the sidebar dots, the chat bubbles and the selected
+   items on the case pages all keep the full-strength palette. */
+:root {
+  --domain-psychosis: #b37c8d; --domain-psychosis-soft: rgba(179,124,141,.14); --domain-psychosis-ink: #885465;
+  --domain-mood:      #9783b0; --domain-mood-soft:      rgba(151,131,176,.14); --domain-mood-ink:      #6d5b86;
+  --domain-anxiety:   #5d96b2; --domain-anxiety-soft:   rgba(93,150,178,.14);  --domain-anxiety-ink:   #477b98;
+  --domain-substance: #a58759; --domain-substance-soft: rgba(165,135,89,.14);  --domain-substance-ink: #7a5f33;
+
+  --accent: #799b8a; --accent-ink: #597165; --accent-soft: #d7e1dc;
+  --success: #3e7851; --warning: #8d6532; --danger: #ae4f4a; --info: #4b6e98;
+}
   /* Page-specific touches - small enough not to warrant their own file yet. */
   .dash-hero-greeting { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--sp-5); margin-bottom: var(--sp-7); flex-wrap: wrap; }
   .dash-hero-greeting .sub { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
@@ -47,6 +64,10 @@
     background: radial-gradient(circle at 100% 0%, var(--domain-color, var(--accent)), transparent 60%);
   }
   .continue-hero-body { position: relative; }
+  /* The hero mark is a PNG, so the softened tokens above cannot reach it.
+     The same 26% comes off as a filter instead, which is why it is here
+     rather than in the token block. */
+  .continue-hero-mark img { filter: saturate(.74); }
   .continue-hero-quote { font-style: italic; color: var(--text-secondary); margin: var(--sp-3) 0 var(--sp-5); font-size: var(--text-base); max-width: 52ch; }
   .continue-hero-progress { display: flex; align-items: center; gap: var(--sp-3); max-width: 320px; margin-bottom: var(--sp-6); }
   .continue-hero-progress .progress-fill { background: var(--domain-color, var(--accent)); }
@@ -270,9 +291,14 @@
   grid.innerHTML = ClinCog.MODULES.map((m) => {
     const s = statusOf(m.id);
     const domain = DOMAIN_CLASS[m.id];
-    const badge = s.state === "complete" ? '<span class="badge badge-success">Complete</span>'
-      : s.state === "in-progress" ? '<span class="badge badge-info">In progress</span>'
-      : '<span class="badge badge-neutral">Not started</span>';
+    // Each state is a strength of this case's own colour, not a generic
+    // green/blue/grey - see .badge-case in components.css.
+    const caseVars = `--case-color:var(${DOMAIN_VAR[m.id]});--case-ink:var(${DOMAIN_VAR[m.id]}-ink);`;
+    const badge = s.state === "complete"
+      ? `<span class="badge badge-case is-complete" style="${caseVars}">Complete</span>`
+      : s.state === "in-progress"
+      ? `<span class="badge badge-case is-progress" style="${caseVars}">In progress</span>`
+      : `<span class="badge badge-case" style="${caseVars}">Not started</span>`;
     // Was gated on evalReached, which only becomes true once a student
     // already reaches the report step INSIDE the evaluation - an
     // impossible deadlock for anyone trying to get there the first time.

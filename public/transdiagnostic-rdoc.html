@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="color-scheme" content="light dark">
+<script src="/theme-init.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClinCog · Research Domain Criteria (RDoC)</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/favicon-180.png">
+
+<link rel="preload" as="script" href="/shell.js?v=2">
+<link rel="preload" as="style" href="/shell.css">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
+<style>
+  /* Prose-heavy page: narrow the column so running text fills its box
+     instead of stopping short inside a wide one. */
+  :root { --shell-content-max: 1080px; }
+
+  .ct-section { margin-bottom: var(--sp-8); }
+  /* Every run of prose on this page caps at the reading measure. Before
+     this, the descriptive paragraphs ran the full content width. */
+  /* Only running body copy caps. Notes, captions and reference lists sit
+     inside a card that is already narrow, so capping them again strands
+     them at just over half the card's width. */
+  .ct-section > p { max-width: var(--measure); }
+  .ct-section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .ct-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .ct-section-sub { font-size: var(--text-sm); color: var(--text-tertiary); margin: 4px 0 var(--sp-5) 20px; }
+  .ct-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); margin: var(--sp-4) 0; }
+  /* On narrow phones the table keeps its natural width and scrolls inside its
+     own container, so words stay whole and the page itself never scrolls sideways. */
+  /* Long URLs and DOIs in the reference lists may break across lines on narrow
+     phones; ordinary words are unaffected, since break-word only breaks a run
+     that cannot fit on a line of its own. */
+  li, li a { overflow-wrap: break-word; }
+  .ct-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: var(--sp-4) 0; contain: inline-size; }
+  .ct-table-wrap > .ct-table { margin: 0; }
+  @media (max-width: 413px) { .ct-table th, .ct-table td { padding-left: 8px; padding-right: 8px; } }
+  .ct-table th { text-align: left; padding: 8px 10px 10px; border-bottom: none; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: .06em; font-weight: 500; font-size: var(--text-xs); }
+  .ct-table td { padding: 10px; border-bottom: none; box-shadow: inset 0 -1px 0 var(--border); vertical-align: top; }
+  .ct-table tr:last-child td { box-shadow: none; }
+  .ct-table .used { display: inline-block; margin-top: 3px; font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 999px; }
+  .ct-links { display: flex; flex-direction: column; gap: 6px; margin: 12px 0; }
+  .ct-links a { font-size: var(--text-sm); font-weight: 500; color: var(--accent-ink); text-decoration: none; }
+  .ct-links a:hover { text-decoration: underline; }
+  .ct-refs { margin: 10px 0 0; padding-left: 18px; font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.9; }
+  .ct-refs li { margin-bottom: 6px; }
+  .ct-note { margin-top: var(--sp-4); padding: var(--sp-4) var(--sp-5); background: var(--bg-surface-alt); border-radius: var(--radius-md); font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.7; }
+  .ct-subhead { font-size: var(--text-base); font-weight: 600; letter-spacing: -.008em; color: var(--text-primary); margin: var(--sp-6) 0 var(--sp-2); }
+  .ct-toc { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: var(--sp-6); }
+  .ct-toc a { font-size: var(--text-sm); font-weight: 500; padding: 8px 14px; border-radius: var(--radius-pill); border: none; background: var(--bg-surface); box-shadow: var(--shadow-xs); color: var(--text-secondary); text-decoration: none; transition: background var(--duration-hover) var(--ease-standard), color var(--duration-hover) var(--ease-standard); }
+  .ct-toc a:hover { background: var(--domain-anxiety-soft); color: var(--accent-ink); }
+
+  .ct-chart { margin: var(--sp-5) 0; }
+  .ct-chart svg { width: 100%; height: auto; display: block; }
+  .ct-chart-caption { font-size: var(--text-sm); color: var(--text-tertiary); margin-top: var(--sp-3); line-height: 1.65; }
+  .ct-chart-caption strong { color: var(--text-secondary); }
+  .ct-back { display: inline-flex; align-items: center; gap: 8px; margin-top: var(--sp-7); }
+  /* Reproduced figure: the frame and the credit line travel together, so
+     a licensed image can never end up on the page without its licence. */
+  .td-figure { margin: var(--sp-5) 0 0; }
+  .td-figure img {
+    display: block; width: 100%; height: auto;
+    border: 1px solid var(--border); border-radius: var(--radius-md);
+    background: #ffffff;
+  }
+  .td-figure figcaption {
+    margin-top: var(--sp-3); font-size: var(--text-xs); color: var(--text-tertiary); line-height: 1.7;
+  }
+  .td-figure figcaption a { color: inherit; }
+  .td-quote {
+    margin: var(--sp-4) 0; padding-left: var(--sp-5);
+    border-left: 3px solid var(--border);
+    color: var(--text-secondary); font-size: var(--text-sm); line-height: 1.75;
+  }
+  .td-quote cite { display: block; margin-top: 6px; font-style: normal; font-size: var(--text-xs); color: var(--text-tertiary); }
+  .td-matrix { width: 100%; border-collapse: separate; border-spacing: 4px; font-size: var(--text-xs); }
+  .td-matrix th { text-align: left; font-weight: 600; color: var(--text-secondary); padding: 6px 8px; }
+  .td-matrix th.td-unit { writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; font-weight: 500; color: var(--text-tertiary); padding: 8px 4px; }
+  .td-matrix td { background: var(--bg-surface-alt); border-radius: var(--radius-sm); height: 26px; }
+  .td-matrix tbody th { background: var(--accent-soft); border-radius: var(--radius-sm); color: var(--text-primary); }
+  /* One cell filled in, so the grid reads as a coordinate space a study
+     can occupy rather than as an empty table. */
+  .td-matrix td.td-cell-on { background: var(--domain-anxiety); }
+
+</style>
+</head>
+<body>
+
+<div id="shell-content">
+
+  <div class="ct-section" id="rdoc">
+    <div class="ct-section-head"><span class="ct-dot" style="background:var(--domain-anxiety);"></span><span class="text-card-title" style="font-size:var(--text-base);">Research Domain Criteria (RDoC)</span></div>
+    <div class="ct-section-sub">A research framework from the US National Institute of Mental Health</div>
+
+    <div class="card"><div class="card-body">
+      <p class="text-secondary" style="margin:0 0 10px;">RDoC starts from the opposite end to a diagnostic manual. Rather than beginning with a disorder and looking for its mechanism, it begins with a dimension of normal functioning &ndash; threat response, reward learning, working memory &ndash; and studies how it varies from healthy to impaired, across whoever happens to show that variation. NIMH is unambiguous about its scope:</p>
+
+      <blockquote class="td-quote">
+        &ldquo;RDoC is not meant to serve as a diagnostic guide, nor is it intended to replace current diagnostic systems.&rdquo;
+        <cite>National Institute of Mental Health, <a href="https://www.nimh.nih.gov/research/research-funded-by-nimh/rdoc/about-rdoc" target="_blank" rel="noopener">About RDoC</a></cite>
+      </blockquote>
+
+      <p class="text-secondary" style="margin:0 0 10px;">That is worth holding on to when reading RDoC-framed studies: a finding that a circuit differs between groups is a finding about that circuit, not a new diagnosis.</p>
+
+      <div class="ct-subhead">The matrix</div>
+      <p class="text-secondary" style="margin:0 0 10px;">The framework is organised as a grid. Rows are constructs, grouped into six domains of functioning; columns are units of analysis, running from genes up to the whole person. A study picks a construct and measures it across one or more units.</p>
+
+      <div class="ct-table-wrap"><table class="td-matrix">
+        <thead>
+          <tr>
+            <th style="width:22%;">Domain</th>
+            <th class="td-unit">Genes</th><th class="td-unit">Molecules</th><th class="td-unit">Cells</th><th class="td-unit">Circuits</th>
+            <th class="td-unit">Physiology</th><th class="td-unit">Behavior</th><th class="td-unit">Self-Report</th><th class="td-unit">Paradigms</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><th>Negative Valence Systems</th><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><th>Positive Valence Systems</th><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><th>Cognitive Systems</th><td></td><td></td><td></td><td></td><td></td><td class="td-cell-on" title="Cognitive Systems × Behavior"></td><td></td><td></td></tr>
+          <tr><th>Social Processes</th><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><th>Arousal and Regulatory Systems</th><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><th>Sensorimotor Systems</th><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table></div>
+      <p style="font-size:var(--text-xs);color:var(--text-tertiary);line-height:1.7;margin:var(--sp-3) 0 0;">Reproduced for this page from the domain and unit-of-analysis names published by NIMH. The filled cell is an example: the stop-signal task on Jordan’s case measures a construct in <strong>Cognitive Systems</strong> (response inhibition, under Cognitive Control) at the <strong>Behavior</strong> unit of analysis – one square of this grid, which is how an RDoC-framed study is specified. The live matrix, with every construct and subconstruct, is at <a href="https://www.nimh.nih.gov/research/research-funded-by-nimh/rdoc/constructs/rdoc-matrix" target="_blank" rel="noopener">nimh.nih.gov &rsaquo; RDoC Matrix</a>.</p>
+
+      <div class="ct-subhead">The six domains</div>
+      <div class="ct-table-wrap"><table class="ct-table">
+        <thead><tr><th>Domain</th><th>NIMH definition</th><th>Constructs</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Negative Valence Systems</strong></td><td>&ldquo;Primarily responsible for responses to aversive situations or context, such as fear, anxiety, and loss.&rdquo;</td><td>Acute Threat (Fear) &middot; Potential Threat (Anxiety) &middot; Sustained Threat &middot; Loss &middot; Frustrative Nonreward</td></tr>
+          <tr><td><strong>Positive Valence Systems</strong></td><td>&ldquo;Primarily responsible for responses to positive motivational situations or contexts, such as reward seeking, consummatory behavior, and reward/habit learning.&rdquo;</td><td>Reward Responsiveness &middot; Reward Learning &middot; Reward Valuation</td></tr>
+          <tr><td><strong>Cognitive Systems</strong></td><td>&ldquo;Responsible for various cognitive processes.&rdquo;</td><td>Attention &middot; Perception &middot; Declarative Memory &middot; Language &middot; Cognitive Control &middot; Working Memory</td></tr>
+          <tr><td><strong>Systems for Social Processes</strong></td><td>&ldquo;Mediate responses in interpersonal settings of various types, including perception and interpretation of others&rsquo; actions.&rdquo;</td><td>Affiliation and Attachment &middot; Social Communication &middot; Perception and Understanding of Self &middot; Perception and Understanding of Others</td></tr>
+          <tr><td><strong>Arousal/Regulatory Systems</strong></td><td>&ldquo;Responsible for generating activation of neural systems as appropriate for various contexts and providing appropriate homeostatic regulation of such systems as energy balance and sleep.&rdquo;</td><td>Arousal &middot; Circadian Rhythms &middot; Sleep and Wakefulness</td></tr>
+          <tr><td><strong>Sensorimotor Systems</strong></td><td>&ldquo;Primarily responsible for the control and execution of motor behaviors, and their refinement during learning and development.&rdquo;</td><td>Motor Actions &middot; Agency and Ownership &middot; Habit &middot; Innate Motor Patterns</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="ct-subhead">Foundations of RDoC</div>
+      <p class="text-secondary" style="margin:0 0 10px;">Insel and colleagues set out three assumptions underlying RDoC: that mental illnesses are &ldquo;disorders of brain circuits&rdquo;; that this circuit dysfunction can be identified with the tools of clinical neuroscience, &ldquo;including electrophysiology, functional neuroimaging, and new methods for quantifying connections <em>in vivo</em>&rdquo;; and that genetics and clinical neuroscience will yield &ldquo;biosignatures that will augment clinical symptoms and signs for clinical management&rdquo; (Insel et al., 2010). The matrix itself is described there as rows of constructs grouped into broad domains of function, with columns denoting &ldquo;different levels of analysis, from genetic, molecular, and cellular levels, proceeding to the circuit-level &hellip; and on to the level of the individual, family environment, and social context.&rdquo;</p>
+
+      <div class="ct-note"><strong>Note:</strong> the founding paper is candid about how far this was from practice. &ldquo;Clearly, this is a vision for the future, given the rudimentary nature of data relating measures of brain function to clinically relevant individual differences.&rdquo; The authors add that RDoC &ldquo;will likely require several mid-course corrections and may ultimately fail to deliver the transformation we seek in clinical care&rdquo; (Insel et al., 2010). Fifteen years on, that framing is still the honest one to teach: RDoC has reorganised a great deal of research without replacing a single diagnosis.</div>
+
+      <div class="ct-subhead">Official links</div>
+      <div class="ct-links">
+        <a href="https://www.nimh.nih.gov/research/research-funded-by-nimh/rdoc/about-rdoc" target="_blank" rel="noopener">NIMH &ndash; About RDoC</a>
+        <a href="https://www.nimh.nih.gov/research/research-funded-by-nimh/rdoc/constructs/rdoc-matrix" target="_blank" rel="noopener">NIMH &ndash; the RDoC matrix</a>
+        <a href="https://www.nimh.nih.gov/research/research-funded-by-nimh/rdoc/constructs/definitions-of-the-rdoc-domains-and-constructs" target="_blank" rel="noopener">NIMH &ndash; definitions of the domains and constructs</a>
+      </div>
+
+      <div class="ct-subhead">Selective bibliography</div>
+      <ul class="ct-refs">
+        <li><strong>The seminal paper.</strong> Insel, T., Cuthbert, B., Garvey, M., Heinssen, R., Pine, D. S., Quinn, K., Sanislow, C., &amp; Wang, P. (2010). Research Domain Criteria (RDoC): Toward a new classification framework for research on mental disorders. <em>American Journal of Psychiatry, 167</em>(7), 748&ndash;751. <a href="https://doi.org/10.1176/appi.ajp.2010.09091379" target="_blank" rel="noopener">https://doi.org/10.1176/appi.ajp.2010.09091379</a></li>
+        <li><strong>Read alongside HiTOP.</strong> Hagerty, S. L. (2023). Toward precision characterization and treatment of psychopathology: A path forward and integrative framework of the Hierarchical Taxonomy of Psychopathology and the Research Domain Criteria. <em>Perspectives on Psychological Science, 18</em>(1), 91&ndash;109. <a href="https://doi.org/10.1177/17456916221079597" target="_blank" rel="noopener">https://doi.org/10.1177/17456916221079597</a> <span class="text-tertiary">(listed by the HiTOP consortium among its key papers)</span></li>
+      </ul>
+    </div></div>
+  </div>
+
+  <a class="btn btn-secondary ct-back" href="/transdiagnostic.html">&larr; All transdiagnostic frameworks</a>
+
+</div>
+
+<script>window.CLINCOG_SHELL = {
+  activeNav: "transdiagnostic",
+  breadcrumb: [{ label: "Transdiagnostic frameworks", href: "/transdiagnostic.html" }, { label: 'RDoC' }]
+};</script>
+<script src="/storage.js"></script>
+<script src="/icons.js"></script>
+<script src="/shell.js?v=2"></script>
+<script src="/a11y.js"></script>
+</body>
+</html>

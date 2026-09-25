@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="color-scheme" content="light dark">
+<script src="/theme-init.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClinCog · Stop-signal task</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/favicon-180.png">
+
+<link rel="preload" as="script" href="/shell.js?v=2">
+<link rel="preload" as="style" href="/shell.css">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
+<style>
+  /* Prose-heavy page: narrow the column so running text fills its box
+     instead of stopping short inside a wide one. */
+  :root { --shell-content-max: 1080px; }
+
+  .ct-section { margin-bottom: var(--sp-8); }
+  /* Every run of prose on this page caps at the reading measure. Before
+     this, the descriptive paragraphs ran the full content width. */
+  /* Only running body copy caps. Notes, captions and reference lists sit
+     inside a card that is already narrow, so capping them again strands
+     them at just over half the card's width. */
+  .ct-section > p { max-width: var(--measure); }
+  .ct-section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .ct-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .ct-section-sub { font-size: var(--text-sm); color: var(--text-tertiary); margin: 4px 0 var(--sp-5) 20px; }
+  .ct-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); margin: var(--sp-4) 0; }
+  /* On narrow phones the table keeps its natural width and scrolls inside its
+     own container, so words stay whole and the page itself never scrolls sideways. */
+  /* Long URLs and DOIs in the reference lists may break across lines on narrow
+     phones; ordinary words are unaffected, since break-word only breaks a run
+     that cannot fit on a line of its own. */
+  li, li a { overflow-wrap: break-word; }
+  .ct-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: var(--sp-4) 0; contain: inline-size; }
+  .ct-table-wrap > .ct-table { margin: 0; }
+  @media (max-width: 413px) { .ct-table th, .ct-table td { padding-left: 8px; padding-right: 8px; } }
+  .ct-table th { text-align: left; padding: 8px 10px 10px; border-bottom: none; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: .06em; font-weight: 500; font-size: var(--text-xs); }
+  .ct-table td { padding: 10px; border-bottom: none; box-shadow: inset 0 -1px 0 var(--border); vertical-align: top; }
+  .ct-table tr:last-child td { box-shadow: none; }
+  .ct-table .used { display: inline-block; margin-top: 3px; font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 999px; }
+  .ct-links { display: flex; flex-direction: column; gap: 6px; margin: 12px 0; }
+  .ct-links a { font-size: var(--text-sm); font-weight: 500; color: var(--accent-ink); text-decoration: none; }
+  .ct-links a:hover { text-decoration: underline; }
+  .ct-refs { margin: 10px 0 0; padding-left: 18px; font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.9; }
+  .ct-refs li { margin-bottom: 6px; }
+  .ct-note { margin-top: var(--sp-4); padding: var(--sp-4) var(--sp-5); background: var(--bg-surface-alt); border-radius: var(--radius-md); font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.7; }
+  .ct-subhead { font-size: var(--text-base); font-weight: 600; letter-spacing: -.008em; color: var(--text-primary); margin: var(--sp-6) 0 var(--sp-2); }
+  .ct-toc { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: var(--sp-6); }
+  .ct-toc a { font-size: var(--text-sm); font-weight: 500; padding: 8px 14px; border-radius: var(--radius-pill); border: none; background: var(--bg-surface); box-shadow: var(--shadow-xs); color: var(--text-secondary); text-decoration: none; transition: background var(--duration-hover) var(--ease-standard), color var(--duration-hover) var(--ease-standard); }
+  .ct-toc a:hover { background: var(--domain-anxiety-soft); color: var(--accent-ink); }
+
+  .ct-chart { margin: var(--sp-5) 0; }
+  .ct-chart svg { width: 100%; height: auto; display: block; }
+  .ct-chart-caption { font-size: var(--text-sm); color: var(--text-tertiary); margin-top: var(--sp-3); line-height: 1.65; }
+  .ct-chart-caption strong { color: var(--text-secondary); }
+  .ct-legend { list-style: none; margin: var(--sp-3) 0 0; padding: 0; display: grid; gap: 6px; }
+  .ct-legend li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 9px; align-items: start;
+                  font-size: var(--text-xs); color: var(--text-secondary); line-height: 1.55; }
+  .ct-legend-swatch { width: 11px; height: 11px; border-radius: 3px; margin-top: 3px; }
+  /* Back to the index - the topbar breadcrumb carries the same link, but
+     a reader who has scrolled to the bibliography should not have to
+     scroll back up to leave. */
+  .ct-back { display: inline-flex; align-items: center; gap: 8px; margin-top: var(--sp-7); }
+</style>
+</head>
+<body>
+
+<div id="shell-content">
+
+      <div class="ct-section-head"><span class="ct-dot" style="background:var(--domain-substance);"></span><span class="text-card-title" style="font-size:var(--text-base);">Stop-signal task</span></div>
+      <div class="ct-section-sub">Used in Jordan's case (substance use) – inhibitory control</div>
+
+      <div class="card"><div class="card-body">
+        <p class="text-secondary" style="margin:0 0 10px;">On most trials, the respondent makes a fast choice response (e.g., left/right arrow key matching an arrow's direction). On a minority of trials (typically ~25%), a stop signal appears after a short, variable delay, instructing the respondent to withhold that response. The task is one of the most widely used laboratory measures of response inhibition across clinical, developmental, and comparative (animal) research.</p>
+
+        <div class="ct-subhead">Stop-Signal Reaction Time (SSRT)</div>
+        <p class="text-secondary" style="margin:0;">SSRT is not observed directly – it is estimated from the horse-race model, which treats the go process and the stop process as independent runners: whichever finishes first determines whether the response is executed or withheld. By titrating the stop-signal delay (SSD) so that stopping succeeds on roughly half of stop trials, and combining SSD with the go-RT distribution, an estimate of the covert stopping latency (SSRT) can be derived. The 2019 consensus guide explicitly recommends the <strong>integration method</strong> over the older mean method for estimating SSRT, because the integration method is more robust to skew in the RT distribution.</p>
+
+        <div class="ct-note">The 2019 cross-lab consensus paper – 48 co-authors from the response-inhibition field – issued 12 concrete recommendations for running and analysing the stop-signal task (e.g., ~25% stop-signal rate, a staircase-tracking SSD procedure, the integration method for SSRT, minimum trial counts) specifically to stop avoidable methodological choices from silently biasing SSRT estimates and group comparisons.</div>
+
+        <div class="ct-subhead">SSRT deficits across disorders – and an honest caveat about substance use</div>
+        <div class="ct-chart">
+          <svg viewBox="0 0 500 196" role="img" aria-label="Bar chart comparing SSRT effect sizes across psychiatric disorders">
+            <line x1="170" y1="15" x2="170" y2="188" stroke="var(--line)" stroke-width="1"/>
+            <text x="170" y="10" font-size="10.5" fill="var(--text-tertiary)" text-anchor="middle">g = 0</text>
+            <!-- OCD g=0.77 -->
+            <text x="160" y="38" font-size="12" fill="var(--text-primary)" text-anchor="end">OCD</text>
+            <rect x="170" y="28" width="154" height="16" fill="#8a97a8" rx="2"/>
+            <text x="330" y="40" font-size="12" font-weight="600" fill="var(--text-primary)">g=0.77</text>
+            <!-- Schizophrenia g=0.69 -->
+            <text x="160" y="68" font-size="12" fill="var(--text-primary)" text-anchor="end">Schizophrenia</text>
+            <rect x="170" y="58" width="138" height="16" fill="var(--domain-psychosis)" rx="2"/>
+            <text x="314" y="70" font-size="12" font-weight="600" fill="var(--text-primary)">g=0.69</text>
+            <!-- ADHD g=0.62 -->
+            <text x="160" y="98" font-size="12" fill="var(--text-primary)" text-anchor="end">ADHD</text>
+            <rect x="170" y="88" width="124" height="16" fill="#8a97a8" rx="2"/>
+            <text x="300" y="100" font-size="12" font-weight="600" fill="var(--text-primary)">g=0.62</text>
+            <!-- Substance use - contested -->
+            <text x="160" y="135" font-size="12" fill="var(--text-primary)" text-anchor="end">Substance use</text>
+            <text x="160" y="149" font-size="10" fill="var(--text-tertiary)" text-anchor="end">(older estimate)</text>
+            <rect x="170" y="120" width="90" height="16" fill="var(--domain-substance)" opacity="0.4" rx="2" stroke="var(--domain-substance)" stroke-width="1.5" stroke-dasharray="3 2"/>
+            <text x="266" y="132" font-size="12" fill="var(--text-secondary)">Smith et al., 2014</text>
+            <text x="160" y="178" font-size="10" fill="var(--text-tertiary)" text-anchor="end">(2024 re-analysis)</text>
+            <rect x="170" y="163" width="30" height="16" fill="var(--domain-substance)" rx="2"/>
+            <text x="206" y="175" font-size="12" font-weight="600" fill="var(--text-primary)">g≈0.13–0.27, ns</text>
+          </svg>
+          <!-- These two lines used to sit inside the SVG at font-size 11. The
+               longer one is wider than the 500-unit viewBox, so it was clipped
+               at the right edge. As HTML they wrap instead of being cut. -->
+          <ul class="ct-legend">
+            <li><span class="ct-legend-swatch" style="background:#8a97a8;"></span>Medium/large, well-replicated deficits</li>
+            <li><span class="ct-legend-swatch" style="background:var(--domain-substance);"></span>Substance use specifically: small, not statistically significant in the most recent meta-analysis</li>
+          </ul>
+          <p class="ct-chart-caption">SSRT deficits (Hedges' g vs. healthy controls) are well-established and medium-to-large for OCD, schizophrenia, and ADHD. For <strong>substance use disorders specifically</strong>, the picture is less settled: the same 2010 meta-analysis that established those three deficits explicitly found SSRT to be "less impaired or normal" for substance dependence, and a more recent, publication-bias-checked 2024 re-analysis reached the same conclusion (Hedges' g = 0.13–0.27, not statistically significant) – even though an intervening 2014 meta-analysis (Smith et al.) had reported a deficit. This is a genuinely open, actively-revisited question in the field, not a settled fact in either direction. <strong>Sources:</strong> Lipszyc &amp; Schachar (2010); Fascher et al. (2024).</p>
+        </div>
+
+        <div class="ct-subhead">Why it belongs in an addiction workup</div>
+        <p class="text-secondary" style="margin:0;">Kwako et al.'s Addictions Neuroclinical Assessment (ANA) framework groups laboratory measures relevant to addictive disorders into three functional domains derived from the neurocircuitry of addiction – <strong>incentive salience</strong>, <strong>negative emotionality</strong>, and <strong>executive function</strong> – echoing Koob &amp; Volkow's three-stage model of the addiction cycle (binge/intoxication, withdrawal/negative affect, preoccupation/anticipation). Response inhibition, measured with tasks such as the stop-signal task, sits within the executive function domain.</p>
+
+        <div class="ct-subhead">Selective bibliography</div>
+        <ul class="ct-refs">
+          <li>Verbruggen, F., Aron, A.R., Band, G.P.H., Beste, C., Bissett, P.G., Brockett, A.T., Brown, J.W., Chamberlain, S.R., Chambers, C.D., Colonius, H., Colzato, L.S., Corneil, B.D., Coxon, J.P., Dupuis, A., Eagle, D.M., Garavan, H., Greenhouse, I., Heathcote, A., Huster, R.J., Jahfari, S., Kenemans, J.L., Leunissen, I., Li, C.R., Logan, G.D., Matzke, D., Morein-Zamir, S., Murthy, A., Paré, M., Poldrack, R.A., Ridderinkhof, K.R., Robbins, T.W., Roesch, M., Rubia, K., Schachar, R.J., Schall, J.D., Stock, A.K., Swann, N.C., Thakkar, K.N., van der Molen, M.W., Vermeylen, L., Vink, M., Wessel, J.R., Whelan, R., Zandbelt, B.B., &amp; Boehler, C.N. (2019). A consensus guide to capturing the ability to inhibit actions and impulsive behaviors in the stop-signal task. <em>eLife, 8</em>, e46323. <a href="https://doi.org/10.7554/eLife.46323" target="_blank" rel="noopener">https://doi.org/10.7554/eLife.46323</a></li>
+          <li>Kwako, L.E., Momenan, R., Litten, R.Z., Koob, G.F., &amp; Goldman, D. (2016). Addictions Neuroclinical Assessment: A neuroscience-based framework for addictive disorders. <em>Biological Psychiatry, 80</em>(3), 179–189. <a href="https://doi.org/10.1016/j.biopsych.2015.10.024" target="_blank" rel="noopener">https://doi.org/10.1016/j.biopsych.2015.10.024</a></li>
+          <li>Logan, G.D., Cowan, W.B., &amp; Davis, K.A. (1984). On the ability to inhibit simple and choice reaction time responses: A model and a method. <em>Journal of Experimental Psychology: Human Perception and Performance, 10</em>(2), 276–291. <a href="https://doi.org/10.1037/0096-1523.10.2.276" target="_blank" rel="noopener">https://doi.org/10.1037/0096-1523.10.2.276</a></li>
+          <li>Lipszyc, J., &amp; Schachar, R. (2010). Inhibitory control and psychopathology: A meta-analysis of studies using the stop signal task. <em>Journal of the International Neuropsychological Society, 16</em>(6), 1064–1076. <a href="https://doi.org/10.1017/S1355617710000895" target="_blank" rel="noopener">https://doi.org/10.1017/S1355617710000895</a></li>
+          <li>Fascher, M., Nowaczynski, S., Spindler, C., Strobach, T., &amp; Muehlhan, M. (2024). Neural underpinnings of response inhibition in substance use disorders: Weak meta-analytic evidence for a widely used construct. <em>Psychopharmacology, 241</em>(1), 1–17. <a href="https://doi.org/10.1007/s00213-023-06498-1" target="_blank" rel="noopener">https://doi.org/10.1007/s00213-023-06498-1</a></li>
+        </ul>
+      </div></div>
+
+  <a class="btn btn-secondary ct-back" href="/cognitive-tests.html">&larr; All cognitive tasks</a>
+
+</div>
+
+<script>window.CLINCOG_SHELL = {
+  activeNav: "cognitive-tests",
+  breadcrumb: [{ label: "Cognitive tasks", href: "/cognitive-tests.html" }, { label: 'Stop-signal task' }]
+};</script>
+<script src="/storage.js"></script>
+<script src="/icons.js"></script>
+<script src="/shell.js?v=2"></script>
+<script src="/a11y.js"></script>
+</body>
+</html>

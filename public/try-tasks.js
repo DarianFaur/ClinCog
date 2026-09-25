@@ -28,7 +28,7 @@
     bg: css('--bg-surface-alt') || '#f1efec',
     ink: css('--text-primary') || '#1a1a1a',
     muted: css('--text-secondary') || '#6e6a64',
-    accent: css('--accent') || '#6f9d87',
+    accent: css('--ink') || '#3b332c',
     danger: css('--danger') || '#c03e3e',
     surface: css('--bg-surface') || '#ffffff',
   });
@@ -49,18 +49,118 @@
     };
     return { c, ctx: c.getContext('2d'), point };
   }
+  // ---------- expand ---------------------------------------------------------
+  // The demos run inside a panel a few hundred pixels tall, which is the wrong
+  // size for a timed task. "Expand" lifts the task into a centred panel over a
+  // dimmed page - the same move as the ICD-11 widget's info panel - rather than
+  // taking the whole screen. The host element itself is repositioned, so no DOM
+  // is moved and no handler is rebound; a running task keeps running.
+  const EXP_STYLE = `
+    .tt-backdrop {
+      position: fixed; inset: 0; z-index: 940;
+      background: rgba(20,18,16,.48);
+      -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+    }
+    .tt-host.tt-expanded {
+      position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);
+      z-index: 950; max-width: 94vw; max-height: 94vh; overflow: auto;
+      background: var(--bg-surface); color: var(--text-primary);
+      border: 1px solid var(--border); border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg); padding: clamp(14px, 1.8vw, 26px);
+    }
+    .tt-host.tt-expanded > .tt-close { position: sticky; top: 0; z-index: 2; display: block; margin: 0 0 10px auto; }
+    /* the collapsed canvas is capped at its own drawing width; expanded, the
+       size is computed instead, so that cap has to come off */
+    .tt-host.tt-expanded canvas { max-width: none !important; }
+    html.tt-locked, html.tt-locked body { overflow: hidden; }
+    @media (prefers-reduced-motion: no-preference) {
+      .tt-host.tt-expanded { animation: tt-pop .16s var(--ease-standard, ease-out) both; }
+      @keyframes tt-pop { from { opacity: 0; transform: translate(-50%, -48%) scale(.99); } }
+    }
+  `;
+  let expStyleAdded = false;
+
+  // The panel is sized from the viewport, not from a fixed pixel width: the
+  // canvas is grown until it hits either the available width or the available
+  // height, and the panel is then cut to the canvas. Without the height half
+  // of that, a 13-inch laptop got a panel taller than its screen (hence the
+  // scrollbar) while a 27-inch monitor got the same 1080px box it had before.
+  function fitExpanded(host) {
+    const c = host.querySelector('canvas');
+    const cs = getComputedStyle(host);
+    const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+    const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+    const availW = Math.min(window.innerWidth * 0.94, 1760) - padX;
+    const availH = window.innerHeight * 0.94 - padY - 4;
+    if (!c || !c.width || !c.height) { host.style.width = Math.round(availW + padX) + 'px'; return; }
+    const ar = c.width / c.height;
+    // The panel's width is settled first and never depends on the canvas:
+    // sizing the two against each other made the instruction text re-wrap,
+    // which changed the height left for the canvas, which changed the width.
+    // Past roughly twice its drawing width the canvas is only an upscaled
+    // bitmap, so that is the ceiling.
+    const panelW = Math.min(availW, c.width * 2);
+    host.style.width = Math.round(panelW + padX) + 'px';
+    c.style.width = '0px'; c.style.height = '0px';
+    const other = host.scrollHeight - padY;
+    const w = Math.max(240, Math.min(panelW, Math.max(120, availH - other) * ar));
+    c.style.width = Math.round(w) + 'px';
+    c.style.height = Math.round(w / ar) + 'px';
+    c.style.marginInline = 'auto';
+  }
+
+  function addExpand(host, row) {
+    if (!expStyleAdded) { document.head.appendChild(el('style', {}, EXP_STYLE)); expStyleAdded = true; }
+    host.classList.add('tt-host');
+    const b = el('button', { type: 'button', class: 'btn btn-secondary btn-sm' }, 'Expand');
+    let back = null;
+    const onResize = () => fitExpanded(host);
+    const close = () => {
+      if (!back) return;
+      host.classList.remove('tt-expanded');
+      const x = host.querySelector(':scope > .tt-close'); if (x) x.remove();
+      const c = host.querySelector('canvas');
+      if (c) { c.style.width = ''; c.style.height = ''; c.style.marginInline = ''; }
+      host.style.width = '';
+      document.documentElement.classList.remove('tt-locked');
+      back.remove(); back = null;
+      b.textContent = 'Expand';
+      document.removeEventListener('keydown', onKey);
+      window.removeEventListener('resize', onResize);
+    };
+    const onKey = e => { if (e.key === 'Escape') { e.stopPropagation(); close(); } };
+    const open = () => {
+      back = el('div', { class: 'tt-backdrop' });
+      back.addEventListener('click', close);
+      document.body.appendChild(back);
+      const x = el('button', { type: 'button', class: 'btn btn-secondary btn-sm tt-close' }, 'Close');
+      x.addEventListener('click', close);
+      host.insertBefore(x, host.firstChild);
+      host.classList.add('tt-expanded');
+      document.documentElement.classList.add('tt-locked');
+      fitExpanded(host);
+      b.textContent = 'Close';
+      document.addEventListener('keydown', onKey);
+      window.addEventListener('resize', onResize);
+    };
+    b.addEventListener('click', () => (back ? close() : open()));
+    row.appendChild(b);
+    return b;
+  }
+
   // A small frame shared by every task: status line, start button, result box.
   function frame(host, intro) {
     const p = el('p', { style: 'font-size:var(--text-sm);color:var(--text-secondary);margin:0 0 12px;max-width:var(--measure)' }, intro);
     // scroll-margin keeps the stage clear of the fixed top bar when it is
     // brought into view, so no part of the task starts hidden under it.
-    const stage = el('div', { style: 'margin:0 0 12px;scroll-margin-top:calc(var(--topbar-h, 72px) + 12px)' });
-    const row = el('div', { style: 'display:flex;gap:12px;align-items:center;flex-wrap:wrap' });
+    const stage = el('div', { class: 'tt-stage', style: 'margin:0 0 12px;scroll-margin-top:calc(var(--topbar-h, 72px) + 12px)' });
+    const row = el('div', { class: 'tt-row', style: 'display:flex;gap:12px;align-items:center;flex-wrap:wrap' });
     const btn = el('button', { type: 'button', class: 'btn btn-primary' }, 'Start');
     const status = el('span', { style: 'font-size:var(--text-sm);color:var(--text-secondary)' });
-    const result = el('div', { style: 'margin-top:12px;font-size:var(--text-sm);line-height:1.6', 'aria-live': 'polite' });
+    const result = el('div', { class: 'tt-result', style: 'margin-top:12px;font-size:var(--text-sm);line-height:1.6', 'aria-live': 'polite' });
     row.append(btn, status);
     host.append(p, stage, row, result);
+    addExpand(host, row);
     btn.addEventListener('click', () => stage.scrollIntoView({ block: 'start' }));
     return { stage, btn, status, result };
   }
@@ -140,10 +240,10 @@
 
   // ---------- 2. letter-number sequencing -----------------------------------
   function lns(host) {
-    const f = frame(host, 'A mix of numbers and letters appears one at a time. Afterwards, type the numbers in ascending order, then the letters in alphabetical order. The series get longer until two at the same length are missed.');
+    const f = frame(host, 'A mix of numbers and letters appears one at a time. Afterwards, type the numbers in ascending order, then the letters in alphabetical order. The series get longer until two at the same length are missed, up to eight items.');
     f.stage.append(el('p', { style: 'margin:0 0 8px;font-size:var(--text-xs);color:var(--text-tertiary)' },
       'In the original paradigm the series is read aloud. Here it is shown on screen, which is a real difference: treat it as an illustration, not as the same task.'));
-    const show = el('div', { style: 'height:96px;display:flex;align-items:center;justify-content:center;font:600 44px/1 Inter, sans-serif;background:var(--bg-surface-alt);border-radius:10px;letter-spacing:.04em' });
+    const show = el('div', { class: 'tt-show', style: 'height:96px;display:flex;align-items:center;justify-content:center;font:600 44px/1 Inter, sans-serif;background:var(--bg-surface-alt);border-radius:10px;letter-spacing:.04em' });
     const form = el('div', { style: 'display:none;gap:8px;margin-top:10px;flex-wrap:wrap' });
     const input = el('input', { type: 'text', autocomplete: 'off', 'aria-label': 'Your answer', style: 'flex:1;min-width:180px;padding:10px 12px;border-radius:8px;border:1px solid var(--border);font:500 16px Inter, sans-serif' });
     const ok = el('button', { type: 'button', class: 'btn btn-secondary' }, 'Submit');
@@ -176,7 +276,7 @@
       if (right) { correct++; longest = Math.max(longest, len); } else missesAtLen++;
       trial++;
       if (trial === 2) {
-        if (missesAtLen === 2 || len === 7) { return finish(); }
+        if (missesAtLen === 2 || len === 8) { return finish(); }
         len++; trial = 0; missesAtLen = 0;
       }
       present();
@@ -198,10 +298,12 @@
 
   // ---------- 3. spatial working memory --------------------------------------
   function swm(host) {
-    const f = frame(host, 'A token is hidden in one of the boxes. Open boxes by clicking until you find it. A box that has held a token will never hold one again, so search the others. There are three rounds, with 3, 4 and 6 boxes.');
+    const f = frame(host, 'A token is hidden in one of the boxes. Open boxes by clicking until you find it. A box that has held a token will never hold one again, so search the others. There are eight rounds, working up from 3 boxes to 8.');
     const W = 560, H = 360, S = 54;
     const { c, ctx, point } = makeCanvas(f.stage, W, H);
-    const LEVELS = [3, 4, 6];
+    // Three rounds ended before the search strategy a student is meant to
+    // notice had a chance to matter. Four set sizes, each run twice.
+    const LEVELS = [3, 3, 4, 4, 6, 6, 8, 8];
     let level = 0, boxes = [], used = new Set(), openNow = new Set(), target = -1, reveal = -1, running = false;
     let found = 0, between = 0, within = 0; const perLevel = [];
 
@@ -254,7 +356,9 @@
     }
     function finish() {
       running = false; f.status.textContent = 'Done.'; f.btn.textContent = 'Run again'; f.btn.disabled = false;
-      const rows = perLevel.map(p => [p.n + ' boxes \u2014 between / within errors', p.between + ' / ' + p.within]);
+      // Two rounds share each set size now, so the row has to name the round
+      // as well, or the table shows the same label twice.
+      const rows = perLevel.map((p, i) => ['Round ' + (i + 1) + ' \u00b7 ' + p.n + ' boxes \u2014 between / within errors', p.between + ' / ' + p.within]);
       rows.push(['Total between-search errors', String(perLevel.reduce((a, p) => a + p.between, 0))]);
       showResult(f.result, rows);
     }
@@ -267,7 +371,7 @@
 
   // ---------- 4. Tower of London --------------------------------------------
   function tol(host) {
-    const f = frame(host, 'Move the balls so the lower arrangement matches the goal shown above it. Click a peg to pick up its top ball, then click another peg to put it down. The pegs hold 3, 2 and 1 ball. Try to use the fewest moves shown.');
+    const f = frame(host, 'Move the balls so the lower arrangement matches the goal shown above it. Click a peg to pick up its top ball, then click another peg to put it down. The pegs hold 3, 2 and 1 ball. Try to use the fewest moves shown. There are nine problems, from 2 moves up to 6.');
     f.stage.append(el('p', { style: 'margin:0 0 8px;font-size:var(--text-xs);color:var(--text-tertiary)' },
       'This is the classic move-by-move Tower of London. The CANTAB task in Darren\u2019s results (One Touch Stockings) asks for the number of moves without making them, so the two are related but not the same.'));
     const W = 560, H = 380;
@@ -291,7 +395,7 @@
     const START = [[0, 1], [2], []];
     const { d: DIST, states: ALL } = distances(START);
     function pickProblems() {
-      const want = [2, 3, 3, 4, 4, 5], out = [];
+      const want = [2, 2, 3, 3, 4, 4, 5, 5, 6], out = [];
       for (const w of want) {
         const pool = shuffle(ALL.filter(s => DIST.get(key(s)) === w && !out.some(o => key(o.goal) === key(s))));
         if (pool.length) out.push({ goal: pool[0], min: w });
@@ -319,12 +423,18 @@
       const k = colours();
       ctx.fillStyle = k.bg; ctx.fillRect(0, 0, W, H);
       ctx.fillStyle = k.muted; ctx.font = '500 13px Inter, sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
-      ctx.fillText('Goal', 20, 14);
+      const label = (txt, x, y) => {
+        // drawTower leaves fillStyle on the last ball it painted, so every
+        // label re-states its own colour and font before drawing.
+        ctx.fillStyle = k.muted; ctx.font = '500 13px Inter, sans-serif';
+        ctx.fillText(txt, x, y);
+      };
+      label('Goal', 20, 14);
       if (problems[pi]) drawTower(problems[pi].goal, 20, 118, 0.55, -1);
-      ctx.fillText('Your tower', 20, 150);
+      label('Your tower', 20, 150);
       pegs = drawTower(state || START, 20, 350, 1, held);
       ctx.textAlign = 'right';
-      if (problems[pi]) ctx.fillText('Moves: ' + moves + '   Minimum: ' + problems[pi].min, W - 16, 14);
+      if (problems[pi]) label('Moves: ' + moves + '   Minimum: ' + problems[pi].min, W - 16, 14);
     }
     c.addEventListener('pointerdown', ev => {
       if (!running) return;

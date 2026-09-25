@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="color-scheme" content="light dark">
+<script src="/theme-init.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClinCog · HiTOP</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/favicon-180.png">
+
+<link rel="preload" as="script" href="/shell.js?v=2">
+<link rel="preload" as="style" href="/shell.css">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
+<style>
+  /* Prose-heavy page: narrow the column so running text fills its box
+     instead of stopping short inside a wide one. */
+  :root { --shell-content-max: 1080px; }
+
+  .ct-section { margin-bottom: var(--sp-8); }
+  /* Every run of prose on this page caps at the reading measure. Before
+     this, the descriptive paragraphs ran the full content width. */
+  /* Only running body copy caps. Notes, captions and reference lists sit
+     inside a card that is already narrow, so capping them again strands
+     them at just over half the card's width. */
+  .ct-section > p { max-width: var(--measure); }
+  .ct-section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .ct-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .ct-section-sub { font-size: var(--text-sm); color: var(--text-tertiary); margin: 4px 0 var(--sp-5) 20px; }
+  .ct-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); margin: var(--sp-4) 0; }
+  /* On narrow phones the table keeps its natural width and scrolls inside its
+     own container, so words stay whole and the page itself never scrolls sideways. */
+  /* Long URLs and DOIs in the reference lists may break across lines on narrow
+     phones; ordinary words are unaffected, since break-word only breaks a run
+     that cannot fit on a line of its own. */
+  li, li a { overflow-wrap: break-word; }
+  .ct-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: var(--sp-4) 0; contain: inline-size; }
+  .ct-table-wrap > .ct-table { margin: 0; }
+  @media (max-width: 413px) { .ct-table th, .ct-table td { padding-left: 8px; padding-right: 8px; } }
+  .ct-table th { text-align: left; padding: 8px 10px 10px; border-bottom: none; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: .06em; font-weight: 500; font-size: var(--text-xs); }
+  .ct-table td { padding: 10px; border-bottom: none; box-shadow: inset 0 -1px 0 var(--border); vertical-align: top; }
+  .ct-table tr:last-child td { box-shadow: none; }
+  .ct-table .used { display: inline-block; margin-top: 3px; font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 999px; }
+  .ct-links { display: flex; flex-direction: column; gap: 6px; margin: 12px 0; }
+  .ct-links a { font-size: var(--text-sm); font-weight: 500; color: var(--accent-ink); text-decoration: none; }
+  .ct-links a:hover { text-decoration: underline; }
+  .ct-refs { margin: 10px 0 0; padding-left: 18px; font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.9; }
+  .ct-refs li { margin-bottom: 6px; }
+  .ct-note { margin-top: var(--sp-4); padding: var(--sp-4) var(--sp-5); background: var(--bg-surface-alt); border-radius: var(--radius-md); font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.7; }
+  .ct-subhead { font-size: var(--text-base); font-weight: 600; letter-spacing: -.008em; color: var(--text-primary); margin: var(--sp-6) 0 var(--sp-2); }
+  .ct-toc { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: var(--sp-6); }
+  .ct-toc a { font-size: var(--text-sm); font-weight: 500; padding: 8px 14px; border-radius: var(--radius-pill); border: none; background: var(--bg-surface); box-shadow: var(--shadow-xs); color: var(--text-secondary); text-decoration: none; transition: background var(--duration-hover) var(--ease-standard), color var(--duration-hover) var(--ease-standard); }
+  .ct-toc a:hover { background: var(--domain-anxiety-soft); color: var(--accent-ink); }
+
+  .ct-chart { margin: var(--sp-5) 0; }
+  .ct-chart svg { width: 100%; height: auto; display: block; }
+  .ct-chart-caption { font-size: var(--text-sm); color: var(--text-tertiary); margin-top: var(--sp-3); line-height: 1.65; }
+  .ct-chart-caption strong { color: var(--text-secondary); }
+  .ct-back { display: inline-flex; align-items: center; gap: 8px; margin-top: var(--sp-7); }
+  /* Reproduced figure: the frame and the credit line travel together, so
+     a licensed image can never end up on the page without its licence. */
+  .td-figure { margin: var(--sp-5) 0 0; }
+  .td-figure img {
+    display: block; width: 100%; height: auto;
+    border: 1px solid var(--border); border-radius: var(--radius-md);
+    background: #ffffff;
+  }
+  .td-figure figcaption {
+    margin-top: var(--sp-3); font-size: var(--text-xs); color: var(--text-tertiary); line-height: 1.7;
+  }
+  .td-figure figcaption a { color: inherit; }
+  .td-quote {
+    margin: var(--sp-4) 0; padding-left: var(--sp-5);
+    border-left: 3px solid var(--border);
+    color: var(--text-secondary); font-size: var(--text-sm); line-height: 1.75;
+  }
+  .td-quote cite { display: block; margin-top: 6px; font-style: normal; font-size: var(--text-xs); color: var(--text-tertiary); }
+  .td-matrix { width: 100%; border-collapse: separate; border-spacing: 4px; font-size: var(--text-xs); }
+  .td-matrix th { text-align: left; font-weight: 600; color: var(--text-secondary); padding: 6px 8px; }
+  .td-matrix th.td-unit { writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; font-weight: 500; color: var(--text-tertiary); padding: 8px 4px; }
+  .td-matrix td { background: var(--bg-surface-alt); border-radius: var(--radius-sm); height: 26px; }
+  .td-matrix tbody th { background: var(--accent-soft); border-radius: var(--radius-sm); color: var(--text-primary); }
+
+</style>
+</head>
+<body>
+
+<div id="shell-content">
+
+  <div class="ct-section" id="hitop">
+    <div class="ct-section-head"><span class="ct-dot" style="background:var(--domain-mood);"></span><span class="text-card-title" style="font-size:var(--text-base);">Hierarchical Taxonomy of Psychopathology (HiTOP)</span></div>
+    <div class="ct-section-sub">A dimensional classification built from the observed covariation of symptoms, rather than from committee-defined categories</div>
+
+    <div class="card"><div class="card-body">
+      <p class="text-secondary" style="margin:0 0 10px;">HiTOP is a consortium of clinical researchers building a classification of mental illness from quantitative evidence about how symptoms actually co-occur. Its starting point is a list of problems with traditional nosologies that its inaugural paper sets out directly: <em>&ldquo;arbitrary boundaries between psychopathology and normality, often unclear boundaries between disorders, frequent disorder co-occurrence, heterogeneity within disorders, and diagnostic instability&rdquo;</em> (Kotov et al., 2017). Instead of assigning a person to a category, HiTOP places them on continua, and organises those continua into a hierarchy that runs from single symptoms up to a general factor shared by all mental disorders.</p>
+
+      <div class="ct-subhead">The model</div>
+      <figure class="td-figure">
+        <img src="/hitop-model.jpg" alt="The official HiTOP working model: a hierarchy running from individual signs, symptoms and maladaptive behaviours at the bottom, through homogeneous symptom components and maladaptive traits, dimensional syndromes, subfactors, spectra including somatoform, internalizing, thought disorder, detachment, disinhibited externalizing and antagonistic externalizing, up to a general factor of psychopathology at the top." loading="lazy">
+        <figcaption>
+          Official HiTOP Working Model, reproduced unmodified. &copy; HiTOP Consortium, published under a
+          <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC&nbsp;BY&nbsp;4.0</a> licence on the OSF
+          (<a href="https://osf.io/rscqf" target="_blank" rel="noopener">osf.io/rscqf</a>). The consortium also publishes an editable
+          version and a record of revisions at <a href="https://osf.io/8h7m6/" target="_blank" rel="noopener">osf.io/8h7m6</a>.
+          Source: <a href="https://www.hitop-system.org/current-model" target="_blank" rel="noopener">hitop-system.org/current-model</a>.
+        </figcaption>
+      </figure>
+
+      <div class="ct-subhead">HiTOP glossary</div>
+      <p class="text-secondary" style="margin:0 0 10px;">Each definition below is quoted from the inaugural paper (Kotov et al., 2017), reading from the bottom of the hierarchy upwards.</p>
+      <div class="ct-table-wrap"><table class="ct-table">
+        <thead><tr><th>Level</th><th>Definition</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Homogeneous components</strong></td><td>&ldquo;constellations of closely related symptom manifestations; for example, fears of working, reading, eating, or drinking in front of others form performance anxiety.&rdquo;</td></tr>
+          <tr><td><strong>Maladaptive traits</strong></td><td>&ldquo;specific pathological personality characteristics, such as submissiveness.&rdquo;</td></tr>
+          <tr><td><strong>Syndromes</strong></td><td>&ldquo;composites of related components/traits, such as a social anxiety syndrome that encompasses both performance anxiety and interaction anxiety.&rdquo;</td></tr>
+          <tr><td><strong>Subfactors</strong></td><td>&ldquo;groups of closely related syndromes, such as the fear subfactor formed by strong links between social anxiety, agoraphobia, and specific phobia.&rdquo;</td></tr>
+          <tr><td><strong>Spectra</strong></td><td>&ldquo;larger constellations of syndromes, such as an internalizing spectrum composed of syndromes from fear, distress, eating pathology, and sexual problems subfactors.&rdquo;</td></tr>
+          <tr><td><strong>Superspectra</strong></td><td>&ldquo;extremely broad dimensions comprised of multiple spectra, such as a general factor of psychopathology that represents the liability shared by all mental disorders.&rdquo;</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="ct-note">A caution the authors state themselves: HiTOP &ldquo;remains a work in progress&rdquo;, and the paper describes the system as <em>&ldquo;a set of testable hypotheses that would encourage exploration rather than constrain it&rdquo;</em>, adding that the consortium seeks &ldquo;to avoid reification of the system&rdquo; (Kotov et al., 2017). Where this application uses HiTOP-SR scales, it uses them as severity dimensions for teaching, not as a diagnosis.</div>
+
+      <div class="ct-subhead">Official links</div>
+      <div class="ct-links">
+        <a href="https://www.hitop-system.org/" target="_blank" rel="noopener">HiTOP Consortium &ndash; official site</a>
+        <a href="https://www.hitop-system.org/current-model" target="_blank" rel="noopener">The current HiTOP working model (figure, editable file, revision history)</a>
+        <a href="https://www.hitop-system.org/key-papers" target="_blank" rel="noopener">The consortium's own list of key papers</a>
+      </div>
+
+      <div class="ct-subhead">Relevant readings</div>
+      <p class="text-secondary" style="margin:0 0 10px;">A short reading path, selected from the consortium's key-papers page. Critiques are included because the consortium lists them there too.</p>
+      <ul class="ct-refs">
+        <li><strong>Inaugural paper.</strong> Kotov, R., Krueger, R. F., Watson, D., Achenbach, T. M., Althoff, R. R., Bagby, R. M., &hellip; Zimmerman, M. (2017). The Hierarchical Taxonomy of Psychopathology (HiTOP): A dimensional alternative to traditional nosologies. <em>Journal of Abnormal Psychology, 126</em>(4), 454&ndash;477. <a href="https://doi.org/10.1037/abn0000258" target="_blank" rel="noopener">https://doi.org/10.1037/abn0000258</a></li>
+        <li><strong>Consensus summary.</strong> Kotov, R., Krueger, R. F., Watson, D., Cicero, D. C., Conway, C. C., DeYoung, C. G., &hellip; Wright, A. G. C. (2021). The Hierarchical Taxonomy of Psychopathology (HiTOP): A quantitative nosology based on consensus of evidence. <em>Annual Review of Clinical Psychology, 17</em>, 83&ndash;108. <a href="https://doi.org/10.1146/annurev-clinpsy-081219-093304" target="_blank" rel="noopener">https://doi.org/10.1146/annurev-clinpsy-081219-093304</a></li>
+        <li><strong>Validity and utility, I&ndash;III.</strong> Kotov et al. (2020), psychosis superspectrum, <em>World Psychiatry, 19</em>, 151&ndash;172. <a href="https://doi.org/10.1002/wps.20730" target="_blank" rel="noopener">https://doi.org/10.1002/wps.20730</a> &middot; Krueger et al. (2021), externalizing superspectrum, <em>World Psychiatry, 20</em>, 171&ndash;193. <a href="https://doi.org/10.1002/wps.20844" target="_blank" rel="noopener">https://doi.org/10.1002/wps.20844</a> &middot; Watson et al. (2022), emotional dysfunction superspectrum, <em>World Psychiatry, 21</em>, 26&ndash;54. <a href="https://doi.org/10.1002/wps.20943" target="_blank" rel="noopener">https://doi.org/10.1002/wps.20943</a></li>
+        <li><strong>Using it with patients.</strong> Ruggero, C. J., Kotov, R., Hopwood, C. J., First, M., Clark, L. A., Skodol, A. E., &hellip; Zimmermann, J. (2019). Integrating the Hierarchical Taxonomy of Psychopathology (HiTOP) into clinical practice. <em>Journal of Consulting and Clinical Psychology, 87</em>(12), 1069&ndash;1084. <a href="https://doi.org/10.1037/ccp0000452" target="_blank" rel="noopener">https://doi.org/10.1037/ccp0000452</a></li>
+        <li><strong>In practice and research.</strong> Kotov, R., Cicero, D. C., Conway, C. C., DeYoung, C. G., Dombrovski, A., Eaton, N. R., &hellip; Wright, A. G. C. (2022). The Hierarchical Taxonomy of Psychopathology (HiTOP) in psychiatric practice and research. <em>Psychological Medicine, 52</em>(9), 1666&ndash;1678. <a href="https://doi.org/10.1017/S0033291722001301" target="_blank" rel="noopener">https://doi.org/10.1017/S0033291722001301</a></li>
+        <li><strong>Does the structure replicate?</strong> Ringwald, W. R., Forbes, M. K., &amp; Wright, A. G. C. (2023). Meta-analysis of structural evidence for the Hierarchical Taxonomy of Psychopathology (HiTOP) model. <em>Psychological Medicine, 53</em>(2), 533&ndash;546. <a href="https://doi.org/10.1017/S0033291721001902" target="_blank" rel="noopener">https://doi.org/10.1017/S0033291721001902</a></li>
+        <li><strong>Critiques.</strong> Haeffel, G. J., Jeronimus, B. F., Kaiser, B. N., Weaver, L. J., Soyster, P. D., Fisher, A. J., Vargas, I., Goodson, J. T., &amp; Lu, W. (2022). Folk classification and factor rotations: Whales, sharks, and the problems with the Hierarchical Taxonomy of Psychopathology (HiTOP). <em>Clinical Psychological Science, 10</em>(2), 259&ndash;278. <a href="https://doi.org/10.1177/21677026211002500" target="_blank" rel="noopener">https://doi.org/10.1177/21677026211002500</a> &middot; Zimmerman, M. (2021). Why hierarchical dimensional approaches to classification will fail to transform diagnosis in psychiatry. <em>World Psychiatry, 20</em>(1), 70. <a href="https://doi.org/10.1002/wps.20815" target="_blank" rel="noopener">https://doi.org/10.1002/wps.20815</a> &middot; Reed, G. M. (2018). HiTOP must meet the use requirements of the ICD before it can aspire to replace it. <em>World Psychiatry, 17</em>(3), 296. <a href="https://doi.org/10.1002/wps.20560" target="_blank" rel="noopener">https://doi.org/10.1002/wps.20560</a> &middot; Wittchen, H.-U., &amp; Beesdo-Baum, K. (2018). &ldquo;Throwing out the baby with the bathwater&rdquo;? Conceptual and methodological limitations of the HiTOP approach. <em>World Psychiatry, 17</em>(3), 298. <a href="https://doi.org/10.1002/wps.20561" target="_blank" rel="noopener">https://doi.org/10.1002/wps.20561</a></li>
+      </ul>
+    </div></div>
+  </div>
+
+  <a class="btn btn-secondary ct-back" href="/transdiagnostic.html">&larr; All transdiagnostic frameworks</a>
+
+</div>
+
+<script>window.CLINCOG_SHELL = {
+  activeNav: "transdiagnostic",
+  breadcrumb: [{ label: "Transdiagnostic frameworks", href: "/transdiagnostic.html" }, { label: 'HiTOP' }]
+};</script>
+<script src="/storage.js"></script>
+<script src="/icons.js"></script>
+<script src="/shell.js?v=2"></script>
+<script src="/a11y.js"></script>
+</body>
+</html>

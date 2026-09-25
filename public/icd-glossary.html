@@ -16,74 +16,138 @@
 <link rel="stylesheet" href="/components.css">
 <link rel="stylesheet" href="/shell.css">
 <style>
-  /* Prose-heavy page: narrow the column so running text fills its box
-     instead of stopping short inside a wide one. */
-  :root { --shell-content-max: 940px; }
+  :root { --shell-content-max: 1120px; }
 
-  .gl-section { margin-bottom: var(--sp-8); }
-  /* Reading column. A term card stretched to the full 1200px content
-     width leaves the right half of every card empty once the text is
-     capped at 68ch, so the column itself is capped instead. */
-  .gl-term-list { display: block; }
-  .gl-section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
-  .gl-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; background: var(--accent); }
-  .gl-section-sub { font-size: var(--text-sm); color: var(--text-tertiary); margin: 4px 0 var(--sp-5) 20px; max-width: var(--measure); }
-  .gl-search-wrap { margin-bottom: var(--sp-6); position: relative; }
+  .gl-intro { color: var(--text-secondary); margin: 0 0 var(--sp-6); }
+
+  /* Search and the section jump-list travel with the reader. The topbar
+     is sticky at 0 and exactly --topbar-h tall, so this sits directly
+     beneath it. */
+  .gl-toolbar {
+    position: sticky;
+    top: var(--topbar-h);
+    z-index: 20;
+    margin: 0 calc(-1 * var(--sp-4)) var(--sp-6);
+    padding: var(--sp-4);
+    background: color-mix(in srgb, var(--bg-app) 88%, transparent);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+  .gl-search-wrap { position: relative; }
   .gl-search-wrap input {
-    width: 100%; box-sizing: border-box; padding: 15px 18px 15px 46px; font-size: var(--text-base);
-    border: none; border-radius: var(--radius-pill); font-family: var(--font-sans);
-    background: var(--bg-surface); color: var(--text-primary); box-shadow: var(--shadow-sm);
+    width: 100%; box-sizing: border-box; padding: 14px 18px 14px 46px; font-size: var(--text-base);
+    border: 1px solid var(--border); border-radius: var(--radius-pill); font-family: var(--font-sans);
+    background: var(--bg-surface); color: var(--text-primary);
   }
-  .gl-search-wrap input:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .gl-search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--text-tertiary); pointer-events: none; }
-  /* Each entry is its own surface. Previously every term was a row in
-     one giant card separated by hairlines, and the definitions ran the
-     full width of the viewport - around 120 characters per line, which
-     is what made this page read as an unedited document. */
+  .gl-search-wrap input:focus { outline: 2px solid var(--text-primary); outline-offset: -2px; border-color: transparent; }
+  .gl-search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--text-tertiary); pointer-events: none; display: flex; }
+
+  .gl-jump { display: flex; flex-wrap: wrap; gap: 6px; margin-top: var(--sp-3); }
+  .gl-jump a {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: var(--text-xs); font-weight: 500;
+    padding: 6px 12px; border-radius: var(--radius-pill);
+    background: var(--bg-surface-alt); color: var(--text-secondary); text-decoration: none;
+    transition: background var(--duration-hover) var(--ease-standard), color var(--duration-hover) var(--ease-standard);
+  }
+  .gl-jump a:hover { background: var(--border); color: var(--text-primary); }
+  .gl-jump a .gl-dot { width: 7px; height: 7px; }
+  .gl-jump a .gl-count { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-tertiary); }
+  .gl-jump a.gl-empty { opacity: .38; pointer-events: none; }
+
+  /* ---- sections ---- */
+  .gl-section { margin-bottom: var(--sp-8); scroll-margin-top: calc(var(--topbar-h) + 132px); }
+  .gl-section-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+  .gl-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; background: var(--gl-color, var(--accent)); align-self: center; }
+  /* Sits next to its heading, not pushed to the far edge, where it
+     read as a stray number floating in the margin. */
+  .gl-section-count { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--text-tertiary); }
+  .gl-section-sub { font-size: var(--text-sm); color: var(--text-tertiary); margin: 4px 0 var(--sp-5) 20px; }
+
+  /* Two columns on a wide screen: these are short definitions, and one
+     column of 46 of them is what made the page read as a scroll with no
+     shape. minmax(0,1fr) so a long word cannot widen a track. */
+  .gl-term-list > div {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--sp-3);
+    align-items: start;
+  }
+  @media (max-width: 820px) { .gl-term-list > div { grid-template-columns: minmax(0, 1fr); } }
+
   .gl-term {
-    background: var(--bg-surface); border-radius: var(--radius-md);
-    padding: var(--sp-5) var(--sp-6); margin-bottom: var(--sp-3);
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gl-color, var(--accent));
+    border-radius: var(--radius-md);
+    padding: var(--sp-4) var(--sp-5);
   }
-  .gl-term:last-child { margin-bottom: 0; }
-  .gl-term-name { font-weight: 600; color: var(--text-primary); font-size: var(--text-lg); letter-spacing: -.012em; }
-  .gl-term-def { color: var(--text-secondary); margin-top: var(--sp-2); font-size: var(--text-base); line-height: 1.65; }
-  .gl-term-example { margin-top: var(--sp-3); padding: var(--sp-3) var(--sp-4); background: var(--bg-surface-alt); border-radius: var(--radius-sm); font-size: var(--text-sm); color: var(--text-secondary); }
+  .gl-term-name { font-weight: 600; color: var(--text-primary); font-size: var(--text-base); letter-spacing: -.008em; }
+  .gl-term-def { color: var(--text-secondary); margin-top: 5px; font-size: var(--text-sm); line-height: 1.6; }
+  .gl-term-example { margin-top: var(--sp-3); padding: var(--sp-3) var(--sp-4); background: var(--bg-surface-alt); border-radius: var(--radius-sm); font-size: var(--text-xs); color: var(--text-secondary); line-height: 1.6; }
   .gl-term-example strong { color: var(--text-tertiary); text-transform: uppercase; font-size: 10.5px; letter-spacing: .04em; }
+  /* A term that matched the search, highlighted so the eye lands on it
+     rather than on whichever card happens to be first. */
+  .gl-term.gl-hit { border-color: var(--gl-color, var(--accent)); box-shadow: var(--shadow-sm); }
   .gl-term.gl-hidden { display: none; }
+
   .gl-no-results { display: none; padding: 24px 0; text-align: center; color: var(--text-tertiary); font-size: var(--text-sm); }
   .gl-no-results.on { display: block; }
+
   .gl-links { display: flex; flex-direction: column; gap: 6px; margin: 12px 0 0; }
   .gl-links a { font-size: var(--text-sm); color: var(--accent-ink); text-decoration: none; }
   .gl-links a:hover { text-decoration: underline; }
   .gl-refs { margin: 10px 0 0; padding-left: 18px; font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.9; }
   .gl-refs li { margin-bottom: 6px; }
+  li, li a { overflow-wrap: break-word; }
+
+  .gl-attrib {
+    margin-top: var(--sp-7);
+    padding-top: var(--sp-5);
+    border-top: 1px solid var(--border);
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    line-height: 1.7;
+  }
+  .gl-attrib a { color: inherit; }
 </style>
 </head>
 <body>
 
 <div id="shell-content">
 
-  <div style="margin-bottom:var(--sp-6);">
-    <p class="text-secondary" style="margin-top:var(--sp-3);">The vocabulary ICD-11 and its CDDR diagnostic manual use for their own structure — what a "linearization" is, what "essential features" means, why some categories don't have codes — collected in one place instead of scattered across documentation. Search or scroll; terms are grouped by what they describe.</p>
+  <div>
+    <p class="text-secondary gl-intro">The vocabulary ICD-11 and its CDDR diagnostic manual use for their own structure – what a "linearization" is, what "essential features" means, why some categories don't have codes – collected in one place instead of scattered across documentation. Search or scroll; terms are grouped by what they describe.</p>
   </div>
 
-  <div class="gl-search-wrap">
-    <span class="gl-search-icon">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="5.5"/><path d="M11.5 11.5L15 15" stroke-linecap="round"/></svg>
-    </span>
-    <input type="text" id="gl-search" autocomplete="off" placeholder="Search terms, e.g. &quot;linearization&quot; or &quot;threshold&quot;…">
+  <div class="gl-toolbar">
+    <div class="gl-search-wrap">
+      <span class="gl-search-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="5.5"/><path d="M11.5 11.5L15 15" stroke-linecap="round"/></svg>
+      </span>
+      <input type="text" id="gl-search" autocomplete="off" placeholder="Search {0} terms, e.g. &quot;anhedonia&quot; or &quot;essential features&quot;…">
+    </div>
+    <nav class="gl-jump" id="gl-jump" aria-label="Jump to a section">
+      <a href="#thought" data-jump="thought"><span class="gl-dot" style="background:var(--domain-psychosis);"></span><span class="gl-jump-label"></span><span class="gl-count"></span></a>
+      <a href="#affect" data-jump="affect"><span class="gl-dot" style="background:var(--domain-mood);"></span><span class="gl-jump-label"></span><span class="gl-count"></span></a>
+      <a href="#drive" data-jump="drive"><span class="gl-dot" style="background:var(--domain-substance);"></span><span class="gl-jump-label"></span><span class="gl-count"></span></a>
+      <a href="#anxiety" data-jump="anxiety"><span class="gl-dot" style="background:var(--domain-anxiety);"></span><span class="gl-jump-label"></span><span class="gl-count"></span></a>
+      <a href="#cognition" data-jump="cognition"><span class="gl-dot" style="background:var(--info);"></span><span class="gl-jump-label"></span><span class="gl-count"></span></a>
+      <a href="#risk" data-jump="risk"><span class="gl-dot" style="background:var(--danger);"></span><span class="gl-jump-label"></span><span class="gl-count"></span></a>
+      <a href="#cddr-structure" data-jump="cddr-structure"><span class="gl-dot" style="background:var(--accent);"></span><span class="gl-jump-label"></span><span class="gl-count"></span></a>
+    </nav>
   </div>
 
   <div id="gl-no-results" class="gl-no-results">No terms match that search.</div>
 
   <!-- ============ HOW ICD-11 IS BUILT ============ -->
-  <div class="gl-section" id="thought">
-    <div class="gl-section-head"><span class="gl-dot"></span><span class="text-card-title" style="font-size:var(--text-base)">Thought and its content</span></div>
+  <div class="gl-section" id="thought" style="--gl-color:var(--domain-psychosis);">
+    <div class="gl-section-head"><span class="gl-dot"></span><span class="text-card-title" style="font-size:var(--text-base)">Thought and its content</span><span class="gl-section-count"></span></div>
     <div class="gl-section-sub">What the person believes and how the thinking is organised.</div>
     <div class="gl-term-list"><div>
       <div class="gl-term" data-term="delusion">
         <div class="gl-term-name">Delusion</div>
-        <div class="gl-term-def">a belief that is demonstrably untrue or not shared by others, usually based on incorrect inference about external reality.</div>
+        <div class="gl-term-def">a belief that is demonstrably untrue or not shared by others, usually based on incorrect inference about external reality. The belief is firmly held with conviction and is not, or is only briefly, susceptible to modification by experience or evidence that contradicts it. The belief is not ordinarily accepted by other members or the person&rsquo;s culture or subculture (i.e. it is not an article of religious faith).</div>
       </div>
       <div class="gl-term" data-term="referential thinking">
         <div class="gl-term-name">Referential thinking</div>
@@ -103,7 +167,7 @@
       </div>
       <div class="gl-term" data-term="disorganized behaviour">
         <div class="gl-term-name">Disorganized behaviour</div>
-        <div class="gl-term-def">behaviour including posture, gait and other activity that is unpredictable or not goal-directed (e.g.</div>
+        <div class="gl-term-def">behaviour including posture, gait and other activity that is unpredictable or not goal-directed (e.g. shouting at strangers on the street).</div>
       </div>
       <div class="gl-term" data-term="thought withdrawal">
         <div class="gl-term-name">Thought withdrawal</div>
@@ -112,8 +176,8 @@
     </div></div>
   </div>
 
-  <div class="gl-section" id="affect">
-    <div class="gl-section-head"><span class="gl-dot"></span><span class="text-card-title" style="font-size:var(--text-base)">Affect and mood</span></div>
+  <div class="gl-section" id="affect" style="--gl-color:var(--domain-mood);">
+    <div class="gl-section-head"><span class="gl-dot"></span><span class="text-card-title" style="font-size:var(--text-base)">Affect and mood</span><span class="gl-section-count"></span></div>
     <div class="gl-section-sub">How feeling is experienced and how it shows.</div>
     <div class="gl-term-list"><div>
       <div class="gl-term" data-term="depressed mood">
@@ -167,8 +231,8 @@
     </div></div>
   </div>
 
-  <div class="gl-section" id="drive">
-    <div class="gl-section-head"><span class="gl-dot"></span><span class="text-card-title" style="font-size:var(--text-base)">Drive and psychomotor activity</span></div>
+  <div class="gl-section" id="drive" style="--gl-color:var(--domain-substance);">
+    <div class="gl-section-head"><span class="gl-dot"></span><span class="text-card-title" style="font-size:var(--text-base)">Drive and psychomotor activity</span><span class="gl-section-count"></span></div>
     <div class="gl-section-sub">Motivation, movement and the pace of behaviour.</div>
     <div class="gl-term-list"><div>
       <div class="gl-term" data-term="avolition">
@@ -198,8 +262,8 @@
     </div></div>
   </div>
 
-  <div class="gl-section" id="anxiety">
-    <div class="gl-section-head"><span class="gl-dot"></span><span class="text-card-title" style="font-size:var(--text-base)">Anxiety and fear</span></div>
+  <div class="gl-section" id="anxiety" style="--gl-color:var(--domain-anxiety);">
+    <div class="gl-section-head"><span class="gl-dot"></span><span class="text-card-title" style="font-size:var(--text-base)">Anxiety and fear</span><span class="gl-section-count"></span></div>
     <div class="gl-section-sub">The terms that separate fear, anxiety and worry from one another.</div>
     <div class="gl-term-list"><div>
       <div class="gl-term" data-term="fear">
@@ -208,7 +272,7 @@
       </div>
       <div class="gl-term" data-term="anxiety">
         <div class="gl-term-name">Anxiety</div>
-        <div class="gl-term-def">apprehensiveness or anticipation of future danger or misfortune accompanied by a feeling of worry, distress or somatic symptoms of tension.</div>
+        <div class="gl-term-def">apprehensiveness or anticipation of future danger or misfortune accompanied by a feeling of worry, distress or somatic symptoms of tension. The focus of anticipated danger may be internal or external.</div>
       </div>
       <div class="gl-term" data-term="worry">
         <div class="gl-term-name">Worry</div>
@@ -216,7 +280,7 @@
       </div>
       <div class="gl-term" data-term="panic attack">
         <div class="gl-term-name">Panic attack</div>
-        <div class="gl-term-def">a discrete episode of intense fear or apprehension accompanied by the rapid and concurrent onset of a number of characteristic symptoms.</div>
+        <div class="gl-term-def">a discrete episode of intense fear or apprehension accompanied by the rapid and concurrent onset of a number of characteristic symptoms. These symptoms may include &ndash; but are not limited to &ndash; palpitations or increased heart rate, sweating, trembling, sensations of shortness of breath, feelings of choking, chest pain, nausea or abdominal distress, feelings of dizziness or lightheadedness, chills or hot flushes, tingling or lack of sensation in extremities (i.e. paraesthesias), depersonalization or derealization, fear of losing control or going mad, and fear of imminent death. Panic attacks can appear &ldquo;out of the blue&rdquo; or can be triggered by particular situations.</div>
       </div>
       <div class="gl-term" data-term="avoidance behaviour">
         <div class="gl-term-name">Avoidance behaviour</div>
@@ -225,8 +289,8 @@
     </div></div>
   </div>
 
-  <div class="gl-section" id="cognition">
-    <div class="gl-section-head"><span class="gl-dot"></span><span class="text-card-title" style="font-size:var(--text-base)">Cognition</span></div>
+  <div class="gl-section" id="cognition" style="--gl-color:var(--info);">
+    <div class="gl-section-head"><span class="gl-dot"></span><span class="text-card-title" style="font-size:var(--text-base)">Cognition</span><span class="gl-section-count"></span></div>
     <div class="gl-section-sub">What the cognitive layer of each case is trying to measure.</div>
     <div class="gl-term-list"><div>
       <div class="gl-term" data-term="poor concentration">
@@ -256,8 +320,8 @@
     </div></div>
   </div>
 
-  <div class="gl-section" id="risk">
-    <div class="gl-section-head"><span class="gl-dot"></span><span class="text-card-title" style="font-size:var(--text-base)">Risk</span></div>
+  <div class="gl-section" id="risk" style="--gl-color:var(--danger);">
+    <div class="gl-section-head"><span class="gl-dot"></span><span class="text-card-title" style="font-size:var(--text-base)">Risk</span><span class="gl-section-count"></span></div>
     <div class="gl-section-sub">Terms that carry clinical weight and are easy to use loosely.</div>
     <div class="gl-term-list"><div>
       <div class="gl-term" data-term="suicidal ideation">
@@ -271,41 +335,41 @@
     </div></div>
   </div>
 
-  <div class="gl-section" id="cddr-structure">
-    <div class="gl-section-head"><span class="gl-dot"></span><span class="text-card-title" style="font-size:var(--text-base);">The parts of a CDDR diagnostic write-up</span></div>
-    <div class="gl-section-sub">Every disorder in the CDDR manual is described using this same set of headings</div>
+  <div class="gl-section" id="cddr-structure" style="--gl-color:var(--accent);">
+    <div class="gl-section-head"><span class="gl-dot"></span><span class="text-card-title" style="font-size:var(--text-base);">The parts of a CDDR diagnostic write-up</span><span class="gl-section-count"></span></div>
+    <div class="gl-section-sub">Every disorder in the CDDR manual is described using this same set of headings. Unlike the clinical sections above, the descriptions here are this course’s own summaries, not WHO wording.</div>
 
     <div class="gl-term-list"><div>
 
       <div class="gl-term" data-term="essential required features">
         <div class="gl-term-name">Essential (Required) Features</div>
-        <div class="gl-term-def">The features a clinician should expect to see in every case of the disorder — the closest thing CDDR has to "criteria," though written as clinical description rather than a rigid checklist.</div>
-        <div class="gl-term-example"><strong>In this course</strong> — the "Diagnostic criteria reproduced verbatim from World Health Organization…" text on each case's ICD-11 step is the Essential Features section for that disorder.</div>
+        <div class="gl-term-def">The features a clinician should expect to see in every case of the disorder – the closest thing CDDR has to "criteria," though written as clinical description rather than a rigid checklist.</div>
+        <div class="gl-term-example"><strong>In this course</strong> – the "Diagnostic criteria reproduced verbatim from World Health Organization…" text on each case's ICD-11 step is the Essential Features section for that disorder.</div>
       </div>
 
       <div class="gl-term" data-term="additional clinical features">
         <div class="gl-term-name">Additional Clinical Features</div>
-        <div class="gl-term-def">Features commonly seen in some, but not all, cases of the disorder — useful for recognition, but not required for the diagnosis to apply.</div>
+        <div class="gl-term-def">Features commonly seen in some, but not all, cases of the disorder – useful for recognition, but not required for the diagnosis to apply.</div>
       </div>
 
       <div class="gl-term" data-term="boundary with normality threshold">
         <div class="gl-term-name">Boundary with Normality (Threshold)</div>
-        <div class="gl-term-def">Where CDDR draws the line between an ordinary human experience (sadness, worry, unusual belief) and the disorder — the severity, duration, or impairment threshold that has to be crossed before a diagnosis is appropriate.</div>
+        <div class="gl-term-def">Where CDDR draws the line between an ordinary human experience (sadness, worry, unusual belief) and the disorder – the severity, duration, or impairment threshold that has to be crossed before a diagnosis is appropriate.</div>
       </div>
 
       <div class="gl-term" data-term="differential diagnosis boundaries other disorders">
         <div class="gl-term-name">Differential Diagnosis (Boundaries with Other Disorders and Conditions)</div>
-        <div class="gl-term-def">How to tell this disorder apart from others it's commonly confused with, including other mental disorders and relevant medical conditions — the section that matters most when two diagnoses both seem to fit.</div>
+        <div class="gl-term-def">How to tell this disorder apart from others it's commonly confused with, including other mental disorders and relevant medical conditions – the section that matters most when two diagnoses both seem to fit.</div>
       </div>
 
       <div class="gl-term" data-term="course features">
         <div class="gl-term-name">Course Features</div>
-        <div class="gl-term-def">How the disorder typically unfolds over time — onset pattern, typical duration, episodic vs. persistent course, and common trajectories.</div>
+        <div class="gl-term-def">How the disorder typically unfolds over time – onset pattern, typical duration, episodic vs. persistent course, and common trajectories.</div>
       </div>
 
       <div class="gl-term" data-term="developmental presentations">
         <div class="gl-term-name">Developmental Presentations</div>
-        <div class="gl-term-def">How the disorder can look different at different ages — for instance, presentations more typical in children or adolescents versus adults.</div>
+        <div class="gl-term-def">How the disorder can look different at different ages – for instance, presentations more typical in children or adolescents versus adults.</div>
       </div>
 
       <div class="gl-term" data-term="culture related features">
@@ -321,18 +385,26 @@
     </div></div>
 
     <div class="gl-links" style="margin-top:14px;">
-      <a href="/cddr-guide.html">This course's CDDR criteria guide — what CDDR is, and a live ICD-11 search tool</a>
+      <a href="/cddr-guide.html">This course's CDDR criteria guide – what CDDR is, and a live ICD-11 search tool</a>
     </div>
 
     <div style="margin-top:18px;">
       <span class="text-card-title" style="font-size:var(--text-sm);">Selective bibliography</span>
       <ul class="gl-refs">
-        <li>Pezzella, A. (2022). The ICD-11 is now officially in effect. <em>World Psychiatry, 21</em>(2), 331–332.</li>
-        <li>Kestel, D., et al. (2024). Global launch of the ICD-11 Clinical Descriptions and Diagnostic Requirements (CDDR). <em>World Psychiatry, 23</em>(3), 429–430.</li>
-        <li>Reed, G.M., First, M.B., Kogan, C.S., et al. (2019). Innovations and changes in the ICD-11 classification of mental, behavioural and neurodevelopmental disorders. <em>World Psychiatry, 18</em>(1), 3–19.</li>
+        <li>Pezzella, A. (2022). The ICD-11 is now officially in effect. <em>World Psychiatry, 21</em>(2), 331–332. <a href="https://doi.org/10.1002/wps.20982" target="_blank" rel="noopener">https://doi.org/10.1002/wps.20982</a></li>
+        <li>Kestel, D., &amp; Reed, G. M. (2024). Global launch of the ICD-11 Clinical Descriptions and Diagnostic Requirements (CDDR). <em>World Psychiatry, 23</em>(3), 310–311. <a href="https://doi.org/10.1002/wps.21223" target="_blank" rel="noopener">https://doi.org/10.1002/wps.21223</a></li>
+        <li>Reed, G.M., First, M.B., Kogan, C.S., et al. (2019). Innovations and changes in the ICD-11 classification of mental, behavioural and neurodevelopmental disorders. <em>World Psychiatry, 18</em>(1), 3–19. <a href="https://doi.org/10.1002/wps.20611" target="_blank" rel="noopener">https://doi.org/10.1002/wps.20611</a></li>
       </ul>
     </div>
   </div>
+
+  <p class="gl-attrib">
+    Definitions in the clinical sections are reproduced from the symptom glossary of the World Health
+    Organization’s <em>Clinical descriptions and diagnostic requirements for ICD-11 mental, behavioural and
+    neurodevelopmental disorders</em> (Geneva: WHO; 2024), licensed under
+    <a href="https://creativecommons.org/licenses/by-nc-nd/3.0/igo/" target="_blank" rel="noopener">CC BY-NC-ND 3.0 IGO</a>.
+    Clinical terms not defined in that glossary are not listed rather than paraphrased. The final section, on the structure of a CDDR write-up, is written by this course and is not WHO text.
+  </p>
 
 </div>
 
@@ -340,36 +412,59 @@
      the first paint; the second copy here was a duplicate request. -->
 
 <script>window.CLINCOG_SHELL = { activeNav: "icd-glossary", breadcrumb: [{ label: "ICD-11 glossary" }] };</script>
+<script src="/icons.js"></script>
 <script src="/shell.js?v=2"></script>
 <script src="/a11y.js"></script>
-  <p style="font-size:var(--text-xs);color:var(--text-tertiary);line-height:1.7;margin:var(--sp-6) 0 0;">
-    Definitions in the clinical sections are reproduced from the symptom glossary of the World Health
-    Organization’s <em>Clinical descriptions and diagnostic requirements for ICD-11 mental, behavioural and
-    neurodevelopmental disorders</em> (Geneva: WHO; 2024), licensed under
-    <a href="https://creativecommons.org/licenses/by-nc-nd/3.0/igo/" target="_blank" rel="noopener">CC BY-NC-ND 3.0 IGO</a>.
-    Terms the manual does not define in that glossary are not listed here rather than paraphrased.
-  </p>
 <script>
 (function () {
   const input = document.getElementById('gl-search');
   const terms = Array.from(document.querySelectorAll('.gl-term'));
   const noResults = document.getElementById('gl-no-results');
   const sections = Array.from(document.querySelectorAll('.gl-section'));
+  const jump = document.getElementById('gl-jump');
 
-  input.addEventListener('input', () => {
-    const q = input.value.trim().toLowerCase();
-    let anyVisible = false;
-    terms.forEach(term => {
+  // Section labels and counts are read off the page rather than written
+  // twice, so adding a term cannot leave a stale number behind.
+  const chips = new Map();
+  sections.forEach((section) => {
+    const label = section.querySelector('.gl-section-head .text-card-title').textContent.trim();
+    const chip = jump.querySelector('[data-jump="' + section.id + '"]');
+    if (chip) {
+      chip.querySelector('.gl-jump-label').textContent = label;
+      chips.set(section.id, chip);
+    }
+  });
+
+  const render = (q) => {
+    let total = 0;
+    terms.forEach((term) => {
       const haystack = (term.dataset.term + ' ' + term.textContent).toLowerCase();
       const match = q === '' || haystack.includes(q);
       term.classList.toggle('gl-hidden', !match);
-      if (match) anyVisible = true;
+      term.classList.toggle('gl-hit', match && q !== '');
+      if (match) total += 1;
     });
-    sections.forEach(section => {
-      const hasVisible = section.querySelectorAll('.gl-term:not(.gl-hidden)').length > 0;
-      section.style.display = (q === '' || hasVisible) ? '' : 'none';
+    sections.forEach((section) => {
+      const n = section.querySelectorAll('.gl-term:not(.gl-hidden)').length;
+      section.style.display = n ? '' : 'none';
+      section.querySelector('.gl-section-count').textContent =
+        n + (q === '' ? '' : ' of ' + section.querySelectorAll('.gl-term').length);
+      const chip = chips.get(section.id);
+      if (chip) {
+        chip.querySelector('.gl-count').textContent = n;
+        chip.classList.toggle('gl-empty', n === 0);
+      }
     });
-    noResults.classList.toggle('on', !anyVisible && q !== '');
+    noResults.classList.toggle('on', total === 0 && q !== '');
+    return total;
+  };
+
+  input.placeholder = input.placeholder.replace('{0}', terms.length);
+  render('');
+  input.addEventListener('input', () => render(input.value.trim().toLowerCase()));
+  // Escape clears, which is what a search field is expected to do.
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && input.value !== '') { input.value = ''; render(''); }
   });
 })();
 </script>

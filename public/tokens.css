@@ -285,9 +285,34 @@
   --duration-hover: 150ms;
   --duration-layout: 250ms;
   --duration-progress: 400ms;
+
+  /* ---- Selection ----
+     One colour for "this is the answer you picked", shared by every item
+     control on the evaluation pages. It is the same recipe the student's
+     own chat bubble already uses - the accent at 12% over the surface - so
+     an answered item and a message the student wrote read as the same
+     gesture. The fill is what actually changed: the previous "selected"
+     state reused --bg-surface-alt, the same background as an unselected
+     control, which is why clicking looked like nothing happened.
+     Measured: label 15.5:1 on the fill, outline 4.7:1 against it. */
+  --select: var(--accent);
+  --select-line: var(--accent-ink);
+  --select-ink: var(--text-primary);
+  --select-fill: color-mix(in srgb, var(--accent) 12%, var(--bg-surface));
+  --select-ring: color-mix(in srgb, var(--accent) 20%, transparent);
+  /* Text on a solid fill of the outline colour, not of --accent, which
+     only reaches 3.07:1 against white. */
+  --select-solid: var(--accent-ink);
+  --select-on: #ffffff;
 }
 
 html[data-theme="dark"] {
+  /* The fill formula carries over unchanged - it mixes into whatever
+     --bg-surface is - so only the outline has to swap to the lighter tone
+     to stay visible on it. Measured: label 12.1:1, outline 4.7:1. */
+  --select-line: var(--accent);
+  --select-solid: var(--accent);
+  --select-on: #16211c;
   --bg-app: #131211;
   --bg-surface: #1c1b19;
   --bg-surface-alt: #232220;
@@ -341,6 +366,12 @@ html[data-theme="dark"] {
    so an explicit "light" choice always wins (see theme-init.js). */
 @media (prefers-color-scheme: dark) {
   html:not([data-theme="light"]) {
+    /* The fill formula carries over unchanged - it mixes into whatever
+       --bg-surface is - so only the outline has to swap to the lighter tone
+       to stay visible on it. Measured: label 12.1:1, outline 4.7:1. */
+    --select-line: var(--accent);
+    --select-solid: var(--accent);
+    --select-on: #16211c;
     --bg-app: #131211;
     --bg-surface: #1c1b19;
     --bg-surface-alt: #232220;

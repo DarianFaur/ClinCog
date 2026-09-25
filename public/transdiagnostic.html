@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="color-scheme" content="light dark">
+<script src="/theme-init.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClinCog · Transdiagnostic frameworks</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/favicon-180.png">
+
+<link rel="preload" as="script" href="/shell.js?v=2">
+<link rel="preload" as="style" href="/shell.css">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
+<style>
+  :root { --shell-content-max: 1080px; }
+
+  .td-intro { color: var(--text-secondary); margin: 0 0 var(--sp-7); }
+
+  .td-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-5); }
+  @media (max-width: 1000px) { .td-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 760px) { .td-grid { grid-template-columns: minmax(0, 1fr); } }
+
+  a.td-card {
+    display: flex; flex-direction: column;
+    text-decoration: none; color: inherit; overflow: hidden; padding: 0;
+  }
+  a.td-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* Each drawing is an original schematic of how that framework is
+     organised - a diagram of the idea, not a copy of anyone's figure. */
+  .td-art {
+    height: 132px; display: flex; align-items: center; justify-content: center;
+    background: var(--domain-soft, var(--accent-soft));
+    border-bottom: 1px solid var(--border);
+  }
+  .td-art svg { width: 190px; height: 92px; display: block; }
+  .td-art-stroke { stroke: var(--domain-ink, var(--accent-ink)); }
+  .td-art-fill { fill: var(--domain-ink, var(--accent-ink)); }
+
+  .td-card-body { padding: var(--sp-5) var(--sp-5) var(--sp-6); display: flex; flex-direction: column; flex: 1; }
+  .td-card-eyebrow {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--font-mono); font-size: var(--text-eyebrow-size);
+    letter-spacing: var(--text-eyebrow-spacing); text-transform: uppercase;
+    color: var(--text-secondary); margin-bottom: var(--sp-3);
+  }
+  .td-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: var(--domain-color, var(--accent)); }
+  .td-card-title { font-size: var(--text-base); font-weight: 600; letter-spacing: -.008em; margin: 0 0 6px; }
+  .td-card-desc { font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.6; margin: 0; }
+
+  .td-note {
+    margin-top: var(--sp-7); padding: var(--sp-5);
+    background: var(--bg-surface-alt); border-radius: var(--radius-md);
+    font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.7;
+  }
+  .td-note a { color: var(--accent-ink); }
+</style>
+</head>
+<body>
+
+<div id="shell-content">
+
+  <p class="text-secondary td-intro">
+    The cases in this application are worked with ICD-11, which sorts people into categories. That is
+    one answer to the question of how mental illness should be classified, and it is contested. These
+    pages cover three alternatives the field is actively building &ndash; one that replaces categories
+    with dimensions, one that sets classification aside to study mechanisms, and one that asks where a
+    person is along a course rather than which box they belong in. None of them replaces ICD-11 in
+    clinical practice today; knowing why is part of learning to use any of them.
+  </p>
+
+  <div class="td-grid">
+
+    <a class="card card-hoverable td-card" href="/transdiagnostic-hitop.html"
+       style="--domain-color:var(--domain-mood);--domain-soft:var(--domain-mood-soft);--domain-ink:var(--domain-mood-ink);">
+      <div class="td-art">
+        <!-- A hierarchy: many symptoms narrowing upward to one general factor -->
+        <svg viewBox="0 0 190 92" role="img" aria-label="A hierarchy narrowing from many symptoms at the bottom to one general factor at the top">
+          <g class="td-art-stroke" fill="none" stroke-width="1.6" stroke-linecap="round" opacity=".55">
+            <path d="M95 26 V36 M60 46 V36 H130 V46"/>
+            <path d="M60 56 V66 M42 66 H78 M42 66 V72 M78 66 V72"/>
+            <path d="M130 56 V66 M112 66 H148 M112 66 V72 M148 66 V72"/>
+          </g>
+          <g class="td-art-fill">
+            <rect x="62" y="14" width="66" height="12" rx="4"/>
+            <rect x="34" y="44" width="52" height="12" rx="4" opacity=".72"/>
+            <rect x="104" y="44" width="52" height="12" rx="4" opacity=".72"/>
+            <rect x="30" y="72" width="24" height="10" rx="3" opacity=".45"/>
+            <rect x="66" y="72" width="24" height="10" rx="3" opacity=".45"/>
+            <rect x="100" y="72" width="24" height="10" rx="3" opacity=".45"/>
+            <rect x="136" y="72" width="24" height="10" rx="3" opacity=".45"/>
+          </g>
+        </svg>
+      </div>
+      <div class="td-card-body">
+        <div class="td-card-eyebrow"><span class="td-dot"></span>Dimensional</div>
+        <h3 class="td-card-title">HiTOP</h3>
+        <p class="td-card-desc">A hierarchy built from how symptoms actually co-occur: single symptoms at the bottom, spectra such as internalizing and thought disorder in the middle, a general factor of psychopathology at the top.</p>
+      </div>
+    </a>
+
+    <a class="card card-hoverable td-card" href="/transdiagnostic-rdoc.html"
+       style="--domain-color:var(--domain-anxiety);--domain-soft:var(--domain-anxiety-soft);--domain-ink:var(--domain-anxiety-ink);">
+      <div class="td-art">
+        <!-- A matrix: constructs down the side, units of analysis across -->
+        <svg viewBox="0 0 190 92" role="img" aria-label="A grid with constructs down one side and units of analysis across the top">
+          <g class="td-art-fill" opacity=".5">
+            <rect x="30" y="16" width="18" height="8" rx="2"/>
+            <rect x="30" y="32" width="18" height="8" rx="2"/>
+            <rect x="30" y="48" width="18" height="8" rx="2"/>
+            <rect x="30" y="64" width="18" height="8" rx="2"/>
+          </g>
+          <g class="td-art-stroke" fill="none" stroke-width="1.6">
+            <rect x="56" y="14" width="24" height="12" rx="3"/><rect x="84" y="14" width="24" height="12" rx="3"/>
+            <rect x="112" y="14" width="24" height="12" rx="3"/><rect x="140" y="14" width="24" height="12" rx="3"/>
+            <rect x="56" y="30" width="24" height="12" rx="3"/><rect x="84" y="30" width="24" height="12" rx="3"/>
+            <rect x="112" y="30" width="24" height="12" rx="3"/><rect x="140" y="30" width="24" height="12" rx="3"/>
+            <rect x="56" y="46" width="24" height="12" rx="3"/><rect x="84" y="46" width="24" height="12" rx="3"/>
+            <rect x="112" y="46" width="24" height="12" rx="3"/><rect x="140" y="46" width="24" height="12" rx="3"/>
+            <rect x="56" y="62" width="24" height="12" rx="3"/><rect x="84" y="62" width="24" height="12" rx="3"/>
+            <rect x="112" y="62" width="24" height="12" rx="3"/><rect x="140" y="62" width="24" height="12" rx="3"/>
+          </g>
+          <rect class="td-art-fill" x="84" y="30" width="24" height="12" rx="3" opacity=".8"/>
+        </svg>
+      </div>
+      <div class="td-card-body">
+        <div class="td-card-eyebrow"><span class="td-dot"></span>Mechanistic</div>
+        <h3 class="td-card-title">RDoC</h3>
+        <p class="td-card-desc">NIMH's research framework: six domains of functioning crossed with units of analysis from genes to self-report. Deliberately not a diagnostic system, and its authors say so in the founding paper.</p>
+      </div>
+    </a>
+
+    <a class="card card-hoverable td-card" href="/transdiagnostic-staging.html"
+       style="--domain-color:var(--domain-substance);--domain-soft:var(--domain-substance-soft);--domain-ink:var(--domain-substance-ink);">
+      <div class="td-art">
+        <!-- A course of illness: rising steps from at-risk to persistent -->
+        <svg viewBox="0 0 190 92" role="img" aria-label="Rising steps representing stages from at-risk through first episode to persistent illness">
+          <g class="td-art-fill">
+            <rect x="26" y="66" width="26" height="10" rx="3" opacity=".35"/>
+            <rect x="58" y="54" width="26" height="22" rx="3" opacity=".5"/>
+            <rect x="90" y="42" width="26" height="34" rx="3" opacity=".65"/>
+            <rect x="122" y="28" width="26" height="48" rx="3" opacity=".8"/>
+          </g>
+          <path class="td-art-stroke" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                d="M30 60 L68 48 L100 36 L138 22 M130 20 l8 2 -2 8"/>
+        </svg>
+      </div>
+      <div class="td-card-body">
+        <div class="td-card-eyebrow"><span class="td-dot"></span>Longitudinal</div>
+        <h3 class="td-card-title">Clinical staging</h3>
+        <p class="td-card-desc">Borrowed from oncology: the same diagnosis early and late is not the same clinical problem. Stage 0 to 4, from at-risk to treatment resistance, used to match intervention intensity to where someone actually is.</p>
+      </div>
+    </a>
+
+  </div>
+
+  <p class="td-note">
+    These three are not competitors with a winner. HiTOP reorganises what we measure, RDoC reorganises
+    what we study, and staging reorganises when we act &ndash; and the same authors often appear in more
+    than one literature. A useful way in is
+    <a href="/transdiagnostic-staging.html">Eaton et al. (2023)</a>, which reviews dimensional models,
+    network approaches and staging side by side.
+  </p>
+
+</div>
+
+<script>window.CLINCOG_SHELL = { activeNav: "transdiagnostic", breadcrumb: [{ label: "Transdiagnostic frameworks" }] };</script>
+<script src="/storage.js"></script>
+<script src="/icons.js"></script>
+<script src="/shell.js?v=2"></script>
+<script src="/a11y.js"></script>
+</body>
+</html>

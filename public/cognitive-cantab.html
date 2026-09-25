@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="color-scheme" content="light dark">
+<script src="/theme-init.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClinCog · CANTAB</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/favicon-180.png">
+
+<link rel="preload" as="script" href="/shell.js?v=2">
+<link rel="preload" as="style" href="/shell.css">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
+<style>
+  /* Prose-heavy page: narrow the column so running text fills its box
+     instead of stopping short inside a wide one. */
+  :root { --shell-content-max: 1080px; }
+
+  .ct-section { margin-bottom: var(--sp-8); }
+  /* Every run of prose on this page caps at the reading measure. Before
+     this, the descriptive paragraphs ran the full content width. */
+  /* Only running body copy caps. Notes, captions and reference lists sit
+     inside a card that is already narrow, so capping them again strands
+     them at just over half the card's width. */
+  .ct-section > p { max-width: var(--measure); }
+  .ct-section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .ct-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .ct-section-sub { font-size: var(--text-sm); color: var(--text-tertiary); margin: 4px 0 var(--sp-5) 20px; }
+  .ct-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); margin: var(--sp-4) 0; }
+  /* On narrow phones the table keeps its natural width and scrolls inside its
+     own container, so words stay whole and the page itself never scrolls sideways. */
+  /* Long URLs and DOIs in the reference lists may break across lines on narrow
+     phones; ordinary words are unaffected, since break-word only breaks a run
+     that cannot fit on a line of its own. */
+  li, li a { overflow-wrap: break-word; }
+  .ct-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: var(--sp-4) 0; contain: inline-size; }
+  .ct-table-wrap > .ct-table { margin: 0; }
+  @media (max-width: 413px) { .ct-table th, .ct-table td { padding-left: 8px; padding-right: 8px; } }
+  .ct-table th { text-align: left; padding: 8px 10px 10px; border-bottom: none; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: .06em; font-weight: 500; font-size: var(--text-xs); }
+  .ct-table td { padding: 10px; border-bottom: none; box-shadow: inset 0 -1px 0 var(--border); vertical-align: top; }
+  .ct-table tr:last-child td { box-shadow: none; }
+  .ct-table .used { display: inline-block; margin-top: 3px; font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 999px; }
+  .ct-links { display: flex; flex-direction: column; gap: 6px; margin: 12px 0; }
+  .ct-links a { font-size: var(--text-sm); font-weight: 500; color: var(--accent-ink); text-decoration: none; }
+  .ct-links a:hover { text-decoration: underline; }
+  .ct-refs { margin: 10px 0 0; padding-left: 18px; font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.9; }
+  .ct-refs li { margin-bottom: 6px; }
+  .ct-note { margin-top: var(--sp-4); padding: var(--sp-4) var(--sp-5); background: var(--bg-surface-alt); border-radius: var(--radius-md); font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.7; }
+  .ct-subhead { font-size: var(--text-base); font-weight: 600; letter-spacing: -.008em; color: var(--text-primary); margin: var(--sp-6) 0 var(--sp-2); }
+  .ct-toc { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: var(--sp-6); }
+  .ct-toc a { font-size: var(--text-sm); font-weight: 500; padding: 8px 14px; border-radius: var(--radius-pill); border: none; background: var(--bg-surface); box-shadow: var(--shadow-xs); color: var(--text-secondary); text-decoration: none; transition: background var(--duration-hover) var(--ease-standard), color var(--duration-hover) var(--ease-standard); }
+  .ct-toc a:hover { background: var(--domain-anxiety-soft); color: var(--accent-ink); }
+
+  .ct-chart { margin: var(--sp-5) 0; }
+  .ct-chart svg { width: 100%; height: auto; display: block; }
+  .ct-chart-caption { font-size: var(--text-sm); color: var(--text-tertiary); margin-top: var(--sp-3); line-height: 1.65; }
+  .ct-chart-caption strong { color: var(--text-secondary); }
+  /* Back to the index - the topbar breadcrumb carries the same link, but
+     a reader who has scrolled to the bibliography should not have to
+     scroll back up to leave. */
+  .ct-back { display: inline-flex; align-items: center; gap: 8px; margin-top: var(--sp-7); }
+</style>
+</head>
+<body>
+
+<div id="shell-content">
+
+      <div class="ct-section-head"><span class="ct-dot" style="background:var(--domain-mood);"></span><span class="text-card-title" style="font-size:var(--text-base);">CANTAB – Cambridge Neuropsychological Test Automated Battery</span></div>
+      <div class="ct-section-sub">Used in Darren's case (depression) – Spatial Working Memory and One Touch Stockings</div>
+
+      <div class="card"><div class="card-body">
+        <p class="text-secondary" style="margin:0 0 10px;">CANTAB is a computerised, touchscreen neuropsychological battery developed at the University of Cambridge and now maintained commercially by Cambridge Cognition. Its tasks are largely language- and culture-independent, which has made it a common choice across neurology, psychiatry, and pharmacology trials – dementia, schizophrenia, depression, Parkinson's disease, and others.</p>
+
+        <div class="ct-subhead">Spatial Working Memory (SWM)</div>
+        <p class="text-secondary" style="margin:0;">A number of coloured boxes are shown on screen. The participant searches them one at a time to find a hidden yellow token, using the rule that once a token has been found in a box, that box will not hide a token again for the rest of that trial – so returning to a box already emptied is an error. Box count increases across trials (up to 12). The key outcome, <strong>between errors</strong>, counts returns to boxes already shown to be empty; a separate <strong>strategy score</strong> captures how systematically the participant searches (e.g., always starting from the same box). It is described by Cambridge Cognition as sensitive to frontal-lobe / executive dysfunction.</p>
+
+        <div class="ct-subhead">One Touch Stockings of Cambridge (OTS)</div>
+        <p class="text-secondary" style="margin:0;">Based on the Tower of London / Tower of Hanoi paradigm. Two displays of three coloured balls, shown as if held in stockings hanging from a beam, are presented; the participant must work out – without moving anything – the minimum number of moves needed to turn the lower display into the upper one, then touch the number box showing that answer. It measures spatial planning and working memory together, and is treated as a marker of frontal/executive function.</p>
+
+        <div class="ct-note">In a study using an automated neuropsychological battery (CANTAB) with 30 patients with major depressive disorder (10 currently symptomatic, 10 remitted, 10 healthy controls), the symptomatic group showed significant dysfunction on almost every test administered except IED (set-shifting) and MTS (matching to sample); visual memory was the most impaired domain. The remitted group still showed significant dysfunction except on IED, RTI (reaction time), and SOC (Stockings of Cambridge) – consistent with the broader finding that some CANTAB-measured deficits in depression persist beyond the symptomatic episode (Egerházi et al., 2013).</div>
+
+        <div class="ct-subhead">The evidence base for SWM deficits in depression</div>
+        <div class="ct-chart">
+          <svg viewBox="0 0 500 150" role="img" aria-label="Bar chart showing the scale of evidence for SWM deficits in depression">
+            <text x="10" y="24" font-size="12" fill="var(--text-secondary)">Meta-analysis (Arnone et al., 2025) – 41 pooled studies</text>
+            <text x="10" y="50" font-size="12" fill="var(--text-primary)">MDD patients</text>
+            <rect x="140" y="38" width="269" height="18" fill="var(--domain-mood)" rx="6"/>
+            <text x="415" y="52" font-size="12" font-weight="600" fill="var(--text-primary)">n=1,793</text>
+            <text x="10" y="80" font-size="12" fill="var(--text-primary)">Healthy controls</text>
+            <rect x="140" y="68" width="217" height="18" fill="#8a97a8" rx="6"/>
+            <text x="363" y="82" font-size="12" font-weight="600" fill="var(--text-primary)">n=1,445</text>
+            <line x1="10" y1="102" x2="490" y2="102" stroke="var(--line)" stroke-width="1"/>
+            <text x="10" y="122" font-size="12" fill="var(--text-primary)">Finding: MDD patients scored significantly worse on SWM</text>
+            <text x="10" y="139" font-size="12" fill="var(--text-primary)">between-errors and strategy score, pooled across studies.</text>
+          </svg>
+          <p class="ct-chart-caption">Bar length here represents the <strong>size of the pooled evidence base</strong> (number of participants across all included studies), not a score comparison – the meta-analysis reports this deficit as a standardized effect size (SMD) rather than a single raw score, since it pools many different studies. In one representative individual study (35 MDD patients vs. 48 healthy controls), MDD patients made significantly more SWM between-errors than controls (<strong>p</strong> = .037). <strong>Sources:</strong> Arnone et al. (2025); Du et al. (2021).</p>
+        </div>
+
+        <div class="ct-subhead">Official links</div>
+        <div class="ct-links">
+          <a href="https://cambridgecognition.com/digital-cognitive-assessments/" target="_blank" rel="noopener">Cambridge Cognition – digital cognitive assessments overview</a>
+          <a href="https://cambridgecognition.com/spatial-working-memory-swm/" target="_blank" rel="noopener">Cambridge Cognition – Spatial Working Memory (SWM), official test page</a>
+          <a href="https://cambridgecognition.com/one-touch-stockings-of-cambridge-ots/" target="_blank" rel="noopener">Cambridge Cognition – One Touch Stockings of Cambridge (OTS), official test page</a>
+        </div>
+
+        <div class="ct-subhead">Selective bibliography</div>
+        <ul class="ct-refs">
+          <li>Égerházi, A., Balla, P., Ritzl, A., Varga, Z., Frecska, E., &amp; Berecz, R. (2013). Automated Neuropsychological Test Battery in depression – preliminary data. <em>Neuropsychopharmacologia Hungarica, 15</em>(1), 5–11.</li>
+          <li>Arnone, D., Ramaraj, R., Östlundh, L., et al. (2025). Assessment of cognitive domains in major depressive disorders using the Cambridge Neuropsychological Test Automated Battery (CANTAB): Systematic review and meta-analysis of cross-sectional and longitudinal studies. <em>Progress in Neuro-Psychopharmacology and Biological Psychiatry, 138</em>, 111301. <a href="https://doi.org/10.1016/j.pnpbp.2025.111301" target="_blank" rel="noopener">https://doi.org/10.1016/j.pnpbp.2025.111301</a></li>
+          <li>Rock, P.L., Roiser, J.P., Riedel, W.J., &amp; Blackwell, A.D. (2014). Cognitive impairment in depression: A systematic review and meta-analysis. <em>Psychological Medicine, 44</em>(10), 2029–2040. <a href="https://doi.org/10.1017/S0033291713002535" target="_blank" rel="noopener">https://doi.org/10.1017/S0033291713002535</a></li>
+          <li>Du, Y., Wei, J., Yang, X., Dou, Y., Zhao, L., Qi, X., Yu, X., Guo, W., Wang, Q., Deng, W., Li, M., Lin, D., Li, T., &amp; Ma, X. (2021). Plasma metabolites were associated with spatial working memory in major depressive disorder. <em>Medicine, 100</em>(8), e24581. <a href="https://doi.org/10.1097/MD.0000000000024581" target="_blank" rel="noopener">https://doi.org/10.1097/MD.0000000000024581</a></li>
+        </ul>
+      </div></div>
+
+  <a class="btn btn-secondary ct-back" href="/cognitive-tests.html">&larr; All cognitive tasks</a>
+
+</div>
+
+<script>window.CLINCOG_SHELL = {
+  activeNav: "cognitive-tests",
+  breadcrumb: [{ label: "Cognitive tasks", href: "/cognitive-tests.html" }, { label: 'CANTAB' }]
+};</script>
+<script src="/storage.js"></script>
+<script src="/icons.js"></script>
+<script src="/shell.js?v=2"></script>
+<script src="/a11y.js"></script>
+</body>
+</html>

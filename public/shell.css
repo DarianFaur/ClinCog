@@ -6,16 +6,39 @@
 
 /* Smooth cross-document transitions (dashboard <-> eval/chat pages,
    logo click back to dashboard, etc). Native browser feature - the
-   whole page crossfades instead of a hard flash-to-white reload.
-   Silently ignored in browsers that don't support it yet, so this
-   is a pure enhancement with no fallback code needed. */
+   browser snapshots the outgoing page and animates into the incoming
+   one instead of tearing down and repainting from blank. Silently
+   ignored in browsers that don't support it yet, so this is a pure
+   enhancement with no fallback code needed. */
 @view-transition {
   navigation: auto;
 }
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: 0.18s;
-  animation-timing-function: ease-out;
+
+/* The default is a true cross-fade: the outgoing snapshot drops to 0
+   while the incoming one rises from 0. Halfway through, BOTH are
+   semi-transparent, so the page background shows through both and the
+   whole frame washes out - with a near-black sidebar against a white
+   backdrop that momentary lightening is exactly what reads as a page
+   refresh. Holding the old snapshot fully opaque and fading the new one
+   in above it keeps every pixel covered for the whole transition. */
+::view-transition-old(root) { animation: none; opacity: 1; }
+::view-transition-new(root) { animation: ccg-vt-in 240ms var(--ease-standard, cubic-bezier(.4,0,.2,1)) both; }
+@keyframes ccg-vt-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* The sidebar and topbar are identical on both sides of an in-app
+   navigation, so they are lifted out of the page snapshot and simply
+   stay put rather than being re-drawn. Only the content area moves. */
+.shell-sidebar { view-transition-name: ccg-sidebar; }
+.shell-topbar  { view-transition-name: ccg-topbar; }
+::view-transition-group(ccg-sidebar),
+::view-transition-group(ccg-topbar) { animation: none; }
+::view-transition-old(ccg-sidebar),
+::view-transition-old(ccg-topbar) { animation: none; opacity: 0; }
+::view-transition-new(ccg-sidebar),
+::view-transition-new(ccg-topbar) { animation: none; opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
 }
 
 html, body { height: 100%; }

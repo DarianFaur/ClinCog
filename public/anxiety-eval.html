@@ -19,9 +19,9 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --teal: var(--domain-anxiety);
-  --teal-pale: var(--domain-anxiety-soft);
-  --teal-mid: var(--domain-anxiety);
+  --teal: var(--ink);
+  --teal-pale: var(--bg-surface-alt);
+  --teal-mid: var(--ink);
   --text: var(--text-primary);
   --muted: var(--text-secondary);
   --bg: var(--bg-app);
@@ -36,7 +36,7 @@
   --ink2: var(--text-secondary);
   --ink3: var(--text-tertiary, var(--text-secondary));
   --bg-surface-alt: var(--bg-surface-alt);
-  --accent-bg: var(--domain-anxiety-soft);
+  --accent-bg: var(--bg-surface-alt);
   --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
   --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
   --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
@@ -81,7 +81,7 @@ h1,h2,h3,h4,h5{font-family:var(--serif)}
 .page-tagline{font-size:17px;font-weight:400;font-style:normal;color:var(--muted);margin-bottom:48px}
 .layer-list{list-style:none;margin:0 0 48px;border-top:1px solid var(--border)}
 .layer-item{display:flex;gap:20px;padding:20px 0;border-bottom:1px solid var(--border);align-items:baseline}
-.layer-num{font-family:var(--font-sans);font-size:var(--text-xs);font-weight:600;color:var(--domain-anxiety-ink);background:var(--domain-anxiety-soft);padding:4px 10px;border:none;border-radius:var(--radius-pill);flex-shrink:0;letter-spacing:.03em}
+.layer-num{font-family:var(--font-sans);font-size:var(--text-xs);font-weight:600;color:var(--text-primary);background:var(--bg-surface-alt);padding:4px 10px;border:none;border-radius:var(--radius-pill);flex-shrink:0;letter-spacing:.03em}
 .layer-body{}
 .layer-name{font-size:16px;font-weight:600;margin-bottom:4px}
 .layer-desc{font-size:14px;color:var(--muted)}
@@ -104,7 +104,7 @@ h1,h2,h3,h4,h5{font-family:var(--serif)}
 .vignette-section:last-child { margin-bottom: 0; }
 .vignette-section-title { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--ink3); margin-bottom: 8px; }
 .vignette-section p { font-size: 16px; line-height: 1.75; color: var(--ink); margin: 0; }
-.vignette-highlight { background: var(--accent-bg); border-left: 3px solid var(--domain-anxiety); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 16px; line-height: 1.6; color: var(--ink); }
+.vignette-highlight { background: var(--accent-bg); border-left: 3px solid var(--ink); padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 16px; line-height: 1.6; color: var(--ink); }
 .patient-meta{display:flex;gap:24px;margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid var(--border)}
 .meta-item{display:flex;flex-direction:column;gap:2px}
 .meta-lbl{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
@@ -122,7 +122,7 @@ h1,h2,h3,h4,h5{font-family:var(--serif)}
 .rating-btn input{display:none}
 .rating-btn label{width:40px;height:40px;border:none;background:var(--bg-surface-alt);display:flex;align-items:center;justify-content:center;font-family:var(--font-sans);font-size:var(--text-base);font-weight:500;cursor:pointer;color:var(--text-secondary);transition:background var(--duration-hover) var(--ease-standard),color var(--duration-hover) var(--ease-standard);border-radius:var(--radius-md)}
 .rating-btn label:hover{background:var(--border);color:var(--text-primary);}
-.rating-btn input:checked+label{background:var(--domain-anxiety-soft);color:var(--domain-anxiety-ink);font-weight:700;}
+.rating-btn input:checked+label{background:var(--bg-surface-alt);color:var(--text-primary);font-weight:700;}
 /* DIAGNOSIS SECTION */
 .diag-section{margin:40px 0 0;padding:28px 0 0;border-top:1px solid var(--border)}
 .diag-section h3{font-size:16px;font-weight:600;margin-bottom:16px}
@@ -163,16 +163,16 @@ h1,h2,h3,h4,h5{font-family:var(--serif)}
 /* Segmented strip: each step on its own surface inside the tinted rail. */
 .likert-legend { display: flex; gap: var(--sp-2); margin-bottom: var(--sp-5); background: var(--bg-surface-alt); border-radius: var(--radius-md); padding: var(--sp-2); }
 .likert-legend-item { flex: 1; text-align: center; background: var(--bg-surface); border-radius: var(--radius-sm); padding: var(--sp-3) var(--sp-2); box-shadow: var(--shadow-xs); }
-.likert-legend-num { font-size: var(--text-lg); font-weight: 700; letter-spacing: -.02em; color: var(--domain-anxiety-ink); font-variant-numeric: tabular-nums; }
+.likert-legend-num { font-size: var(--text-lg); font-weight: 700; letter-spacing: -.02em; color: var(--text-primary); font-variant-numeric: tabular-nums; }
 .likert-legend-label { font-size: var(--text-xs); color: var(--text-secondary); line-height: 1.35; margin-top: 3px; }
-.subscale-name-colored { font-family: var(--font-sans); font-size: var(--text-xs); font-weight: 600; color: var(--domain-anxiety-ink); text-transform: uppercase; letter-spacing: .06em; border-bottom: none; box-shadow: inset 0 -1px 0 var(--border); padding-bottom: var(--sp-3); margin: var(--sp-6) 0 var(--sp-4); }
+.subscale-name-colored { font-family: var(--font-sans); font-size: var(--text-xs); font-weight: 600; color: var(--text-primary); text-transform: uppercase; letter-spacing: .06em; border-bottom: none; box-shadow: inset 0 -1px 0 var(--border); padding-bottom: var(--sp-3); margin: var(--sp-6) 0 var(--sp-4); }
 /* HITOP */
 .subscale-block{margin-bottom:32px}
 .subscale-block:last-child{margin-bottom:0}
-.subscale-name{font-family:var(--font-sans);font-weight:600;font-size:var(--text-xs);color:var(--domain-anxiety-ink);text-transform:uppercase;letter-spacing:.06em;margin-bottom:var(--sp-4);padding:var(--sp-1) 0 var(--sp-3);border-bottom:none;box-shadow:inset 0 -1px 0 var(--border)}
+.subscale-name{font-family:var(--font-sans);font-weight:600;font-size:var(--text-xs);color:var(--text-primary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:var(--sp-4);padding:var(--sp-1) 0 var(--sp-3);border-bottom:none;box-shadow:inset 0 -1px 0 var(--border)}
 /* PAGE 4 PART HEADERS */
 .part-header{padding:var(--sp-6) 0 var(--sp-5);border-bottom:none;box-shadow:inset 0 -1px 0 var(--border);margin-bottom:var(--sp-2)}
-.part-tag{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--domain-anxiety-ink);text-transform:uppercase;letter-spacing:.1em;margin-bottom:var(--sp-1)}
+.part-tag{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-primary);text-transform:uppercase;letter-spacing:.1em;margin-bottom:var(--sp-1)}
 .part-title{font-size:var(--text-xl);font-weight:600;letter-spacing:-.015em}
 /* BUTTONS */
 .btn-row{display:flex;justify-content:flex-end;margin-top:48px;gap:12px}
@@ -402,7 +402,7 @@ canvas{width:100%;height:auto;display:block}
   display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px;
   border-radius: var(--radius-sm); font-family: var(--mono); font-size: 11px; font-weight: 600; flex-shrink: 0;
 }
-.ctx-guide-mark.p { background: var(--success-soft, var(--accent-bg)); color: var(--success, var(--domain-anxiety)); }
+.ctx-guide-mark.p { background: var(--success-soft, var(--accent-bg)); color: var(--success, var(--ink)); }
 .ctx-guide-mark.n { background: var(--bg-surface-alt); color: var(--ink3); }
 .ctx-guide-mark.u { background: var(--warning-soft, var(--warning-soft)); color: var(--warning, var(--warning)); }
 
@@ -417,7 +417,7 @@ canvas{width:100%;height:auto;display:block}
   font-family: var(--mono); font-size: 9px; font-weight: 600; background: var(--bg-surface-alt); color: var(--ink3);
   transition: all .2s;
 }
-.scoring-dot.p { background: var(--accent-bg); color: var(--domain-anxiety-ink); }
+.scoring-dot.p { background: var(--accent-bg); color: var(--text-primary); }
 .scoring-dot.n { background: var(--bg-surface-alt); color: var(--ink2); }
 .scoring-dot.u { background: var(--warning-soft); color: var(--warning); }
 
@@ -439,7 +439,7 @@ canvas{width:100%;height:auto;display:block}
 .layer-num {
   display: inline-flex; align-items: center; justify-content: center; padding: 0 10px; height: 24px;
   font-family: var(--font-sans); font-size: var(--text-xs); font-weight: 600;
-  color: var(--domain-anxiety-ink); background: var(--domain-anxiety-soft);
+  color: var(--text-primary); background: var(--bg-surface-alt);
   border-radius: var(--radius-md); margin-bottom: 14px; letter-spacing: 0;
 }
 .layer-body { display: block; }
@@ -452,16 +452,16 @@ canvas{width:100%;height:auto;display:block}
 .v-step.done, .v-step.current { cursor: pointer; }
 .v-step-line { position: absolute; left: 12px; top: 35px; width: 2px; height: 18px; background: var(--line); z-index: 0; transition: background .3s; }
 .v-step:last-child .v-step-line { display: none; }
-.v-step.done .v-step-line { background: var(--domain-anxiety); }
+.v-step.done .v-step-line { background: var(--ink); }
 .v-step-dot {
   width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--surface);
   display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px;
   color: var(--ink3); flex-shrink: 0; z-index: 1; transition: all .2s;
 }
-.v-step.done .v-step-dot { border: none; background: var(--domain-anxiety); color: #fff; font-size: 13px; }
-.v-step.current .v-step-dot { border-width: 2px; border-color: var(--domain-anxiety); background: var(--accent-bg); color: var(--domain-anxiety-ink); font-weight: 600; }
+.v-step.done .v-step-dot { border: none; background: var(--ink); color: var(--ink-text); font-size: 13px; }
+.v-step.current .v-step-dot { border-width: 2px; border-color: var(--ink); background: var(--accent-bg); color: var(--text-primary); font-weight: 600; }
 .v-step-label { font-size: 14.5px; color: var(--ink3); transition: color .2s; }
-.v-step.current .v-step-label { color: var(--domain-anxiety-ink); font-weight: 600; }
+.v-step.current .v-step-label { color: var(--text-primary); font-weight: 600; }
 .v-step.done .v-step-label { color: var(--ink2); }
 .v-step:hover:not(.v-step.current):not([style*="cursor: not-allowed"]) .v-step-label { color: var(--ink); }
 
@@ -582,7 +582,7 @@ canvas{width:100%;height:auto;display:block}
   display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px;
   border-radius: var(--radius-sm); font-family: var(--mono); font-size: 11px; font-weight: 600; flex-shrink: 0;
 }
-.ctx-guide-mark.p { background: var(--success-soft, var(--accent-bg)); color: var(--success, var(--domain-anxiety)); }
+.ctx-guide-mark.p { background: var(--success-soft, var(--accent-bg)); color: var(--success, var(--ink)); }
 .ctx-guide-mark.n { background: var(--bg-surface-alt); color: var(--ink3); }
 .ctx-guide-mark.u { background: var(--warning-soft, var(--warning-soft)); color: var(--warning, var(--warning)); }
 
@@ -597,7 +597,7 @@ canvas{width:100%;height:auto;display:block}
   font-family: var(--mono); font-size: 9px; font-weight: 600; background: var(--bg-surface-alt); color: var(--ink3);
   transition: all .2s;
 }
-.scoring-dot.p { background: var(--accent-bg); color: var(--domain-anxiety-ink); }
+.scoring-dot.p { background: var(--accent-bg); color: var(--text-primary); }
 .scoring-dot.n { background: var(--bg-surface-alt); color: var(--ink2); }
 .scoring-dot.u { background: var(--warning-soft); color: var(--warning); }
 
@@ -633,8 +633,8 @@ canvas{width:100%;height:auto;display:block}
 .radio-row label:has(input:checked).p,
 .radio-row label:has(input:checked).n,
 .radio-row label:has(input:checked).u {
-  background: var(--domain-anxiety-soft); border: none;
-  color: var(--domain-anxiety-ink); font-weight: 600;
+  background: var(--bg-surface-alt); border: none;
+  color: var(--text-primary); font-weight: 600;
 }
 
 .hitop-block { border: none; border-radius: 0; background: transparent; padding: 20px 0; border-top: 1px solid var(--line); margin-bottom: 0; }
@@ -705,7 +705,214 @@ canvas{width:100%;height:auto;display:block}
 .ss-fill.brd { background: var(--warning); }
 .ss-mid { position: absolute; left: 50%; top: 1px; width: 2px; height: 14px; border-radius: 1px; background: var(--text-tertiary); }
 .report-sec .ctab-wrap, .report-sec .scroll-x { overflow-x: auto; }
+
+/* Helper cards, made legible again. They were white-on-white with only a
+   soft shadow, so the aside read as part of the page rather than as a set
+   of cards sitting beside the items. A hairline border plus a restrained
+   lift on hover - the same move the dashboard cards make, at half the
+   distance, because these are reference panels, not navigation. */
+.ctx-card {
+  border: 1px solid var(--border) !important;
+  transition: border-color var(--duration-hover, .18s) var(--ease-standard, ease),
+              box-shadow var(--duration-hover, .18s) var(--ease-standard, ease),
+              transform var(--duration-hover, .18s) var(--ease-standard, ease);
+}
+.ctx-card:hover {
+  border-color: var(--text-tertiary);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
+}
+.ctx-card.pinned:hover { transform: none; }
+.callout { border: 1px solid var(--border) !important; }
+@media (prefers-reduced-motion: reduce) {
+  .ctx-card, .ctx-card:hover { transform: none; transition: none; }
+
+}
+
+/* ============================================================
+   SELECTED ITEM - one state for every answer control.
+   The four cases were built at different times and had drifted into
+   three different (and two broken) treatments:
+     - the CDDR pills kept --bg-surface-alt when selected, the same
+       background as unselected, so only the label weight changed;
+     - the option rows set background:var(--accent-bg), which resolves
+       to --bg-surface-alt as well, and their hover used exactly the
+       same rule, so hovering looked identical to answering;
+     - only the HiTOP numbers had real feedback, a solid black fill,
+       which is why they looked like a different kind of control.
+   All of them now share: tinted fill, 1.5px outline in the selection
+   colour, a soft ring, and the label in --select-ink. Geometry is
+   untouched. Measured contrast 6.85:1 light / 7.04:1 dark.
+   ============================================================ */
+.radio-row label:has(input:checked),
+.radio-row label:has(input:checked).p,
+.radio-row label:has(input:checked).n,
+.radio-row label:has(input:checked).u,
+.item-opts label:has(input:checked),
+.dx-options label:has(input:checked),
+.yn-row label:has(input:checked),
+.likert label:has(input:checked) .num,
+.rating-btn input:checked + label,
+.opt-btn input:checked + label,
+.radio-option.selected,
+.radio-option.selected-yes,
+.likert-btn.selected {
+  background: var(--select-fill) !important;
+  border: 1.5px solid var(--select-line) !important;
+  color: var(--select-ink) !important;
+  font-weight: 600 !important;
+  box-shadow: 0 0 0 3px var(--select-ring) !important;
+}
+/* The numeral chip inside a selected option row is the one element that
+   stays solid, so the row still reads as "this number". */
+.item-opts label:has(input:checked) .opt-n {
+  background: var(--select-solid) !important;
+  border-color: var(--select-solid) !important;
+  color: var(--select-on) !important;
+}
+/* Hover must not imitate the selected state: these three rules used the
+   selection colours, which is why a hovered row looked answered. */
+.item-opts label:hover:not(:has(input:checked)),
+.dx-options label:hover:not(:has(input:checked)),
+.radio-row label:hover:not(:has(input:checked)),
+.radio-option:hover:not(.selected):not(.selected-yes) {
+  background: var(--border) !important;
+  border-color: var(--text-tertiary) !important;
+  color: var(--text-primary) !important;
+}
+.opt-btn input:not(:checked) + label:hover,
+.likert-btn:not(.selected):hover,
+.rating-btn input:not(:checked) + label:hover {
+  background: var(--border) !important;
+  border-color: var(--text-tertiary) !important;
+  color: var(--text-primary) !important;
+}
+/* The question itself picks up a quiet marker once it has been answered,
+   so a long form shows at a glance how far down it has been filled. */
+.scid-q:has(.radio-row label:has(input:checked)),
+.item-q:has(input:checked) {
+  box-shadow: inset 3px 0 0 -1px var(--select-line);
+  padding-left: 12px;
+  transition: box-shadow var(--duration-hover, .18s) var(--ease-standard, ease),
+              padding-left var(--duration-hover, .18s) var(--ease-standard, ease);
+}
+
 </style>
+
+<!-- Shared expand helper for the two natively built tasks. The demos sit in a
+     panel a few hundred pixels tall, which is the wrong size for a timed
+     reaction-time task. "Expand" lifts the task into a centred panel over a
+     dimmed page - the same move as the ICD-11 widget's info panel - rather
+     than taking the whole screen. The element is repositioned in place, so a
+     running trial keeps running and no handler is rebound. -->
+<style>
+  .ccg-backdrop {
+    position: fixed; inset: 0; z-index: 940; background: rgba(20,18,16,.48);
+    -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+  }
+  .ccg-expanded {
+    position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    z-index: 950; max-width: 94vw; max-height: 94vh; overflow: auto !important;
+    background: var(--bg-surface); color: var(--text-primary);
+    border: 1px solid var(--border); border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg); padding: clamp(16px, 2.4vw, 28px) !important;
+  }
+  .ccg-expanded canvas { max-width: none !important; margin-inline: auto; }
+  .ccg-expanded > .ccg-close {
+    position: sticky; top: 0; z-index: 2; display: block; margin: 0 0 10px auto;
+  }
+  html.ccg-locked, html.ccg-locked body { overflow: hidden; }
+  @media (prefers-reduced-motion: no-preference) {
+    .ccg-expanded { animation: ccg-pop .16s var(--ease-standard, ease-out) both; }
+    @keyframes ccg-pop { from { opacity: 0; transform: translate(-50%, -48%) scale(.99); } }
+  }
+
+/* The step rail used solid --ink for a completed step and an --ink outline
+   for the current one, which was the last place a filled black chip was
+   doing the job the selection colour now does everywhere else. Same green,
+   same recipe: a filled step is the outline tone, the current step is the
+   tinted fill with that outline around it. */
+.v-step.done .v-step-dot {
+  background: var(--select-solid) !important;
+  border: none !important;
+  color: var(--select-on) !important;
+}
+.v-step.done .v-step-line { background: var(--select-line) !important; }
+.v-step.current .v-step-dot {
+  border: 2px solid var(--select-line) !important;
+  background: var(--select-fill) !important;
+  color: var(--select-ink) !important;
+}
+</style>
+<script>
+  // Expands a task into an in-page panel over the dimmed page. Closes on the
+  // button, on Escape, or on a click outside the panel.
+  // The panel is sized from the viewport: its width is settled first, then
+  // the canvas is grown until it hits either that width or the height left
+  // over after the instructions and controls. A fixed pixel width gave a
+  // 13-inch laptop a panel taller than its screen and a 27-inch monitor a
+  // panel no bigger than the laptop's.
+  function ccgFit(t) {
+    var c = t.querySelector('canvas');
+    var cs = getComputedStyle(t);
+    var padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+    var padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+    var availW = Math.min(window.innerWidth * 0.94, 1760) - padX;
+    var availH = window.innerHeight * 0.94 - padY - 4;
+    if (!c || !c.width || !c.height) { t.style.width = Math.round(availW + padX) + 'px'; return; }
+    var ar = c.width / c.height;
+    // Past roughly twice its drawing width the canvas is only an upscaled
+    // bitmap, so that is the ceiling.
+    var panelW = Math.min(availW, c.width * 2);
+    t.style.width = Math.round(panelW + padX) + 'px';
+    c.style.width = '0px'; c.style.height = '0px';
+    var other = t.scrollHeight - padY;
+    var w = Math.max(240, Math.min(panelW, Math.max(120, availH - other) * ar));
+    c.style.width = Math.round(w) + 'px';
+    c.style.height = Math.round(w / ar) + 'px';
+  }
+
+  function ccgExpandButton(targetId, btnId) {
+    var t = document.getElementById(targetId), b = document.getElementById(btnId);
+    if (!t || !b) return null;
+    var back = null;
+    var onResize = function () { ccgFit(t); };
+    function close() {
+      if (!back) return;
+      t.classList.remove('ccg-expanded');
+      var x = t.querySelector(':scope > .ccg-close'); if (x) x.remove();
+      var c = t.querySelector('canvas');
+      if (c) { c.style.width = ''; c.style.height = ''; }
+      t.style.width = '';
+      document.documentElement.classList.remove('ccg-locked');
+      window.removeEventListener('resize', onResize);
+      back.remove(); back = null;
+      b.textContent = 'Expand';
+      document.removeEventListener('keydown', onKey);
+    }
+    function onKey(e) { if (e.key === 'Escape') { e.stopPropagation(); close(); } }
+    function open() {
+      back = document.createElement('div');
+      back.className = 'ccg-backdrop';
+      back.addEventListener('click', close);
+      document.body.appendChild(back);
+      // A Close control pinned inside the panel: the button that opened it can
+      // be hidden once a trial starts (the intro screen goes away).
+      var x = document.createElement('button');
+      x.type = 'button'; x.className = 'btn btn-secondary btn-sm ccg-close'; x.textContent = 'Close';
+      x.addEventListener('click', close);
+      t.insertBefore(x, t.firstChild);
+      t.classList.add('ccg-expanded');
+      document.documentElement.classList.add('ccg-locked');
+      ccgFit(t);
+      b.textContent = 'Close';
+      document.addEventListener('keydown', onKey);
+      window.addEventListener('resize', onResize);
+    }
+    b.addEventListener('click', function () { back ? close() : open(); });
+    return b;
+  }
+</script>
 </head>
 <body>
 <script>
@@ -723,7 +930,7 @@ canvas{width:100%;height:auto;display:block}
   <aside class="eval-context" id="ctx-p1"></aside>
   <div class="eval-work" style="max-width:900px;">
 
-  <p style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--domain-anxiety-ink);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px">Seminar Activity</p>
+  <p style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-primary);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px">Seminar Activity</p>
   <h1 class="page-title">Three Ways to Evaluate<br>Social Anxiety Disorder</h1>
   <p class="page-tagline">A multi-level clinical and cognitive assessment exercise</p>
 
@@ -821,7 +1028,7 @@ canvas{width:100%;height:auto;display:block}
   <aside class="eval-context" id="ctx-p3"></aside>
   <div class="eval-work">
 
-  <p style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--domain-anxiety-ink);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px">Layer 1 — Categorical Evaluation</p>
+  <p style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-primary);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px">Layer 1 — Categorical Evaluation</p>
   <h1 class="page-title">ICD-11 / CDDR</h1>
   <p class="page-tagline">Social Anxiety Disorder (6B04)</p>
 
@@ -959,7 +1166,7 @@ canvas{width:100%;height:auto;display:block}
   <aside class="eval-context" id="ctx-p4"></aside>
   <div class="eval-work">
 
-  <p style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--domain-anxiety-ink);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px">Layer 2 — Dimensional–Psychological Evaluation</p>
+  <p style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-primary);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px">Layer 2 — Dimensional–Psychological Evaluation</p>
   <h1 class="page-title">GAD-7 &amp; HiTOP</h1>
   <p class="page-tagline">Complete all items as they apply to Alex based on the vignette.</p>
 
@@ -1202,7 +1409,7 @@ canvas{width:100%;height:auto;display:block}
   <aside class="eval-context" id="ctx-p5"></aside>
   <div class="eval-work">
 
-  <p style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--domain-anxiety-ink);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px">Layer 3 — Dimensional–Cognitive Evaluation</p>
+  <p style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-primary);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px">Layer 3 — Dimensional–Cognitive Evaluation</p>
   <h1 class="page-title">Dot-probe Task</h1>
   <p class="page-tagline">Attentional bias and implicit threat processing</p>
 
@@ -1256,7 +1463,7 @@ canvas{width:100%;height:auto;display:block}
         <span class="try-task-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l6 3.5-6 3.5z" fill="currentColor" stroke="none"/></svg></span>
         <span class="try-task-copy">
           <span class="try-task-title">Try the task yourself</span>
-          <span class="try-task-sub">Run the dot-probe Alex completed — 48 trials, about two minutes.</span>
+          <span class="try-task-sub">Run the dot-probe Alex completed — 64 trials, about three minutes.</span>
           <span class="try-task-badges"><span class="badge badge-neutral">Optional</span><span class="badge badge-neutral">Not graded</span><span class="badge badge-neutral">Never in the report</span></span>
         </span>
         <span class="try-task-cta"><span class="cta-open">Try it yourself</span><span class="cta-close">Hide the task</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
@@ -1266,13 +1473,15 @@ canvas{width:100%;height:auto;display:block}
     <p style="font-size:var(--text-sm);color:var(--muted);margin:12px 0 16px;max-width:var(--measure)">
       This is a re-implementation of the dot-probe paradigm written for this platform, Running it shows you what Alex experienced. Your own numbers stay on this screen: they are not saved to
       the report and are not compared with Alex’s.</p>
-  <div class="dp-frame-wrap">
+  <div class="dp-frame-wrap" id="dp-frame">
     <canvas id="dp-canvas" width="720" height="420" style="display:block;width:100%;background:#000;border-radius:var(--radius-md)"></canvas>
     <div id="dp-controls" style="display:flex;gap:12px;align-items:center;padding:14px 16px;flex-wrap:wrap">
       <button type="button" class="btn btn-primary" id="dp-start">Start the task</button>
-      <span id="dp-status" style="font-size:var(--text-sm);color:var(--muted)">48 trials, about two minutes. Press SPACE as soon as you see the dot.</span>
+      <button type="button" class="btn btn-secondary btn-sm" id="dp-fs">Expand</button>
+      <span id="dp-status" style="font-size:var(--text-sm);color:var(--muted)">64 trials, about three minutes. Press SPACE as soon as you see the dot.</span>
     </div>
   </div>
+  <script>ccgExpandButton('dp-frame', 'dp-fs');</script>
 
   <div class="callout" style="margin:20px 0;font-size:var(--text-sm)">
     A single session of this task is not a measure of an individual&rsquo;s attentional bias. Dot-probe
@@ -1317,7 +1526,7 @@ canvas{width:100%;height:auto;display:block}
     <p class="print-only" style="font-size:9pt;color:#555;margin:0 0 6mm">ClinCog — teaching platform. Fictional case. For educational use only; not for assessing real people.</p>
 
 
-  <p style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--domain-anxiety-ink);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px">Comparative Report</p>
+  <p style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-primary);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px">Comparative Report</p>
   <h1 class="page-title">Evaluation Summary</h1>
   <p class="page-tagline" id="report-subtitle">Auto-generated from your responses across all three layers.</p>
   <p id="report-ts" style="font-family:var(--mono);font-size:11px;color:#bbb;margin-top:-36px;margin-bottom:48px"></p>
@@ -2122,13 +2331,13 @@ const DotProbe = {
   _build(){
     const cells=[];
     for(const tp of ['upper','lower']) for(const pp of ['upper','lower'])
-      for(let k=0;k<6;k++) cells.push({tp,pp});
+      for(let k=0;k<8;k++) cells.push({tp,pp});   // 4 cells x 8 = 32 critical trials
     const shuffled=[...DP_THREAT].sort(()=>Math.random()-0.5);
     const crit=cells.map((c,i)=>({
       type:'critical', threat:shuffled[i], neutral:DP_NEUTRAL[i % DP_NEUTRAL.length],
       threatPos:c.tp, probePos:c.pp }));
     const fill=[];
-    for(let i=0;i<24;i++){
+    for(let i=0;i<32;i++){
       const a=DP_NEUTRAL[i % DP_NEUTRAL.length];
       const b=DP_NEUTRAL[(i+7) % DP_NEUTRAL.length];
       fill.push({type:'filler', upper:a, lower:b,

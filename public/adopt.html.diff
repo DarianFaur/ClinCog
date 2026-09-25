@@ -1,0 +1,113 @@
+--- /tmp/adopt-old.html	2026-09-25 13:31:34.313238565 +0000
++++ public/adopt.html	2026-09-25 13:31:59.141240041 +0000
+@@ -23,6 +23,10 @@
+   .adopt-form { display: flex; flex-direction: column; gap: 10px; margin: 18px 0 22px; }
+   .adopt-field label { display: block; font-size: var(--text-xs); font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+   .adopt-field .hint { font-size: var(--text-xs); color: var(--text-secondary); margin-bottom: 8px; line-height: 1.5; }
++  /* Troubleshooting for whoever is wiring the credentials up - it used to
++     sit on the CDDR guide, which students read and instructors do not. */
++  .adopt-note { margin-top: 14px; padding: 10px 14px; background: var(--bg-surface-alt); border-radius: var(--radius-md); font-size: var(--text-xs); color: var(--text-secondary); line-height: 1.7; }
++  .adopt-note code { font-size: .92em; }
+   .adopt-field input { width: 100%; padding: 11px 14px; border: 1px solid var(--border); border-radius: 10px;
+     font-family: var(--font-mono); font-size: var(--text-sm); color: var(--text-primary); background: var(--bg-surface); box-sizing: border-box; }
+   .adopt-field input:focus { outline: none; border-color: var(--accent); }
+@@ -60,7 +64,7 @@
+   </div>
+   <div class="card"><div class="card-body">
+     <p>
+-      ClinCog is free to try, right here on this domain — but every conversation
++      ClinCog is free to try, right here on this domain – but every conversation
+       you have on this page draws from the author's own API budget, which is why
+       it's kept deliberately modest for casual use.
+     </p>
+@@ -76,7 +80,7 @@
+         <ul>
+           <li>Two minutes, no account beyond an Anthropic API key</li>
+           <li>Still runs through ClinCog's own server (this domain)</li>
+-          <li>Your key lives only in this browser — see below for the form</li>
++          <li>Your key lives only in this browser – see below for the form</li>
+         </ul>
+         <a class="btn btn-secondary" href="#adopt-form-section">Use this option ↓</a>
+       </div>
+@@ -95,7 +99,7 @@
+     <p style="font-size: var(--text-xs); color: var(--text-secondary);" id="adopt-form-section">
+       Continuing below sets up <strong>Option A</strong>. Your keys are stored
+       only in this browser's local storage. They're sent to ClinCog's server
+-      with each request — used for that single call, then discarded — never
++      with each request – used for that single call, then discarded – never
+       logged, never saved anywhere server-side.
+     </p>
+ 
+@@ -106,7 +110,7 @@
+       <div class="adopt-form">
+         <div class="adopt-field">
+           <label>Which model provider?</label>
+-          <div class="hint">Pick whichever you already have (or want) an API key for — the conversation with each simulated patient runs on this.</div>
++          <div class="hint">Pick whichever you already have (or want) an API key for – the conversation with each simulated patient runs on this.</div>
+           <div class="provider-toggle" id="provider-toggle">
+             <button type="button" class="provider-btn active" data-provider="anthropic">Anthropic</button>
+             <button type="button" class="provider-btn" data-provider="gemini">Google Gemini</button>
+@@ -115,7 +119,7 @@
+         </div>
+         <div class="adopt-field">
+           <label>Which model?</label>
+-          <div class="hint" id="model-hint">Faster/cheaper models work well for this — the patient's replies are short by design.</div>
++          <div class="hint" id="model-hint">Faster/cheaper models work well for this – the patient's replies are short by design.</div>
+           <select id="model-select" class="adopt-select"></select>
+         </div>
+         <div class="adopt-field">
+@@ -133,7 +137,7 @@
+       <div class="adopt-form">
+         <div class="adopt-field">
+           <label for="icd-client-id">WHO ICD-11 client ID</label>
+-          <div class="hint">Powers the diagnosis search widget after each conversation. Free to register at <a href="https://icd.who.int/icdapi" target="_blank" rel="noopener">icd.who.int/icdapi</a>. Optional — if left blank, the demo's shared ICD-11 access is used instead.</div>
++          <div class="hint">Powers the diagnosis search widget after each conversation. Free to register at <a href="https://icd.who.int/icdapi" target="_blank" rel="noopener">icd.who.int/icdapi</a>. Optional – if left blank, the demo's shared ICD-11 access is used instead.</div>
+           <input type="text" id="icd-client-id" placeholder="client_id" autocomplete="off" spellcheck="false" />
+         </div>
+         <div class="adopt-field">
+@@ -141,6 +145,7 @@
+           <input type="password" id="icd-client-secret" placeholder="client_secret" autocomplete="off" spellcheck="false" />
+         </div>
+       </div>
++      <div class="adopt-note">If the ICD-11 search box on the <a href="/cddr-guide.html">CDDR criteria guide</a> stays empty after you type, the most likely cause is the token request to <code>/api/icd/token</code> failing &ndash; check that <code>ICD_CLIENT_ID</code> / <code>ICD_CLIENT_SECRET</code> (or the demo pair) are set as Worker secrets, and that you&rsquo;re not offline.</div>
+     </div>
+ 
+     <div class="adopt-row">
+@@ -170,19 +175,19 @@
+ 
+   const PROVIDER_MODELS = {
+     anthropic: [
+-      { id: "claude-haiku-4-5-20251001", label: "Claude Haiku 4.5 — fast & affordable" },
+-      { id: "claude-sonnet-5", label: "Claude Sonnet 5 — balanced" },
+-      { id: "claude-opus-5", label: "Claude Opus 5 — most capable" },
++      { id: "claude-haiku-4-5-20251001", label: "Claude Haiku 4.5 – fast & affordable" },
++      { id: "claude-sonnet-5", label: "Claude Sonnet 5 – balanced" },
++      { id: "claude-opus-5", label: "Claude Opus 5 – most capable" },
+     ],
+     gemini: [
+-      { id: "gemini-3.1-flash-lite", label: "Gemini 3.1 Flash-Lite — fast & affordable" },
+-      { id: "gemini-3.5-flash", label: "Gemini 3.5 Flash — balanced" },
+-      { id: "gemini-3.1-pro", label: "Gemini 3.1 Pro — most capable" },
++      { id: "gemini-3.1-flash-lite", label: "Gemini 3.1 Flash-Lite – fast & affordable" },
++      { id: "gemini-3.5-flash", label: "Gemini 3.5 Flash – balanced" },
++      { id: "gemini-3.1-pro", label: "Gemini 3.1 Pro – most capable" },
+     ],
+     openai: [
+-      { id: "gpt-5-nano", label: "GPT-5 Nano — fast & affordable" },
+-      { id: "gpt-5.6-terra", label: "GPT-5.6 Terra — balanced" },
+-      { id: "gpt-5.6-sol", label: "GPT-5.6 Sol — most capable" },
++      { id: "gpt-5-nano", label: "GPT-5 Nano – fast & affordable" },
++      { id: "gpt-5.6-terra", label: "GPT-5.6 Terra – balanced" },
++      { id: "gpt-5.6-sol", label: "GPT-5.6 Sol – most capable" },
+     ],
+   };
+ 
+@@ -234,7 +239,7 @@
+       const modelLabel = (PROVIDER_MODELS[byok.llmProvider] || []).find((m) => m.id === byok.llmModel)?.label;
+       document.getElementById("status-llm-text").textContent =
+         `Using your own ${PROVIDER_LABEL[byok.llmProvider] || byok.llmProvider} key` +
+-        (modelLabel ? ` (${modelLabel.split(" — ")[0]})` : "");
++        (modelLabel ? ` (${modelLabel.split(" – ")[0]})` : "");
+       // Default the toggle to the saved provider/model so re-visiting
+       // this page doesn't look like it reset to Anthropic.
+       selectProvider(byok.llmProvider, byok.llmModel);
