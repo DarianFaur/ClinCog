@@ -213,6 +213,11 @@ const ClinCog = {
       localStorage.removeItem(this.stageKey(m.id));
       localStorage.removeItem(this.completeKey(m.id));
       localStorage.removeItem(this.hypothesisKey(m.id));
+      // The answers themselves (see eval-memory.js). Without this a reset
+      // case came back with every item still filled in.
+      localStorage.removeItem("clincog_answers_" + m.id);
+      localStorage.removeItem("clincog_step_" + m.id);
+      localStorage.removeItem("clincog_session_" + m.id);
     }
   },
 

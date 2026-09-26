@@ -217,13 +217,146 @@
 .rpt-note { margin: 0; font-size: var(--text-xs); color: var(--text-secondary); line-height: 1.6; }
 
 @media print {
-  .rpt { gap: 6mm; display: block !important; }
-  .rpt > * { margin-bottom: 6mm; }
-  .rpt-summary { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 4mm !important; }
-  .rpt-section { break-inside: auto; border: 1px solid #d4d4d8 !important; }
-  .rpt-section-head { break-after: avoid; page-break-after: avoid; padding: 4mm !important; }
-  .rpt-section-body { padding: 4mm !important; gap: 3mm !important; }
-  .rpt-metric { padding: 3mm !important; }
-  .rpt-verdict { break-inside: avoid; }
-  .rpt-table { font-size: 9.5pt; }
+  /* ============================================================
+     Printed report.
+
+     The screen layout is a stack of cards; on paper a card is the worst
+     possible unit, because a box that does not fit is sliced in half and
+     resumes on the next sheet with no top edge. A printed clinical report
+     does not use boxes at all: it uses a heading, a rule, and content that
+     may run over the page break without anything looking broken.
+
+     So on paper every section loses its border, radius, shadow and fill,
+     and keeps a rule under its heading. Rows, figures and headings are the
+     units that must not split; sections are free to.
+     ============================================================ */
+
+  @page {
+    size: A4;
+    margin: 18mm 16mm 16mm;
+  }
+
+  /* Anything interactive. On paper a button is a puzzle. */
+  .btn, button, .eval-footer, .reflect-block button, .ctx-toggle-btn, .ctx-pin-btn,
+  .tt-host, .tt-backdrop, .ccg-backdrop { display: none !important; }
+
+  .rpt, .report-doc { display: block !important; gap: 0 !important; }
+
+  /* --- sections become headed passages, not boxes --- */
+  .rpt-section, .report-tool-card, .report-section, .card, .instrument-card,
+  .reflect-block, .chart-container {
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 0 7mm !important;
+    break-inside: auto;
+  }
+  .rpt-section-head {
+    padding: 0 0 2mm !important;
+    margin-bottom: 3mm !important;
+    border-bottom: 0.4mm solid #1a1a1a !important;
+    box-shadow: none !important;
+    /* a heading must never be the last thing on a sheet */
+    break-after: avoid; page-break-after: avoid;
+    break-inside: avoid;
+  }
+  .rpt-section-body { padding: 0 !important; gap: 3mm !important; }
+  .rpt-section-title { font-size: 11.5pt; }
+  .rpt-section-sub { font-size: 9.5pt; }
+
+  /* --- what must stay whole --- */
+  tr, .sev, .dist-panel, .tbars-row, .rpt-verdict, .verdict, .rpt-answer,
+  .count-strip, .kpi-grid > *, figure, .rpt-metric, .sev-track, .ncurve {
+    break-inside: avoid; page-break-inside: avoid;
+  }
+  h1, h2, h3, h4, .chart-title, .tbars-group, .dist-panel figcaption {
+    break-after: avoid; page-break-after: avoid;
+  }
+
+  /* --- tables: header repeats on every sheet, hairline rules only --- */
+  table { width: 100% !important; border-collapse: collapse !important; font-size: 9.5pt; }
+  thead { display: table-header-group; }
+  tfoot { display: table-footer-group; }
+  th {
+    border-bottom: 0.3mm solid #1a1a1a !important;
+    background: transparent !important;
+    padding: 1.5mm 2mm !important; text-align: left;
+  }
+  td {
+    border-bottom: 0.2mm solid #c8c8cc !important;
+    background: transparent !important;
+    padding: 1.5mm 2mm !important;
+  }
+
+  /* --- figures --- */
+  canvas { max-width: 100% !important; height: auto !important; }
+  .dist-row { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 4mm !important; }
+
+  /* The colour fills are the point of the bars, so they have to survive the
+     browser's "remove backgrounds" default. */
+  .sev-seg, .sev-marker, .tbars-fill, .tbars-rail, .tbars-norm, .progress-fill,
+  .mini-fill, .ss-fill, .badge, .verdict {
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  /* The profile bars and the z-score column printed in red and amber - the
+     last place a clinical colour survived the move to a single neutral. */
+  .mini-fill, .ss-fill, .tbars-fill { background: #4a4a4a !important; }
+  html body .imp, html body .brd, html body td.imp, html body td.brd,
+  html body .z-imp, html body .z-brd, html body .ht-t, html body td.ht-t {
+    /* !important reaches these even where the colour is set inline */
+    color: #1a1a1a !important; font-weight: 600;
+  }
+
+  /* The band labels inside the severity bar are truncated at print width and
+     "Moderately seve..." reads as a defect. The band is named in full in the
+     line above the bar, so on paper the bar carries the marker and the axis. */
+  .sev-seg span { display: none !important; }
+  .sev-band { font-size: 10pt; }
+
+  /* Remaining boxes inside a section: the summary cells and the verdict
+     strip. Same reasoning as the sections themselves - a rule reads as a
+     report, a box reads as a screen. */
+  .count-strip, .count-cell, .rpt-summary, .kpi-grid > *, .rpt-metric,
+  .verdict, .badge, .band, .score-pill, .sev-band {
+    border: none !important; border-radius: 0 !important;
+    background: transparent !important; box-shadow: none !important;
+    padding: 0 2mm 0 0 !important;
+  }
+  .count-strip { display: flex !important; gap: 8mm !important; margin: 0 0 4mm !important; }
+
+  /* The last wrappers that still drew a box: the summary row, the table
+     shells and the small state pills. Found by walking the printed report
+     and listing every element that still had a border or a fill. */
+  .count-row, .ctab-wrap, .ht-wrap, .table-wrap, .report-items-table,
+  .dx-badge, .cpill, .band, .diag-badge, .score-display {
+    border: none !important; border-radius: 0 !important;
+    background: transparent !important; box-shadow: none !important;
+  }
+  .count-row { display: flex !important; gap: 8mm !important; }
+  /* The pages set this one !important and load after this file, so it needs
+     the extra specificity to come off on paper. */
+  html body .reflect-block { background: transparent !important; border: none !important; padding: 0 !important; }
+  .cpill, .dx-badge { padding: 0 3mm 0 0 !important; font-weight: 600; }
+  .verdict { padding: 0 0 3mm !important; font-size: 10.5pt; }
+  .verdict-mark { display: none !important; }
+  .badge, .band, .score-pill { font-weight: 600; }
+
+  /* Free-text answers read as written text on paper, not as form fields.
+     Specificity raised past the pages' own field rules, which are !important
+     and load after this file. */
+  html body textarea,
+  html body :is(.reflect-block, .eval-work, .instrument-card, .dp-q, #formulation-boxes) textarea,
+  html body textarea.interp {
+    border: none !important; border-left: 0.5mm solid #c8c8cc !important;
+    border-radius: 0 !important; background: transparent !important;
+    padding: 0 0 0 3mm !important; resize: none !important;
+    height: auto !important; min-height: 0 !important;
+    font-size: 10pt !important; color: #1a1a1a !important;
+    overflow: visible !important;
+  }
+
+  .rpt-note, .canvas-footnote, .dist-note, .ncurve-key { font-size: 8.5pt; color: #4a4a4a !important; }
+  a { color: inherit !important; text-decoration: none !important; }
 }

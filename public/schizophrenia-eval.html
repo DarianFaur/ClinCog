@@ -711,6 +711,130 @@ textarea.interp:focus { outline: 2px solid var(--accent); outline-offset: -2px; 
   background: var(--select-fill) !important;
   color: var(--select-ink) !important;
 }
+
+/* Likert legend: the same white-on-white problem the helper cards had.
+   Each step sat on --bg-surface inside a --bg-surface-alt rail with only a
+   1px shadow to separate them, which disappears once the rail is pale. */
+.likert-legend-item { border: 1px solid var(--border); }
+
+/* No glow on a selected item: the tinted fill and the 1.5px outline carry
+   the state on their own, and the 3px ring read as a focus effect stuck on. */
+.radio-row label:has(input:checked),
+.radio-row label:has(input:checked).p,
+.radio-row label:has(input:checked).n,
+.radio-row label:has(input:checked).u,
+.item-opts label:has(input:checked),
+.dx-options label:has(input:checked),
+.yn-row label:has(input:checked),
+.likert label:has(input:checked) .num,
+.rating-btn input:checked + label,
+.opt-btn input:checked + label,
+.radio-option.selected,
+.radio-option.selected-yes,
+.likert-btn.selected {
+  box-shadow: none !important;
+}
+
+/* The sidebar counters were the last white-on-white cards left: surface on
+   surface with no edge. Same hairline as the helper cards and the Likert
+   legend, so the whole aside reads as one set. */
+.mini-stat { border: 1px solid var(--border) !important; }
+
+/* Buttons, back on the app's own type scale.
+   These pages redefine --text-sm one step larger than tokens.css does
+   (16px against 15px at 1440), so every button here rendered a size
+   bigger than the same button on the dashboard - which is what made the
+   reflection button look oversized next to its own text. Pinned to the
+   token file's value, at one height, so the four cases match each other
+   and the rest of the app. */
+.btn, .btn-primary, .btn-secondary {
+  height: 42px !important;
+  font-size: clamp(0.8125rem, 0.78rem + 0.25vw, 0.9375rem) !important;
+  font-weight: 500;
+  border-radius: var(--radius-pill) !important;
+  padding: 0 22px !important;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  text-decoration: none; cursor: pointer;
+}
+.btn-primary { font-weight: 600; }
+.btn-sm { height: 34px !important; padding: 0 14px !important; font-size: var(--text-xs) !important; }
+
+/* The reflection note was capped at 540px inside an 896px card, so it
+   stopped two-thirds of the way across and read as a broken column. */
+.reflect-note { max-width: none !important; }
+.reflect-block textarea { min-height: 120px; }
+
+/* One footer on every case: print, then out to the dashboard. */
+.eval-footer {
+  display: flex; gap: 10px; justify-content: flex-end;
+  flex-wrap: wrap; padding-top: 24px; margin-top: 8px;
+}
+
+/* The reflection box, the same card as every other section. Jordan's was
+   filled with the page's old cream and Alex's with a pale teal, so the
+   last block of each report read as a different component. */
+.reflect-block {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-6) var(--sp-7) !important;
+  margin-top: var(--sp-6);
+}
+.reflect-block h3 {
+  font-size: var(--text-card-title-size); font-weight: 600;
+  letter-spacing: -.008em; margin: 0 0 8px; text-transform: none;
+}
+.reflect-block textarea {
+  width: 100%; border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 12px 14px; font-family: var(--font-sans); font-size: var(--text-sm);
+  color: var(--text-primary); background: var(--bg-surface-alt);
+  resize: vertical; min-height: 120px; line-height: 1.6; margin-bottom: 14px;
+}
+.reflect-block textarea:focus { outline: 2px solid var(--select-line); outline-offset: -2px; background: var(--bg-surface); }
+
+/* Free-text answers, boxed like every other field. They were transparent
+   until focus, so an empty one read as a gap in the page rather than as
+   something to fill in. Same grey fill and hairline as the option rows. */
+.eval-work textarea,
+.instrument-card textarea,
+.dp-q textarea,
+textarea.interp,
+#formulation-boxes textarea,
+.reflect-block textarea {
+  width: 100%; box-sizing: border-box;
+  padding: 13px 16px;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md);
+  background: var(--bg-surface-alt) !important;
+  color: var(--text-primary);
+  font-family: var(--font-sans); font-size: var(--text-sm);
+  line-height: 1.65; resize: vertical; min-height: 110px;
+  transition: border-color var(--duration-hover, .18s) var(--ease-standard, ease),
+              background var(--duration-hover, .18s) var(--ease-standard, ease);
+}
+.eval-work textarea:hover,
+.instrument-card textarea:hover,
+.dp-q textarea:hover,
+textarea.interp:hover,
+#formulation-boxes textarea:hover,
+.reflect-block textarea:hover { border-color: var(--text-tertiary) !important; }
+.eval-work textarea:focus,
+.instrument-card textarea:focus,
+.dp-q textarea:focus,
+textarea.interp:focus,
+#formulation-boxes textarea:focus,
+.reflect-block textarea:focus {
+  outline: none;
+  border-color: var(--select-line) !important;
+  background: var(--bg-surface) !important;
+  box-shadow: 0 0 0 1px var(--select-line);
+}
+.eval-work textarea::placeholder,
+.instrument-card textarea::placeholder,
+.dp-q textarea::placeholder,
+textarea.interp::placeholder,
+#formulation-boxes textarea::placeholder,
+.reflect-block textarea::placeholder { color: var(--text-tertiary); }
 </style>
 </head>
 <body>
@@ -928,7 +1052,7 @@ textarea.interp:focus { outline: 2px solid var(--accent); outline-offset: -2px; 
     <div class="session-head">
       <div class="kv-row"><span class="kv-key">Subject ID:</span> <span class="kv-val">DN</span></div>
       <div class="kv-row"><span class="kv-key">Sex:</span> <span class="kv-val">M</span></div>
-      <div class="kv-row"><span class="kv-key">Session start time:</span> <span class="kv-val">March 14, 2026 · 09:40 AM</span></div>
+      <div class="kv-row"><span class="kv-key">Session start time:</span> <span class="kv-val" data-session-start>—</span></div>
       <div class="kv-row"><span class="kv-key">Subjects:</span> <span class="kv-val">Subject: First-episode psychosis</span></div>
       <div class="kv-row"><span class="kv-key">Age:</span> <span class="kv-val">25</span></div>
     </div>
@@ -969,12 +1093,11 @@ textarea.interp:focus { outline: 2px solid var(--accent); outline-offset: -2px; 
         <span class="try-task-copy">
           <span class="try-task-title">Try the tasks yourself</span>
           <span class="try-task-sub">Run open versions of the two paradigms behind Dennis’s results — about five minutes.</span>
-          <span class="try-task-badges"><span class="badge badge-neutral">Optional</span><span class="badge badge-neutral">Not graded</span><span class="badge badge-neutral">Never in the report</span></span>
+          
         </span>
         <span class="try-task-cta"><span class="cta-open">Try it yourself</span><span class="cta-close">Hide the task</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
       </summary>
       <div class="try-task-body">
-      <p style="font-size:var(--text-sm);color:var(--text-secondary);margin:0 0 4px;max-width:var(--measure)"><strong>A single session is not a measurement.</strong> Scores from one run have low reliability for an individual and no diagnostic value; treat them as an illustration of the task, not as a result about you.</p>
 
       <p style="font-size:var(--text-sm);color:var(--text-secondary);margin:12px 0 4px;max-width:var(--measure)">Open re-implementations written for this platform, after the published trail-making and letter–number sequencing paradigms. They are not the MATRICS Consensus Cognitive Battery and reproduce none of its items, timings, scoring or norms. Your results stay on this screen: they are not saved, not added to the report and not compared with the patient’s.</p>
       <h4 style="margin:18px 0 8px;font-size:var(--text-base)">Trail-making, part A style</h4>
@@ -1046,6 +1169,7 @@ textarea.interp:focus { outline: 2px solid var(--accent); outline-offset: -2px; 
               <thead><tr><th>Subscale</th><th>Spectrum</th><th class="num">Raw</th><th class="num">T</th><th>Profile</th></tr></thead>
               <tbody id="r-ht-body"></tbody>
             </table>
+          <div id="r-ht-panels"></div>
           </div>
           <p class="rpt-note">T-scores (M = 50, SD = 10) against per-subscale community norms. ⚠ Reality Distortion has a
             reference mean near the floor of the scale, so a single endorsed item produces a high T; read it as presence
@@ -1104,8 +1228,9 @@ textarea.interp:focus { outline: 2px solid var(--accent); outline-offset: -2px; 
       </section>
 
     </div><!-- /.rpt -->
-    <div class="nav-row" style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;padding-top:20px;">
-      <button class="btn btn-secondary" onclick="go(1)">← Vignette</button>
+    <div class="nav-row eval-footer">
+      <button class="btn btn-secondary" onclick="window.print()">Print report</button>
+      <a class="btn btn-primary" href="/dashboard.html">Dashboard &rarr;</a>
     </div>
     </div>
   </div>
@@ -1404,13 +1529,27 @@ function paintReflectState() {
   if (done) {
     if (done.reflection) box.value = done.reflection;
     msg.style.display = 'flex';
-    msg.innerHTML = '&#10003; Case marked complete. <a href="/dashboard.html" style="color:inherit;text-decoration:underline;margin-left:4px;">Back to dashboard &rarr;</a>';
+    msg.innerHTML = '&#10003; Case marked complete.';
     btn.textContent = 'Update reflection';
   }
 }
 
 let cur = 0;
-let maxStepReached = 0;
+/* Seeded from, and written straight to, localStorage rather than through
+   ClinCogEvalMemory: that file loads after this script, so the helper does
+   not exist yet at this point in the page. Same key either way. */
+/* Seeded from three places, not one: the step counter written below, the
+   stage the dashboard already records (which has existed far longer than
+   that counter), and the case-complete flag. Reading only the counter meant
+   a case finished before this counter existed came back with the whole rail
+   locked. Written straight to localStorage because eval-memory.js loads
+   after this script. */
+let maxStepReached = (function () {
+  var stored = parseInt(localStorage.getItem('clincog_step_schizophrenia'), 10) || 0;
+  var fromStage = { icd: 2, dimensional: 3, cognitive: 4, report: 5, complete: 5 }[localStorage.getItem('clincog_stage_schizophrenia')] || 0;
+  var done = localStorage.getItem('clincog_complete_schizophrenia') ? 5 : 0;
+  return Math.max(stored, fromStage, done);
+})();
 function stepClick(n) {
   // Any step already reached before (regardless of current position after
   // navigating back) stays clickable - only genuinely unvisited steps ahead
@@ -1424,7 +1563,7 @@ function go(n) {
 
   document.getElementById('pg'+cur).classList.remove('on');
   cur = n;
-  if (n > maxStepReached) maxStepReached = n;
+  if (n > maxStepReached) { maxStepReached = n; try { localStorage.setItem('clincog_step_schizophrenia', String(n)); } catch (e) {} }
   document.getElementById('pg'+cur).classList.add('on');
   window.scrollTo({top:0, behavior:'smooth'});
   tick();
@@ -1644,6 +1783,19 @@ function buildReport() {
   }
   document.getElementById('r-ht-body').innerHTML = html;
 
+  // The same distribution panel the other three reports use, one per
+  // subscale. Not one per spectrum: each subscale has its own published
+  // norm, and no norm exists for their sum.
+  if (window.ClinCharts) {
+    ClinCharts.distribution('r-ht-panels', HITOP_SCZ.map(function (s) {
+      return {
+        label: s.n + ' \u00b7 ' + s.spec,
+        t: hitopSczT(s, sumScale(s.names)),
+        note: s.floor ? 'Reference mean near the floor of the scale: a single endorsed item gives a high T.' : '',
+      };
+    }));
+  }
+
   document.getElementById('r-cog1').textContent = document.getElementById('cog1').value.trim() || 'Not answered.';
   document.getElementById('r-cog2').textContent = document.getElementById('cog2').value.trim() || 'Not answered.';
 }
@@ -1728,5 +1880,52 @@ initHelperFab();
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', set); else set();
 })();
 </script>
+<script>window.CLINCOG_EVAL = "schizophrenia";</script>
+<script src="/charts.js"></script>
+<script src="/eval-memory.js"></script>
+<script>
+// A textarea prints only the slice of text that fits its box. Before the
+// print dialog opens, each one is grown to its content so the whole answer
+// appears on paper; afterwards it goes back to the size the student sized it.
+(function () {
+  var saved = [];
+  function expand() {
+    saved = [];
+    document.querySelectorAll('textarea').forEach(function (t) {
+      saved.push([t, t.style.height]);
+      t.style.height = 'auto';
+      t.style.height = t.scrollHeight + 'px';
+    });
+  }
+  function restore() { saved.forEach(function (p) { p[0].style.height = p[1]; }); saved = []; }
+  window.addEventListener('beforeprint', expand);
+  window.addEventListener('afterprint', restore);
+})();
+</script>
+
+<script>
+// The task headers carried one fixed date for every student. The
+// real session start is stamped the first time this case's evaluation is
+// opened and kept with the rest of the case's progress, so a report printed
+// weeks later still shows when the work was actually done.
+(function () {
+  var key = "clincog_session_" + (window.CLINCOG_EVAL || "case");
+  var started;
+  try {
+    started = localStorage.getItem(key);
+    if (!started) { started = String(Date.now()); localStorage.setItem(key, started); }
+  } catch (e) { started = String(Date.now()); }
+  var d = new Date(Number(started));
+  var text = d.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" }) +
+    " \u00b7 " + d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+  function paint() {
+    document.querySelectorAll("[data-session-start]").forEach(function (el) { el.textContent = text; });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", paint);
+  else paint();
+  window.CLINCOG_SESSION_START = Number(started);
+})();
+</script>
+
 </body>
 </html>

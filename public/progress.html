@@ -19,6 +19,19 @@
   if (!localStorage.getItem("clincog_name")) { location.replace("/"); }
 </script>
 <style>
+/* The same softened palette the dashboard uses - this page shows all four
+   case colours at once for the same reason. Each value keeps its lightness
+   exactly, so every contrast ratio is unchanged, and gives up 26% of its
+   chroma. */
+:root {
+  --domain-psychosis: #b37c8d; --domain-psychosis-soft: rgba(179,124,141,.14); --domain-psychosis-ink: #885465;
+  --domain-mood:      #9783b0; --domain-mood-soft:      rgba(151,131,176,.14); --domain-mood-ink:      #6d5b86;
+  --domain-anxiety:   #5d96b2; --domain-anxiety-soft:   rgba(93,150,178,.14);  --domain-anxiety-ink:   #477b98;
+  --domain-substance: #a58759; --domain-substance-soft: rgba(165,135,89,.14);  --domain-substance-ink: #7a5f33;
+
+  --accent: #799b8a; --accent-ink: #597165; --accent-soft: #d7e1dc;
+  --success: #3e7851; --warning: #8d6532; --danger: #ae4f4a; --info: #4b6e98;
+}
   /* Prose-heavy page: narrow the column so running text fills its box
      instead of stopping short inside a wide one. */
   :root { --shell-content-max: 1040px; }
@@ -141,9 +154,17 @@
     const complete = ClinCog.getCaseComplete(m.id);
     const dateFmt = (t) => new Date(t).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 
+    // Two badges, matching the dashboard: how much was said, and where the
+    // case stands. It used to show a blue "Complete - <date>" for reaching
+    // the evaluation and a green "Completed - <date>" for finishing the
+    // case, side by side, which read as the same thing twice.
+    const caseVars = `--case-color:var(--domain-${domain});--case-ink:var(--domain-${domain}-ink);`;
+    const stateCls = s.state === "complete" ? "is-complete" : s.state === "in-progress" ? "is-progress" : "";
+    const stateLbl = s.state === "complete"
+      ? `Completed · ${dateFmt(complete.completedAt)}`
+      : s.state === "in-progress" ? `In progress · ${s.stageLabel}` : "Not started";
     let badges = `<span class="badge badge-neutral">${s.exchanges} exchange${s.exchanges === 1 ? "" : "s"}</span>`;
-    if (evalStatus) badges += `<span class="badge badge-info">${s.stageLabel} · ${dateFmt(evalStatus.reachedAt)}</span>`;
-    if (complete) badges += `<span class="badge badge-success">Completed · ${dateFmt(complete.completedAt)}</span>`;
+    badges += `<span class="badge badge-case ${stateCls}" style="${caseVars}">${stateLbl}</span>`;
 
     return `
       <div class="case-detail-row">

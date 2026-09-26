@@ -32,10 +32,12 @@
   /* Was the old amber; as a solid fill under white text it measured
      2.54:1. Solid buttons now use the shared near-black. */
   --color-primary:var(--ink);--color-primary-hover:var(--text-primary);--color-primary-active:var(--ink);
-  --color-primary-highlight:#f6ecd9;
-  --color-success:#437a22;--color-success-hover:#2e5c10;--color-success-highlight:#d4dfcc;
-  --color-error:#a12c7b;--color-error-hover:#7d1e5e;--color-error-highlight:#e0ced7;
-  --color-warning:#964219;--color-warning-highlight:#ddcfc6;
+  --color-primary-highlight:var(--bg-surface-alt);
+  --color-success:var(--success);--color-success-hover:var(--success);--color-success-highlight:var(--success-soft);
+  /* Was a magenta picked for this page alone, which is the purple still
+     showing up in the categorical section of the report. */
+  --color-error:var(--danger);--color-error-hover:var(--danger);--color-error-highlight:var(--danger-soft);
+  --color-warning:var(--warning);--color-warning-highlight:var(--warning-soft);
   /* Pulled onto the shared domain tokens. This page had its own gold and
      a saturated blue picked independently of the rest of the app, which is
      why its section icons and note boxes read as belonging elsewhere. */
@@ -382,7 +384,12 @@ body.mobile-mode .sst-kbd-hint{display:none;}
   --ink3: var(--color-text-faint);
   --surface: var(--color-surface);
   --line: var(--color-border);
-  --bg-surface-alt: var(--color-surface-2);
+  /* --bg-surface-alt was defined here as var(--color-surface-2) while
+     --color-surface-2 is defined above as var(--bg-surface-alt): a cycle,
+     so both resolved to nothing and every surface that depends on them -
+     the AUDIT and ICD-11 answer pills, the callouts, the sidebar counters,
+     the selected-item fill - rendered with no background at all. The token
+     file's own value stands. */
   --radius-pill: var(--radius-full);
   --shadow-xs: var(--shadow-sm);
 }
@@ -756,6 +763,168 @@ body.mobile-mode .sst-kbd-hint{display:none;}
   background: var(--select-fill) !important;
   color: var(--select-ink) !important;
 }
+
+/* Likert legend: the same white-on-white problem the helper cards had.
+   Each step sat on --bg-surface inside a --bg-surface-alt rail with only a
+   1px shadow to separate them, which disappears once the rail is pale. */
+.likert-legend-item { border: 1px solid var(--border); }
+
+/* No glow on a selected item: the tinted fill and the 1.5px outline carry
+   the state on their own, and the 3px ring read as a focus effect stuck on. */
+.radio-row label:has(input:checked),
+.radio-row label:has(input:checked).p,
+.radio-row label:has(input:checked).n,
+.radio-row label:has(input:checked).u,
+.item-opts label:has(input:checked),
+.dx-options label:has(input:checked),
+.yn-row label:has(input:checked),
+.likert label:has(input:checked) .num,
+.rating-btn input:checked + label,
+.opt-btn input:checked + label,
+.radio-option.selected,
+.radio-option.selected-yes,
+.likert-btn.selected {
+  box-shadow: none !important;
+}
+
+/* The two framing requirements read as two more answerable boxes when they
+   were bordered callouts; they are statements of the rule, so they are a
+   ticked list instead. */
+.cddr-frame { list-style: none; margin: var(--sp-4) 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.cddr-frame li {
+  position: relative; padding-left: 28px; font-size: var(--text-sm);
+  line-height: 1.65; color: var(--text-secondary); max-width: var(--measure);
+}
+.cddr-frame li::before {
+  content: ""; position: absolute; left: 2px; top: .42em;
+  width: 13px; height: 8px; border-left: 2px solid var(--select-line);
+  border-bottom: 2px solid var(--select-line); transform: rotate(-45deg);
+}
+
+/* One neutral summary pill. The red/amber/green set read as a verdict and
+   was the last place the page's own semantic colours surfaced. */
+.score-pill.score-neutral {
+  background: var(--select-fill); border: 1px solid var(--select-line);
+  color: var(--text-primary); font-weight: 600;
+}
+
+/* The AUDIT score sits in its own chip, so "2" and "2 to 4 times a month"
+   read as a score and an answer rather than as one run-on string of
+   digits. The option text itself is verbatim WHO wording and is not
+   touched. */
+.radio-option .opt-n {
+  flex: 0 0 auto; width: 20px; height: 20px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  color: var(--text-secondary); line-height: 1;
+}
+.radio-option.selected .opt-n,
+.radio-option.selected-yes .opt-n {
+  background: var(--select-solid); border-color: var(--select-solid); color: var(--select-on);
+}
+.radio-group-wrap { gap: 8px 10px; }
+
+/* The sidebar counters were the last white-on-white cards left: surface on
+   surface with no edge. Same hairline as the helper cards and the Likert
+   legend, so the whole aside reads as one set. */
+.mini-stat { border: 1px solid var(--border) !important; }
+
+/* Buttons, back on the app's own type scale.
+   These pages redefine --text-sm one step larger than tokens.css does
+   (16px against 15px at 1440), so every button here rendered a size
+   bigger than the same button on the dashboard - which is what made the
+   reflection button look oversized next to its own text. Pinned to the
+   token file's value, at one height, so the four cases match each other
+   and the rest of the app. */
+.btn, .btn-primary, .btn-secondary {
+  height: 42px !important;
+  font-size: clamp(0.8125rem, 0.78rem + 0.25vw, 0.9375rem) !important;
+  font-weight: 500;
+  border-radius: var(--radius-pill) !important;
+  padding: 0 22px !important;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  text-decoration: none; cursor: pointer;
+}
+.btn-primary { font-weight: 600; }
+.btn-sm { height: 34px !important; padding: 0 14px !important; font-size: var(--text-xs) !important; }
+
+/* The reflection note was capped at 540px inside an 896px card, so it
+   stopped two-thirds of the way across and read as a broken column. */
+.reflect-note { max-width: none !important; }
+.reflect-block textarea { min-height: 120px; }
+
+/* One footer on every case: print, then out to the dashboard. */
+.eval-footer {
+  display: flex; gap: 10px; justify-content: flex-end;
+  flex-wrap: wrap; padding-top: 24px; margin-top: 8px;
+}
+
+/* The reflection box, the same card as every other section. Jordan's was
+   filled with the page's old cream and Alex's with a pale teal, so the
+   last block of each report read as a different component. */
+.reflect-block {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-6) var(--sp-7) !important;
+  margin-top: var(--sp-6);
+}
+.reflect-block h3 {
+  font-size: var(--text-card-title-size); font-weight: 600;
+  letter-spacing: -.008em; margin: 0 0 8px; text-transform: none;
+}
+.reflect-block textarea {
+  width: 100%; border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 12px 14px; font-family: var(--font-sans); font-size: var(--text-sm);
+  color: var(--text-primary); background: var(--bg-surface-alt);
+  resize: vertical; min-height: 120px; line-height: 1.6; margin-bottom: 14px;
+}
+.reflect-block textarea:focus { outline: 2px solid var(--select-line); outline-offset: -2px; background: var(--bg-surface); }
+
+/* Free-text answers, boxed like every other field. They were transparent
+   until focus, so an empty one read as a gap in the page rather than as
+   something to fill in. Same grey fill and hairline as the option rows. */
+.eval-work textarea,
+.instrument-card textarea,
+.dp-q textarea,
+textarea.interp,
+#formulation-boxes textarea,
+.reflect-block textarea {
+  width: 100%; box-sizing: border-box;
+  padding: 13px 16px;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md);
+  background: var(--bg-surface-alt) !important;
+  color: var(--text-primary);
+  font-family: var(--font-sans); font-size: var(--text-sm);
+  line-height: 1.65; resize: vertical; min-height: 110px;
+  transition: border-color var(--duration-hover, .18s) var(--ease-standard, ease),
+              background var(--duration-hover, .18s) var(--ease-standard, ease);
+}
+.eval-work textarea:hover,
+.instrument-card textarea:hover,
+.dp-q textarea:hover,
+textarea.interp:hover,
+#formulation-boxes textarea:hover,
+.reflect-block textarea:hover { border-color: var(--text-tertiary) !important; }
+.eval-work textarea:focus,
+.instrument-card textarea:focus,
+.dp-q textarea:focus,
+textarea.interp:focus,
+#formulation-boxes textarea:focus,
+.reflect-block textarea:focus {
+  outline: none;
+  border-color: var(--select-line) !important;
+  background: var(--bg-surface) !important;
+  box-shadow: 0 0 0 1px var(--select-line);
+}
+.eval-work textarea::placeholder,
+.instrument-card textarea::placeholder,
+.dp-q textarea::placeholder,
+textarea.interp::placeholder,
+#formulation-boxes textarea::placeholder,
+.reflect-block textarea::placeholder { color: var(--text-tertiary); }
 </style>
 <script>
   // Expands a task into an in-page panel over the dimmed page. Closes on the
@@ -842,7 +1011,6 @@ body.mobile-mode .sst-kbd-hint{display:none;}
   <div class="eval-layout two-col">
   <aside class="eval-context" data-for-view="intro"></aside>
   <div class="eval-work" style="max-width:640px;">
-    <div class="content-note" role="note" style="border-left:3px solid var(--warning);background:var(--bg-surface-alt);padding:14px 16px;border-radius:var(--radius-md);margin:0 0 24px;font-size:var(--text-sm);line-height:1.65;max-width:var(--measure);"><strong>Content note.</strong> This case describes alcohol dependence, including withdrawal, drinking in the morning and driving after drinking. If this is difficult material for you right now, you can pause and come back later, or speak to your instructor.</div>
     <p style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-primary);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px;">Seminar Activity · Addiction Module</p>
     <h1 style="font-size:2.35rem;font-weight:700;letter-spacing:-.01em;line-height:1.15;margin-bottom:16px;">Three Ways to Evaluate<br>Substance Use</h1>
     <p style="font-size:16px;line-height:1.7;color:var(--color-text-muted);max-width:560px;margin-bottom:32px;">You will read a clinical vignette and evaluate the same patient through three different conceptual frameworks. The lens shapes what you see.</p>
@@ -963,8 +1131,10 @@ body.mobile-mode .sst-kbd-hint{display:none;}
       <div>
         <div class="tool-section-title">ICD-11 CDDR · 3 essential features</div>
         <div class="tool-section-sub">Impaired control · increasing precedence · physiological features — two or more required</div>
-        <div class="callout" id="icd-stem" style="margin-top:var(--space-3);font-size:var(--text-sm);"></div>
-        <div class="callout" id="icd-duration" style="margin-top:var(--space-2);font-size:var(--text-sm);"></div>
+        <ul class="cddr-frame">
+          <li id="icd-stem"></li>
+          <li id="icd-duration"></li>
+        </ul>
       </div>
     </div>
     <div class="instrument-card">
@@ -1062,7 +1232,7 @@ body.mobile-mode .sst-kbd-hint{display:none;}
   <div class="session-head">
     <div class="kv-row"><span class="kv-key">Subject ID:</span> <span class="kv-val">JM</span></div>
     <div class="kv-row"><span class="kv-key">Age:</span> <span class="kv-val">25</span></div>
-    <div class="kv-row"><span class="kv-key">Session start time:</span> <span class="kv-val">March 14, 2026 · 02:15 PM</span></div>
+    <div class="kv-row"><span class="kv-key">Session start time:</span> <span class="kv-val" data-session-start>—</span></div>
     <div class="kv-row"><span class="kv-key">Tasks:</span> <span class="kv-val">Stop-signal · Alcohol purchase task</span></div>
   </div>
   <div class="ctab-wrap">
@@ -1087,12 +1257,11 @@ body.mobile-mode .sst-kbd-hint{display:none;}
         <span class="try-task-copy">
           <span class="try-task-title">Try the task yourself</span>
           <span class="try-task-sub">Run the stop-signal task Jordan completed — about three minutes.</span>
-          <span class="try-task-badges"><span class="badge badge-neutral">Optional</span><span class="badge badge-neutral">Not graded</span><span class="badge badge-neutral">Never in the report</span></span>
+          
         </span>
         <span class="try-task-cta"><span class="cta-open">Try it yourself</span><span class="cta-close">Hide the task</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
       </summary>
       <div class="try-task-body">
-      <p style="font-size:var(--text-sm);color:var(--text-secondary);margin:0 0 4px;max-width:var(--measure)"><strong>A single session is not a measurement.</strong> Scores from one run have low reliability for an individual and no diagnostic value; treat them as an illustration of the task, not as a result about you.</p>
 
     <p style="font-size:var(--text-sm);color:var(--text-secondary);margin:12px 0 16px;max-width:var(--measure)">
       This is a re-implementation of the stop-signal paradigm written for this platform.</p>
@@ -1265,7 +1434,7 @@ function paintReflectState() {
   if (done) {
     if (done.reflection) box.value = done.reflection;
     msg.style.display = 'flex';
-    msg.innerHTML = '&#10003; Case marked complete. <a href="/dashboard.html" style="color:inherit;text-decoration:underline;margin-left:4px;">Back to dashboard &rarr;</a>';
+    msg.innerHTML = '&#10003; Case marked complete.';
     btn.textContent = 'Update reflection';
   }
 }
@@ -1449,7 +1618,21 @@ function syncMobileNav(viewId){
   });
 }
 
-let maxViewIndexReached = 0;
+/* Seeded from, and written straight to, localStorage rather than through
+   ClinCogEvalMemory: that file loads after this script, so the helper does
+   not exist yet at this point in the page. Same key either way. */
+/* Seeded from three places, not one: the step counter written below, the
+   stage the dashboard already records (which has existed far longer than
+   that counter), and the case-complete flag. Reading only the counter meant
+   a case finished before this counter existed came back with the whole rail
+   locked. Written straight to localStorage because eval-memory.js loads
+   after this script. */
+let maxViewIndexReached = (function () {
+  var stored = parseInt(localStorage.getItem('clincog_step_addiction'), 10) || 0;
+  var fromStage = { icd: 2, dimensional: 3, cognitive: 4, report: 4, complete: 4 }[localStorage.getItem('clincog_stage_addiction')] || 0;
+  var done = localStorage.getItem('clincog_complete_addiction') ? 4 : 0;
+  return Math.max(stored, fromStage, done);
+})();
 function showView(id) {
   // Jordan's case recorded no progress at all until now.
   try { const _st = { audit:'icd', icd:'icd', hitop:'dimensional', ana:'cognitive', report:'report' }[id];
@@ -1462,7 +1645,7 @@ function showView(id) {
   if (nb) nb.classList.add('active');
   syncMobileNav(id);
   const idx = ADD_STEP_ORDER.indexOf(id);
-  if (idx > maxViewIndexReached) maxViewIndexReached = idx;
+  if (idx > maxViewIndexReached) { maxViewIndexReached = idx; try { localStorage.setItem('clincog_step_addiction', String(idx)); } catch (e) {} }
   updateAddSteps(id);
   expandContextCardsByDefault();
   reapplyPin();
@@ -1804,13 +1987,13 @@ function buildIcd() {
       <div class="question-followup">↳ ${item.followup}</div>
       <div class="radio-group">
         <label class="radio-option" id="icd-${i}-yes" onclick="setAnswer('icd',${i},1,this)">
-          <input type="radio" name="icd-${i}"> Yes
+          <input type="radio" name="icd-${i}"> + Present
         </label>
         <label class="radio-option" id="icd-${i}-no" onclick="setAnswer('icd',${i},0,this)">
-          <input type="radio" name="icd-${i}"> No
+          <input type="radio" name="icd-${i}"> &minus; Absent
         </label>
         <label class="radio-option" id="icd-${i}-unk" onclick="setAnswer('icd',${i},2,this)">
-          <input type="radio" name="icd-${i}"> ?
+          <input type="radio" name="icd-${i}"> ? Info lacking
         </label>
       </div>
     </div>`).join('');
@@ -2633,21 +2816,12 @@ function buildReport() {
     <div class="rpt-section report-tool-card">
       <div class="report-tool-header">
         <div class="rpt-section-head" style="padding:0 0 var(--sp-4);box-shadow:inset 0 -1px 0 var(--border);"><span class="rpt-num">01</span><div><h3 class="rpt-section-title">Categorical — screening</h3><p class="rpt-section-sub">AUDIT (WHO), 10 items</p></div></div>
-        <span class="score-pill ${cs >= 16 ? 'score-high' : cs >= 8 ? 'score-moderate' : 'score-low'}">${cs}/40 · ${auditZone(cs).zone}</span>
+
       </div>
-      <table class="report-items-table">
-        <tr><th>Item</th><th>Domain</th><th>Response</th><th>Score</th></tr>
-        ${AUDIT_ITEMS.map((it,i) => {
-          const sc = state.audit[i];
-          const opt = sc === null ? null : it.options.find(o => o.score === sc);
-          return `<tr>
-            <td>${it.n}</td>
-            <td style="color:var(--color-text-muted)">${it.domain}</td>
-            <td>${opt ? opt.label : '—'}</td>
-            <td class="${sc > 0 ? 'yes-cell' : 'no-cell'}">${sc === null ? '—' : sc}</td>
-          </tr>`;
-        }).join('')}
-      </table>
+      <!-- The item-by-item table repeated back what the student had just
+           entered. What the report needs to show is where the total falls
+           against the published cut-off, which is what the AUDIT is for. -->
+      <div id="r-audit-sev"></div>
       <div style="margin-top:var(--space-3);font-size:var(--text-xs);color:var(--color-text-muted)">
         Total of 8 or more indicates hazardous and harmful alcohol use, as well as possible alcohol dependence.
         ${auditZone(cs).zone}: ${auditZone(cs).action}.
@@ -2658,7 +2832,7 @@ function buildReport() {
     <div class="rpt-section report-tool-card">
       <div class="report-tool-header">
         <div class="rpt-section-head" style="padding:0 0 var(--sp-4);box-shadow:inset 0 -1px 0 var(--border);"><span class="rpt-num">02</span><div><h3 class="rpt-section-title">Categorical — diagnosis</h3><p class="rpt-section-sub">ICD-11 essential features for alcohol dependence</p></div></div>
-        <span class="score-pill ${state.icdConclusion==='with'?'score-high':state.icdConclusion==='without'?'score-low':'score-moderate'}">${ss}/3 · ${state.icdConclusion==='with'?'Meets requirements':state.icdConclusion==='without'?'Does not meet requirements':'No conclusion recorded'}</span>
+        <span class="score-pill score-neutral">${ss}/3 · ${state.icdConclusion==='with'?'Meets requirements':state.icdConclusion==='without'?'Does not meet requirements':'No conclusion recorded'}</span>
       </div>
       <table class="report-items-table">
         <tr><th>Criterion</th><th>ICD-11 Feature</th><th>Rating</th></tr>
@@ -2680,14 +2854,14 @@ function buildReport() {
       <div class="chart-title">Profile — 6 complete subscales</div>
       <div class="chart-sub">T-scores (M=50, SD=10). The three externalising subscales use the HiTOP-SR community norms. The three substance subscales use the German HiTOP-SR norms and carry the caution below.</div>
       <div class="callout" style="margin:var(--space-3) 0;font-size:var(--text-xs);">⚠ ${HITOP_SUD_WARNING}</div>
-      <div id="chart-hitop-bar" style="height:420px"></div>
+      <div id="chart-hitop-bar"></div>
       <p style="font-size:var(--text-xs);color:var(--color-text-muted);font-style:italic;margin-top:var(--space-2);">Source: ${HITOP_NORM_CITATION}</p>
     </div>
 
     <div class="chart-container">
       <div class="chart-title">Disinhibited Externalizing & Harmful Substance Use — T-Score Distribution</div>
       <div class="chart-sub">Each panel shows a reference normal distribution (M=50, SD=10) with the client's spectrum-level T-score marked. Shading indicates clinical elevation thresholds.</div>
-      <div id="chart-hitop-hist" style="height:380px"></div>
+      <div id="chart-hitop-hist"></div>
     </div>
   </div>
 
@@ -2748,12 +2922,27 @@ function buildReport() {
     </div>
   </div>
 
-  <div style="display:flex;gap:var(--space-3);margin-top:var(--space-6)">
-    <button class="btn-primary" onclick="window.print()">Print Report</button>
-    <button class="btn-secondary" onclick="showView('ana')">← Back to Tasks</button>
+  <div class="nav-row eval-footer">
+    <button class="btn btn-secondary" onclick="window.print()">Print report</button>
+    <a class="btn btn-primary" href="/dashboard.html">Dashboard &rarr;</a>
   </div>`;
 
   area.innerHTML = html;
+
+  // The shared severity bar writes its own markup, so it is painted after
+  // the report is in the DOM. The zones are the WHO manual's own.
+  if (window.ClinCharts) {
+    ClinCharts.severityBar('r-audit-sev', {
+      score: cs, max: 40,
+      answered: state.audit.filter(v => v !== null).length + ' of 10 items answered',
+      bands: [
+        { to: 7,  label: 'Zone I · low risk' },
+        { to: 15, label: 'Zone II · hazardous' },
+        { to: 19, label: 'Zone III · harmful' },
+        { to: 40, label: 'Zone IV · possible dependence' },
+      ],
+    });
+  }
 
   // Build formulation textboxes
   buildFormulationBoxes(cs, ss, disAvgT, hsuAvgT, hsuAvgRaw, di);
@@ -2822,7 +3011,7 @@ function buildFormulationBoxes(cs, ss, disAvgT, hsuAvgT, hsuAvgRaw, di) {
         '<div style="font-size:var(--text-xs);color:var(--color-primary);font-weight:500;overflow-wrap:anywhere;min-width:0;">' + fb.meta + '</div>' +
       '</div>' +
       '<div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-2);font-style:italic;line-height:1.65;padding:var(--space-2) var(--space-3);background:var(--color-surface-offset);border-radius:var(--radius-md);">' +
-        '\uD83D\uDCA1 ' + fb.hint +
+        fb.hint +
       '</div>' +
       '<textarea id="' + fb.id + '" rows="4"' +
         ' style="width:100%;padding:var(--space-3) var(--space-4);border:1.5px solid var(--color-border);border-radius:var(--radius-lg);background:var(--color-surface-2);font-family:var(--font-body);font-size:var(--text-sm);color:var(--color-text);resize:vertical;line-height:1.6;transition:border-color 180ms;"' +
@@ -2852,44 +3041,17 @@ function getTheme() {
 }
 
 function renderHitopBar(tScores) {
-  const t = getTheme();
-  const names = tScores.map(s => s.scale);
-  const values = tScores.map(s => s.t);
-  const colors = values.map(v => v >= 70 ? t.error : v >= 60 ? t.gold : t.primary);
-  const isDis = (i) => i < 8;
-
-  Plotly.newPlot('chart-hitop-bar', [{
-    type: 'bar',
-    orientation: 'h',
-    x: values,
-    y: names,
-    marker: { color: colors },
-    text: values.map(v => 'T=' + v),
-    textposition: 'outside',
-    hovertemplate: '<b>%{y}</b><br>T-score: %{x}<extra></extra>'
-  }], {
-    paper_bgcolor: t.paper, plot_bgcolor: t.bg,
-    margin: { t: 10, l: 160, r: 60, b: 50 },
-    xaxis: {
-      range: [30, Math.max(80, ...values) + 5],
-      title: { text: 'T-Score (M=50, SD=10)', font: { color: t.muted } },
-      tickfont: { color: t.muted }, gridcolor: t.grid, linecolor: t.grid,
-      zerolinecolor: t.grid,
-      tickvals: [40,50,60,70,80]
-    },
-    yaxis: { tickfont: { color: t.text }, gridcolor: t.grid, linecolor: t.grid, autorange: 'reversed' },
-    shapes: [
-      { type:'line', x0:60, x1:60, y0:-0.5, y1:names.length-0.5, line:{ color:t.gold, width:1.5, dash:'dot' } },
-      { type:'line', x0:70, x1:70, y0:-0.5, y1:names.length-0.5, line:{ color:t.error, width:1.5, dash:'dot' } },
-      { type:'line', x0:50, x1:50, y0:-0.5, y1:names.length-0.5, line:{ color:t.muted, width:1, dash:'dot' } },
-      { type:'rect', x0:0, x1:8.5, y0:-0.5, y1:7.5, fillcolor: t.primary, opacity:0.04, line:{width:0} },
-      { type:'rect', x0:0, x1:8.5, y0:7.5, y1:13.5, fillcolor: t.blue, opacity:0.04, line:{width:0} }
-    ],
-    annotations: [
-      { x: 32, y: 3.5, text:'Disinhibited<br>Externalizing', showarrow:false, font:{color:t.primary, size:10}, textangle:-90 },
-      { x: 32, y: 11, text:'Harmful<br>Substance Use', showarrow:false, font:{color:t.blue, size:10}, textangle:-90 }
-    ]
-  }, { responsive: true, displayModeBar: false });
+  // Was a Plotly horizontal bar chart in this page's own amber/magenta.
+  // Now the same rail the cognitive tables in the other three reports use,
+  // so the four reports draw a subscale profile the same way.
+  if (!window.ClinCharts) return;
+  ClinCharts.tBars('chart-hitop-bar', tScores.map(function (s, i) {
+    return {
+      label: s.scale,
+      t: s.t,
+      group: i < 8 ? 'Disinhibited Externalizing' : 'Harmful Substance Use',
+    };
+  }), { min: 30, max: 80 });
 }
 
 function normalPDF(x, mu, sigma) {
@@ -2897,78 +3059,21 @@ function normalPDF(x, mu, sigma) {
 }
 
 function renderHitopHist(disT, hsuT) {
-  const t = getTheme();
-  const xs = [], ys_norm = [];
-  for (let x = 20; x <= 80; x += 0.5) {
-    xs.push(x);
-    ys_norm.push(normalPDF(x, 50, 10));
-  }
-  const peakY = normalPDF(50, 50, 10);
-
-  const makeSubplot = (label, patientT, color, xref, yref, axisN) => {
-    return [
-      {
-        type: 'scatter', mode: 'lines', x: xs, y: ys_norm,
-        fill: 'tozeroy', fillcolor: color + '22',
-        line: { color: color, width: 2 },
-        name: label + ' reference', showlegend: false,
-        xaxis: axisN === 1 ? 'x' : 'x2', yaxis: axisN === 1 ? 'y' : 'y2',
-        hoverinfo: 'skip'
-      },
-      {
-        type: 'scatter', mode: 'markers+text',
-        x: [patientT], y: [normalPDF(patientT, 50, 10) + peakY * 0.1],
-        marker: { color: patientT >= 70 ? t.error : patientT >= 60 ? t.gold : t.success, size: 14, symbol: 'triangle-down' },
-        text: ['T=' + patientT], textposition: 'top center',
-        textfont: { color: t.text, size: 11, weight: 700 },
-        name: label, showlegend: true,
-        xaxis: axisN === 1 ? 'x' : 'x2', yaxis: axisN === 1 ? 'y' : 'y2',
-        hovertemplate: label + '<br>T-score: ' + patientT + '<extra></extra>'
-      }
-    ];
-  };
-
-  const data = [
-    ...makeSubplot('Disinhibited Externalizing', disT, t.primary, 'x domain', 'y domain', 1),
-    // The reference curve drawn here is a normal distribution, which the
-    // substance norms are not. The panel is kept because the comparison is
-    // still informative, and the caption above it says what it is not.
-    ...(hsuT === null ? [] : makeSubplot('Harmful Substance Use', hsuT, t.blue, 'x2 domain', 'y2 domain', 2))
-  ];
-
-  const shapeForAxis = (xref, yref, color) => [
-    { type:'rect', xref, yref, x0:60, x1:70, y0:0, y1:peakY*1.4, fillcolor:t.gold, opacity:0.08, line:{width:0} },
-    { type:'rect', xref, yref, x0:70, x1:80, y0:0, y1:peakY*1.4, fillcolor:t.error, opacity:0.1, line:{width:0} },
-    { type:'line', xref, yref:'paper', x0:50, x1:50, y0:0, y1:1, line:{ color: t.muted, width:1, dash:'dot' } },
-    { type:'line', xref, yref:'paper', x0:60, x1:60, y0:0, y1:1, line:{ color: t.gold, width:1, dash:'dot' } },
-    { type:'line', xref, yref:'paper', x0:70, x1:70, y0:0, y1:1, line:{ color: t.error, width:1, dash:'dot' } }
-  ];
-
-  Plotly.newPlot('chart-hitop-hist', data, {
-    paper_bgcolor: t.paper, plot_bgcolor: t.bg,
-    grid: { rows:1, columns:2, pattern:'independent', xgap:0.1 },
-    margin: { t: 40, l: 10, r: 10, b: 60 },
-    showlegend: true,
-    legend: { orientation:'h', y:-0.2, font:{color:t.text}, bgcolor:'rgba(0,0,0,0)' },
-    xaxis:  { range:[25,80], title:{text:'Disinhibited Externalizing T-Score',font:{color:t.muted}}, tickfont:{color:t.muted}, gridcolor:t.grid, linecolor:t.grid, zerolinewidth:0 },
-    xaxis2: { range:[25,80], title:{text:'Harmful Substance Use T-Score',font:{color:t.muted}}, tickfont:{color:t.muted}, gridcolor:t.grid, linecolor:t.grid, zerolinewidth:0 },
-    yaxis:  { visible:false, range:[0, peakY*1.5] },
-    yaxis2: { visible:false, range:[0, peakY*1.5] },
-    shapes: [
-      ...shapeForAxis('x','y',t.primary),
-      ...shapeForAxis('x2','y2',t.blue)
-    ],
-    annotations: [
-      { xref:'x', yref:'paper', x:50, y:1.06, text:'Mean', showarrow:false, font:{color:t.muted, size:9} },
-      { xref:'x', yref:'paper', x:60, y:1.06, text:'T=60', showarrow:false, font:{color:t.gold, size:9} },
-      { xref:'x', yref:'paper', x:70, y:1.06, text:'T=70', showarrow:false, font:{color:t.error, size:9} },
-      { xref:'x2', yref:'paper', x:50, y:1.06, text:'Mean', showarrow:false, font:{color:t.muted, size:9} },
-      { xref:'x2', yref:'paper', x:60, y:1.06, text:'T=60', showarrow:false, font:{color:t.gold, size:9} },
-      { xref:'x2', yref:'paper', x:70, y:1.06, text:'T=70', showarrow:false, font:{color:t.error, size:9} }
-    ]
-  }, { responsive: true, displayModeBar: false });
+  // Same figure as before - a reference normal with the elevation bands
+  // shaded and the case marked - drawn on the shared canvas so the other
+  // three reports can show it too, and so the page needs Plotly for the
+  // demand curve alone.
+  if (!window.ClinCharts) return;
+  var items = [{ label: 'Disinhibited Externalizing', t: disT }];
+  if (hsuT !== null) items.push({
+    label: 'Harmful Substance Use',
+    t: hsuT,
+    // The reference curve is a normal distribution, which the substance
+    // norms are not; the caution above the figure says so.
+    note: 'Reference distribution shown as normal for comparison; the substance norms are floor-bound.',
+  });
+  ClinCharts.distribution('chart-hitop-hist', items);
 }
-
 
 function renderDemandCurve() {
   const t = getTheme();
@@ -3115,5 +3220,52 @@ initHelperFab();
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', set); else set();
 })();
 </script>
+<script>window.CLINCOG_EVAL = "addiction";</script>
+<script src="/charts.js"></script>
+<script src="/eval-memory.js"></script>
+<script>
+// A textarea prints only the slice of text that fits its box. Before the
+// print dialog opens, each one is grown to its content so the whole answer
+// appears on paper; afterwards it goes back to the size the student sized it.
+(function () {
+  var saved = [];
+  function expand() {
+    saved = [];
+    document.querySelectorAll('textarea').forEach(function (t) {
+      saved.push([t, t.style.height]);
+      t.style.height = 'auto';
+      t.style.height = t.scrollHeight + 'px';
+    });
+  }
+  function restore() { saved.forEach(function (p) { p[0].style.height = p[1]; }); saved = []; }
+  window.addEventListener('beforeprint', expand);
+  window.addEventListener('afterprint', restore);
+})();
+</script>
+
+<script>
+// The task headers carried one fixed date for every student. The
+// real session start is stamped the first time this case's evaluation is
+// opened and kept with the rest of the case's progress, so a report printed
+// weeks later still shows when the work was actually done.
+(function () {
+  var key = "clincog_session_" + (window.CLINCOG_EVAL || "case");
+  var started;
+  try {
+    started = localStorage.getItem(key);
+    if (!started) { started = String(Date.now()); localStorage.setItem(key, started); }
+  } catch (e) { started = String(Date.now()); }
+  var d = new Date(Number(started));
+  var text = d.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" }) +
+    " \u00b7 " + d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+  function paint() {
+    document.querySelectorAll("[data-session-start]").forEach(function (el) { el.textContent = text; });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", paint);
+  else paint();
+  window.CLINCOG_SESSION_START = Number(started);
+})();
+</script>
+
 </body>
 </html>

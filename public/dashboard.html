@@ -70,7 +70,11 @@
   .continue-hero-mark img { filter: saturate(.74); }
   .continue-hero-quote { font-style: italic; color: var(--text-secondary); margin: var(--sp-3) 0 var(--sp-5); font-size: var(--text-base); max-width: 52ch; }
   .continue-hero-progress { display: flex; align-items: center; gap: var(--sp-3); max-width: 320px; margin-bottom: var(--sp-6); }
-  .continue-hero-progress .progress-fill { background: var(--domain-color, var(--accent)); }
+  /* The bars take the case colour washed the way the status badges are
+     washed, instead of the solid hue. The badge itself is 8% over the
+     surface, which on a hatched track would read as an empty bar, so the
+     bar sits at 45%: the same family, still legible as a fill. */
+  .progress-fill { --progress-fill: color-mix(in srgb, var(--domain-color, var(--accent)) 45%, var(--bg-surface)); }
   @media (max-width: 768px) { .continue-hero { grid-template-columns: 1fr; text-align: left; } .continue-hero-mark { display: none; } }
 
   .dash-grid-cases { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-5); margin-bottom: var(--sp-6); }
@@ -218,7 +222,7 @@
           <div class="continue-hero-quote">${current.quote}</div>
           <div class="continue-hero-progress">
             <span class="text-label" style="white-space:nowrap;">${s.stageLabel}</span>
-            <div class="progress-track hatched"><div class="progress-fill" style="width:${s.pct}%"></div></div>
+            <div class="progress-track hatched"><div class="progress-fill" style="width:${s.pct}%;background:var(--progress-fill)"></div></div>
             <span class="progress-pct">${s.pct}%</span>
           </div>
           <a class="btn btn-primary" href="${nextHref}">${nextLabel} →</a>
@@ -306,7 +310,7 @@
     // with the conceptualization at all.
     const evalDisabled = s.state === "not-started";
     return `
-      <div class="card case-card">
+      <div class="card case-card" style="--domain-color:var(${DOMAIN_VAR[m.id]});">
         <div class="case-card-top">
           <div class="case-card-icon domain-${domain}" data-icon-slot="brain"></div>
           <div class="case-card-identity">
@@ -319,7 +323,7 @@
           <div class="case-card-grid-item"><span class="val">${s.exchanges}</span><span class="lbl">Messages exchanged</span></div>
           <div class="case-card-grid-item"><span class="val">${s.state === "not-started" ? "—" : s.stageLabel}</span><span class="lbl">Stage</span></div>
         </div>
-        <div class="progress-row"><div class="progress-track hatched slim"><div class="progress-fill" style="width:${s.pct}%;background:var(${DOMAIN_VAR[m.id]})"></div></div><span class="progress-pct">${s.pct}%</span></div>
+        <div class="progress-row"><div class="progress-track hatched slim"><div class="progress-fill" style="width:${s.pct}%;background:var(--progress-fill)"></div></div><span class="progress-pct">${s.pct}%</span></div>
         <div class="case-card-footer">
           <a class="btn btn-secondary" href="${m.chat}">Conceptualize</a>
           <a class="btn ${evalDisabled ? 'btn-secondary' : 'btn-primary'}" href="${m.eval}" ${evalDisabled ? 'aria-disabled="true" onclick="return false;" style="opacity:.5;cursor:not-allowed;"' : ''}>Evaluate</a>

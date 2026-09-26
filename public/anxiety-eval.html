@@ -35,7 +35,10 @@
   --ink: var(--text-primary);
   --ink2: var(--text-secondary);
   --ink3: var(--text-tertiary, var(--text-secondary));
-  --bg-surface-alt: var(--bg-surface-alt);
+  /* Was "--bg-surface-alt: var(--bg-surface-alt)" - a token defined as
+     itself, which is invalid, so it resolved to nothing and every surface
+     built on it (the free-text fields, the callouts, the selected-item
+     fill) rendered transparent. The token file's own value stands. */
   --accent-bg: var(--bg-surface-alt);
   --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
   --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
@@ -843,6 +846,140 @@ canvas{width:100%;height:auto;display:block}
   background: var(--select-fill) !important;
   color: var(--select-ink) !important;
 }
+
+/* Likert legend: the same white-on-white problem the helper cards had.
+   Each step sat on --bg-surface inside a --bg-surface-alt rail with only a
+   1px shadow to separate them, which disappears once the rail is pale. */
+.likert-legend-item { border: 1px solid var(--border); }
+
+/* No glow on a selected item: the tinted fill and the 1.5px outline carry
+   the state on their own, and the 3px ring read as a focus effect stuck on. */
+.radio-row label:has(input:checked),
+.radio-row label:has(input:checked).p,
+.radio-row label:has(input:checked).n,
+.radio-row label:has(input:checked).u,
+.item-opts label:has(input:checked),
+.dx-options label:has(input:checked),
+.yn-row label:has(input:checked),
+.likert label:has(input:checked) .num,
+.rating-btn input:checked + label,
+.opt-btn input:checked + label,
+.radio-option.selected,
+.radio-option.selected-yes,
+.likert-btn.selected {
+  box-shadow: none !important;
+}
+
+/* Alex's CDDR answers were 40x40 squares holding a bare +, - or ?, which is
+   a different control from the three labelled pills the other cases use.
+   Same geometry as .radio-row now; only this page's rating buttons are
+   affected, the HiTOP 1-4 squares keep their size. */
+.cddr-scale .rating-btn label {
+  width: auto; height: auto; padding: 9px 18px;
+  border-radius: var(--radius-pill) !important; font-weight: 500;
+}
+.cddr-scale .rating-group { flex-wrap: wrap; gap: 10px; }
+
+/* The sidebar counters were the last white-on-white cards left: surface on
+   surface with no edge. Same hairline as the helper cards and the Likert
+   legend, so the whole aside reads as one set. */
+.mini-stat { border: 1px solid var(--border) !important; }
+
+/* Buttons, back on the app's own type scale.
+   These pages redefine --text-sm one step larger than tokens.css does
+   (16px against 15px at 1440), so every button here rendered a size
+   bigger than the same button on the dashboard - which is what made the
+   reflection button look oversized next to its own text. Pinned to the
+   token file's value, at one height, so the four cases match each other
+   and the rest of the app. */
+.btn, .btn-primary, .btn-secondary {
+  height: 42px !important;
+  font-size: clamp(0.8125rem, 0.78rem + 0.25vw, 0.9375rem) !important;
+  font-weight: 500;
+  border-radius: var(--radius-pill) !important;
+  padding: 0 22px !important;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  text-decoration: none; cursor: pointer;
+}
+.btn-primary { font-weight: 600; }
+.btn-sm { height: 34px !important; padding: 0 14px !important; font-size: var(--text-xs) !important; }
+
+/* The reflection note was capped at 540px inside an 896px card, so it
+   stopped two-thirds of the way across and read as a broken column. */
+.reflect-note { max-width: none !important; }
+.reflect-block textarea { min-height: 120px; }
+
+/* One footer on every case: print, then out to the dashboard. */
+.eval-footer {
+  display: flex; gap: 10px; justify-content: flex-end;
+  flex-wrap: wrap; padding-top: 24px; margin-top: 8px;
+}
+
+/* The reflection box, the same card as every other section. Jordan's was
+   filled with the page's old cream and Alex's with a pale teal, so the
+   last block of each report read as a different component. */
+.reflect-block {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-6) var(--sp-7) !important;
+  margin-top: var(--sp-6);
+}
+.reflect-block h3 {
+  font-size: var(--text-card-title-size); font-weight: 600;
+  letter-spacing: -.008em; margin: 0 0 8px; text-transform: none;
+}
+.reflect-block textarea {
+  width: 100%; border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 12px 14px; font-family: var(--font-sans); font-size: var(--text-sm);
+  color: var(--text-primary); background: var(--bg-surface-alt);
+  resize: vertical; min-height: 120px; line-height: 1.6; margin-bottom: 14px;
+}
+.reflect-block textarea:focus { outline: 2px solid var(--select-line); outline-offset: -2px; background: var(--bg-surface); }
+
+/* Free-text answers, boxed like every other field. They were transparent
+   until focus, so an empty one read as a gap in the page rather than as
+   something to fill in. Same grey fill and hairline as the option rows. */
+.eval-work textarea,
+.instrument-card textarea,
+.dp-q textarea,
+textarea.interp,
+#formulation-boxes textarea,
+.reflect-block textarea {
+  width: 100%; box-sizing: border-box;
+  padding: 13px 16px;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md);
+  background: var(--bg-surface-alt) !important;
+  color: var(--text-primary);
+  font-family: var(--font-sans); font-size: var(--text-sm);
+  line-height: 1.65; resize: vertical; min-height: 110px;
+  transition: border-color var(--duration-hover, .18s) var(--ease-standard, ease),
+              background var(--duration-hover, .18s) var(--ease-standard, ease);
+}
+.eval-work textarea:hover,
+.instrument-card textarea:hover,
+.dp-q textarea:hover,
+textarea.interp:hover,
+#formulation-boxes textarea:hover,
+.reflect-block textarea:hover { border-color: var(--text-tertiary) !important; }
+.eval-work textarea:focus,
+.instrument-card textarea:focus,
+.dp-q textarea:focus,
+textarea.interp:focus,
+#formulation-boxes textarea:focus,
+.reflect-block textarea:focus {
+  outline: none;
+  border-color: var(--select-line) !important;
+  background: var(--bg-surface) !important;
+  box-shadow: 0 0 0 1px var(--select-line);
+}
+.eval-work textarea::placeholder,
+.instrument-card textarea::placeholder,
+.dp-q textarea::placeholder,
+textarea.interp::placeholder,
+#formulation-boxes textarea::placeholder,
+.reflect-block textarea::placeholder { color: var(--text-tertiary); }
 </style>
 <script>
   // Expands a task into an in-page panel over the dimmed page. Closes on the
@@ -1032,9 +1169,9 @@ canvas{width:100%;height:auto;display:block}
   <h1 class="page-title">ICD-11 / CDDR</h1>
   <p class="page-tagline">Social Anxiety Disorder (6B04)</p>
 
-  <p style="font-size:var(--text-base);color:var(--muted);margin-bottom:40px;max-width:var(--measure)">Rate each item as present (<strong>+</strong>), absent (<strong>−</strong>), or uncertain (<strong>?</strong>) based on the vignette and your clinical judgement. All items must be rated before proceeding.</p>
+  <p style="font-size:var(--text-base);color:var(--muted);margin-bottom:40px;max-width:var(--measure)">Rate each item as present, absent, or info lacking based on the vignette and your clinical judgement. All items must be rated before proceeding.</p>
 
-  <div id="scid-items" class="instrument-card">
+  <div id="scid-items" class="instrument-card cddr-scale">
 
     <div class="scid-item">
       <div class="scid-row">
@@ -1044,9 +1181,9 @@ canvas{width:100%;height:auto;display:block}
           <em class="item-sublabel">↳ The core feature. Note the CDDR wording is “occurs consistently”, not “consistently occurs”, and that the examples are part of the criterion.</em>
         </div>
         <div class="rating-group">
-          <div class="rating-btn"><input type="radio" name="cddr_a" id="cddr_ap" value="+" onchange="scidChange()"><label for="cddr_ap">+</label></div>
-          <div class="rating-btn"><input type="radio" name="cddr_a" id="cddr_an" value="-" onchange="scidChange()"><label for="cddr_an">&minus;</label></div>
-          <div class="rating-btn"><input type="radio" name="cddr_a" id="cddr_au" value="?" onchange="scidChange()"><label for="cddr_au">?</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_a" id="cddr_ap" value="+" onchange="scidChange()"><label for="cddr_ap"> + Present</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_a" id="cddr_an" value="-" onchange="scidChange()"><label for="cddr_an"> &minus; Absent</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_a" id="cddr_au" value="?" onchange="scidChange()"><label for="cddr_au"> ? Info lacking</label></div>
         </div>
       </div>
     </div>
@@ -1059,9 +1196,9 @@ canvas{width:100%;height:auto;display:block}
           <em class="item-sublabel">↳ This is what distinguishes social anxiety from generalized anxiety — the fear is specifically about others’ evaluation.</em>
         </div>
         <div class="rating-group">
-          <div class="rating-btn"><input type="radio" name="cddr_b" id="cddr_bp" value="+" onchange="scidChange()"><label for="cddr_bp">+</label></div>
-          <div class="rating-btn"><input type="radio" name="cddr_b" id="cddr_bn" value="-" onchange="scidChange()"><label for="cddr_bn">&minus;</label></div>
-          <div class="rating-btn"><input type="radio" name="cddr_b" id="cddr_bu" value="?" onchange="scidChange()"><label for="cddr_bu">?</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_b" id="cddr_bp" value="+" onchange="scidChange()"><label for="cddr_bp"> + Present</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_b" id="cddr_bn" value="-" onchange="scidChange()"><label for="cddr_bn"> &minus; Absent</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_b" id="cddr_bu" value="?" onchange="scidChange()"><label for="cddr_bu"> ? Info lacking</label></div>
         </div>
       </div>
     </div>
@@ -1074,9 +1211,9 @@ canvas{width:100%;height:auto;display:block}
           <em class="item-sublabel">↳ Either active avoidance or enduring the situation with marked distress satisfies this criterion.</em>
         </div>
         <div class="rating-group">
-          <div class="rating-btn"><input type="radio" name="cddr_c" id="cddr_cp" value="+" onchange="scidChange()"><label for="cddr_cp">+</label></div>
-          <div class="rating-btn"><input type="radio" name="cddr_c" id="cddr_cn" value="-" onchange="scidChange()"><label for="cddr_cn">&minus;</label></div>
-          <div class="rating-btn"><input type="radio" name="cddr_c" id="cddr_cu" value="?" onchange="scidChange()"><label for="cddr_cu">?</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_c" id="cddr_cp" value="+" onchange="scidChange()"><label for="cddr_cp"> + Present</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_c" id="cddr_cn" value="-" onchange="scidChange()"><label for="cddr_cn"> &minus; Absent</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_c" id="cddr_cu" value="?" onchange="scidChange()"><label for="cddr_cu"> ? Info lacking</label></div>
         </div>
       </div>
     </div>
@@ -1089,9 +1226,9 @@ canvas{width:100%;height:auto;display:block}
           <em class="item-sublabel">↳ The CDDR states a duration in terms of persistence rather than a fixed cut-off.</em>
         </div>
         <div class="rating-group">
-          <div class="rating-btn"><input type="radio" name="cddr_d" id="cddr_dp" value="+" onchange="scidChange()"><label for="cddr_dp">+</label></div>
-          <div class="rating-btn"><input type="radio" name="cddr_d" id="cddr_dn" value="-" onchange="scidChange()"><label for="cddr_dn">&minus;</label></div>
-          <div class="rating-btn"><input type="radio" name="cddr_d" id="cddr_du" value="?" onchange="scidChange()"><label for="cddr_du">?</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_d" id="cddr_dp" value="+" onchange="scidChange()"><label for="cddr_dp"> + Present</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_d" id="cddr_dn" value="-" onchange="scidChange()"><label for="cddr_dn"> &minus; Absent</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_d" id="cddr_du" value="?" onchange="scidChange()"><label for="cddr_du"> ? Info lacking</label></div>
         </div>
       </div>
     </div>
@@ -1104,9 +1241,9 @@ canvas{width:100%;height:auto;display:block}
           <em class="item-sublabel">↳ Differential diagnosis, stated as a required feature in the CDDR. This criterion was missing from the earlier version of this page.</em>
         </div>
         <div class="rating-group">
-          <div class="rating-btn"><input type="radio" name="cddr_e" id="cddr_ep" value="+" onchange="scidChange()"><label for="cddr_ep">+</label></div>
-          <div class="rating-btn"><input type="radio" name="cddr_e" id="cddr_en" value="-" onchange="scidChange()"><label for="cddr_en">&minus;</label></div>
-          <div class="rating-btn"><input type="radio" name="cddr_e" id="cddr_eu" value="?" onchange="scidChange()"><label for="cddr_eu">?</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_e" id="cddr_ep" value="+" onchange="scidChange()"><label for="cddr_ep"> + Present</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_e" id="cddr_en" value="-" onchange="scidChange()"><label for="cddr_en"> &minus; Absent</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_e" id="cddr_eu" value="?" onchange="scidChange()"><label for="cddr_eu"> ? Info lacking</label></div>
         </div>
       </div>
     </div>
@@ -1119,9 +1256,9 @@ canvas{width:100%;height:auto;display:block}
           <em class="item-sublabel">↳ Distress about the anxiety itself counts, as does impairment. Maintained functioning achieved only through significant extra effort still meets this criterion.</em>
         </div>
         <div class="rating-group">
-          <div class="rating-btn"><input type="radio" name="cddr_f" id="cddr_fp" value="+" onchange="scidChange()"><label for="cddr_fp">+</label></div>
-          <div class="rating-btn"><input type="radio" name="cddr_f" id="cddr_fn" value="-" onchange="scidChange()"><label for="cddr_fn">&minus;</label></div>
-          <div class="rating-btn"><input type="radio" name="cddr_f" id="cddr_fu" value="?" onchange="scidChange()"><label for="cddr_fu">?</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_f" id="cddr_fp" value="+" onchange="scidChange()"><label for="cddr_fp"> + Present</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_f" id="cddr_fn" value="-" onchange="scidChange()"><label for="cddr_fn"> &minus; Absent</label></div>
+          <div class="rating-btn"><input type="radio" name="cddr_f" id="cddr_fu" value="?" onchange="scidChange()"><label for="cddr_fu"> ? Info lacking</label></div>
         </div>
       </div>
     </div>
@@ -1423,7 +1560,7 @@ canvas{width:100%;height:auto;display:block}
   <div class="session-head">
     <div class="kv-row"><span class="kv-key">Subject ID:</span> <span class="kv-val">AX</span></div>
     <div class="kv-row"><span class="kv-key">Age:</span> <span class="kv-val">24</span></div>
-    <div class="kv-row"><span class="kv-key">Session start time:</span> <span class="kv-val">March 14, 2026 · 11:05 AM</span></div>
+    <div class="kv-row"><span class="kv-key">Session start time:</span> <span class="kv-val" data-session-start>—</span></div>
     <div class="kv-row"><span class="kv-key">Task:</span> <span class="kv-val">Dot-probe, social-threat words</span></div>
   </div>
   <div class="ctab-wrap">
@@ -1464,7 +1601,7 @@ canvas{width:100%;height:auto;display:block}
         <span class="try-task-copy">
           <span class="try-task-title">Try the task yourself</span>
           <span class="try-task-sub">Run the dot-probe Alex completed — 64 trials, about three minutes.</span>
-          <span class="try-task-badges"><span class="badge badge-neutral">Optional</span><span class="badge badge-neutral">Not graded</span><span class="badge badge-neutral">Never in the report</span></span>
+          
         </span>
         <span class="try-task-cta"><span class="cta-open">Try it yourself</span><span class="cta-close">Hide the task</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
       </summary>
@@ -1543,10 +1680,10 @@ canvas{width:100%;height:auto;display:block}
     <button class="btn btn-primary" id="reflect-btn" onclick="completeCase()">Complete case →</button>
   </div>
 
-  <div class="btn-row" style="margin-top:32px">
-    <button class="btn btn-secondary" onclick="goTo(5)">← Back</button>
-    <button class="btn btn-secondary" onclick="window.print()">Print Report</button>
-  </div>
+  <div class="nav-row eval-footer">
+      <button class="btn btn-secondary" onclick="window.print()">Print report</button>
+      <a class="btn btn-primary" href="/dashboard.html">Dashboard &rarr;</a>
+    </div>
 
   </div>
 </div>
@@ -1566,7 +1703,17 @@ canvas{width:100%;height:auto;display:block}
 // ═══════════════════════════════════════════════
 const S = {
   page: 1,
-  maxPage: 1,
+  // Seeded from localStorage so the step rail comes back unlocked as far
+  // as the student actually got; eval-memory.js loads later than this.
+  // Seeded from the step counter, the stage the dashboard records and the
+  // case-complete flag, so a case finished before the counter existed comes
+  // back with its rail unlocked.
+  maxPage: (function () {
+    var stored = parseInt(localStorage.getItem('clincog_step_anxiety'), 10) || 0;
+    var fromStage = { icd: 3, dimensional: 4, cognitive: 5, report: 6, complete: 6 }[localStorage.getItem('clincog_stage_anxiety')] || 0;
+    var done = localStorage.getItem('clincog_complete_anxiety') ? 6 : 0;
+    return Math.max(1, stored, fromStage, done);
+  })(),
   scid: {},      // F32-F41 → '+'/'-'/'?'
   diag: null,    // 'SAD'/'SAD-PO'/'none'
   gadAns: {},    // GAD-7 item 1-7 -> 0-3
@@ -1809,7 +1956,7 @@ function goTo(n) {
 
   document.getElementById('p'+S.page).classList.remove('active');
   S.page = n;
-  if (n > S.maxPage) S.maxPage = n;
+  if (n > S.maxPage) { S.maxPage = n; try { localStorage.setItem('clincog_step_anxiety', String(n)); } catch (e) {} }
   document.getElementById('p'+n).classList.add('active');
   updateNav();
   toggleScoreBar();
@@ -1862,7 +2009,7 @@ function paintReflectState() {
   if (done) {
     if (done.reflection) box.value = done.reflection;
     msg.style.display = 'flex';
-    msg.innerHTML = '&#10003; Case marked complete. <a href="/dashboard.html" style="color:inherit;text-decoration:underline;margin-left:4px;">Back to dashboard &rarr;</a>';
+    msg.innerHTML = '&#10003; Case marked complete.';
     btn.textContent = 'Update reflection';
   }
 }
@@ -2510,7 +2657,17 @@ function generateReport() {
     setTimeout(() => {
       const _n = getFreshNorms();
       const _fsn = fearSpectrumNorm();
-      drawCanvas('canvas-hitop-fear', _fsn.mean, _fsn.sd, calcFearTotal());
+      // Was this page's own canvas routine in a hardcoded teal; now the
+      // shared panel, which also survives a theme switch.
+      if (window.ClinCharts) {
+        const _fearT = 50 + ((calcFearTotal() - _fsn.mean) / _fsn.sd) * 10;
+        ClinCharts.distribution('canvas-hitop-fear-wrap', [{
+          label: 'Fear spectrum',
+          t: _fearT,
+          note: 'The spectrum total combines four subscale norms assuming independence, so its spread is understated; read this T as approximate.',
+        }]);
+      }
+      paintGadSeverity();
     }, 60);
   });
 }
@@ -2528,13 +2685,18 @@ function buildSection1() {
 
   return `<div class="rpt-section">
     <div class="rpt-section-head"><span class="rpt-num">01</span><div><h3 class="rpt-section-title">Categorical</h3><p class="rpt-section-sub">ICD-11 diagnostic requirements (CDDR) for social anxiety disorder (6B04)</p></div></div>
-    <div class="diag-badge ${badgeCls}">${diagLabel}</div>
-    <div class="count-strip">
-      <div class="count-cell"><span class="count-num">${plus}/6</span><span class="count-desc">Criteria present (a–e)</span></div>
-      <div class="count-cell"><span class="count-num">${coreMet ? '✓' : '✗'}</span><span class="count-desc">Core symptom (a) present</span></div>
-      <div class="count-cell"><span class="count-num">${diagMet ? 'Met' : 'Not met'}</span><span class="count-desc">Student judgment</span></div>
+    <div class="rpt-section-body">
+      <div class="verdict ${badgeCls}">
+        <span class="verdict-mark">${diagMet ? '✓' : '·'}</span>
+        <span class="verdict-text">${diagLabel}</span>
+      </div>
+      <div class="count-strip">
+        <div class="count-cell"><span class="count-num">${plus}/6</span><span class="count-desc">Criteria present (a–e)</span></div>
+        <div class="count-cell"><span class="count-num">${coreMet ? '✓' : '✗'}</span><span class="count-desc">Core symptom (a) present</span></div>
+        <div class="count-cell"><span class="count-num">${diagMet ? 'Met' : 'Not met'}</span><span class="count-desc">Student judgment</span></div>
+      </div>
+      <p class="rpt-note">Diagnostic criteria reproduced verbatim from WHO's ICD-11 CDDR, licensed CC BY-NC-ND 3.0 IGO.</p>
     </div>
-    <p style="font-size:12px;color:var(--muted);margin-top:14px;line-height:1.6;">Diagnostic criteria reproduced verbatim from WHO's ICD-11 CDDR, licensed CC BY-NC-ND 3.0 IGO.</p>
   </div>`;
 }
 
@@ -2543,25 +2705,78 @@ function buildSection2() {
   const answered = Object.keys(S.gadAns).length;
   const band = raw === null ? null : gad7Band(raw);
 
-  // No T-score. The GAD-7 form supplied for this project gives the items,
-  // the anchors and the severity bands; it gives no normative mean or SD,
-  // so there is no reference distribution to standardise against.
+  // Standardised since the German representative norms were added: the
+  // form itself gives only items, anchors and bands, but Kliem et al.
+  // (2025) publish a full percentile table for the same instrument.
   return `<div class="rpt-section">
     <div class="rpt-section-head"><span class="rpt-num">02</span><div><h3 class="rpt-section-title">Dimensional — severity</h3><p class="rpt-section-sub">GAD-7</p></div></div>
 
-    <div class="score-display">
-      <span class="score-big">${raw === null ? '—' : raw}</span>
-      <span class="score-unit">/ 21</span>
-      ${band ? `<span class="severity-pill">${band.label}</span>` : ''}
-    </div>
-    <p class="score-meta">${answered} of 7 items answered${raw === null ? ' — total shown once all seven are rated' : ''}</p>
+    <div class="rpt-section-body">
+    <div id="r-gad-sev"></div>
+    <div id="r-gad-curve"></div>
+    <p class="canvas-footnote" id="r-gad-norm"></p>
     <p class="canvas-footnote">Severity bands: 0–4 minimal, 5–9 mild, 10–14 moderate, 15–21 severe.
       Add the scores for each question (0–3) for a total score of 0–21.</p>
     <p class="canvas-footnote" style="font-style:italic;">Source: GAD-7 form as supplied.
       Scale developed and validated as reported in Spitzer RL, Kroenke K, Williams JBW, Löwe B.
       A brief measure for assessing generalized anxiety disorder: the GAD-7.
       <em>Arch Intern Med</em>. 2006;166(10):1092–1097. Self-assessments do not provide a diagnosis.</p>
+    <p class="canvas-footnote" style="font-style:italic;">Population norms: Kliem, S., Sachser, C., Lohmann, A.,
+      Baier, D., Brähler, E., Fegert, J. M., &amp; Gündel, H. (2025). Psychometric evaluation and community norms of
+      the GAD-7, based on a representative German sample. <em>Frontiers in Psychology, 16</em>, 1526181.
+      <a href="https://doi.org/10.3389/fpsyg.2025.1526181" target="_blank" rel="noopener">https://doi.org/10.3389/fpsyg.2025.1526181</a>
+      (cumulative percentiles, Table 3, with male and female subsamples in Supplementary Tables A9 and A11;
+      total-score mean and SD in Supplementary Table A3; N = 2,519). Alex's sex is not stated in the case, so the
+      total sample is used; the subsample norms are loaded and available. Editable on the Assessment benchmarks page.</p>
+    </div>
   </div>`;
+}
+
+// Painted after the section is in the DOM: the shared bar (charts.js) builds
+// its own markup, so it needs an element to write into.
+// Standardising against the published population norms (norms.js,
+// overridable on the benchmarks page). Identical to the PHQ-9 report's
+// painter on purpose: the two questionnaires now read the same way.
+function paintNormCurve(normId, raw, complete, curveId, noteId) {
+  const note = document.getElementById(noteId);
+  const host = document.getElementById(curveId);
+  if (!window.ClinCharts || !host) return;
+  if (!complete) {
+    host.innerHTML = '';
+    if (note) note.textContent = 'The standardised score appears once every item is rated.';
+    return;
+  }
+  const s = ClinCharts.standardise(normId, raw, { sex: window.CLINCOG_CASE_SEX });
+  if (!s) return;
+  // The same panel the other three reports use, so the four draw a
+  // standardised score the same way.
+  ClinCharts.distribution(curveId, [{
+    label: 'Position in the reference population',
+    t: s.t,
+  }]);
+  if (note) {
+    const bits = [];
+    bits.push(`<strong>${s.pct.toFixed(1)}th percentile</strong> of the ${s.group} — ${s.sample} — that is the proportion of the reference group scoring at or below ${raw}.`);
+    bits.push(`Normalized T = <strong>${s.t.toFixed(1)}</strong> (mean 50, SD 10), derived from that percentile.`);
+    if (!s.exact) bits.push(`The published table has no row for ${raw}; the value for ${s.usedScore} is used.`);
+    if (s.mean != null && s.sd != null) bits.push(`That group's mean total is ${s.mean} (SD ${s.sd}).`);
+    bits.push('The curve is the normalized reference distribution: after the percentile-to-T transformation it is normal by construction, which the raw totals are not — both scales are strongly floor-weighted.');
+    note.innerHTML = bits.join(' ');
+  }
+}
+
+function paintGadSeverity() {
+  const raw = calcGad7Score();
+  const answered = Object.keys(S.gadAns).length;
+  if (raw === null || !window.ClinCharts) return;
+  const norm = ClinCharts.standardise ? ClinCharts.standardise('gad7', raw) : null;
+  ClinCharts.severityBar('r-gad-sev', {
+    score: raw, max: 21,
+    cutoff: norm ? norm.cutoff : null,
+    answered: `${answered} of 7 items answered`,
+    bands: GAD7_BANDS.map(b => ({ to: b.max, label: b.label })),
+  });
+  paintNormCurve('gad7', raw, answered === 7, 'r-gad-curve', 'r-gad-norm');
 }
 
 function buildSection3() {
@@ -2613,7 +2828,7 @@ function buildSection3() {
     </div>
     <p class="score-meta">T = <strong style="font-family:var(--mono)">${fearT.toFixed(1)}</strong> &nbsp;·&nbsp; ${fearPct.toFixed(0)}th percentile</p>
     <div class="canvas-wrap">
-      <canvas id="canvas-hitop-fear" width="640" height="130"></canvas>
+      <div id="canvas-hitop-fear-wrap"></div>
       <p class="canvas-footnote">Each subscale is compared with its own community norm; the spectrum total uses those four norms combined, which assumes independence between subscales and therefore understates the spread. Read the spectrum T as approximate.</p>
       <p class="canvas-footnote" style="font-style:italic;color:#999;">Source: ${HITOP_NORM_CITATION}</p>
     </div>
@@ -2856,5 +3071,52 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', set); else set();
 })();
 </script>
+<script>window.CLINCOG_EVAL = "anxiety";</script>
+<script src="/charts.js"></script>
+<script src="/eval-memory.js"></script>
+<script>
+// A textarea prints only the slice of text that fits its box. Before the
+// print dialog opens, each one is grown to its content so the whole answer
+// appears on paper; afterwards it goes back to the size the student sized it.
+(function () {
+  var saved = [];
+  function expand() {
+    saved = [];
+    document.querySelectorAll('textarea').forEach(function (t) {
+      saved.push([t, t.style.height]);
+      t.style.height = 'auto';
+      t.style.height = t.scrollHeight + 'px';
+    });
+  }
+  function restore() { saved.forEach(function (p) { p[0].style.height = p[1]; }); saved = []; }
+  window.addEventListener('beforeprint', expand);
+  window.addEventListener('afterprint', restore);
+})();
+</script>
+
+<script>
+// The task headers carried one fixed date for every student. The
+// real session start is stamped the first time this case's evaluation is
+// opened and kept with the rest of the case's progress, so a report printed
+// weeks later still shows when the work was actually done.
+(function () {
+  var key = "clincog_session_" + (window.CLINCOG_EVAL || "case");
+  var started;
+  try {
+    started = localStorage.getItem(key);
+    if (!started) { started = String(Date.now()); localStorage.setItem(key, started); }
+  } catch (e) { started = String(Date.now()); }
+  var d = new Date(Number(started));
+  var text = d.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" }) +
+    " \u00b7 " + d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+  function paint() {
+    document.querySelectorAll("[data-session-start]").forEach(function (el) { el.textContent = text; });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", paint);
+  else paint();
+  window.CLINCOG_SESSION_START = Number(started);
+})();
+</script>
+
 </body>
 </html>
