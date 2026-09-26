@@ -41,7 +41,7 @@
   };
   // Canvas that stays sharp and maps pointer events to its own coordinates.
   function makeCanvas(host, w, h) {
-    const c = el('canvas', { width: w, height: h, style: 'display:block;width:100%;max-width:' + w + 'px;border-radius:10px;touch-action:manipulation;cursor:pointer' });
+    const c = el('canvas', { width: w, height: h, style: 'display:block;width:100%;max-width:' + w + 'px;margin-inline:auto;border-radius:10px;touch-action:manipulation;cursor:pointer' });
     host.appendChild(c);
     const point = ev => {
       const r = c.getBoundingClientRect();
@@ -120,7 +120,7 @@
       host.classList.remove('tt-expanded');
       const x = host.querySelector(':scope > .tt-close'); if (x) x.remove();
       const c = host.querySelector('canvas');
-      if (c) { c.style.width = ''; c.style.height = ''; c.style.marginInline = ''; }
+      if (c) { c.style.width = ''; c.style.height = ''; c.style.marginInline = 'auto'; }
       host.style.width = '';
       document.documentElement.classList.remove('tt-locked');
       back.remove(); back = null;
@@ -150,14 +150,14 @@
 
   // A small frame shared by every task: status line, start button, result box.
   function frame(host, intro) {
-    const p = el('p', { style: 'font-size:var(--text-sm);color:var(--text-secondary);margin:0 0 12px;max-width:var(--measure)' }, intro);
+    const p = el('p', { style: 'font-size:var(--text-sm);color:var(--text-secondary);margin:0 0 12px;max-width:none' }, intro);
     // scroll-margin keeps the stage clear of the fixed top bar when it is
     // brought into view, so no part of the task starts hidden under it.
-    const stage = el('div', { class: 'tt-stage', style: 'margin:0 0 12px;scroll-margin-top:calc(var(--topbar-h, 72px) + 12px)' });
-    const row = el('div', { class: 'tt-row', style: 'display:flex;gap:12px;align-items:center;flex-wrap:wrap' });
+    const stage = el('div', { class: 'tt-stage', style: 'margin:0 0 12px;text-align:center;scroll-margin-top:calc(var(--topbar-h, 72px) + 12px)' });
+    const row = el('div', { class: 'tt-row', style: 'display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap' });
     const btn = el('button', { type: 'button', class: 'btn btn-primary' }, 'Start');
     const status = el('span', { style: 'font-size:var(--text-sm);color:var(--text-secondary)' });
-    const result = el('div', { class: 'tt-result', style: 'margin-top:12px;font-size:var(--text-sm);line-height:1.6', 'aria-live': 'polite' });
+    const result = el('div', { class: 'tt-result', style: 'margin-top:12px;font-size:var(--text-sm);line-height:1.6;display:flex;flex-direction:column;align-items:center;text-align:center', 'aria-live': 'polite' });
     row.append(btn, status);
     host.append(p, stage, row, result);
     addExpand(host, row);
@@ -243,8 +243,8 @@
     const f = frame(host, 'A mix of numbers and letters appears one at a time. Afterwards, type the numbers in ascending order, then the letters in alphabetical order. The series get longer until two at the same length are missed, up to eight items.');
     f.stage.append(el('p', { style: 'margin:0 0 8px;font-size:var(--text-xs);color:var(--text-tertiary)' },
       'In the original paradigm the series is read aloud. Here it is shown on screen, which is a real difference: treat it as an illustration, not as the same task.'));
-    const show = el('div', { class: 'tt-show', style: 'height:96px;display:flex;align-items:center;justify-content:center;font:600 44px/1 Inter, sans-serif;background:var(--bg-surface-alt);border-radius:10px;letter-spacing:.04em' });
-    const form = el('div', { style: 'display:none;gap:8px;margin-top:10px;flex-wrap:wrap' });
+    const show = el('div', { class: 'tt-show', style: 'max-width:640px;margin-inline:auto;height:96px;display:flex;align-items:center;justify-content:center;font:600 44px/1 Inter, sans-serif;background:var(--bg-surface-alt);border-radius:10px;letter-spacing:.04em' });
+    const form = el('div', { style: 'display:none;gap:8px;margin:10px auto 0;max-width:640px;flex-wrap:wrap;justify-content:center' });
     const input = el('input', { type: 'text', autocomplete: 'off', 'aria-label': 'Your answer', style: 'flex:1;min-width:180px;padding:10px 12px;border-radius:8px;border:1px solid var(--border);font:500 16px Inter, sans-serif' });
     const ok = el('button', { type: 'button', class: 'btn btn-secondary' }, 'Submit');
     form.append(input, ok); f.stage.append(show, form);
@@ -376,7 +376,7 @@
       'This is the classic move-by-move Tower of London. The CANTAB task in Darren\u2019s results (One Touch Stockings) asks for the number of moves without making them, so the two are related but not the same.'));
     const W = 560, H = 380;
     const { c, ctx, point } = makeCanvas(f.stage, W, H);
-    const CAP = [3, 2, 1], BALL = ['#c0504d', '#4f81bd', '#9bbb59'];
+    const CAP = [3, 2, 1], BALL = ['#ff682c', '#202020', '#816729'];
     const key = s => s.map(p => p.join('')).join('|');
     const clone = s => s.map(p => p.slice());
     // Every legal arrangement, and the distance between two of them, found by

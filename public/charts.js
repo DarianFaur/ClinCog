@@ -249,8 +249,8 @@
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     ctx.clearRect(0, 0, W, H);
 
-    var line = resolve(css("--select-line", "#527363"), "#527363");
-    var fill = resolve(css("--select-fill", "#eef3f1"), "#eef3f1");
+    var line = resolve(css("--accent", "#ff682c"), "#ff682c");
+    var fill = resolve(css("--accent-soft", "#fbe1d1"), "#fbe1d1");
     var grid = resolve(css("--border", "#e4e4e7"), "#e4e4e7");
     var faint = resolve(css("--text-tertiary", "#706c65"), "#706c65");
     var ink = resolve(css("--text-primary", "#1a1a1a"), "#1a1a1a");
@@ -399,8 +399,8 @@
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     ctx.clearRect(0, 0, W, H);
 
-    var line = resolve(css("--select-line", "#527363"), "#527363");
-    var fill = resolve(css("--select-fill", "#eef3f1"), "#eef3f1");
+    var line = resolve(css("--accent", "#ff682c"), "#ff682c");
+    var fill = resolve(css("--accent-soft", "#fbe1d1"), "#fbe1d1");
     var grid = resolve(css("--border", "#e4e4e7"), "#e4e4e7");
     var faint = resolve(css("--text-tertiary", "#706c65"), "#706c65");
     var ink = resolve(css("--text-primary", "#1a1a1a"), "#1a1a1a");

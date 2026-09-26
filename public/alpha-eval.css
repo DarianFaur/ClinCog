@@ -1,0 +1,208 @@
+/* ============================================================
+   alpha-eval.css — the "Paper & Ink" layer for the four evaluation
+   pages. Loaded last in <head> on each *-eval.html, after the page's
+   own <style> blocks, so it can re-point their local aliases.
+
+   Why a separate layer instead of editing 600KB of page CSS: the four
+   pages were built at different times with four naming conventions
+   (--surface/--line, --soft/--teal-pale, --color-surface-2 ...), but
+   every one of those aliases ultimately resolves to the same global
+   surface tokens. Re-declaring the surface ladder once, inside
+   .eval-layout, flips every panel on every page to the alpha pattern
+   at the same time:
+
+     page canvas  = paper
+     panel        = flat mist, no border, no shadow, 24px
+     nested items = paper again (answer buttons, item rows, fields)
+
+   Custom properties resolve where they are declared, so the aliases
+   have to be re-declared here too - re-pointing --bg-surface alone
+   would not reach a --surface that :root already resolved to white.
+   ============================================================ */
+
+:root { --font-display: var(--font-serif); }
+
+.eval-layout {
+  --bg-surface: var(--mist);
+  --bg-surface-alt: var(--paper);
+  --border: var(--hairline-on-mist);
+
+  /* schizophrenia / depression aliases */
+  --surface: var(--mist);
+  --line: var(--hairline-on-mist);
+  --accent-bg: var(--paper);
+  /* anxiety aliases */
+  --soft: var(--paper);
+  --teal-pale: var(--paper);
+  /* addiction aliases */
+  --color-surface: var(--mist);
+  --color-surface-2: var(--paper);
+  --color-surface-offset: var(--paper);
+  --color-primary-highlight: var(--paper);
+  --color-gold-highlight: var(--paper);
+  --color-blue-highlight: var(--paper);
+  --color-border: var(--hairline-on-mist);
+  --color-divider: var(--hairline-on-mist);
+
+  /* Panels were separated from the page by a ring shadow; tone does
+     that now. Floating things (popovers, the pinned mobile card) use
+     --shadow-md / --shadow-lg, which are left alone. */
+  --shadow-xs: none;
+  --shadow-sm: none;
+
+  --serif: var(--font-serif);
+  --font-display: var(--font-serif);
+  --radius-lg: 24px;
+  --radius-md: 16px;
+}
+
+/* ---- Headings inside the flow: serif, 400, balanced ---- */
+.eval-layout h1 { font-size: var(--text-page-title-size) !important; line-height: 1.1 !important; letter-spacing: -.02em !important; }
+.eval-layout h2 { line-height: 1.15; letter-spacing: -.015em; }
+
+/* ---- The progress hairline under the topbar ----
+   #bar was pinned at top:56px, i.e. inside the 72px topbar, where the
+   bar's frosted glass blurred it into a grey smear beside the title.
+   It now sits exactly on the topbar's bottom edge as a clay reading-
+   progress line. */
+#bar {
+  top: var(--topbar-h) !important; height: 2px !important;
+  background: transparent !important; z-index: 31 !important;
+}
+#bar-fill { background: var(--accent) !important; }
+
+/* ---- Answer controls: one geometry everywhere ----
+   The pages mark up an answer three ways:
+     - a <button> that IS the control           (.likert-btn - Jordan)
+     - a wrapper <div> around input + <label>    (.rating-btn - Alex)
+     - a <label> wrapping input + <span class=num> (.likert - Dennis, Darren)
+   The previous rule painted the WRAPPER white. In the last two cases the
+   visible control is the inner element, which was smaller (40px in a 44px
+   wrapper) and had 16px corners instead of a circle, so a white rim stuck
+   out beyond the black selection outline. Wrappers are now transparent and
+   the inner element is the full-size control: its border is the outermost
+   edge, and nothing is painted outside it. */
+.eval-layout .rating-btn,
+.eval-layout .likert label {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  min-width: 0 !important; min-height: 0 !important;
+}
+
+.eval-layout .rating-btn label,
+.eval-layout .likert label .num,
+.eval-layout .likert-buttons button,
+.eval-layout .likert-btn {
+  box-sizing: border-box !important;
+  min-width: 44px !important; height: 44px !important;
+  border-radius: 999px !important;
+  border: 1.5px solid transparent !important;
+  background: var(--paper) !important;
+  color: var(--text-secondary);
+  box-shadow: none !important;
+  outline-offset: 2px;
+}
+/* Numeric answers are true circles; worded ones ("+ Present") are pills. */
+.eval-layout .likert label .num,
+.eval-layout .likert-btn,
+.eval-layout .likert-buttons button { width: 44px !important; padding: 0 !important; }
+.eval-layout .rating-btn label { width: auto !important; padding: 0 14px !important; }
+/* The wrappers used to supply the spacing (a 40px label in a 44px box).
+   Now that the label fills its wrapper, the row supplies it instead - and
+   Alex's GAD-7 row was a fixed 180px block, too narrow for four 44px
+   circles, so it becomes a flex row that sizes to its buttons. */
+.eval-layout :has(> .rating-btn) { display: flex !important; flex-wrap: wrap; gap: 8px !important; width: auto !important; }
+
+.eval-layout .rating-btn input:not(:checked) + label:hover,
+.eval-layout .likert label:not(:has(input:checked)):hover .num,
+.eval-layout .likert-btn:not(.selected):hover,
+.eval-layout .likert-buttons button:not(.selected):hover {
+  border-color: var(--text-tertiary) !important; color: var(--text-primary);
+}
+
+/* Chosen: filled mist with the ink line on the outer edge. */
+.eval-layout .rating-btn input:checked + label,
+.eval-layout .likert label:has(input:checked) .num,
+.eval-layout .likert-btn.selected,
+.eval-layout .likert-buttons button.selected {
+  background: var(--select-fill) !important;
+  border-color: var(--select-line) !important;
+  color: var(--text-primary) !important;
+  font-weight: 600;
+}
+
+/* ---- Stepper: ink for done, ring for current, mono numerals ---- */
+.eval-layout .v-step-num, .eval-layout .v-step .num, .eval-layout .step-num { font-family: var(--font-mono); }
+
+/* ---- Overview: the three lenses as postcards ----
+   The same device as the landing page and the dashboard hero: paper cards
+   that float with the one real shadow in the system, each tilted a little
+   differently, and a touch of the case's own colour - the middle card is
+   set on the case's surface (peach for Dennis, graphite for Darren, mist
+   for Alex, ivory for Jordan), and every number chip wears it. Colour is
+   per page from --case / --case-soft / --case-ink, declared next to where
+   this file is linked. Straightens on hover; flat on reduced motion and
+   on phones, where a tilted card in a single column only looks crooked. */
+.eval-layout .layers,
+.eval-layout .layer-list {
+  display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 22px !important; margin: 36px 0 44px !important; padding: 6px 4px 10px !important;
+  list-style: none; border: 0 !important;
+}
+.eval-layout .layer-row,
+.eval-layout .layer-item {
+  display: flex !important; flex-direction: column !important; align-items: flex-start !important; gap: 16px !important;
+  background: var(--paper) !important; color: var(--text-primary);
+  border: 0 !important; border-radius: 20px !important;
+  box-shadow: var(--shadow-lg) !important;
+  padding: 22px 22px 26px !important;
+  transform: rotate(-1.6deg);
+  transition: transform var(--duration-layout) var(--ease-out), box-shadow var(--duration-layout) var(--ease-out);
+}
+.eval-layout .layer-row:nth-child(2),
+.eval-layout .layer-item:nth-child(2) {
+  transform: rotate(1.1deg) translateY(10px);
+  background: var(--case-soft, var(--accent-soft)) !important;
+  color: var(--case-ink, var(--accent-deep));
+}
+.eval-layout .layer-row:nth-child(3),
+.eval-layout .layer-item:nth-child(3) { transform: rotate(-.7deg) translateY(-4px); }
+.eval-layout .layer-row:hover,
+.eval-layout .layer-item:hover { transform: rotate(0) translateY(-4px) !important; }
+
+.eval-layout .layer-num {
+  font-family: var(--font-mono) !important; font-size: 12px !important; font-weight: 400 !important;
+  letter-spacing: 0 !important; text-transform: none !important;
+  background: var(--case-soft, var(--accent-soft)) !important; color: var(--case-ink, var(--accent-deep)) !important;
+  border: 0 !important; border-radius: 999px !important; padding: 5px 11px !important; line-height: 1.2;
+}
+/* On the case-coloured card the chip steps back to paper, so it still reads. */
+.eval-layout .layer-row:nth-child(2) .layer-num,
+.eval-layout .layer-item:nth-child(2) .layer-num {
+  background: var(--paper) !important; color: var(--text-primary) !important;
+}
+.eval-layout .layer-text .lt,
+.eval-layout .layer-name {
+  display: block; font-family: var(--font-serif) !important; font-weight: 400 !important;
+  font-size: clamp(1.1875rem, 1.1rem + .35vw, 1.4375rem) !important; line-height: 1.2 !important;
+  letter-spacing: -.012em; color: inherit !important; margin-bottom: 8px !important;
+}
+.eval-layout .layer-text .ls,
+.eval-layout .layer-desc {
+  display: block; font-size: var(--text-sm) !important; line-height: 1.55 !important;
+  color: inherit !important; opacity: .78;
+}
+@media (max-width: 900px) {
+  .eval-layout .layers, .eval-layout .layer-list { grid-template-columns: minmax(0, 1fr) !important; gap: 14px !important; }
+  .eval-layout .layer-row, .eval-layout .layer-item,
+  .eval-layout .layer-row:nth-child(n), .eval-layout .layer-item:nth-child(n) { transform: none !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .eval-layout .layer-row, .eval-layout .layer-item,
+  .eval-layout .layer-row:nth-child(n), .eval-layout .layer-item:nth-child(n) { transform: none !important; transition: none; }
+}
+/* Text on the case surface stays at full strength (brass on ivory has no
+   contrast to spare). */
+.eval-layout .layer-row:nth-child(2) .ls,
+.eval-layout .layer-item:nth-child(2) .layer-desc { opacity: 1; }

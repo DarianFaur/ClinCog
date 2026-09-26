@@ -1,94 +1,69 @@
 /* ============================================================
    tokens.css — the single source of truth for every design value
-   used across ClinCog. No hex, no px shadow value, no font stack
-   should ever be hardcoded outside this file - everything else
-   references these custom properties.
+   used across ClinCog. No hex, no shadow value, no font stack is
+   hardcoded outside this file.
 
-   Inter and DM Mono are self-hosted from public/fonts/ (@fontsource,
-   WOFF2). Both latin and latin-ext subsets are shipped - latin-ext is
-   required for Romanian (a-breve, s-comma, t-comma). No Google Fonts
-   CDN dependency. Poppins was removed: it was declared in styles.css
-   but never actually loaded, and the hierarchy is now carried by
-   weight and tracking within a single family.
+   ALPHA — "Paper & Ink"
+   An editorial system: a quiet serif voice for headings over a
+   near-achromatic paper canvas, flat mist cards instead of bordered
+   white boxes, one warm clay accent used sparingly, and each case
+   carrying its own paper-and-ink pair. See styleguide.html and
+   DESIGN.md for the rules behind every value below.
+
+   Fonts, all self-hosted (latin + latin-ext, needed for Romanian):
+   - Newsreader (variable, opsz 6-72, wght 200-800, roman + italic)
+     display serif. Optical sizing is automatic, so the same file
+     draws a display cut at 44px and a text cut at 18px.
+   - Inter (variable, wght 100-900) body and UI. The variable axis is
+     what allows the half-step weights (450, 480) the system uses.
+   - DM Mono: indices, codes, figures on charts.
    ============================================================ */
 
 @font-face {
   font-family: 'Inter';
-  src: url('/fonts/Inter-300-latin.woff2') format('woff2');
-  font-weight: 300;
+  src: url('/fonts/Inter-var-latin.woff2') format('woff2-variations'), url('/fonts/Inter-var-latin.woff2') format('woff2');
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
   unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 @font-face {
   font-family: 'Inter';
-  src: url('/fonts/Inter-300-latin-ext.woff2') format('woff2');
-  font-weight: 300;
+  src: url('/fonts/Inter-var-latin-ext.woff2') format('woff2-variations'), url('/fonts/Inter-var-latin-ext.woff2') format('woff2');
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
   unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
 }
 @font-face {
-  font-family: 'Inter';
-  src: url('/fonts/Inter-400-latin.woff2') format('woff2');
-  font-weight: 400;
+  font-family: 'Newsreader';
+  src: url('/fonts/Newsreader-latin-normal.woff2') format('woff2-variations'), url('/fonts/Newsreader-latin-normal.woff2') format('woff2');
+  font-weight: 200 800;
   font-style: normal;
   font-display: swap;
   unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 @font-face {
-  font-family: 'Inter';
-  src: url('/fonts/Inter-400-latin-ext.woff2') format('woff2');
-  font-weight: 400;
+  font-family: 'Newsreader';
+  src: url('/fonts/Newsreader-latin-ext-normal.woff2') format('woff2-variations'), url('/fonts/Newsreader-latin-ext-normal.woff2') format('woff2');
+  font-weight: 200 800;
   font-style: normal;
   font-display: swap;
   unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
 }
 @font-face {
-  font-family: 'Inter';
-  src: url('/fonts/Inter-500-latin.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
+  font-family: 'Newsreader';
+  src: url('/fonts/Newsreader-latin-italic.woff2') format('woff2-variations'), url('/fonts/Newsreader-latin-italic.woff2') format('woff2');
+  font-weight: 200 800;
+  font-style: italic;
   font-display: swap;
   unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
 }
 @font-face {
-  font-family: 'Inter';
-  src: url('/fonts/Inter-500-latin-ext.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
-}
-@font-face {
-  font-family: 'Inter';
-  src: url('/fonts/Inter-600-latin.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-@font-face {
-  font-family: 'Inter';
-  src: url('/fonts/Inter-600-latin-ext.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
-}
-@font-face {
-  font-family: 'Inter';
-  src: url('/fonts/Inter-700-latin.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-@font-face {
-  font-family: 'Inter';
-  src: url('/fonts/Inter-700-latin-ext.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
+  font-family: 'Newsreader';
+  src: url('/fonts/Newsreader-latin-ext-italic.woff2') format('woff2-variations'), url('/fonts/Newsreader-latin-ext-italic.woff2') format('woff2');
+  font-weight: 200 800;
+  font-style: italic;
   font-display: swap;
   unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
 }
@@ -125,289 +100,295 @@
   unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
 }
 
+
 :root {
-  /* ---- Neutrals (light) ---- */
-  /* White page. The warm off-white this replaced was what separated the
-     white cards from the page; cards now carry a hairline border instead,
-     and the neutral greys below keep panels from reading as cream. */
-  --bg-app: #ffffff;
-  --bg-surface: #ffffff;
-  --bg-surface-alt: #f4f4f5;
-  --border: #e4e4e7;
-  --text-primary: #1a1a1a;
-  --text-secondary: #6e6a64;
-  /* Darkened from #a09a92, which measured 2.79:1 against the page and
-     failed AA everywhere it was used - and it is used for every eyebrow,
-     every label and every caption in the app. It now clears 4.5:1 against the
-     tinted panel as well as against white, which is the harder of the two
-     and where most labels actually sit. */
-  --text-tertiary: #706c65;
+  /* ---- Palette ----
+     Every colour below is taken verbatim from the two reference systems
+     (Steep: ink black, paper, mist, fog, slate, ash, smoke, blush peach,
+     sienna. Ventriloc: graphite, steel, mist, ivory, ember, brass). No
+     in-between tints are invented; where a role needs a value, it is
+     mapped to the nearest reference swatch. */
+  --paper: #ffffff;         /* Steep paper white */
+  --mist: #f2f2f3;          /* Steep mist gray - card surface */
+  --mist-strong: #e8e8e8;   /* Ventriloc mist - hover, tracks */
+  --fog: #fafafb;           /* Steep fog white - sidebar, bands */
+  --ivory: #ebe6dd;         /* Ventriloc ivory */
+  --hairline: #e8e8e8;      /* Ventriloc mist */
+  --hairline-on-mist: #e8e8e8;
 
-  /* ---- Brand ---- */
-  --accent: #6f9d87;
-  --accent-hover: #5b8570;
-  /* Pale companion to the accent. The reference's donut pairs a pale
-     outer segment with a saturated inner arc; without this the two rings
-     read as one doubled stroke. Roughly the accent at 30% over white. */
-  --accent-soft: #d4e2db;
-  /* Text-weight companion. --accent sits at 3.07:1 against white, which is
-     right for a fill or a dot and short of AA for a link or a label. */
-  --accent-ink: #527363;
-  --slate: #6e6a64;
+  --bg-app: var(--paper);
+  --bg-surface: var(--paper);
+  --bg-surface-alt: var(--mist);
+  --bg-card: var(--mist);
+  --bg-elevated: var(--paper);
+  --border: var(--hairline);
 
-  /* Solid near-black used by primary buttons and the sidebar - the
-     single strongest "premium" cue taken from the reference. */
-  --ink: #1a1a1a;
-  --ink-hover: #000000;
+  --text-primary: #17191c;      /* Steep ink black - 17.6:1 */
+  --text-secondary: #4d4d4d;    /* Ventriloc steel - 8.5:1 paper, 7.6:1 mist */
+  --text-tertiary: #777b86;     /* Steep slate gray - 4.2:1 paper, 3.8:1 mist */
+  --text-placeholder: #a3a6af;  /* Steep smoke gray */
+  --slate: #4d4d4d;
+
+  /* ---- Ink: the only dark surface ---- */
+  --ink: #17191c;
+  --ink-hover: #202020;         /* Ventriloc graphite */
   --ink-text: #ffffff;
 
-  /* ---- Clinical domains: base / soft (badge bg) / ink (text on soft) ----
-     Values carried over unchanged from the existing platform palette -
-     formalized into a consistent three-token pattern, not reinvented. */
-  /* The four domain hues, rebalanced. Measured in CIELAB, the previous
-     set ranged from L* 35.9 (mood) to L* 70.6 (anxiety) - a 35-point
-     spread, which is why they stopped reading as one family once the
-     page ground moved from cool grey to warm off-white: mood sat far
-     darker and colder than everything around it, while anxiety and
-     substance were too pale to register as accents at all.
+  /* ---- Accent: Ventriloc ember, with Steep's peach/sienna pair ----
+     Ember is for graphics only - link underlines, focus rings, progress
+     fills, chart strokes, the "current step" dot. Text that needs the
+     accent uses sienna. */
+  --accent: #ff682c;         /* Ventriloc ember */
+  --accent-hover: #5d2a1a;
+  --accent-soft: #fbe1d1;    /* Steep blush peach */
+  --accent-ink: #5d2a1a;     /* Steep sienna brown - 11.6:1 */
+  --accent-deep: #5d2a1a;    /* sienna on peach - 9.3:1 */
 
-     Every base now sits at L* 58 and every ink at L* 42, so all four
-     land on the same contrast (3.39 and 6.0 against white) by
-     construction rather than by eye. Hue and chroma are preserved,
-     except mood, which moved 12 degrees off the cold indigo end
-     towards violet to sit with the warm ground. */
-  --domain-psychosis: #bf768e;
-  --domain-psychosis-soft: rgba(191,118,142,.14);
-  --domain-psychosis-ink: #934d66;
+  /* ---- Cases: four surfaces the references actually contain ----
+     base = dots, bars, chart strokes; soft = the case's surface;
+     ink = text on that surface; action/action-text = a primary button
+     placed on that surface (Darren's surface is dark, so his inverts). */
+  --domain-psychosis: #ff682c;        /* ember */
+  --domain-psychosis-soft: #fbe1d1;   /* blush peach */
+  --domain-psychosis-ink: #5d2a1a;    /* sienna - 9.3:1 */
+  --domain-psychosis-action: #17191c;
+  --domain-psychosis-action-text: #ffffff;
 
-  --domain-mood: #9a80bd;
-  --domain-mood-soft: rgba(154,128,189,.14);
-  --domain-mood-ink: #705892;
+  --domain-mood: #202020;             /* graphite */
+  --domain-mood-soft: #202020;        /* graphite surface */
+  --domain-mood-ink: #ffffff;         /* paper - 16.3:1 */
+  --domain-mood-action: #ffffff;
+  --domain-mood-action-text: #17191c;
 
-  /* Alex's colour was a green 7 ΔE from the theme accent, so the case
-     colour and the app's generic accent were the same colour in practice.
-     Moved to a blue at the same lightness: ≥ 35 ΔE from the accent and
-     from every other case. */
-  --domain-anxiety: #3d98bf;
-  --domain-anxiety-soft: rgba(61,152,191,.14);
-  --domain-anxiety-ink: #247da4;
+  --domain-anxiety: #777b86;          /* slate gray */
+  --domain-anxiety-soft: #e8e8e8;     /* Ventriloc mist */
+  --domain-anxiety-ink: #4d4d4d;      /* steel - 7.0:1 */
+  --domain-anxiety-action: #17191c;
+  --domain-anxiety-action-text: #ffffff;
 
-  --domain-substance: #ab8546;
-  --domain-substance-soft: rgba(171,133,70,.14);
-  --domain-substance-ink: #7f5e1f;
+  --domain-substance: #816729;        /* brass */
+  --domain-substance-soft: #ebe6dd;   /* ivory */
+  --domain-substance-ink: #816729;    /* brass on ivory - 4.3:1 */
+  --domain-substance-action: #17191c;
+  --domain-substance-action-text: #ffffff;
 
-  /* ---- Semantic: system states only, never clinical content ---- */
-  --success: #247b47;
-  --success-soft: rgba(46,158,91,.12);
-  --warning: #956219;
-  --warning-soft: rgba(183,121,31,.12);
-  --danger: #c03e3e;
-  --danger-soft: rgba(214,69,69,.12);
-  --info: #336fa8;
-  --info-soft: rgba(59,130,196,.12);
+  /* ---- Semantic states, mapped onto the same swatches ---- */
+  --success: #17191c;  --success-soft: #f2f2f3;
+  --warning: #816729;  --warning-soft: #ebe6dd;
+  --danger: #5d2a1a;   --danger-soft: #fbe1d1;
+  --info: #4d4d4d;     --info-soft: #efefef;
 
-  /* ---- Shape & depth ---- */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
+  /* ---- Shape ----
+     Two structural radii: 24px for content cards, pill for every
+     control. 16px for small cards and inputs, 12px for images. */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-card: 24px;
   --radius-pill: 999px;
 
-  --shadow-xs: 0 1px 2px rgba(28,25,22,.04);
-  --shadow-sm: 0 1px 2px rgba(28,25,22,.04), 0 8px 24px -8px rgba(28,25,22,.08);
-  --shadow-md: 0 1px 2px rgba(28,25,22,.05), 0 12px 32px -10px rgba(28,25,22,.10);
-  --shadow-lg: 0 2px 4px rgba(28,25,22,.05), 0 20px 48px -12px rgba(28,25,22,.14);
+  /* ---- Elevation ----
+     Content cards never cast a shadow. Only floating things do: the
+     chat window, popovers, modals, the toast, the accessibility button. */
+  --shadow-xs: 0 0 0 1px rgba(4,23,43,.05);
+  --shadow-sm: 0 0 0 1px rgba(0,0,0,.05), 0 4px 24px rgba(0,0,0,.06);
+  --shadow-md: 0 0 0 1px rgba(0,0,0,.05), 0 8px 40px rgba(0,0,0,.09);
+  --shadow-lg: 0 0 0 1px rgba(4,23,43,.05), 0 20px 25px -5px rgba(0,0,0,.10), 0 8px 10px -6px rgba(0,0,0,.08);
 
-  /* ---- Spacing: 4px scale ---- */
+  /* ---- Spacing: 4px base, generous upper steps ---- */
   --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
   --sp-5: 20px; --sp-6: 24px; --sp-7: 32px; --sp-8: 48px;
+  --sp-9: 64px; --sp-10: 80px;
+  --section-gap: clamp(48px, 36px + 3vw, 80px);
 
   /* ---- Typography ---- */
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-display: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* --font-serif is the literal; --font-display points at it. Some pages
+     re-declare --font-display locally (addiction-eval maps it to sans),
+     so shared rules that must stay serif use --font-serif. */
+  --font-serif: 'Newsreader', 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --font-display: var(--font-serif);
   --font-mono: 'DM Mono', ui-monospace, monospace;
 
-  /* Prose measure. Unbounded line length was the reason the resource
-     pages read as an unedited document, but 68ch inside a 1136px card
-     left a third of the box empty, which reads as broken rather than
-     as a reading column. 78ch is still comfortable, and the rule is
-     now: narrow the CONTAINER on prose-heavy pages (via
-     --shell-content-max) rather than stranding short lines inside a
-     wide one. Secondary text inside a card fills its card. */
-  --measure: 78ch;
+  --measure: 72ch;
 
-  /* Height of the application taskbar. Read by shell.css (the sticky bar
-     itself and the boot layout that has to reserve it) and by the
-     evaluation pages, whose helper column sticks just below it. It was
-     three separate hardcoded numbers before, which is how they drifted. */
   --topbar-h: 72px;
   --topbar-gap: 12px;
 
-  /* Calm voice. The dashboard reference carries hierarchy with a
-     moderate semibold heading sitting directly above a muted grey
-     subtitle, not with oversized tightly-tracked display type. Sizes
-     and tracking are pulled back accordingly; only the metric stays
-     large, because a number is the one thing that should shout. */
-  --text-metric-size: clamp(1.75rem, 1.5rem + 1vw, 2.25rem); --text-metric-weight: 700; --text-metric-lh: 1.1; --text-metric-spacing: -.02em;
-  --text-page-title-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.625rem); --text-page-title-weight: 600; --text-page-title-lh: 1.25; --text-page-title-spacing: -.012em;
-  --text-card-title-size: clamp(1rem, 0.94rem + 0.3vw, 1.125rem); --text-card-title-weight: 600; --text-card-title-lh: 1.35; --text-card-title-spacing: -.008em;
-  --text-body-size: clamp(0.9375rem, 0.9rem + 0.2vw, 1.0625rem); --text-body-weight: 400; --text-body-lh: 1.65;
-  --text-label-size: clamp(0.75rem, 0.72rem + 0.15vw, 0.8125rem); --text-label-weight: 500; --text-label-lh: 1.4; --text-label-spacing: .01em;
-  --text-eyebrow-size: clamp(0.6875rem, 0.66rem + 0.12vw, 0.75rem); --text-eyebrow-weight: 600; --text-eyebrow-spacing: .07em;
+  /* Roles. Display and headings are serif at weight 400 - the restraint
+     is the signature; hierarchy comes from size and tracking, never
+     from bold. Body is Inter at 400, UI at 480-500. */
+  --text-display-size: clamp(2.5rem, 1.9rem + 2.6vw, 4rem);         /* 40-64 */
+  --text-display-spacing: -.025em;
+  --text-metric-size: clamp(2.25rem, 1.9rem + 1.4vw, 3rem); --text-metric-weight: 400; --text-metric-lh: 1; --text-metric-spacing: -.02em;
+  --text-page-title-size: clamp(2rem, 1.6rem + 1.6vw, 2.75rem); --text-page-title-weight: 400; --text-page-title-lh: 1.12; --text-page-title-spacing: -.02em;
+  --text-section-size: clamp(1.5rem, 1.3rem + .8vw, 2rem);
+  --text-card-title-size: clamp(1.25rem, 1.15rem + .4vw, 1.5rem); --text-card-title-weight: 400; --text-card-title-lh: 1.2; --text-card-title-spacing: -.012em;
+  --text-body-size: clamp(0.9375rem, 0.9rem + 0.2vw, 1.0625rem); --text-body-weight: 400; --text-body-lh: 1.6;
+  --text-label-size: clamp(0.8125rem, 0.78rem + 0.15vw, 0.875rem); --text-label-weight: 480; --text-label-lh: 1.4; --text-label-spacing: 0;
+  --text-eyebrow-size: clamp(0.8125rem, 0.78rem + 0.15vw, 0.875rem); --text-eyebrow-weight: 450; --text-eyebrow-spacing: 0;
 
-  /* ---- Fluid type scale (matches Jordan/addiction-eval.html's own
-     scale exactly, now shared app-wide so every page scales together
-     at any viewport width instead of jumping between fixed sizes) ---- */
-  --text-xs: clamp(0.75rem, 0.71rem + 0.2vw, 0.8125rem);
-  --text-sm: clamp(0.8125rem, 0.78rem + 0.25vw, 0.9375rem);
+  --text-xs: clamp(0.75rem, 0.72rem + 0.15vw, 0.8125rem);
+  --text-sm: clamp(0.8125rem, 0.78rem + 0.2vw, 0.9375rem);
   --text-base: clamp(0.9375rem, 0.9rem + 0.2vw, 1.0625rem);
-  --text-lg: clamp(1.0625rem, 0.95rem + 0.6vw, 1.375rem);
-  --text-xl: clamp(1.375rem, 1.15rem + 1vw, 1.875rem);
-  /* Top step, for hero moments only. Deliberately short of a true
-     display size - the reference never goes there. */
-  --text-display: clamp(1.75rem, 1.45rem + 1.4vw, 2.5rem);
+  --text-lg: clamp(1.0625rem, 0.98rem + 0.4vw, 1.3125rem);
+  --text-xl: clamp(1.5rem, 1.3rem + .8vw, 2rem);
+  --text-display: var(--text-display-size);
+  --text-subtitle-size: var(--text-base);
 
-  /* Subtitle sitting under a heading: same block, muted, regular
-     weight. This pairing is what carries hierarchy now. */
-  --text-subtitle-size: var(--text-sm);
-
-  /* ---- Sidebar: fixed identity, deliberately independent of the
-     light/dark toggle - a dark sidebar is a brand choice, not a theme
-     one, matching the existing platform's sidebar treatment. ---- */
-  --sidebar-bg: #151513;
-  --sidebar-bg-active: rgba(255,255,255,.08);
-  --sidebar-bg-hover: rgba(255,255,255,.06);
-  --sidebar-text: rgba(255,255,255,.62);
-  --sidebar-text-active: #ffffff;
-  --sidebar-border: rgba(255,255,255,.07);
+  /* ---- Sidebar: now part of the page, not a dark slab. It follows
+     the theme, sits on fog, and marks the active item with a paper
+     pill - the Ventriloc nav-pill idea turned vertical. ---- */
+  --sidebar-bg: var(--fog);
+  --sidebar-bg-active: var(--paper);
+  --sidebar-bg-hover: var(--mist);
+  --sidebar-text: var(--text-secondary);
+  --sidebar-text-active: var(--text-primary);
+  --sidebar-border: var(--hairline);
+  --sidebar-eyebrow: var(--text-tertiary);
 
   /* ---- Motion ---- */
   --ease-standard: cubic-bezier(.4,0,.2,1);
-  --duration-hover: 150ms;
-  --duration-layout: 250ms;
-  --duration-progress: 400ms;
+  --ease-out: cubic-bezier(.2,.8,.2,1);
+  --duration-hover: 160ms;
+  --duration-layout: 260ms;
+  --duration-progress: 500ms;
 
-  /* ---- Selection ----
-     One colour for "this is the answer you picked", shared by every item
-     control on the evaluation pages. It is the same recipe the student's
-     own chat bubble already uses - the accent at 12% over the surface - so
-     an answered item and a message the student wrote read as the same
-     gesture. The fill is what actually changed: the previous "selected"
-     state reused --bg-surface-alt, the same background as an unselected
-     control, which is why clicking looked like nothing happened.
-     Measured: label 15.5:1 on the fill, outline 4.7:1 against it. */
-  --select: var(--accent);
-  --select-line: var(--accent-ink);
+  /* ---- Selection: a chosen answer is inked. Monochrome, unmistakable,
+     and never confused with a case colour or a warning. ---- */
+  --select: var(--ink);
+  --select-line: var(--ink);
   --select-ink: var(--text-primary);
-  --select-fill: color-mix(in srgb, var(--accent) 12%, var(--bg-surface));
-  --select-ring: color-mix(in srgb, var(--accent) 20%, transparent);
-  /* Text on a solid fill of the outline colour, not of --accent, which
-     only reaches 3.07:1 against white. */
-  --select-solid: var(--accent-ink);
-  --select-on: #ffffff;
+  --select-fill: var(--mist-strong);
+  --select-ring: color-mix(in srgb, var(--ink) 14%, transparent);
+  --select-solid: var(--ink);
+  --select-on: var(--ink-text);
 }
 
+/* Dark: warm near-black paper, same roles. Declared twice - once for
+   an explicit choice, once for the system preference - from one source
+   (this file is generated that way; edit both blocks together). */
 html[data-theme="dark"] {
-  /* The fill formula carries over unchanged - it mixes into whatever
-     --bg-surface is - so only the outline has to swap to the lighter tone
-     to stay visible on it. Measured: label 12.1:1, outline 4.7:1. */
-  --select-line: var(--accent);
-  --select-solid: var(--accent);
-  --select-on: #16211c;
-  --bg-app: #131211;
-  --bg-surface: #1c1b19;
-  --bg-surface-alt: #232220;
-  --border: #2e2c29;
-  --text-primary: #ecebe8;
-  --text-secondary: #a29d95;
-  --text-tertiary: #928d85;
+  --paper: #17191c;
+  --mist: #202020;
+  --mist-strong: #2b2b2b;
+  --fog: #202020;
+  --ivory: rgba(235,230,221,.12);
+  --hairline: #2b2b2b;
+  --hairline-on-mist: #333333;
 
-  --accent: #8bb6a2;
-  --accent-hover: #a3c9b6;
-  --accent-soft: rgba(139,182,162,.22);
-  --accent-ink: #a3c9b6;
-  --slate: #a29d95;
-  --ink: #ecebe8;
+  --text-primary: #fafafb;
+  --text-secondary: #a3a6af;
+  --text-tertiary: #979799;
+  --text-placeholder: #777b86;
+  --slate: #a3a6af;
+
+  --ink: #fafafb;
   --ink-hover: #ffffff;
-  --ink-text: #1a1a1a;
+  --ink-text: #17191c;
 
-  --domain-psychosis: #eaa2b9;
-  --domain-psychosis-soft: rgba(234,162,185,.16);
-  --domain-psychosis-ink: #ffc0d4;
+  --accent: #ff682c;
+  --accent-hover: #fbe1d1;
+  --accent-soft: rgba(251,225,209,.12);
+  --accent-ink: #fbe1d1;
+  --accent-deep: #fbe1d1;
 
-  --domain-mood: #c3ace1;
-  --domain-mood-soft: rgba(195,172,225,.16);
-  --domain-mood-ink: #dec9f8;
+  --domain-psychosis: #ff682c;
+  --domain-psychosis-soft: rgba(251,225,209,.12);
+  --domain-psychosis-ink: #fbe1d1;
+  --domain-psychosis-action: #fafafb;
+  --domain-psychosis-action-text: #17191c;
+  --domain-mood: #e8e8e8;
+  --domain-mood-soft: #efefef;
+  --domain-mood-ink: #17191c;
+  --domain-mood-action: #17191c;
+  --domain-mood-action-text: #fafafb;
+  --domain-anxiety: #979799;
+  --domain-anxiety-soft: rgba(255,255,255,.08);
+  --domain-anxiety-ink: #e8e8e8;
+  --domain-anxiety-action: #fafafb;
+  --domain-anxiety-action-text: #17191c;
+  --domain-substance: #816729;
+  --domain-substance-soft: rgba(235,230,221,.12);
+  --domain-substance-ink: #ebe6dd;
+  --domain-substance-action: #fafafb;
+  --domain-substance-action-text: #17191c;
 
-  --domain-anxiety: #71cdf5;
-  --domain-anxiety-soft: rgba(113,205,245,.16);
-  --domain-anxiety-ink: #9bf2ff;
+  --success: #fafafb; --success-soft: rgba(255,255,255,.08);
+  --warning: #ebe6dd; --warning-soft: rgba(235,230,221,.12);
+  --danger: #ff682c;  --danger-soft: rgba(255,104,44,.14);
+  --info: #a3a6af;    --info-soft: rgba(255,255,255,.06);
 
-  --domain-substance: #d2b180;
-  --domain-substance-soft: rgba(210,177,128,.16);
-  --domain-substance-ink: #eccda2;
+  --shadow-xs: 0 0 0 1px rgba(255,255,255,.05);
+  --shadow-sm: 0 0 0 1px rgba(255,255,255,.06), 0 4px 24px rgba(0,0,0,.35);
+  --shadow-md: 0 0 0 1px rgba(255,255,255,.06), 0 8px 40px rgba(0,0,0,.45);
+  --shadow-lg: 0 0 0 1px rgba(255,255,255,.07), 0 20px 25px -5px rgba(0,0,0,.5), 0 8px 10px -6px rgba(0,0,0,.4);
 
-  --success: #4cb87a;
-  --success-soft: rgba(76,184,122,.16);
-  --warning: #d9a441;
-  --warning-soft: rgba(217,164,65,.16);
-  --danger: #e8706f;
-  --danger-soft: rgba(232,112,111,.16);
-  --info: #6badde;
-  --info-soft: rgba(107,173,222,.16);
-
-  --shadow-xs: 0 1px 2px rgba(0,0,0,.3);
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.35), 0 1px 2px rgba(0,0,0,.25);
-  --shadow-md: 0 4px 14px rgba(0,0,0,.4);
-  --shadow-lg: 0 14px 32px rgba(0,0,0,.5);
+  --sidebar-bg: var(--fog);
+  --sidebar-bg-active: var(--mist-strong);
+  --sidebar-bg-hover: var(--mist);
 }
-
-/* prefers-color-scheme fallback for visitors who haven't explicitly
-   picked a theme yet - mirrors html[data-theme="dark"] exactly, gated
-   so an explicit "light" choice always wins (see theme-init.js). */
 @media (prefers-color-scheme: dark) {
   html:not([data-theme="light"]) {
-    /* The fill formula carries over unchanged - it mixes into whatever
-       --bg-surface is - so only the outline has to swap to the lighter tone
-       to stay visible on it. Measured: label 12.1:1, outline 4.7:1. */
-    --select-line: var(--accent);
-    --select-solid: var(--accent);
-    --select-on: #16211c;
-    --bg-app: #131211;
-    --bg-surface: #1c1b19;
-    --bg-surface-alt: #232220;
-    --border: #2e2c29;
-    --text-primary: #ecebe8;
-    --text-secondary: #a29d95;
-    --text-tertiary: #928d85;
-    --accent: #8bb6a2;
-    --accent-hover: #a3c9b6;
-    --accent-soft: rgba(139,182,162,.22);
-    --accent-ink: #a3c9b6;
-  --accent-ink: #a3c9b6;
-    --slate: #a29d95;
-    --ink: #ecebe8;
+    --paper: #17191c;
+    --mist: #202020;
+    --mist-strong: #2b2b2b;
+    --fog: #202020;
+    --ivory: rgba(235,230,221,.12);
+    --hairline: #2b2b2b;
+    --hairline-on-mist: #333333;
+
+    --text-primary: #fafafb;
+    --text-secondary: #a3a6af;
+    --text-tertiary: #979799;
+    --text-placeholder: #777b86;
+    --slate: #a3a6af;
+
+    --ink: #fafafb;
     --ink-hover: #ffffff;
-    --ink-text: #1a1a1a;
-    --domain-psychosis: #eaa2b9;
-    --domain-psychosis-soft: rgba(234,162,185,.16);
-    --domain-psychosis-ink: #ffc0d4;
-    --domain-mood: #c3ace1;
-    --domain-mood-soft: rgba(195,172,225,.16);
-    --domain-mood-ink: #dec9f8;
-    --domain-anxiety: #71cdf5;
-    --domain-anxiety-soft: rgba(113,205,245,.16);
-    --domain-anxiety-ink: #9bf2ff;
-    --domain-substance: #d2b180;
-    --domain-substance-soft: rgba(210,177,128,.16);
-    --domain-substance-ink: #eccda2;
-    --success: #4cb87a; --success-soft: rgba(76,184,122,.16);
-    --warning: #d9a441; --warning-soft: rgba(217,164,65,.16);
-    --danger: #e8706f; --danger-soft: rgba(232,112,111,.16);
-    --info: #6badde; --info-soft: rgba(107,173,222,.16);
-    --shadow-xs: 0 1px 2px rgba(0,0,0,.3);
-    --shadow-sm: 0 1px 3px rgba(0,0,0,.35), 0 1px 2px rgba(0,0,0,.25);
-    --shadow-md: 0 4px 14px rgba(0,0,0,.4);
-    --shadow-lg: 0 14px 32px rgba(0,0,0,.5);
+    --ink-text: #17191c;
+
+    --accent: #ff682c;
+    --accent-hover: #fbe1d1;
+    --accent-soft: rgba(251,225,209,.12);
+    --accent-ink: #fbe1d1;
+    --accent-deep: #fbe1d1;
+
+    --domain-psychosis: #ff682c;
+    --domain-psychosis-soft: rgba(251,225,209,.12);
+    --domain-psychosis-ink: #fbe1d1;
+    --domain-psychosis-action: #fafafb;
+    --domain-psychosis-action-text: #17191c;
+    --domain-mood: #e8e8e8;
+    --domain-mood-soft: #efefef;
+    --domain-mood-ink: #17191c;
+    --domain-mood-action: #17191c;
+    --domain-mood-action-text: #fafafb;
+    --domain-anxiety: #979799;
+    --domain-anxiety-soft: rgba(255,255,255,.08);
+    --domain-anxiety-ink: #e8e8e8;
+    --domain-anxiety-action: #fafafb;
+    --domain-anxiety-action-text: #17191c;
+    --domain-substance: #816729;
+    --domain-substance-soft: rgba(235,230,221,.12);
+    --domain-substance-ink: #ebe6dd;
+    --domain-substance-action: #fafafb;
+    --domain-substance-action-text: #17191c;
+
+    --success: #fafafb; --success-soft: rgba(255,255,255,.08);
+    --warning: #ebe6dd; --warning-soft: rgba(235,230,221,.12);
+    --danger: #ff682c;  --danger-soft: rgba(255,104,44,.14);
+    --info: #a3a6af;    --info-soft: rgba(255,255,255,.06);
+
+    --shadow-xs: 0 0 0 1px rgba(255,255,255,.05);
+    --shadow-sm: 0 0 0 1px rgba(255,255,255,.06), 0 4px 24px rgba(0,0,0,.35);
+    --shadow-md: 0 0 0 1px rgba(255,255,255,.06), 0 8px 40px rgba(0,0,0,.45);
+    --shadow-lg: 0 0 0 1px rgba(255,255,255,.07), 0 20px 25px -5px rgba(0,0,0,.5), 0 8px 10px -6px rgba(0,0,0,.4);
+
+    --sidebar-bg: var(--fog);
+    --sidebar-bg-active: var(--mist-strong);
+    --sidebar-bg-hover: var(--mist);
   }
 }
 
@@ -424,29 +405,31 @@ html[data-theme="dark"] {
 }
 
 /* ---------------------------------------------------------------
-   Toast surface. Inverts with the theme: a near-black pill on a
-   light page, a lifted warm grey on a dark one. See toast.js.
+   Toast surface. Inverts with the theme: an ink pill on a light
+   page, a lifted warm grey on a dark one. See toast.js.
 --------------------------------------------------------------- */
 :root, html {
-  --toast-bg: rgba(23,23,26,.84);
-  --toast-fg: #f4f3f1;
-  --toast-fg-dim: rgba(244,243,241,.62);
-  --toast-mark: #f0a09c;
+  --toast-bg: rgba(23,25,28,.92);
+  --toast-fg: #fafafb;
+  --toast-fg-dim: rgba(250,250,251,.64);
+  --toast-mark: #ff682c;
   --toast-ring: rgba(255,255,255,.10);
   --toast-track: rgba(255,255,255,.12);
 }
 html[data-theme="dark"] {
-  --toast-bg: rgba(46,44,41,.90);
-  --toast-fg: #f4f3f1;
-  --toast-fg-dim: rgba(244,243,241,.60);
-  --toast-mark: #e8837f;
+  --toast-bg: rgba(46,44,41,.92);
+  --toast-fg: #fafafb;
+  --toast-fg-dim: rgba(250,250,251,.60);
+  --toast-mark: #ff682c;
   --toast-ring: rgba(255,255,255,.14);
   --toast-track: rgba(255,255,255,.14);
 }
 @media (prefers-color-scheme: dark) {
   html:not([data-theme="light"]) {
-    --toast-bg: rgba(46,44,41,.90);
-    --toast-mark: #e8837f;
+    --toast-bg: rgba(46,44,41,.92);
+    --toast-fg: #fafafb;
+    --toast-fg-dim: rgba(250,250,251,.60);
+    --toast-mark: #ff682c;
     --toast-ring: rgba(255,255,255,.14);
     --toast-track: rgba(255,255,255,.14);
   }

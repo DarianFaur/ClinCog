@@ -70,9 +70,9 @@ h1,h2,h3,h4,h5{font-family:var(--serif)}
 .sb-label{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
 .sb-score{font-family:var(--mono);font-size:18px;font-weight:400;color:var(--text)}
 .sb-band{padding:4px 12px;border-radius:var(--radius-pill);font-family:var(--font-sans);font-size:var(--text-xs);font-weight:500;letter-spacing:.03em}
-.band-low{background:#dcfce7;color:#166534}
-.band-mod{background:#fef3c7;color:#92400e}
-.band-high{background:#fee2e2;color:#991b1b}
+.band-low{background:var(--mist);color:var(--text-primary)}
+.band-mod{background:var(--ivory);color:var(--domain-substance-ink)}
+.band-high{background:var(--accent-soft);color:var(--accent-deep)}
 /* PAGES */
 .page{display:none}
 .page.active{display:block}
@@ -209,8 +209,8 @@ h1,h2,h3,h4,h5{font-family:var(--serif)}
 .report-section-title{font-family:var(--mono);font-size:10px;color:var(--teal);text-transform:uppercase;letter-spacing:.12em;margin-bottom:20px}
 /* Diagnosis badge */
 .diag-badge{display:inline-block;padding:6px 14px;border-radius:var(--radius-pill);font-family:var(--font-sans);font-size:var(--text-xs);font-weight:500;letter-spacing:.02em;margin-bottom:20px}
-.diag-pos{background:#dcfce7;color:#166534;border:1px solid #bbf7d0}
-.diag-neg{background:#fee2e2;color:#991b1b;border:1px solid #fecaca}
+.diag-pos{background:var(--accent-soft);color:var(--accent-deep);border:0}
+.diag-neg{background:var(--mist);color:var(--text-secondary);border:0}
 .diag-neutral{background:var(--bg-surface-alt);color:var(--text-primary);border:none}
 /* Count strip */
 .count-strip{display:flex;gap:var(--sp-2);margin-bottom:20px;border:none;border-radius:var(--radius-md);overflow:hidden}
@@ -221,8 +221,8 @@ h1,h2,h3,h4,h5{font-family:var(--serif)}
 /* Pills */
 .pill-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .pill{padding:4px 10px;border-radius:20px;font-size:11px;font-family:var(--mono);letter-spacing:.03em}
-.pill-met{background:#dcfce7;color:#166534}
-.pill-unmet{background:#fee2e2;color:#991b1b}
+.pill-met{background:var(--accent-soft);color:var(--accent-deep)}
+.pill-unmet{background:var(--mist);color:var(--text-secondary)}
 .pill-unknown{background:var(--bg-surface-alt);color:var(--text-secondary)}
 /* Score display */
 .score-display{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
@@ -251,7 +251,7 @@ canvas{width:100%;height:auto;display:block}
 .dp-bar-z{font-family:var(--mono);font-size:12px;width:60px;text-align:right}
 .bar-red{background:var(--danger)}
 .bar-amber{background:var(--warning)}
-.bar-green{background:#22c55e}
+.bar-green{background:var(--text-primary)}
 /* Interpretation text */
 .interp-block{margin-top:20px}
 .interp-q-label{font-family:var(--mono);font-size:10px;color:var(--teal);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
@@ -1050,6 +1050,8 @@ textarea.interp::placeholder,
     return b;
   }
 </script>
+<link rel="stylesheet" href="/alpha-eval.css">
+<style>:root { --case: var(--domain-anxiety); --case-soft: var(--domain-anxiety-soft); --case-ink: var(--domain-anxiety-ink); }</style>
 </head>
 <body>
 <script>
@@ -2577,7 +2579,7 @@ const DotProbe = {
     const r=this._results();
     // Kept on the task object only: the student's run is not part of the report.
     this.lastResult=r;
-    this._bg(); this._text('Done',this.H/2-14,24,'#8ae5b0');
+    this._bg(); this._text('Done',this.H/2-14,24,'#fafafb');
     this._text('Your numbers stay on this screen only.',this.H/2+18,15,'#888');
     document.getElementById('dp-status').textContent =
       r.bias===null ? 'Too many missed trials to compute a bias score.'
@@ -2958,7 +2960,7 @@ function _renderCanvas(canvasId, mean, sd, rawScore) {
   }
   ctx.lineTo(tToX(fillT), baseY);                         // close down to baseline
   ctx.closePath();
-  ctx.fillStyle = 'rgba(13,148,136,0.13)';
+  ctx.fillStyle = 'rgba(255,104,44,0.13)';
   ctx.fill();
 
   // ── Bell curve (full extent) ──
@@ -2968,7 +2970,7 @@ function _renderCanvas(canvasId, mean, sd, rawScore) {
     const y = densityToY(normDensity(t));
     t === tMin ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
   }
-  ctx.strokeStyle = '#0d9488';
+  ctx.strokeStyle = '#ff682c';
   ctx.lineWidth = 1.5;
   ctx.stroke();
 
@@ -2995,7 +2997,7 @@ function _renderCanvas(canvasId, mean, sd, rawScore) {
   ctx.beginPath();
   ctx.moveTo(markerX, padT);
   ctx.lineTo(markerX, baseY);
-  ctx.strokeStyle = '#0d9488';
+  ctx.strokeStyle = '#ff682c';
   ctx.lineWidth = 2;
   ctx.stroke();
 

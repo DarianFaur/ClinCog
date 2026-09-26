@@ -103,7 +103,7 @@
   .chart-container, .ctab-wrap, .t-row {
     background: #fff !important;
     box-shadow: none !important;
-    border: 1px solid #d4d4d8 !important;
+    border: 1px solid #e8e8e8 !important;
   }
   .badge, .score-pill, .severity-pill, .band, .ss-fill, .mini-fill, .t-marker {
     -webkit-print-color-adjust: exact; print-color-adjust: exact;
@@ -256,7 +256,7 @@
   .rpt-section-head {
     padding: 0 0 2mm !important;
     margin-bottom: 3mm !important;
-    border-bottom: 0.4mm solid #1a1a1a !important;
+    border-bottom: 0.4mm solid #17191c !important;
     box-shadow: none !important;
     /* a heading must never be the last thing on a sheet */
     break-after: avoid; page-break-after: avoid;
@@ -280,12 +280,12 @@
   thead { display: table-header-group; }
   tfoot { display: table-footer-group; }
   th {
-    border-bottom: 0.3mm solid #1a1a1a !important;
+    border-bottom: 0.3mm solid #17191c !important;
     background: transparent !important;
     padding: 1.5mm 2mm !important; text-align: left;
   }
   td {
-    border-bottom: 0.2mm solid #c8c8cc !important;
+    border-bottom: 0.2mm solid #e8e8e8 !important;
     background: transparent !important;
     padding: 1.5mm 2mm !important;
   }
@@ -302,11 +302,11 @@
   }
   /* The profile bars and the z-score column printed in red and amber - the
      last place a clinical colour survived the move to a single neutral. */
-  .mini-fill, .ss-fill, .tbars-fill { background: #4a4a4a !important; }
+  .mini-fill, .ss-fill, .tbars-fill { background: #4d4d4d !important; }
   html body .imp, html body .brd, html body td.imp, html body td.brd,
   html body .z-imp, html body .z-brd, html body .ht-t, html body td.ht-t {
     /* !important reaches these even where the colour is set inline */
-    color: #1a1a1a !important; font-weight: 600;
+    color: #17191c !important; font-weight: 600;
   }
 
   /* The band labels inside the severity bar are truncated at print width and
@@ -349,14 +349,14 @@
   html body textarea,
   html body :is(.reflect-block, .eval-work, .instrument-card, .dp-q, #formulation-boxes) textarea,
   html body textarea.interp {
-    border: none !important; border-left: 0.5mm solid #c8c8cc !important;
+    border: none !important; border-left: 0.5mm solid #e8e8e8 !important;
     border-radius: 0 !important; background: transparent !important;
     padding: 0 0 0 3mm !important; resize: none !important;
     height: auto !important; min-height: 0 !important;
-    font-size: 10pt !important; color: #1a1a1a !important;
+    font-size: 10pt !important; color: #17191c !important;
     overflow: visible !important;
   }
 
-  .rpt-note, .canvas-footnote, .dist-note, .ncurve-key { font-size: 8.5pt; color: #4a4a4a !important; }
+  .rpt-note, .canvas-footnote, .dist-note, .ncurve-key { font-size: 8.5pt; color: #4d4d4d !important; }
   a { color: inherit !important; text-decoration: none !important; }
 }

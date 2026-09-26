@@ -10,315 +10,113 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/favicon-180.png">
+<link rel="preload" as="font" type="font/woff2" href="/fonts/Newsreader-latin-normal.woff2" crossorigin>
 
 <link rel="stylesheet" href="/tokens.css">
 <link rel="stylesheet" href="/components.css">
 <style>
   /* ============================================================
-     Landing gate.
-
-     Stylesheets deliberately match the dashboard: tokens.css +
-     components.css, nothing else. The old splash loaded styles.css
-     as well, and styles.css repaints .btn-primary as a green
-     gradient and .btn-secondary as an outlined pill - which is why
-     the first screen's buttons looked nothing like the buttons the
-     student meets one click later. Without it, .btn-primary is the
-     same near-black pill as "Start case" and "Evaluate".
-
-     Everything page-specific is scoped to .lp-* so it cannot collide
-     with shared rules, and every colour comes from tokens.css.
+     Splash — the Steep hero pattern: an oversized serif headline,
+     centred, with a pill form under it, surrounded by floating
+     fragments of the real product (a chat turn, a HiTOP item, an
+     ICD-11 criterion, a T-score chart). The fragments are the
+     imagery: no photography, no illustration. Below the fold, the
+     three lenses as flat mist cards and one peach editorial card.
+     Tokens and components only; nothing here is a new colour.
      ============================================================ */
-  body {
-    background: var(--bg-app);
-    color: var(--text-primary);
-    margin: 0;
-    font-family: var(--font-sans);
-  }
-  /* A single very quiet wash behind the headline. The panel carries
-     the visible gradient, so this stays near the threshold. */
-  .lp-page::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    background: radial-gradient(900px 620px at 8% -12%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 70%);
-  }
-  .lp-page {
-    /* One width for the grid and the footer rule. The wide-screen steps
-       below only raise this and the type scale; everything at or below
-       1499px is untouched. */
-    --lp-max: 1140px;
-    position: relative;
-    min-height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-    padding: clamp(20px, 4vw, 48px);
-  }
-  .lp-inner {
-    position: relative;
-    margin: auto;
-    width: 100%;
-    max-width: var(--lp-max);
-    display: grid;
-    grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr);
-    gap: clamp(32px, 5vw, 72px);
-    align-items: center;
-    animation: lp-rise .55s cubic-bezier(.2,.8,.2,1) both;
-  }
-  @keyframes lp-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  body { background: var(--bg-app); }
+  .lp { min-height: 100vh; display: flex; flex-direction: column; overflow-x: clip; }
+  .lp-wrap { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 40px); }
 
-  /* ---- left column ---- */
-  .lp-brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: clamp(24px, 4vw, 38px);
-  }
-  .lp-brand img { width: 40px; height: auto; display: block; }
-  .lp-brand strong {
-    font-size: 1.25rem;
-    font-weight: 700;
-    letter-spacing: -.015em;
-    color: var(--text-primary);
-  }
-  /* Same treatment as the dashboard's "CONTINUE YOUR CASE · WEEK 1 ·
-     PSYCHOSIS" eyebrow: mono, uppercase, tracked, and muted rather
-     than accent-coloured. */
-  .lp-eyebrow {
-    font-family: var(--font-mono);
-    font-size: var(--text-eyebrow-size);
-    font-weight: var(--text-eyebrow-weight);
-    letter-spacing: var(--text-eyebrow-spacing);
-    text-transform: uppercase;
-    color: var(--text-secondary);
-    margin: 0 0 14px;
-  }
+  /* ---- nav: transparent, whisper-quiet ---- */
+  .lp-nav { display: flex; align-items: center; justify-content: space-between; height: 76px; }
+  .lp-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text-primary);
+    font-family: var(--font-serif); font-size: 26px; letter-spacing: -.02em; }
+  .lp-brand-mark { width: 32px; height: 32px; border-radius: 8px; display: block; }
+  .lp-nav-links { display: flex; align-items: center; gap: var(--sp-5); font-size: var(--text-sm); }
+  .lp-nav-links a:not(.btn) { color: var(--text-primary); text-decoration: none; }
+  .lp-nav-links a:not(.btn):hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  /* ---- hero ---- */
+  .lp-hero { position: relative; padding: clamp(56px, 9vw, 128px) 0 clamp(64px, 9vw, 140px); text-align: center; }
+  .lp-eyebrow { font-size: var(--text-sm); color: var(--text-tertiary); margin: 0 0 var(--sp-5); }
   .lp-title {
-    font-size: clamp(2rem, 1.35rem + 2.6vw, 3.25rem);
-    line-height: 1.08;
-    letter-spacing: -.028em;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin: 0 0 18px;
+    font-family: var(--font-serif); font-weight: 400; margin: 0 auto;
+    font-size: clamp(2.75rem, 1.4rem + 5.6vw, 5.625rem); line-height: 1.02; letter-spacing: -.028em;
+    max-width: 12.5ch; color: var(--text-primary);
   }
-  /* A deliberate line break in the headline, dropped on narrow
-     screens where the natural wrap reads better. */
-  .lp-break { display: block; }
-  @media (max-width: 760px) { .lp-break { display: none; } }
-  .lp-lead {
-    font-size: var(--text-lg);
-    line-height: 1.6;
-    color: var(--text-secondary);
-    max-width: 34em;
-    margin: 0 0 clamp(26px, 3.5vw, 36px);
+  .lp-title em { font-style: italic; }
+  .lp-lead { font-size: clamp(1.0625rem, 1rem + .35vw, 1.25rem); line-height: 1.5; color: var(--text-secondary);
+    max-width: 44ch; margin: var(--sp-6) auto var(--sp-7); }
+  .lp-form { display: flex; gap: var(--sp-2); justify-content: center; max-width: 440px; margin: 0 auto; padding: 6px;
+    background: var(--paper); border-radius: var(--radius-pill); box-shadow: var(--shadow-md); }
+  .lp-form input { flex: 1; min-width: 0; border: 0; background: transparent; padding: 0 18px;
+    font: inherit; font-size: var(--text-base); color: var(--text-primary); border-radius: var(--radius-pill); }
+  .lp-form input::placeholder { color: var(--text-placeholder); }
+  .lp-form input:focus { outline: none; }
+  .lp-form:focus-within { box-shadow: 0 0 0 1px var(--text-primary), var(--shadow-md); }
+  .lp-gate-note { font-size: var(--text-xs); color: var(--text-tertiary); margin: var(--sp-4) auto 0; max-width: 40ch; }
+  .lp-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+  /* ---- floating product fragments ---- */
+  .frag { position: absolute; background: var(--paper); border-radius: 20px; box-shadow: var(--shadow-lg);
+    padding: 16px 18px; text-align: left; font-size: 13px; color: var(--text-primary); width: 260px;
+    animation: frag-in .9s var(--ease-out) both; }
+  .frag-label { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-tertiary); margin-bottom: 10px; }
+  .frag-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .frag-chat { top: 40px; left: -24px; transform: rotate(-3deg); animation-delay: .15s; }
+  .frag-bub { padding: 9px 12px; border-radius: 14px 14px 14px 4px; background: var(--mist); line-height: 1.4; margin-bottom: 8px; max-width: 92%; }
+  .frag-bub.me { margin-left: auto; background: var(--ink); color: var(--ink-text); border-radius: 14px 14px 4px 14px; margin-bottom: 0; }
+  .frag-item { top: 64px; right: -30px; transform: rotate(2.5deg); animation-delay: .3s; width: 280px; }
+  .frag-item p { margin: 0 0 12px; font-size: 14px; }
+  .frag-pills { display: flex; gap: 6px; }
+  .frag-pills span { flex: 1; height: 32px; border-radius: 999px; background: var(--mist); display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--text-secondary); }
+  .frag-pills span.on { background: var(--ink); color: var(--ink-text); }
+  .frag-chart { bottom: 24px; left: 10px; transform: rotate(2deg); animation-delay: .45s; width: 272px; }
+  .frag-bar { display: grid; grid-template-columns: 1fr 34px; gap: 10px; align-items: center; margin-top: 10px; font-size: 12px; }
+  .frag-rail { grid-column: 1 / -1; height: 8px; border-radius: 999px; background: var(--mist); position: relative; overflow: hidden; }
+  .frag-rail i { position: absolute; inset: 0 auto 0 0; border-radius: 999px; background: var(--accent); }
+  .frag-rail b { position: absolute; top: 0; bottom: 0; left: 40%; width: 40%; background: var(--accent-soft); opacity: .7; }
+  .frag-bar .t { font-family: var(--font-mono); color: var(--text-secondary); text-align: right; }
+  .frag-crit { bottom: 0; right: 0; transform: rotate(-2deg); animation-delay: .6s; background: var(--accent-soft); color: var(--accent-deep); box-shadow: var(--shadow-md); }
+  .frag-crit .frag-label { color: var(--accent-deep); opacity: .8; }
+  .frag-crit p { margin: 0 0 10px; font-family: var(--font-serif); font-size: 17px; line-height: 1.3; font-style: italic; }
+  .frag-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; background: var(--accent-deep); color: var(--accent-soft); font-size: 12px; }
+  @keyframes frag-in { from { opacity: 0; translate: 0 14px; } to { opacity: 1; translate: 0 0; } }
+  @media (prefers-reduced-motion: reduce) { .frag { animation: none; } }
+  /* The fragments need the margins the headline leaves. Below that they
+     would collide with the copy, so they drop into a row after it. */
+  @media (max-width: 1180px) {
+    .lp-frags { display: flex; gap: var(--sp-4); overflow-x: auto; padding: var(--sp-8) 4px var(--sp-4); margin: 0 -4px;
+      scroll-snap-type: x mandatory; scrollbar-width: none; }
+    .lp-frags::-webkit-scrollbar { display: none; }
+    .frag { position: static; transform: none; flex: 0 0 260px; scroll-snap-align: start; box-shadow: var(--shadow-md); }
   }
 
-  /* ---- the name gate ----
-     The field copies the app's own text fields (benchmarks.html):
-     filled with --bg-surface-alt, no border, --radius-md, and an
-     inset accent outline on focus. The button is plain .btn
-     .btn-primary, so it is the same control as "Start case" on the
-     dashboard - no local overrides at all. */
-  .lp-form { display: flex; gap: var(--sp-3); max-width: 460px; align-items: stretch; }
-  .lp-form input {
-    flex: 1;
-    min-width: 0;
-    height: 44px;
-    box-sizing: border-box;
-    padding: 0 var(--sp-4);
-    border: none;
-    border-radius: var(--radius-md);
-    font-size: var(--text-sm);
-    font-family: var(--font-sans);
-    background: var(--bg-surface-alt);
-    color: var(--text-primary);
-  }
-  .lp-form input::placeholder { color: var(--text-tertiary); }
-  /* Monochrome focus ring, matching the near-black of the Continue
-     button beside it rather than the accent. */
-  .lp-form input:focus {
-    outline: 2px solid var(--text-primary);
-    outline-offset: -2px;
-    background: var(--bg-surface);
-  }
-  .lp-gate-note {
-    font-size: var(--text-xs);
-    color: var(--text-tertiary);
-    margin: 12px 0 0;
-    max-width: 44ch;
-  }
-  /* The secondary action is a real .btn-secondary, the same grey pill
-     as "Conceptualize" on a case card. Only the spacing is local. */
-  .lp-help { margin-top: clamp(22px, 3vw, 30px); }
+  /* ---- lenses ---- */
+  .lp-section { padding: var(--section-gap) 0; }
+  .lp-section-head { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--sp-6); margin-bottom: var(--sp-7); flex-wrap: wrap; }
+  .lp-section-head h2 { font-size: clamp(2rem, 1.5rem + 2vw, 3.25rem); line-height: 1.08; letter-spacing: -.025em; margin: 0; max-width: 16ch; }
+  .lp-section-head p { max-width: 42ch; margin: 0; color: var(--text-secondary); font-size: var(--text-lg); line-height: 1.5; }
+  .lp-lenses { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-4); list-style: none; margin: 0; padding: 0; }
+  .lp-lens { background: var(--mist); border-radius: var(--radius-card); padding: clamp(24px, 2.4vw, 36px); display: flex; flex-direction: column; min-height: 260px; }
+  .lp-lens-num { font-family: var(--font-mono); font-size: 12px; color: var(--text-tertiary); }
+  .lp-lens-title { font-family: var(--font-serif); font-size: clamp(1.5rem, 1.3rem + .6vw, 1.875rem); letter-spacing: -.015em; margin: var(--sp-9) 0 10px; }
+  .lp-lens-desc { margin: 0; color: var(--text-secondary); font-size: var(--text-base); line-height: 1.55; }
+  @media (max-width: 860px) { .lp-lenses { grid-template-columns: 1fr; } .lp-lens { min-height: 0; } }
 
-  /* ---- right column ----
-     Same construction as the dashboard's "Continue your case" hero: a
-     .card surface with a radial wash of the accent laid over it from
-     the top-right corner, and the brain mark as quiet decoration. The
-     hero keeps its wash at .07 because it sits among other cards; this
-     panel is the only large surface on the page, so it carries a
-     second stop and a little more opacity - still the same recipe and
-     the same colour, never a blue tint. */
-  .lp-panel {
-    position: relative;
-    overflow: hidden;
-    background: var(--bg-surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: clamp(28px, 3.4vw, 40px);
-    box-shadow: var(--shadow-sm);
-  }
-  /* The wash is strongest across the top, behind the mark, and is gone
-     before the list begins - a tint sitting under body text costs
-     contrast, and the smallest text here is 13px. */
-  .lp-panel::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background:
-      linear-gradient(158deg, color-mix(in srgb, var(--accent) 30%, transparent) 0%, transparent 46%),
-      radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 52%);
-  }
-  /* On the dark theme the same mix sits on a dark surface, where it
-     reads as grey haze rather than as a tint; halve it. */
-  html[data-theme="dark"] .lp-panel::before {
-    background:
-      linear-gradient(150deg, color-mix(in srgb, var(--accent) 13%, transparent) 0%, transparent 58%),
-      radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--accent) 11%, transparent), transparent 60%);
-  }
-  .lp-panel-mark {
-    position: relative;
-    display: block;
-    width: clamp(112px, 15vw, 148px);
-    height: auto;
-    margin: 0 auto clamp(24px, 3vw, 30px);
-    opacity: .85;
-  }
-  /* Hairline-separated rows rather than cards inside a card - nesting
-     surfaces here would read as a table. */
-  .lp-lenses { position: relative; display: grid; margin: 0; padding: 0; list-style: none; }
-  .lp-lens {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: var(--sp-4);
-    align-items: start;
-    padding: var(--sp-4) 0;
-    border-top: 1px solid var(--border);
-  }
-  .lp-lens:first-child { border-top: none; padding-top: 0; }
-  .lp-lens:last-child { padding-bottom: 0; }
-  /* the dashboard's .lens-icon chip, with a number instead of a glyph */
-  .lp-lens-num {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
-    border-radius: var(--radius-md);
-    background: var(--accent-soft);
-    /* the numeral is text, not an icon, so it takes the body ink
-       rather than --accent-ink, which would land near 3.9:1 */
-    color: var(--text-primary);
-    font-family: var(--font-mono);
-    font-size: .75rem;
-    font-weight: 600;
-    letter-spacing: .04em;
-  }
-  .lp-lens-title { font-size: var(--text-sm); font-weight: 600; color: var(--text-primary); margin: 0 0 3px; }
-  .lp-lens-desc { font-size: var(--text-xs); line-height: 1.55; color: var(--text-secondary); margin: 0; }
+  /* ---- the one peach card ---- */
+  .lp-note { background: var(--accent-soft); color: var(--accent-deep); border-radius: var(--radius-card);
+    padding: clamp(28px, 4vw, 56px); display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: var(--sp-7); align-items: end; }
+  .lp-note blockquote { margin: 0; font-family: var(--font-serif); font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem); line-height: 1.2; letter-spacing: -.015em; }
+  .lp-note p { margin: 0; font-size: var(--text-base); line-height: 1.6; }
+  .lp-note a { color: inherit; }
+  @media (max-width: 860px) { .lp-note { grid-template-columns: 1fr; } }
 
-  /* ---- footnotes, in normal flow so nothing can overlap ---- */
-  .lp-foot {
-    position: relative;
-    margin: clamp(32px, 4vw, 48px) auto 0;
-    width: 100%;
-    max-width: var(--lp-max);
-    padding-top: 18px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px 22px;
-    align-items: baseline;
-    font-size: var(--text-xs);
-    line-height: 1.5;
-    color: var(--text-tertiary);
-  }
-  .lp-foot p { margin: 0; max-width: 78ch; }
-  .lp-foot a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
-  .lp-foot a:hover { color: var(--accent-ink); }
-
-  .lp-sr {
-    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
-    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
-  }
-
-  /* ---- wide screens ----
-     At 1140px the page sat as a small island on a 2000px monitor. These
-     steps grow the container and the type together; the lead keeps a
-     measure in em so the line length stays readable however wide the
-     column gets. Implemented as breakpoints rather than vw-clamps so
-     that nothing below 1500px changes. */
-  @media (min-width: 1500px) {
-    .lp-page { --lp-max: min(1480px, 88vw); }
-    .lp-inner { gap: clamp(64px, 5vw, 104px); }
-    .lp-brand { margin-bottom: 42px; }
-    .lp-brand img { width: 46px; }
-    .lp-brand strong { font-size: 1.4rem; }
-    /* 0.25rem + 3.2vw passes through exactly 52px at 1500px, which is
-       where the default clamp tops out - so the step is invisible. */
-    .lp-title { font-size: clamp(3.25rem, 0.25rem + 3.2vw, 4.75rem); }
-    .lp-lead { font-size: clamp(1.375rem, 0.625rem + 0.8vw, 1.75rem); max-width: 30em; }
-    .lp-form { max-width: 520px; }
-    .lp-form input, .lp-form .btn { height: 48px; }
-    .lp-gate-note, .lp-help { font-size: var(--text-sm); }
-    .lp-gate-note { max-width: 54ch; }
-    .lp-foot { font-size: var(--text-sm); }
-    .lp-panel { padding: 44px; }
-    .lp-panel-mark { width: clamp(150px, 10vw, 190px); }
-    .lp-lens { padding: 20px 0; }
-    .lp-lens-num { width: 38px; height: 38px; font-size: .8125rem; }
-    .lp-lens-title { font-size: var(--text-base); margin-bottom: 5px; }
-    .lp-lens-desc { font-size: var(--text-sm); }
-  }
-  @media (min-width: 2000px) {
-    .lp-page { --lp-max: 1760px; padding: 72px; }
-    .lp-form { max-width: 580px; }
-    .lp-form input, .lp-form .btn { height: 54px; font-size: var(--text-base); }
-    .lp-panel { padding: 56px; }
-  }
-
-  /* ---- stacked layout ---- */
-  @media (max-width: 900px) {
-    .lp-inner { grid-template-columns: minmax(0, 1fr); gap: 32px; }
-    /* the form stays near the top; the panel follows it */
-    .lp-col-main { order: 1; }
-    .lp-panel { order: 2; }
-    .lp-panel-mark { width: 104px; margin-bottom: 22px; }
-    .lp-lead { font-size: var(--text-base); }
-  }
-  @media (max-width: 460px) {
-    /* stacked: the input must not keep flex:1, or a column flex
-       container resolves its basis against the height and collapses
-       the field to a sliver */
-    .lp-form { flex-direction: column; }
-    .lp-form input { flex: none; width: 100%; }
-    .lp-form .btn { width: 100%; justify-content: center; }
-    .lp-brand img { width: 34px; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .lp-inner { animation: none; }
-  }
-
-  /* Matches shell.css so the first hop into the app behaves like every
-     other navigation. This page has no shell to hold still, so only the
-     root rules apply. */
-  @view-transition { navigation: auto; }
-  ::view-transition-old(root) { animation: none; opacity: 1; }
-  ::view-transition-new(root) { animation: ccg-vt-in 240ms var(--ease-standard) both; }
-  @keyframes ccg-vt-in { from { opacity: 0; } to { opacity: 1; } }
-  @media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }
+  .lp-foot { margin-top: auto; padding: var(--sp-7) 0 var(--sp-8); display: flex; justify-content: space-between; gap: var(--sp-6); flex-wrap: wrap;
+    font-size: var(--text-xs); color: var(--text-tertiary); }
+  .lp-foot p { margin: 0; max-width: 62ch; }
+  @media (max-width: 640px) { .lp-nav-links .lp-hide-sm { display: none; } }
 </style>
 <script>
   // If this student already has a name saved on this device, skip the
@@ -331,67 +129,88 @@
 </head>
 <body>
 
-<main class="lp-page">
-  <div class="lp-inner">
-
-    <div class="lp-col-main">
-      <div class="lp-brand">
-        <img src="/brain-logo-full.png" alt="" />
-        <strong>ClinCog</strong>
+<main class="lp">
+  <div class="lp-wrap">
+    <nav class="lp-nav" aria-label="Site">
+      <a class="lp-brand" href="/"><img class="lp-brand-mark" src="/favicon.svg" alt="" />ClinCog</a>
+      <div class="lp-nav-links">
+        <a class="lp-hide-sm" href="/about.html">About</a>
+        <a class="lp-hide-sm" href="/adopt.html">For instructors</a>
+        <a class="btn btn-secondary btn-sm" href="/help.html">Help</a>
       </div>
+    </nav>
 
-      <p class="lp-eyebrow">Clinical Cognition – Conceptualization &amp; Assessment</p>
-
-      <h1 class="lp-title">Work a case the way <span class="lp-break"></span>clinicians actually do.</h1>
-
-      <p class="lp-lead">
-        An open teaching platform for clinical psychopathology. You interview simulated
-        patients, then bring three formal lenses to the same case – ICD-11 criteria,
-        dimensional questionnaires and a cognitive task – and write up what you found.
-      </p>
+    <section class="lp-hero">
+      <p class="lp-eyebrow">Clinical Cognition · Conceptualization &amp; Assessment</p>
+      <h1 class="lp-title">Work a case the way clinicians <em>actually</em> do.</h1>
+      <p class="lp-lead">Interview a simulated patient, then bring three formal lenses to the same case &ndash; ICD-11 criteria, dimensional questionnaires and a cognitive task &ndash; and write up what you found.</p>
 
       <form class="lp-form" id="name-form">
         <label class="lp-sr" for="name-input">Your first name</label>
         <input id="name-input" type="text" placeholder="Your first name" autocomplete="given-name" autofocus />
-        <button type="submit" class="btn btn-primary">Continue</button>
+        <button type="submit" class="btn btn-primary">Begin</button>
       </form>
-      <p class="lp-gate-note">Your first name only labels your own work on this device. There is no account and nothing to sign up for.</p>
+      <p class="lp-gate-note">Your first name only labels your own work on this device. No account, nothing to sign up for.</p>
 
-      <a class="btn btn-secondary lp-help" href="/help.html">Need help getting started?</a>
-    </div>
+      <div class="lp-frags" aria-hidden="true">
+        <div class="frag frag-chat">
+          <div class="frag-label"><span class="frag-dot" style="background:var(--domain-psychosis)"></span>Dennis, 25 · Interview</div>
+          <div class="frag-bub">They planted cameras. Nobody believes me.</div>
+          <div class="frag-bub me">When did you first notice them?</div>
+        </div>
+        <div class="frag frag-item">
+          <div class="frag-label">HiTOP-SR · Detachment</div>
+          <p>I hid my emotions.</p>
+          <div class="frag-pills"><span>1</span><span>2</span><span class="on">3</span><span>4</span></div>
+        </div>
+        <div class="frag frag-chart">
+          <div class="frag-label">MATRICS · T-scores</div>
+          <div class="frag-bar"><span>Trail Making A</span><span class="t">34</span><div class="frag-rail"><b></b><i style="width:30%"></i></div></div>
+          <div class="frag-bar"><span>Letter–Number Span</span><span class="t">38</span><div class="frag-rail"><b></b><i style="width:36%"></i></div></div>
+        </div>
+        <div class="frag frag-crit">
+          <div class="frag-label">ICD-11 · 6A20 · criterion A</div>
+          <p>Persistent delusions (e.g. persecutory delusions).</p>
+          <span class="frag-chip">+ Present</span>
+        </div>
+      </div>
+    </section>
 
-    <div class="lp-panel">
-      <img class="lp-panel-mark" src="/brain-logo-full.png" alt="" />
+    <section class="lp-section" aria-labelledby="lenses-h">
+      <div class="lp-section-head">
+        <h2 id="lenses-h">Three lenses, <em>one</em> patient.</h2>
+        <p>The same case looks different depending on the framework you bring to it. That difference is the lesson.</p>
+      </div>
       <ul class="lp-lenses">
         <li class="lp-lens">
-          <span class="lp-lens-num">01</span>
-          <div>
-            <p class="lp-lens-title">Categorical</p>
-            <p class="lp-lens-desc">ICD-11 diagnostic criteria, reproduced verbatim, ask whether the case meets requirements for a named diagnosis.</p>
-          </div>
+          <span class="lp-lens-num">01 · Categorical</span>
+          <p class="lp-lens-title">Structured diagnosis</p>
+          <p class="lp-lens-desc">ICD-11 diagnostic requirements, reproduced verbatim from the CDDR, ask whether the case meets a named diagnosis.</p>
         </li>
         <li class="lp-lens">
-          <span class="lp-lens-num">02</span>
-          <div>
-            <p class="lp-lens-title">Dimensional</p>
-            <p class="lp-lens-desc">Standardized questionnaires place the case on continuous severity scales, independent of any single label.</p>
-          </div>
+          <span class="lp-lens-num">02 · Dimensional</span>
+          <p class="lp-lens-title">Severity profile</p>
+          <p class="lp-lens-desc">Standardized questionnaires place the case on continuous scales, independent of any single label.</p>
         </li>
         <li class="lp-lens">
-          <span class="lp-lens-num">03</span>
-          <div>
-            <p class="lp-lens-title">Cognitive</p>
-            <p class="lp-lens-desc">You complete a short cognitive task yourself, and connect that experience to the case's presentation.</p>
-          </div>
+          <span class="lp-lens-num">03 · Cognitive</span>
+          <p class="lp-lens-title">A task you run yourself</p>
+          <p class="lp-lens-desc">You complete a short cognitive task, then connect that experience to the patient&rsquo;s presentation.</p>
         </li>
       </ul>
-    </div>
+    </section>
 
-  </div>
+    <section class="lp-section" style="padding-top:0">
+      <div class="lp-note">
+        <blockquote>Your work stays in this browser. Nothing is stored on a server.</blockquote>
+        <p>No account and no server-side records. Messages you send to a simulated patient are processed by a third-party AI provider to generate the reply, so please never enter real patient information. <a href="/help.html">What this guarantees, and what it doesn&rsquo;t</a>.</p>
+      </div>
+    </section>
 
-  <div class="lp-foot">
-    <p>Progress is stored only in this browser – no account, no server-side records. Messages you send to simulated patients are processed by a third-party AI provider to generate responses; please don't enter real patient information.</p>
-    <p>For educational use only. Originally created at clincog.net. <a href="/about.html">About ClinCog</a></p>
+    <footer class="lp-foot">
+      <p>For educational use only. Originally created at clincog.net by Darian Faur, West University of Timișoara.</p>
+      <p><a href="/about.html">About ClinCog</a></p>
+    </footer>
   </div>
 </main>
 

@@ -16,7 +16,31 @@
 // nothing here is invented).
 // ============================================================
 
-(function () {
+(function bootShell() {
+  // ---- dependency guard ---------------------------------------------------
+  // The sidebar is built from storage.js (the case list, the progress badge)
+  // and icons.js (every nav glyph). Two pages shipped with those loaded late
+  // or not at all, and the shell silently rendered an empty Cases list and a
+  // sidebar with no icons. Pages should still load both BEFORE this file;
+  // if one forgets, the shell now fetches what is missing and builds itself
+  // once it arrives, instead of rendering half a sidebar.
+  const missing = [];
+  if (typeof ClinCog === "undefined") missing.push("/storage.js");
+  if (typeof ClinIcons === "undefined") missing.push("/icons.js");
+  if (missing.length && !window.__clincogShellDepsTried) {
+    window.__clincogShellDepsTried = true;
+    console.warn("shell.js: loaded before " + missing.join(", ") + " - fetching them now. Load them before shell.js on this page.");
+    let i = 0;
+    (function next() {
+      if (i >= missing.length) { bootShell(); return; }
+      const sc = document.createElement("script");
+      sc.src = missing[i++];
+      sc.onload = next; sc.onerror = next;
+      document.head.appendChild(sc);
+    })();
+    return;
+  }
+
   const cfg = window.CLINCOG_SHELL || {};
   const DOMAIN_CLASS = { schizophrenia: "psychosis", depression: "mood", anxiety: "anxiety", addiction: "substance" };
 
@@ -44,7 +68,7 @@
   const sidebarHtml = `
     <div class="shell-sidebar-top">
       <a href="/dashboard.html" class="shell-brand">
-        <img src="/favicon.svg" alt="" />
+        <img class="shell-brand-mark" src="/favicon.svg" alt="" />
         <span class="shell-brand-word">ClinCog</span>
       </a>
     </div>
@@ -236,5 +260,16 @@
   const casesToggle = document.getElementById("shell-cases-toggle");
   const caseList = document.getElementById("shell-case-list");
   if (cfg.activeNav === "cases" || cfg.activeCaseId) caseList.classList.add("open");
-  casesToggle.addEventListener("click", () => caseList.classList.toggle("open"));
+  casesToggle.addEventListener("click", () => {
+    // In the collapsed rail the case list is hidden, so a click used to do
+    // nothing at all. Open the rail first (for this page only - it is not
+    // saved as a preference), then show the list.
+    if (!isMobile() && frame.classList.contains("shell-collapsed")) {
+      frame.classList.remove("shell-collapsed");
+      document.documentElement.setAttribute("data-shell-sidebar", "open");
+      caseList.classList.add("open");
+      return;
+    }
+    caseList.classList.toggle("open");
+  });
 })();

@@ -264,7 +264,7 @@ hr { border: none; border-top: 1px solid var(--line); margin: 36px 0; }
    the last remaining border-as-decoration on these pages, and it read
    loudest of all now that nothing else is outlined. */
 .callout { border-radius: var(--radius-md); border: none; padding: 16px 20px; background: var(--bg-surface-alt); font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.65; margin: var(--sp-5) 0; }
-.callout.warn { border-color: var(--warn); background: var(--warn-bg); color: var(--warn); }
+.callout.warn { /* alpha: sensitive-content notes stay neutral - no coloured ribbon or tint */ }
 
 .layers { margin: 32px 0 40px; display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-4, 16px); border-top: none; }
 @media (max-width: 800px) { .layers { grid-template-columns: 1fr; } }
@@ -589,10 +589,10 @@ textarea.interp:focus { outline: 2px solid var(--accent); outline-offset: -2px; 
 /* Ink darkened past the token defaults: measured in the browser, the
    token colours sit at 3.9-4.5 against these translucent pill fills, which
    is short of AA for 13px text. These clear it. */
-.band.b-min  { background: var(--accent-soft);    color: #41604e; }
+.band.b-min  { background: var(--mist);           color: var(--text-primary); }
 .band.b-mild { background: var(--bg-surface-alt); color: var(--text-secondary); }
-.band.b-mod  { background: var(--warning-soft);   color: #7a5014; }
-.band.b-sev  { background: var(--danger-soft);    color: #9e3232; }
+.band.b-mod  { background: var(--warning-soft);   color: var(--warning); }
+.band.b-sev  { background: var(--danger-soft);    color: var(--danger); }
 html[data-theme="dark"] .band.b-min  { color: var(--accent-ink); }
 html[data-theme="dark"] .band.b-mod  { color: var(--warning); }
 html[data-theme="dark"] .band.b-sev  { color: var(--danger); }
@@ -859,6 +859,8 @@ textarea.interp::placeholder,
 #formulation-boxes textarea::placeholder,
 .reflect-block textarea::placeholder { color: var(--text-tertiary); }
 </style>
+<link rel="stylesheet" href="/alpha-eval.css">
+<style>:root { --case: var(--domain-mood); --case-soft: var(--domain-mood-soft); --case-ink: var(--domain-mood-ink); }</style>
 </head>
 <body>
 <script>
@@ -1919,7 +1921,7 @@ function drawNormPlot(canvasId, tScore, label) {
   ctx.lineTo(tx(shadeTo), ty(norm(zShade)));
   ctx.lineTo(tx(shadeTo), ty(0));
   ctx.closePath();
-  ctx.fillStyle = 'rgba(26,92,92,0.15)';
+  ctx.fillStyle = 'rgba(119,123,134,0.15)';
   ctx.fill();
 
   // ── Normal curve ──

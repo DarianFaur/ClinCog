@@ -60,8 +60,9 @@
     background:var(--accent-soft, var(--domain-anxiety-soft)); border-radius:10px; padding:12px 14px; margin-top:14px; }
   .icd-picker .icd-confirmed.on { display:flex; }
   .icd-picker .icd-confirmed .label { font-weight:600; color:var(--text-primary); font-size:14px; }
-  .icd-picker .icd-confirmed button { background:none; border:none; text-decoration:underline;
-    color:var(--text-secondary); font-size:13px; cursor:pointer; padding:0; }
+  .icd-picker .icd-confirmed button { background:none; border:none; text-decoration:none;
+    color:var(--text-primary); font-weight:500; font-size:13px; cursor:pointer; padding:0; }
+  .icd-picker .icd-confirmed button:hover { text-decoration:underline; text-underline-offset:3px; }
   .icd-picker .icd-error { display:none; color:var(--danger); font-size:var(--text-sm); margin-top:10px; }
   .icd-picker .icd-error.on { display:block; }
   .icd-continue-row { display:none; margin-top:18px; }
