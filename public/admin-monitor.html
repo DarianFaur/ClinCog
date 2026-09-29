@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow">
+<script>
+  // The admin console has no splash page: the app's pages expect a name,
+  // so one is set here if there is none yet.
+  try { if (!localStorage.getItem("clincog_name")) localStorage.setItem("clincog_name", "Admin"); } catch (e) {}
+</script>
+<script src="/theme-init.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClinCog - Live monitoring</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preload" as="script" href="/shell.js?v=2">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
+<style>
+  /* Lane colours: one per lane, from the case pairs; identity only - text
+     always wears the text tokens. */
+  .lane-demo    { --lane: var(--domain-substance-line); --lane-soft: var(--domain-substance-soft); }
+  .lane-seminar { --lane: var(--domain-psychosis-line); --lane-soft: var(--domain-psychosis-soft); }
+  .lane-admin   { --lane: var(--domain-anxiety-line);   --lane-soft: var(--domain-anxiety-soft); }
+  .lane-byok    { --lane: var(--domain-mood-line);      --lane-soft: var(--mist-strong); }
+
+  .mon-head { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--sp-5); flex-wrap: wrap; margin-bottom: var(--sp-6); }
+  .mon-head h1 { margin: 0 0 6px; }
+  .mon-head p { margin: 0; color: var(--text-secondary); max-width: 620px; }
+  .mon-controls { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .live-pill { display: inline-flex; align-items: center; gap: 8px; font-size: var(--text-sm); color: var(--text-secondary); }
+  .live-pill i { width: 8px; height: 8px; border-radius: 50%; background: var(--text-tertiary); }
+  .live-pill.on i { background: var(--domain-psychosis-line); box-shadow: 0 0 0 4px var(--domain-psychosis-soft); animation: livepulse 2s ease-in-out infinite; }
+  @keyframes livepulse { 50% { box-shadow: 0 0 0 7px transparent; } }
+  @media (prefers-reduced-motion: reduce) { .live-pill.on i { animation: none; } }
+
+  .seg { display: inline-flex; gap: 2px; padding: 3px; border-radius: var(--radius-pill); background: var(--mist); }
+  .seg button { height: 32px; padding: 0 14px; border: 0; border-radius: var(--radius-pill); background: transparent;
+    font: 500 var(--text-sm)/1 var(--font-sans); color: var(--text-secondary); cursor: pointer; }
+  .seg button:hover { color: var(--text-primary); }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--ink-text); }
+  .seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .lanes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-5); margin-bottom: var(--sp-8); }
+  @media (max-width: 900px) { .lanes { grid-template-columns: 1fr; } }
+  .lane-card { background: var(--mist); border-radius: 24px; padding: 22px 24px 18px; min-width: 0; transition: opacity .2s; }
+  .lane-card.stale { opacity: .55; }
+  .lane-top { display: flex; align-items: baseline; justify-content: space-between; gap: 4px 12px; flex-wrap: wrap; }
+  @media (max-width: 520px) { .lane-where { flex-basis: 100%; } }
+  .lane-name { display: flex; align-items: center; gap: 10px; font-family: var(--font-serif); font-size: 1.3rem; letter-spacing: -.01em; }
+  .lane-name i { width: 10px; height: 10px; border-radius: 3px; background: var(--lane); flex-shrink: 0; }
+  .lane-where { font-family: var(--font-mono); font-size: 12px; color: var(--text-tertiary); }
+  .lane-hero { display: flex; align-items: baseline; gap: 10px; margin: 14px 0 4px; flex-wrap: wrap; }
+  .lane-hero .big { font-family: var(--font-serif); font-size: clamp(2.2rem, 1.8rem + 1.4vw, 3rem); line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .lane-hero .unit { font-size: var(--text-sm); color: var(--text-tertiary); }
+  .lane-note { font-size: var(--text-xs); color: var(--text-tertiary); min-height: 1.2em; }
+  .lane-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 14px 0 12px; }
+  .lane-stats div { background: var(--paper); border-radius: 14px; padding: 10px 12px; min-width: 0; }
+  .lane-stats b { display: block; font-family: var(--font-serif); font-weight: 400; font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+  .lane-stats span { font-size: 11.5px; color: var(--text-tertiary); }
+  @media (max-width: 480px) { .lane-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .flash { animation: flash 1.2s ease-out; }
+  @keyframes flash { from { background: var(--lane-soft, var(--mist-strong)); } }
+  @media (prefers-reduced-motion: reduce) { .flash { animation: none; } }
+
+  /* ---- chart ---- */
+  .chart { position: relative; }
+  .chart svg { display: block; width: 100%; overflow: visible; }
+  .chart svg:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 6px; }
+  .chart .grid { stroke: var(--hairline); stroke-width: 1; }
+  .chart .axis { font: 400 10.5px var(--font-mono); fill: var(--text-tertiary); }
+  .chart .area { fill: var(--lane); opacity: .14; }
+  .chart .line { fill: none; stroke: var(--lane); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .chart .cross { stroke: var(--text-tertiary); stroke-width: 1; }
+  .chart .dot { fill: var(--lane); stroke: var(--paper); stroke-width: 2; }
+  .tip { position: absolute; pointer-events: none; z-index: 5; min-width: 150px; padding: 10px 12px; border-radius: 12px;
+    background: var(--paper); box-shadow: var(--shadow-lg); font-size: 12.5px; color: var(--text-secondary); white-space: nowrap; }
+  .tip strong { display: block; font-family: var(--font-serif); font-weight: 400; font-size: 1.15rem; color: var(--text-primary); }
+  .tip .when { font-family: var(--font-mono); font-size: 11px; color: var(--text-tertiary); margin-bottom: 4px; }
+
+  /* ---- sections ---- */
+  .mon-section { margin-bottom: var(--sp-8); }
+  .mon-section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: var(--sp-4); }
+  .mon-section-head h2 { margin: 0; font-size: 1.75rem; }
+  .mon-section-head p { margin: 4px 0 0; color: var(--text-tertiary); font-size: var(--text-sm); }
+
+  .ptable-wrap { background: var(--mist); border-radius: 24px; padding: 8px 8px 12px; overflow-x: auto; }
+  table.ptable { width: 100%; border-collapse: collapse; font-size: var(--text-sm); min-width: 640px; }
+  .ptable th { text-align: left; font-weight: 500; color: var(--text-tertiary); font-size: 12px; padding: 12px 14px 8px; }
+  .ptable th.num, .ptable td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .ptable td { padding: 10px 14px; border-top: 1px solid var(--hairline); color: var(--text-primary); }
+  .ptable tbody tr { cursor: pointer; }
+  .ptable tbody tr:hover td, .ptable tbody tr.sel td { background: var(--paper); }
+  .ptable tbody tr.sel td:first-child { box-shadow: inset 3px 0 0 var(--lane); }
+  .ptable .who { font-family: var(--font-mono); font-size: 12.5px; }
+  .ptable .share { width: 22%; }
+  .sharebar { height: 6px; border-radius: 999px; background: var(--hairline); overflow: hidden; }
+  .sharebar i { display: block; height: 100%; border-radius: 999px; background: var(--lane); }
+  .qcell { display: inline-flex; gap: 4px; }
+  .qcell span { font-family: var(--font-mono); font-size: 11px; padding: 3px 6px; border-radius: 6px; background: var(--paper); color: var(--text-secondary); }
+  .qcell span.full { background: var(--lane); color: var(--paper); }
+  .empty { padding: 28px 16px; text-align: center; color: var(--text-tertiary); }
+
+  .detail { margin-top: var(--sp-4); background: var(--paper); border-radius: 22px; box-shadow: var(--shadow-lg); padding: 22px 24px; }
+  .detail[hidden] { display: none; }
+  .detail-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
+  .detail-top h3 { margin: 0; font-family: var(--font-serif); font-weight: 400; font-size: 1.4rem; }
+  .detail-top p { margin: 4px 0 0; color: var(--text-tertiary); font-size: var(--text-sm); }
+  .detail .cases { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+  @media (max-width: 640px) { .detail .cases { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .detail .case { background: var(--mist); border-radius: 14px; padding: 12px 14px; font-size: var(--text-sm); }
+  .detail .case b { display: block; font-weight: 500; margin-bottom: 4px; }
+  .detail .case small { color: var(--text-tertiary); display: block; }
+  .btn-ghost { display: inline-flex; align-items: center; height: 32px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--text-primary);
+    background: transparent; color: var(--text-primary); font: 500 13px var(--font-sans); cursor: pointer; }
+  .btn-ghost:hover { background: var(--ink); color: var(--ink-text); }
+  .btn-ghost:disabled { opacity: .4; cursor: default; background: transparent; color: var(--text-primary); }
+  .detail .case .btn-ghost { margin-top: 8px; height: 28px; font-size: 12px; }
+
+  .feed { background: var(--mist); border-radius: 24px; padding: 6px 8px; }
+  .feed-row { display: grid; grid-template-columns: 78px 118px minmax(0, 1fr) 110px 120px 84px; gap: 12px; align-items: center;
+    padding: 10px 12px; border-radius: 14px; font-size: var(--text-sm); }
+  .feed-row + .feed-row { border-top: 1px solid var(--hairline); }
+  .feed-row .t { font-family: var(--font-mono); font-size: 12px; color: var(--text-tertiary); }
+  .feed-row .l { display: inline-flex; align-items: center; gap: 7px; }
+  .feed-row .l i { width: 8px; height: 8px; border-radius: 2px; background: var(--lane); }
+  .feed-row .p { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .feed-row .p small { color: var(--text-tertiary); margin-left: 6px; }
+  .feed-row .n { text-align: right; font-variant-numeric: tabular-nums; color: var(--text-secondary); }
+  .feed-row .c { text-align: right; font-variant-numeric: tabular-nums; }
+  .feed-row.fail .c { color: var(--text-tertiary); }
+  @media (max-width: 760px) {
+    .feed-row { grid-template-columns: 64px minmax(0, 1fr) 84px; }
+    .feed-row .l, .feed-row .n.tok { display: none; }
+  }
+</style>
+</head>
+<body>
+<div id="shell-content">
+
+  <div class="mon-head">
+    <div>
+      <h1 class="text-page-title">Live <em>monitoring</em></h1>
+      <p>Every reply the patients give, as it happens: who asked, which case, which model, how many tokens and what it cost. Costs are estimates - tokens reported by the provider times the published price.</p>
+    </div>
+    <div class="mon-controls">
+      <span class="live-pill" id="live-pill" role="status"><i></i><span id="live-text">Connecting…</span></span>
+      <div class="seg" id="range" role="group" aria-label="Time range">
+        <button type="button" data-range="1h">1 hour</button>
+        <button type="button" data-range="24h" aria-pressed="true">24 hours</button>
+        <button type="button" data-range="7d">7 days</button>
+        <button type="button" data-range="30d">30 days</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="lanes" id="lanes"></div>
+
+  <section class="mon-section">
+    <div class="mon-section-head">
+      <div>
+        <h2>Participants</h2>
+        <p id="people-sub">Who has used how much in the selected range. Select a row for their own chart.</p>
+      </div>
+      <div class="seg" id="people-lane" role="group" aria-label="Lane">
+        <button type="button" data-lane="seminar" aria-pressed="true">Seminar</button>
+        <button type="button" data-lane="demo">Demo</button>
+        <button type="button" data-lane="admin">Admin</button>
+        <button type="button" data-lane="byok">BYOK</button>
+      </div>
+    </div>
+    <div class="ptable-wrap" id="people"></div>
+    <div class="detail" id="detail" hidden></div>
+  </section>
+
+  <section class="mon-section">
+    <div class="mon-section-head">
+      <div>
+        <h2>Live feed</h2>
+        <p>The latest replies, newest first. New ones appear as they finish.</p>
+      </div>
+    </div>
+    <div class="feed" id="feed"></div>
+  </section>
+
+</div>
+
+<script>window.CLINCOG_SHELL = { activeNav: "monitor", breadcrumb: [{ label: "Live monitoring" }] };</script>
+<script src="/storage.js"></script>
+<script src="/icons.js"></script>
+<script src="/shell.js?v=2"></script>
+<script src="/a11y.js"></script>
+<script src="/admin-monitor.js"></script>
+</body>
+</html>

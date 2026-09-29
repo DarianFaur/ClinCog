@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow">
+<script>
+  try { if (!localStorage.getItem("clincog_name")) localStorage.setItem("clincog_name", "Admin"); } catch (e) {}
+</script>
+<script src="/theme-init.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClinCog - Seminar settings</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preload" as="script" href="/shell.js?v=2">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
+<style>
+  .set-head { margin-bottom: var(--sp-6); }
+  .set-head h1 { margin: 0 0 6px; }
+  .set-head p { margin: 0; color: var(--text-secondary); max-width: 660px; }
+
+  .status-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: var(--sp-8); }
+  @media (max-width: 900px) { .status-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .stat { background: var(--mist); border-radius: 20px; padding: 16px 18px; min-width: 0; }
+  .stat small { display: block; font-size: 12px; color: var(--text-tertiary); margin-bottom: 6px; }
+  .stat b { display: block; font-family: var(--font-serif); font-weight: 400; font-size: 1.35rem; line-height: 1.2; overflow-wrap: anywhere; }
+  .stat span { display: block; font-size: 12.5px; color: var(--text-secondary); margin-top: 4px; }
+  [hidden] { display: none !important; }
+  .dot { display: inline-block; vertical-align: .18em; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; vertical-align: middle; background: var(--text-tertiary); }
+  .dot.on { background: var(--domain-psychosis-line); box-shadow: 0 0 0 4px var(--domain-psychosis-soft); }
+
+  .set-section { background: var(--mist); border-radius: 24px; padding: 26px 28px; margin-bottom: var(--sp-6); }
+  @media (max-width: 640px) { .set-section { padding: 20px 18px; } }
+  .set-section > header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+  .set-section h2 { margin: 0; font-size: 1.6rem; }
+  .set-section header p { margin: 6px 0 0; color: var(--text-secondary); font-size: var(--text-sm); max-width: 640px; }
+
+  .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; }
+  .grid4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+  @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } .grid4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .field > span { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+  .field > small { font-size: 12px; color: var(--text-tertiary); line-height: 1.45; }
+  .inp, .sel, textarea.inp {
+    width: 100%; min-width: 0; height: 40px; padding: 0 12px; border: 1px solid transparent; border-radius: 12px;
+    background: var(--paper); color: var(--text-primary); font: 400 var(--text-sm) var(--font-sans);
+  }
+  textarea.inp { height: auto; min-height: 88px; padding: 10px 12px; line-height: 1.5; resize: vertical; }
+  .inp:focus, .sel:focus { outline: none; border-color: var(--text-primary); }
+  .inp::placeholder { color: var(--text-placeholder); }
+  .limit-pick { display: flex; gap: 6px; }
+  .limit-pick .sel { flex: 1 1 auto; }
+  .limit-pick .inp { width: 84px; flex: 0 0 84px; }
+  .limit-pick .inp[hidden] { display: none; }
+
+  .row-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 18px; }
+  .btn-ink { display: inline-flex; align-items: center; height: 40px; padding: 0 20px; border-radius: 999px; border: 0;
+    background: var(--ink); color: var(--ink-text); font: 500 var(--text-sm) var(--font-sans); cursor: pointer; }
+  .btn-ink:hover { background: var(--ink-hover); }
+  .btn-ghost { display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--text-primary);
+    background: transparent; color: var(--text-primary); font: 500 13px var(--font-sans); cursor: pointer; white-space: nowrap; }
+  .btn-ghost:hover { background: var(--ink); color: var(--ink-text); }
+  .btn-ghost.danger { border-color: var(--domain-psychosis-line); color: var(--domain-psychosis-line); }
+  .btn-ghost.danger:hover { background: var(--domain-psychosis-line); color: var(--paper); }
+  .btn-ghost:disabled, .btn-ink:disabled { opacity: .4; cursor: default; }
+  .btn-sm { height: 30px; padding: 0 12px; font-size: 12.5px; }
+  button:focus-visible, .sel:focus-visible, .inp:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* switch */
+  .switch { display: inline-flex; align-items: center; gap: 12px; cursor: pointer; font-size: var(--text-sm); font-weight: 500; }
+  .switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .switch i { position: relative; width: 44px; height: 26px; border-radius: 999px; background: var(--hairline); transition: background .15s; flex-shrink: 0; }
+  .switch i::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--paper); box-shadow: 0 1px 2px rgba(0,0,0,.2); transition: transform .15s; }
+  .switch input:checked + i { background: var(--ink); }
+  .switch input:checked + i::after { transform: translateX(18px); }
+  .switch input:focus-visible + i { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .checks { display: flex; gap: 18px; flex-wrap: wrap; }
+  .check { display: inline-flex; align-items: center; gap: 8px; font-size: var(--text-sm); cursor: pointer; }
+  .check input { width: 16px; height: 16px; accent-color: var(--ink); }
+
+  /* tables */
+  .twrap { background: var(--paper); border-radius: 18px; overflow-x: auto; }
+  table.tbl { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+  .tbl th { text-align: left; font-weight: 500; font-size: 12px; color: var(--text-tertiary); padding: 12px 14px 8px; white-space: nowrap; }
+  .tbl td { padding: 10px 14px; border-top: 1px solid var(--hairline); vertical-align: middle; }
+  .tbl .mono { font-family: var(--font-mono); font-size: 12.5px; }
+  .tbl .muted { color: var(--text-tertiary); }
+  .tbl tr.sel td { background: var(--mist); }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 12px; background: var(--mist); color: var(--text-secondary); white-space: nowrap; }
+  .pill.run { background: var(--domain-psychosis-soft); color: var(--domain-psychosis-ink); }
+  .pill.off { background: var(--mist-strong); color: var(--text-tertiary); }
+  .chips { display: inline-flex; gap: 4px; }
+  .chips span { font-family: var(--font-mono); font-size: 11px; padding: 3px 6px; border-radius: 6px; background: var(--mist); color: var(--text-secondary); white-space: nowrap; }
+  .chips span.full { background: var(--domain-psychosis-line); color: var(--paper); }
+  .chips span.free { background: transparent; box-shadow: inset 0 0 0 1px var(--hairline); }
+
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin: 18px 0 12px; }
+  .toolbar .inp { max-width: 260px; }
+  .toolbar .count { font-size: 13px; color: var(--text-tertiary); margin-right: auto; }
+  .bulk { display: none; gap: 8px; flex-wrap: wrap; align-items: center; padding: 10px 12px; border-radius: 14px; background: var(--paper); margin-bottom: 10px; }
+  .bulk.on { display: flex; }
+  .bulk b { font-weight: 500; font-size: 13px; margin-right: 6px; }
+
+  .editor { margin-top: 14px; background: var(--paper); border-radius: 22px; box-shadow: var(--shadow-lg); padding: 22px 24px; }
+  .editor[hidden] { display: none; }
+  .editor h3 { margin: 0 0 4px; font-family: var(--font-serif); font-weight: 400; font-size: 1.4rem; }
+  .editor .sub { margin: 0 0 16px; color: var(--text-tertiary); font-size: var(--text-sm); }
+  .editor .case-box { background: var(--mist); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .editor .case-box b { font-weight: 500; font-size: 14px; }
+  .editor .case-box small { color: var(--text-tertiary); font-size: 12px; }
+  .pw-current { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: var(--paper); border-radius: 16px; padding: 12px 14px; }
+  .pw-label { font-size: 13px; font-weight: 500; margin-right: 4px; }
+  .pw-value { font-family: var(--font-mono); font-size: 15px; letter-spacing: .04em; padding: 4px 10px; border-radius: 8px; background: var(--mist); color: var(--text-primary); margin-right: auto; overflow-wrap: anywhere; }
+  .note { font-size: 12.5px; color: var(--text-tertiary); margin: 10px 0 0; line-height: 1.5; }
+  .err { color: var(--domain-psychosis-line); font-size: 13px; margin-top: 8px; min-height: 1em; }
+  .empty { padding: 24px 16px; text-align: center; color: var(--text-tertiary); }
+  .busy { opacity: .6; pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="shell-content">
+
+  <div class="set-head">
+    <h1 class="text-page-title">Seminar <em>settings</em></h1>
+    <p>Everything about uvt.clincog.net that used to need a terminal: who can sign in, how many exchanges each student gets, when the counters start again from zero, and the class password. Changes reach the students within about 20 seconds.</p>
+  </div>
+
+  <div class="status-row" id="status"></div>
+
+  <!-- 1. Interviews -->
+  <section class="set-section" id="sec-access">
+    <header>
+      <div>
+        <h2>Interviews</h2>
+        <p>Close the chat for everyone (the rest of the site stays open), say why, and choose which models students may pick.</p>
+      </div>
+    </header>
+    <div class="grid2">
+      <div class="field">
+        <label class="switch"><input type="checkbox" id="g-open"><i></i><span id="g-open-label">Interviews open</span></label>
+        <small>When closed, students see the message below instead of the chat box.</small>
+      </div>
+      <div class="field">
+        <span>Models students may use</span>
+        <div class="checks">
+          <label class="check"><input type="checkbox" id="g-haiku"> Fast (Haiku)</label>
+          <label class="check"><input type="checkbox" id="g-sonnet"> Thoughtful (Sonnet)</label>
+        </div>
+        <small>With only one on, the model switch in the chat has no effect.</small>
+      </div>
+      <label class="field" style="grid-column: 1 / -1">
+        <span>Message when closed</span>
+        <input class="inp" id="g-msg" maxlength="300" placeholder="The interviews are closed right now.">
+      </label>
+    </div>
+    <div class="row-actions"><button type="button" class="btn-ink" id="g-save">Save</button><span class="err" id="g-err"></span></div>
+  </section>
+
+  <!-- 2. Periods -->
+  <section class="set-section" id="sec-periods">
+    <header>
+      <div>
+        <h2>Periods</h2>
+        <p>Exchanges are counted per period. When a new period starts, every student starts again from zero; the old counts stay with the old period. Outside every period the interviews are closed. A period with no end runs until the next one starts.</p>
+      </div>
+    </header>
+    <div class="twrap" id="p-table"></div>
+    <div class="grid4" style="margin-top:18px">
+      <label class="field"><span>Name</span><input class="inp" id="p-name" placeholder="e.g. 2026-27 Semester 2"></label>
+      <label class="field"><span>Starts</span><input class="inp" type="datetime-local" id="p-start"><small>Empty: already started.</small></label>
+      <label class="field"><span>Ends</span><input class="inp" type="datetime-local" id="p-end"><small>Empty: no end.</small></label>
+      <div class="field"><span>&nbsp;</span><button type="button" class="btn-ink" id="p-add">Add period</button></div>
+    </div>
+    <div class="row-actions">
+      <button type="button" class="btn-ghost" id="p-now">Start a new period now…</button>
+      <span class="err" id="p-err"></span>
+    </div>
+  </section>
+
+  <!-- 3. Limits -->
+  <section class="set-section" id="sec-limits">
+    <header>
+      <div>
+        <h2>Limits</h2>
+        <p>How many exchanges (one question and one answer) a student gets for each patient in a period. A student's own settings, below, override these.</p>
+      </div>
+    </header>
+    <div class="grid2">
+      <label class="field"><span>Default per patient</span><input class="inp" type="number" min="0" max="1000" id="l-default"></label>
+      <label class="field"><span>Daily cap across all patients</span><input class="inp" type="number" min="1" max="5000" id="l-daily" placeholder="No daily cap"><small>Resets at midnight in the time zone below. Empty for none.</small></label>
+    </div>
+    <div class="grid4" style="margin-top:16px" id="l-cases"></div>
+    <div class="grid2" style="margin-top:16px">
+      <label class="field"><span>Time zone</span>
+        <select class="sel" id="l-tz">
+          <option>Europe/Bucharest</option><option>Europe/London</option><option>Europe/Berlin</option><option>UTC</option>
+        </select>
+      </label>
+    </div>
+    <div class="row-actions"><button type="button" class="btn-ink" id="l-save">Save</button><span class="err" id="l-err"></span></div>
+  </section>
+
+  <!-- 4. Students -->
+  <section class="set-section" id="sec-students">
+    <header>
+      <div>
+        <h2>Students</h2>
+        <p>Only the student numbers on this list can sign in. Select a row to change one student's limits, pause them, or reset what they have used.</p>
+      </div>
+    </header>
+    <div class="grid2">
+      <label class="field"><span>Add student numbers</span><textarea class="inp" id="s-add" placeholder="PSI1234, PSI1235&#10;PSI1236"></textarea><small>One per line, or separated by commas. Capitals and spaces inside a number do not matter.</small></label>
+      <div class="field">
+        <label class="field"><span>Note for these students (optional)</span><input class="inp" id="s-note" maxlength="120" placeholder="e.g. Group 2"></label>
+        <div class="row-actions" style="margin-top:6px"><button type="button" class="btn-ink" id="s-add-btn">Add to the list</button><span class="err" id="s-err"></span></div>
+      </div>
+    </div>
+    <div class="toolbar">
+      <span class="count" id="s-count"></span>
+      <input class="inp" id="s-search" placeholder="Search number or note" aria-label="Search students">
+    </div>
+    <div class="bulk" id="s-bulk">
+      <b id="s-bulk-n"></b>
+      <button type="button" class="btn-ghost btn-sm" data-bulk="unlimited">No limit</button>
+      <button type="button" class="btn-ghost btn-sm" data-bulk="default">Default limits</button>
+      <button type="button" class="btn-ghost btn-sm" data-bulk="pause">Pause</button>
+      <button type="button" class="btn-ghost btn-sm" data-bulk="resume">Resume</button>
+      <button type="button" class="btn-ghost btn-sm" data-bulk="reset">Reset used</button>
+      <button type="button" class="btn-ghost btn-sm danger" data-bulk="remove">Remove</button>
+    </div>
+    <div class="twrap" id="s-table"></div>
+    <div class="editor" id="s-editor" hidden></div>
+  </section>
+
+  <!-- 5. Password -->
+  <section class="set-section" id="sec-password">
+    <header>
+      <div>
+        <h2>Class password</h2>
+        <p id="pw-source"></p>
+      </div>
+    </header>
+    <div class="pw-current">
+      <span class="pw-label">Current password</span>
+      <code class="pw-value" id="pw-value" aria-live="polite">••••••••</code>
+      <button type="button" class="btn-ghost btn-sm" id="pw-show">Show</button>
+      <button type="button" class="btn-ghost btn-sm" id="pw-copy">Copy</button>
+    </div>
+    <p class="note" id="pw-note" hidden></p>
+    <div class="grid2" style="margin-top:18px">
+      <label class="field"><span>New password</span><input class="inp" type="password" id="pw-1" autocomplete="new-password"></label>
+      <label class="field"><span>Repeat it</span><input class="inp" type="password" id="pw-2" autocomplete="new-password"></label>
+    </div>
+    <div class="row-actions">
+      <button type="button" class="btn-ink" id="pw-save">Change password</button>
+      <button type="button" class="btn-ghost" id="pw-clear" hidden>Use the password set in Cloudflare again</button>
+      <span class="err" id="pw-err"></span>
+    </div>
+    <p class="note">Students who are signed in keep working until their browser asks again; everyone signing in after the change needs the new password.</p>
+  </section>
+
+</div>
+
+<script>window.CLINCOG_SHELL = { activeNav: "seminar-settings", breadcrumb: [{ label: "Live monitoring", href: "/" }, { label: "Seminar settings" }] };</script>
+<script src="/storage.js"></script>
+<script src="/icons.js"></script>
+<script src="/shell.js?v=2"></script>
+<script src="/toast.js"></script>
+<script src="/a11y.js"></script>
+<script src="/admin-seminar.js"></script>
+</body>
+</html>

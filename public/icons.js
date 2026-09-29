@@ -37,6 +37,8 @@ const ClinIcons = {
     send: '<path d="M17 3 3 9l6 2 2 6 6-14Z"/>',
     inbox: '<path d="M4 4h12l2 6v6H2v-6l2-6Z"/><path d="M2 10h4l1.5 2h5L14 10h4"/>',
     dot: '<circle cx="10" cy="10" r="4" fill="currentColor" stroke="none"/>',
+    "sliders": '<line x1="4" y1="5" x2="16" y2="5"/><line x1="4" y1="10" x2="16" y2="10"/><line x1="4" y1="15" x2="16" y2="15"/><circle cx="12" cy="5" r="1.8" fill="currentColor"/><circle cx="7" cy="10" r="1.8" fill="currentColor"/><circle cx="13" cy="15" r="1.8" fill="currentColor"/>',
+    "activity": '<polyline points="2,10 5.5,10 8,4 12,16 14.5,10 18,10"/>',
     "bar-chart": '<line x1="5" y1="16" x2="5" y2="11"/><line x1="10" y1="16" x2="10" y2="6"/><line x1="15" y1="16" x2="15" y2="13"/>',
     target: '<circle cx="10" cy="10" r="7"/><circle cx="10" cy="10" r="3.5"/><circle cx="10" cy="10" r=".3" fill="currentColor"/>',
     "check-square": '<rect x="3.5" y="3.5" width="13" height="13" rx="2"/><polyline points="6.5 10 9 12.5 14 7"/>',

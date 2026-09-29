@@ -18,6 +18,8 @@ exactly as written.
 - Your own site, at an address like `your-name.workers.dev` (free,
   immediate) — or your own domain, if you have one.
 - Your own Anthropic key, billed to you, used only by your instance.
+- A sign-in for your class (student number + a class password) and a fixed
+  number of exchanges per student, counted on the server.
 - Full control: change anything, turn anything off, depend on no one.
 
 ## Quick glossary — terms you'll run into
@@ -147,11 +149,18 @@ your own Anthropic key, generously, without you ever needing to think
 about the demo tier, Gemini, or BYOK — those stay relevant only to the
 original instance at `clincog.net`.
 
+It also makes your address a **course instance**: students sign in with
+their student number as the username and a class password you choose, and
+every conversation is counted on the server against that number, so each
+student gets a fixed number of exchanges per patient (20 by default) no
+matter how many devices they use. You set the password and the class list in
+Step 9.
+
 ## Step 8 — Simplify `wrangler.toml`
 
 Open **`wrangler.toml`** in the same folder. Delete the whole
 `routes = [ ... ]` block (the few lines mentioning `clincog.net`,
-`www.clincog.net`, `uvt.clincog.net`) — those are the original author's
+`www.clincog.net`, `uvt.clincog.net`, `admin.clincog.net`) — those are the original author's
 domains, not yours. Without that block, Cloudflare automatically gives
 you a free address like `project-name.your-account.workers.dev` — perfect
 to start with; you can add your own domain later (Step 11).
@@ -159,6 +168,11 @@ to start with; you can add your own domain later (Step 11).
 You can also delete the `CHAT_RATE_LIMITER_DEMO` block — it exists only
 to protect the original demo tier's Gemini budget, which doesn't apply to
 your instance at all.
+
+**Keep** the `[[durable_objects.bindings]]` and `[[migrations]]` blocks and
+the `run_worker_first = true` line: they hold the class list and the
+counters, and make the password cover every page. Durable Objects are
+included in Cloudflare's free plan.
 
 **One line you must change rather than delete.** Near the bottom there is
 a `[[send_email]]` block with `destination_address` set to the original
@@ -202,6 +216,36 @@ destination_address = "you@your-university.edu"   # <- your verified address
 [assets]
 directory = "./public"
 binding = "ASSETS"
+run_worker_first = true
+
+[[durable_objects.bindings]]
+name = "STUDENT_QUOTA"
+class_name = "StudentQuota"
+
+[[migrations]]
+tag = "v1-student-quota"
+new_sqlite_classes = ["StudentQuota"]
+
+[[durable_objects.bindings]]
+name = "USAGE_MONITOR"
+class_name = "UsageMonitor"
+
+[[migrations]]
+tag = "v2-usage-monitor"
+new_sqlite_classes = ["UsageMonitor"]
+
+[[durable_objects.bindings]]
+name = "SEMINAR_CONFIG"
+class_name = "SeminarConfig"
+
+[[migrations]]
+tag = "v3-seminar-config"
+new_sqlite_classes = ["SeminarConfig"]
+
+[vars]
+STUDENT_CASE_LIMIT = "20"
+QUOTA_PERIOD = "2026-27-S1"
+GEMINI_FREE_TIER = "false"
 ```
 
 ## Step 9 — Set your key as a secret, then deploy
@@ -215,7 +259,22 @@ Back in the terminal (make sure you're still in the `clincog` folder):
    You'll be asked to paste the key (from Step 6) — paste it and press
    Enter. It won't show on screen as you paste it — that's normal, a
    security measure.
-2. Set the contact form's details. These are the name, role and address
+2. Set the class password and the class list:
+   ```
+   wrangler secret put STUDENT_ACCESS_PASSWORD
+   wrangler secret put STUDENT_IDS
+   ```
+   - `STUDENT_ACCESS_PASSWORD` — the password you will give your class.
+   - `STUDENT_IDS` — your students' numbers, on one line, separated by
+     commas, e.g. `PSI1234, PSI1235, PSI1236`. Capitals and spaces inside a
+     number don't matter. To add students later, run the same command again
+     with the full list: new numbers are added. (Removing a student, changing
+     limits or starting a new term needs the admin console — see Step 13.)
+
+   Without a class list the site still opens with the password, but the
+   patient conversations stay closed: there would be nobody to count them
+   against.
+3. Set the contact form's details. These are the name, role and address
    shown on the Contact page, and the mailbox its messages go to. They're
    stored as secrets rather than written into the code so that your copy
    never carries anyone else's contact details — and so yours never end up
@@ -238,7 +297,7 @@ Back in the terminal (make sure you're still in the `clincog` folder):
 
    Skip these and nothing breaks except the Contact page, which will say it
    isn't configured instead of pointing your students at a stranger.
-3. Deploy for the first time:
+4. Deploy for the first time:
    ```
    wrangler deploy
    ```
@@ -250,9 +309,11 @@ Back in the terminal (make sure you're still in the `clincog` folder):
 
 ## Step 10 — Test it
 
-Open the address from Step 9 in a browser. You should see ClinCog's start
-screen. Enter a name, open a case, try a conversation with the patient —
-if you get a reply, everything's working.
+Open the address from Step 9 in a browser. The browser asks for a username
+and password: use one of the student numbers from `STUDENT_IDS` and the
+class password. You should then see ClinCog's start screen. Enter a name,
+open a case, try a conversation with the patient — if you get a reply, and
+the chat shows "1 of 20 exchanges used", everything's working.
 
 If you didn't already know your exact address for Step 7, you do now — go
 back, correct the line in `worker.js` with the real address you got here,
@@ -289,6 +350,32 @@ recommended if your link might circulate publicly:
 If you'd rather skip this step for now, the platform works normally
 without it — just without the extra anti-bot layer.
 
+## Step 13 (optional) — The admin console
+
+The admin console is a second address for the same Worker, with its own
+username and password, where you manage the course without a terminal:
+**Live monitoring** (who is using how much, live, with cost estimates) and
+**Seminar settings** (add or remove students, change limits per student or
+per patient, set a daily cap, schedule terms — each new term starts every
+student from zero — close the interviews, choose the models, and change or
+look up the class password).
+
+It needs an address of its own, so it needs your own domain (Step 11):
+
+1. In `worker.js`, find `const ADMIN_HOSTNAME = "admin.clincog.net";` and
+   put the address you want, e.g. `"admin.your-domain.org"`.
+2. Add that address as a Custom Domain for the Worker (as in Step 11).
+3. Set its sign-in:
+   ```
+   wrangler secret put ADMIN_USER
+   wrangler secret put ADMIN_PASSWORD
+   ```
+4. `wrangler deploy`.
+
+The first time the console opens, it takes over the class list, the limit
+and the term from Step 9; from then on, make changes there. Without the two
+secrets the admin address lets nobody in.
+
 ## If you also want the ICD-11 diagnosis search widget
 
 Requires a separate, free registration with WHO:
@@ -319,8 +406,9 @@ the request returns 404 and that section of the page never appears.
 The original deployment uses this for the SPIN (Social Phobia Inventory).
 **Your copy will not include it**, and nothing breaks without it. If you
 obtain your own written licence for the SPIN, you supply its content as the
-`SPIN_CONTENT` secret and set `STUDENT_HOSTNAME` in `worker.js` to your own
-password-protected hostname. Do not commit licensed content to your fork.
+`SPIN_CONTENT` secret; it then appears on your course instance
+(`STUDENT_HOSTNAME`) and on your admin console (`ADMIN_HOSTNAME`), both of
+which are password-protected. Do not commit licensed content to your fork.
 
 ## If something goes wrong
 
@@ -329,6 +417,13 @@ password-protected hostname. Do not commit licensed content to your fork.
   installed program).
 - **`wrangler deploy` complains about a missing secret** — you likely
   skipped Step 9(1); run `wrangler secret put ANTHROPIC_API_KEY` again.
+- **The browser keeps asking for a password** — the username has to be a
+  student number on your class list and the password the class password
+  (Step 9). A number added to `STUDENT_IDS` can take up to 20 seconds to
+  be accepted.
+- **The chat says the interviews are closed** — there is no class list yet
+  (Step 9), or they were closed, or no term is running, on the admin
+  console's Seminar settings page.
 - **The site opens, but the patient conversation doesn't reply** — check
   Cloudflare Dashboard → Workers & Pages → your worker → Logs for the
   exact error (often a mistyped Anthropic key, or no credit left on the

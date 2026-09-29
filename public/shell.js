@@ -65,9 +65,14 @@
       <span class="shell-nav-icon"></span><span class="shell-nav-label">${label}</span>${extra}
     </a>`;
 
+  // On the admin console the front page is live monitoring; everything
+  // else is the ordinary app.
+  const isAdminHost = location.hostname === "admin.clincog.net";
+  const homeHref = isAdminHost ? "/" : "/dashboard.html";
+
   const sidebarHtml = `
     <div class="shell-sidebar-top">
-      <a href="/dashboard.html" class="shell-brand">
+      <a href="${homeHref}" class="shell-brand">
         <img class="shell-brand-mark" src="/favicon.svg" alt="" />
         <span class="shell-brand-word">ClinCog</span>
       </a>
@@ -75,6 +80,8 @@
     <nav class="shell-nav">
       <div class="shell-nav-group">
         <div class="shell-nav-eyebrow">Main</div>
+        ${isAdminHost ? navItem("activity", "Live monitoring", "/", "monitor") : ""}
+        ${isAdminHost ? navItem("sliders", "Seminar settings", "/admin-seminar", "seminar-settings") : ""}
         ${navItem("grid", "Dashboard", "/dashboard.html", "dashboard")}
         <div class="shell-nav-item shell-nav-expandable${cfg.activeNav === "cases" || cfg.activeCaseId ? " active" : ""}" id="shell-cases-toggle" data-icon="layers">
           <span class="shell-nav-icon"></span><span class="shell-nav-label">Cases</span>

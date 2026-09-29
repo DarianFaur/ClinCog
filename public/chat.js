@@ -189,13 +189,65 @@
     if (row) row.remove();
   }
 
+  // On the seminar instance the server counts every exchange against the
+  // student's number, across devices and restarts; its count wins over the
+  // one this browser keeps. Elsewhere there is no server count (null).
+  // The seminar leader sets the limits per student and per case (a case
+  // can also have no limit), a daily cap, and can close the interviews.
+  let serverUsed = null;
+  let serverLimit = MAX_EXCHANGES;   // null = no limit for this case
+  let serverClosed = "";             // why the interviews are closed, if they are
+  let dayCap = null, dayUsed = 0;
+  if (window.location.hostname === "uvt.clincog.net") {
+    fetch("/api/quota", { credentials: "same-origin", cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((q) => {
+        if (!q || !q.available) return;
+        serverLimit = q.limits && moduleId in q.limits ? q.limits[moduleId] : (q.limit || MAX_EXCHANGES);
+        serverUsed = (q.used && q.used[moduleId]) || 0;
+        serverClosed = q.open === false ? (q.message || "The interviews are closed right now.") : "";
+        dayCap = q.dayCap || null; dayUsed = q.today || 0;
+        updateStatus();
+      })
+      .catch(() => {});
+  }
+  // How many exchanges this conversation may reach, and how many it has.
+  function limitNow() {
+    if (serverUsed === null) return MAX_EXCHANGES;
+    return serverLimit === null ? Infinity : serverLimit;
+  }
+  function usedNow() {
+    return serverUsed === null ? history.length / 2 : Math.max(serverUsed, history.length / 2);
+  }
+  function blockedReason() {
+    if (serverClosed) return serverClosed;
+    if (usedNow() >= limitNow()) return "You've reached the limit of exchanges for this interview.";
+    if (dayCap !== null && dayUsed >= dayCap) return "You've used today's " + dayCap + " exchanges. More tomorrow.";
+    return "";
+  }
+
+  // A random, anonymous id for this browser, so the admin console can tell
+  // demo visitors apart ("Visitor a3f2") without knowing who anyone is.
+  function visitorId() {
+    try {
+      let v = localStorage.getItem("clincog_visitor");
+      if (!v) {
+        v = Array.from(crypto.getRandomValues(new Uint8Array(4)), (b) => b.toString(16).padStart(2, "0")).join("");
+        localStorage.setItem("clincog_visitor", v);
+      }
+      return v;
+    } catch (e) { return ""; }
+  }
+
   function updateStatus() {
-    const used = history.length / 2;
-    if (used >= MAX_EXCHANGES) {
-      statusDiv.textContent = "You've reached the limit of exchanges for this interview.";
+    const limit = limitNow();
+    const used = usedNow();
+    const blocked = blockedReason();
+    if (blocked) {
+      statusDiv.textContent = blocked;
       sendBtn.disabled = true;
     } else if (used > 0) {
-      statusDiv.textContent = `${used} of ${MAX_EXCHANGES} exchanges used.`;
+      statusDiv.textContent = limit === Infinity ? `${used} ${used === 1 ? "exchange" : "exchanges"} used.` : `${used} of ${limit} exchanges used.`;
       sendBtn.disabled = false;
     } else {
       statusDiv.textContent = "";
@@ -237,7 +289,7 @@
     const question = input.value.trim();
     if (!question) return;
 
-    if (history.length >= MAX_EXCHANGES * 2) {
+    if (blockedReason()) {
       updateStatus();
       return;
     }
@@ -259,18 +311,42 @@
       const response = await fetch(URL_PROXY, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ history: historyToSend, turnstileToken, byok: ClinCog.getByok(), studentModel: ClinCog.getStudentModel() }),
+        body: JSON.stringify({ history: historyToSend, turnstileToken, byok: ClinCog.getByok(), studentModel: ClinCog.getStudentModel(), visitorId: visitorId() }),
       });
 
       if (response.status === 429) {
+        const info = await response.json().catch(() => ({}));
+        if (info.quota) {
+          serverUsed = info.used;
+          if ("limit" in info) serverLimit = info.limit;
+          if (info.reason === "day") { dayCap = info.dayCap; dayUsed = info.dayCap; }
+          updateStatus();
+          return;
+        }
         statusDiv.textContent = "Too many requests right now - please wait a moment and try again. That question wasn't counted.";
         return;
       }
-      if (response.status === 403) {
-        statusDiv.textContent = "We couldn't verify your browser - please refresh the page and try again. That question wasn't counted.";
-        return;
+      if (response.status === 403 || response.status === 503) {
+        const info = await response.json().catch(() => ({}));
+        if (info.gate) {
+          // Closed, paused or not on the list: say so and stop here.
+          serverClosed = info.text || "The interviews are closed right now.";
+          updateStatus();
+          return;
+        }
+        if (response.status === 403) {
+          statusDiv.textContent = "We couldn't verify your browser - please refresh the page and try again. That question wasn't counted.";
+          return;
+        }
       }
       if (!response.ok) throw new Error("Server error: " + response.status);
+      const qUsed = response.headers.get("X-Quota-Used");
+      if (qUsed !== null) {
+        serverUsed = parseInt(qUsed, 10);
+        const ql = response.headers.get("X-Quota-Limit");
+        serverLimit = ql === "none" ? null : (parseInt(ql, 10) || serverLimit);
+        dayUsed++;
+      }
 
       // The reply now arrives as a plain-text stream, not one JSON blob -
       // an empty bubble is shown immediately and filled in as text
@@ -306,7 +382,7 @@
       console.error(err);
     } finally {
       hideTypingIndicator();
-      sendBtn.disabled = false;
+      sendBtn.disabled = !!blockedReason();
       input.focus();
     }
   });

@@ -195,6 +195,13 @@ Copyright (c) 2016 The Inter Project Authors. Licensed under the
 [SIL Open Font License 1.1](https://openfontlicense.org/).
 Self-hosted in `public/fonts/`.
 
+### Newsreader
+
+Copyright 2020 The Newsreader Project Authors
+(https://github.com/productiontype/Newsreader).
+Licensed under the [SIL Open Font License 1.1](https://openfontlicense.org/).
+Self-hosted in `public/fonts/`.
+
 ### DM Mono
 
 Copyright (c) 2019 The DM Mono Project Authors. Licensed under the
@@ -222,8 +229,9 @@ are proprietary and this repository is public:
   the GAD-7 and the HiTOP-SR Social Anxiety subscale.
 * **SPIN** (Social Phobia Inventory) — © Jonathan Davidson; all rights
   reserved. **Not in this repository.** The original author's own deployment
-  uses it under a written licence that restricts it to a password-protected
-  instance; the items are supplied to that instance as a server secret and
+  uses it under a written licence that requires password protection; it is
+  shown only on the password-protected hostnames (the course instance and
+  the author's admin console), the items are supplied as a server secret and
   are never committed. The code that requests them contains no SPIN text and
   does nothing on an instance without the licence. A written licence does not
   transfer to forks: to use the SPIN you need your own permission from the

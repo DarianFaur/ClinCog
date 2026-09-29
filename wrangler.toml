@@ -5,7 +5,8 @@ compatibility_date = "2026-08-01"
 routes = [
   { pattern = "clincog.net", custom_domain = true },
   { pattern = "www.clincog.net", custom_domain = true },
-  { pattern = "uvt.clincog.net", custom_domain = true }
+  { pattern = "uvt.clincog.net", custom_domain = true },
+  { pattern = "admin.clincog.net", custom_domain = true }
 ]
 
 workers_dev = true
@@ -86,3 +87,49 @@ binding = "ASSETS"
 # pages and chat.js loaded without the seminar password, and cancelling the
 # prompt still left a working app. The gate in worker.js now covers them.
 run_worker_first = true
+
+# ---- Per-student quota on the seminar instance (uvt.clincog.net) ----------
+# Each student signs in with their student number as the username. The
+# class list, limits, periods and password are managed on the admin
+# console (admin.clincog.net > Seminar settings) and kept in SEMINAR_CONFIG.
+# Every chat exchange is counted on the server against that number, one
+# Durable Object per student and period, so neither another device nor the
+# in-app "restart progress" gives a student more exchanges than allowed.
+[[durable_objects.bindings]]
+name = "STUDENT_QUOTA"
+class_name = "StudentQuota"
+
+[[migrations]]
+tag = "v1-student-quota"
+new_sqlite_classes = ["StudentQuota"]
+
+# ---- Usage monitoring for the admin console (admin.clincog.net) -------------
+# One Durable Object records every chat reply (tokens, cost, who, which case)
+# and streams it live to the monitoring page. Sign-in: the ADMIN_USER and
+# ADMIN_PASSWORD secrets.
+[[durable_objects.bindings]]
+name = "USAGE_MONITOR"
+class_name = "UsageMonitor"
+
+[[migrations]]
+tag = "v2-usage-monitor"
+new_sqlite_classes = ["UsageMonitor"]
+
+# The seminar settings edited on the admin console.
+[[durable_objects.bindings]]
+name = "SEMINAR_CONFIG"
+class_name = "SeminarConfig"
+
+[[migrations]]
+tag = "v3-seminar-config"
+new_sqlite_classes = ["SeminarConfig"]
+
+[vars]
+# Starting values only: read once, the first time the seminar settings are
+# opened, together with the STUDENT_IDS secret if it is set. After that the
+# admin console is the place to change them.
+STUDENT_CASE_LIMIT = "20"
+QUOTA_PERIOD = "2026-27-S1"
+# Set to "true" while the demo Gemini key is on Google's free tier: the
+# console then labels Gemini costs as what they would be on the paid tier.
+GEMINI_FREE_TIER = "true"

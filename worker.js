@@ -1,3 +1,5 @@
+import { DurableObject } from "cloudflare:workers";
+
 // ============================================================================
 // worker.js
 //
@@ -135,6 +137,11 @@ async function getIcdToken(clientId, clientSecret) {
 //                           with each request and used for that call only -
 //                           never stored server-side, never logged.
 const STUDENT_HOSTNAME = "uvt.clincog.net";
+// The author's own console: the same app as clincog.net (Gemini, demo
+// keys), behind its own username and password, with live usage monitoring
+// as its first page. ADMIN_USER / ADMIN_PASSWORD are secrets; without them
+// the host lets nobody in.
+const ADMIN_HOSTNAME = "admin.clincog.net";
 
 const SUPPORTED_BYOK_PROVIDERS = new Set(["anthropic", "gemini", "openai"]);
 
@@ -155,6 +162,9 @@ const ALLOWED_MODELS = {
 const STUDENT_ALLOWED_MODELS = ["claude-haiku-4-5-20251001", "claude-sonnet-5"];
 
 function resolveModelCredentials(hostname, byok, studentModel, env) {
+  if (hostname === ADMIN_HOSTNAME) {
+    return { provider: "gemini", key: env.GEMINI_API_KEY_DEMO, tier: "admin" };
+  }
   if (hostname === STUDENT_HOSTNAME) {
     const model = STUDENT_ALLOWED_MODELS.includes(studentModel) ? studentModel : undefined;
     return { provider: "anthropic", key: env.ANTHROPIC_API_KEY, model, tier: "student" };
@@ -368,17 +378,600 @@ function rateLimitedResponse() {
 // determined intruder (the password is shared among the whole class, not
 // per-student). Checked server-side, before anything else is served -
 // static pages included - so it can't be bypassed by disabling JS.
-function checkStudentAccess(request, env) {
+//
+// The class list, the password (when changed from the admin console) and
+// every limit live in the seminar configuration below, not in secrets.
+async function checkStudentAccess(request, env) {
+  const cred = basicCredentials(request);
+  if (!cred) return false;
+  const cfg = await seminarConfig(env);
+  if (!(await classPasswordMatches(cfg, cred.password, env))) return false;
+  // With a class list the username has to be a student number on it.
+  // Without one the password alone opens the site, but the chat stays
+  // closed - see studentIdentity().
+  const ids = Object.keys(cfg.students);
+  return ids.length === 0 || !!cfg.students[normaliseStudentId(cred.username)];
+}
+
+function checkAdminAccess(request, env) {
+  const cred = basicCredentials(request);
+  if (!cred || !env.ADMIN_USER || !env.ADMIN_PASSWORD) return false;
+  return cred.username === env.ADMIN_USER && cred.password === env.ADMIN_PASSWORD;
+}
+
+function basicCredentials(request) {
   const auth = request.headers.get("Authorization");
-  if (!auth || !auth.startsWith("Basic ")) return false;
+  if (!auth || !auth.startsWith("Basic ")) return null;
   try {
     const decoded = atob(auth.slice(6));
-    const separatorIndex = decoded.indexOf(":");
-    const password = separatorIndex === -1 ? decoded : decoded.slice(separatorIndex + 1);
-    return password === env.STUDENT_ACCESS_PASSWORD;
+    const i = decoded.indexOf(":");
+    return i === -1 ? { username: "", password: decoded } : { username: decoded.slice(0, i), password: decoded.slice(i + 1) };
   } catch {
-    return false;
+    return null;
   }
+}
+
+// ---- Per-student quota (seminar instance) ------------------------------------
+// Each student signs in with their student number (număr matricol) as the
+// username and the class password. Matching ignores case and spaces, so
+// "ab 123" and "AB123" are the same student.
+//
+// The number is what the quota is counted against, on the server, in a
+// Durable Object per student and per period - so it holds across devices,
+// browsers and the in-app "restart progress", none of which the server
+// ever sees, and a new period starts everyone from zero.
+function normaliseStudentId(v) {
+  return String(v || "").replace(/\s+/g, "").toUpperCase();
+}
+
+// ---- Seminar configuration (edited on admin.clincog.net) ---------------------
+// One Durable Object holds everything the seminar leader can change without
+// a terminal: the class list, per-student and per-case limits, periods,
+// open/closed, which models students may pick, a daily cap and the class
+// password. On first use it is seeded from the old settings (STUDENT_IDS,
+// STUDENT_CASE_LIMIT, QUOTA_PERIOD), so nothing already counted is lost.
+// Each Worker instance keeps a copy for 20 seconds, so a change made in the
+// console reaches every student within that time.
+const CASE_IDS = ["schizophrenia", "depression", "anxiety", "addiction"];
+const STUDENT_MODEL_IDS = { haiku: "claude-haiku-4-5-20251001", sonnet: "claude-sonnet-5" };
+const UNLIMITED_HISTORY = 200; // exchanges a conversation may reach when a limit is lifted
+
+function configStub(env) {
+  return env.SEMINAR_CONFIG.get(env.SEMINAR_CONFIG.idFromName("seminar"));
+}
+function configSeed(env) {
+  const ids = String(env.STUDENT_IDS || "").split(/[\s,;]+/).map(normaliseStudentId).filter(Boolean);
+  const n = parseInt(env.STUDENT_CASE_LIMIT, 10);
+  return { ids, defaultLimit: n > 0 ? n : 20, period: String(env.QUOTA_PERIOD || "default") };
+}
+let cfgCache = { at: 0, value: null };
+async function seminarConfig(env, fresh) {
+  if (!fresh && cfgCache.value && Date.now() - cfgCache.at < 20000) return cfgCache.value;
+  const value = await configStub(env).get(configSeed(env));
+  cfgCache = { at: Date.now(), value };
+  return value;
+}
+
+async function sha256Hex(text) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+async function classPasswordMatches(cfg, password, env) {
+  if (cfg.password && typeof cfg.password.value === "string") return password === cfg.password.value;
+  if (cfg.password) return (await sha256Hex(cfg.password.salt + password)) === cfg.password.hash;
+  return !!env.STUDENT_ACCESS_PASSWORD && password === env.STUDENT_ACCESS_PASSWORD;
+}
+
+// The period now running, or null between periods (the chat is then shut).
+function activePeriod(cfg, now) {
+  now = now || Date.now();
+  let best = null;
+  for (const p of cfg.periods) {
+    if ((p.start == null || p.start <= now) && (p.end == null || p.end > now)) {
+      if (!best || (p.start || 0) >= (best.start || 0)) best = p;
+    }
+  }
+  return best;
+}
+
+// A limit is a number of exchanges, -1 for no limit, or null to inherit:
+// student + case, then student (all cases), then the case, then the default.
+function effectiveLimit(cfg, studentId, caseId) {
+  const s = cfg.students[studentId];
+  let v = s && s.limits ? s.limits[caseId] : null;
+  if (v == null && s && s.limits) v = s.limits.all;
+  if (v == null) v = cfg.caseLimits[caseId];
+  if (v == null) v = cfg.defaultLimit;
+  return v < 0 ? null : v; // null = unlimited
+}
+function studentLimits(cfg, studentId) {
+  const out = {};
+  CASE_IDS.forEach((c) => { out[c] = effectiveLimit(cfg, studentId, c); });
+  return out;
+}
+
+function dayKey(cfg, now) {
+  try {
+    return new Intl.DateTimeFormat("en-CA", { timeZone: cfg.timezone || "Europe/Bucharest", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(now || Date.now()));
+  } catch {
+    return new Date(now || Date.now()).toISOString().slice(0, 10);
+  }
+}
+
+// The signed-in student's number, or null when they are not on the list.
+async function studentIdentity(request, env) {
+  const cred = basicCredentials(request);
+  if (!cred) return null;
+  const cfg = await seminarConfig(env);
+  const id = normaliseStudentId(cred.username);
+  return cfg.students[id] ? id : null;
+}
+
+// Why a student cannot use the interviews right now, or null if they can.
+function seminarGate(cfg, studentId) {
+  const s = cfg.students[studentId];
+  if (!s) return { status: 503, text: "The interview is not available right now. Tell your seminar leader." };
+  if (s.suspended) return { status: 403, text: "Your access to the interviews is paused. Talk to your seminar leader." };
+  if (!cfg.open) return { status: 503, text: cfg.closedMessage || "The interviews are closed right now." };
+  if (!activePeriod(cfg)) return { status: 503, text: cfg.closedMessage || "The interviews are closed between periods." };
+  return null;
+}
+
+function quotaStub(env, periodId, studentId) {
+  return env.STUDENT_QUOTA.get(env.STUDENT_QUOTA.idFromName(periodId + ":" + studentId));
+}
+
+function blankLimits() {
+  const l = { all: null };
+  CASE_IDS.forEach((c) => { l[c] = null; });
+  return l;
+}
+function initialConfig(seed) {
+  seed = seed || { ids: [], defaultLimit: 20, period: "default" };
+  const students = {};
+  const now = Date.now();
+  seed.ids.forEach((id) => { students[id] = { note: "", suspended: false, limits: blankLimits(), added: now }; });
+  const caseLimits = {};
+  CASE_IDS.forEach((c) => { caseLimits[c] = null; });
+  return {
+    version: 1, open: true, closedMessage: "", models: ["haiku", "sonnet"],
+    defaultLimit: seed.defaultLimit, caseLimits, dailyCap: null, timezone: "Europe/Bucharest",
+    periods: [{ id: seed.period, name: seed.period, start: null, end: null }],
+    students, password: null, passwordChanged: null,
+  };
+}
+
+function limitValue(v, allowNull) {
+  if (v === null || v === "" || v === undefined) {
+    if (allowNull) return null;
+    throw new Error("A limit is required.");
+  }
+  if (v === "unlimited" || v === -1) return -1;
+  const n = Number(v);
+  if (!Number.isInteger(n) || n < 0 || n > 1000) throw new Error("Limits are whole numbers from 0 to 1000.");
+  return n;
+}
+function timeValue(v) {
+  if (v === null || v === "" || v === undefined) return null;
+  const n = Number(v);
+  if (!Number.isFinite(n)) throw new Error("That date could not be read.");
+  return n;
+}
+
+export class SeminarConfig extends DurableObject {
+  async get(seed) {
+    let c = await this.ctx.storage.get("config");
+    if (!c) {
+      c = initialConfig(seed);
+      c.seedIds = seed ? seed.ids.slice().sort().join(",") : "";
+      await this.ctx.storage.put("config", c);
+      return c;
+    }
+    // For instances run without the admin console: numbers added to the
+    // STUDENT_IDS secret later are added to the list too. Removing one from
+    // the secret does not remove the student - that is done on the console.
+    const now = seed ? seed.ids.slice().sort().join(",") : null;
+    if (now !== null && now !== (c.seedIds || "")) {
+      // Only numbers that are new in the secret: a student removed on the
+      // console stays removed even though the secret still lists them.
+      const t = Date.now(), before = new Set((c.seedIds || "").split(",").filter(Boolean));
+      seed.ids.forEach((id) => { if (!before.has(id) && !c.students[id]) c.students[id] = { note: "", suspended: false, limits: blankLimits(), added: t }; });
+      c.seedIds = now;
+      await this.ctx.storage.put("config", c);
+    }
+    return c;
+  }
+
+  // Every change goes through here, validated, one at a time.
+  async update(op, a, seed) {
+    const c = await this.get(seed);
+    a = a || {};
+    switch (op) {
+      case "general": {
+        if ("open" in a) c.open = !!a.open;
+        if ("closedMessage" in a) c.closedMessage = String(a.closedMessage || "").slice(0, 300);
+        if ("models" in a) {
+          const m = (Array.isArray(a.models) ? a.models : []).filter((x) => STUDENT_MODEL_IDS[x]);
+          if (!m.length) throw new Error("Leave at least one model on.");
+          c.models = [...new Set(m)];
+        }
+        if ("defaultLimit" in a) {
+          const v = limitValue(a.defaultLimit, false);
+          c.defaultLimit = v;
+        }
+        if (a.caseLimits) CASE_IDS.forEach((k) => { if (k in a.caseLimits) c.caseLimits[k] = limitValue(a.caseLimits[k], true); });
+        if ("dailyCap" in a) {
+          const v = a.dailyCap === null || a.dailyCap === "" ? null : Number(a.dailyCap);
+          if (v !== null && (!Number.isInteger(v) || v < 1 || v > 5000)) throw new Error("The daily cap is a whole number from 1 to 5000, or empty for none.");
+          c.dailyCap = v;
+        }
+        if ("timezone" in a) {
+          try { new Intl.DateTimeFormat("en", { timeZone: a.timezone }); c.timezone = a.timezone; }
+          catch { throw new Error("Unknown time zone."); }
+        }
+        break;
+      }
+      case "addStudents": {
+        // One per line or separated by commas; spaces inside a number are
+        // ignored, so "PSI 1234" is PSI1234.
+        const ids = (Array.isArray(a.ids) ? a.ids : String(a.ids || "").split(/[\n\r\t,;]+/)).map(normaliseStudentId).filter(Boolean);
+        if (!ids.length) throw new Error("No student numbers to add.");
+        if (Object.keys(c.students).length + ids.length > 3000) throw new Error("That is more students than the list can hold.");
+        const now = Date.now();
+        ids.forEach((id) => {
+          if (!/^[A-Z0-9._-]{2,40}$/.test(id)) throw new Error("\"" + id + "\" does not look like a student number.");
+          if (!c.students[id]) c.students[id] = { note: String(a.note || "").slice(0, 120), suspended: false, limits: blankLimits(), added: now };
+        });
+        break;
+      }
+      case "removeStudents": {
+        (a.ids || []).map(normaliseStudentId).forEach((id) => { delete c.students[id]; });
+        break;
+      }
+      case "updateStudent": {
+        const s = c.students[normaliseStudentId(a.id)];
+        if (!s) throw new Error("That student is not on the list.");
+        if ("note" in a) s.note = String(a.note || "").slice(0, 120);
+        if ("suspended" in a) s.suspended = !!a.suspended;
+        if (a.limits) ["all"].concat(CASE_IDS).forEach((k) => { if (k in a.limits) s.limits[k] = limitValue(a.limits[k], true); });
+        break;
+      }
+      case "bulkStudents": {
+        const ids = (a.ids || []).map(normaliseStudentId).filter((id) => c.students[id]);
+        ids.forEach((id) => {
+          const s = c.students[id];
+          if ("suspended" in a) s.suspended = !!a.suspended;
+          if (a.limits) ["all"].concat(CASE_IDS).forEach((k) => { if (k in a.limits) s.limits[k] = limitValue(a.limits[k], true); });
+        });
+        break;
+      }
+      case "addPeriod": {
+        const name = String(a.name || "").trim().slice(0, 60);
+        if (!name) throw new Error("Give the period a name.");
+        const start = timeValue(a.start), end = timeValue(a.end);
+        if (start != null && end != null && end <= start) throw new Error("A period has to end after it starts.");
+        const id = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 30) + "-" + Math.random().toString(36).slice(2, 7);
+        c.periods.push({ id, name, start, end });
+        break;
+      }
+      case "updatePeriod": {
+        const p = c.periods.find((x) => x.id === a.id);
+        if (!p) throw new Error("That period no longer exists.");
+        if ("name" in a) p.name = String(a.name || p.name).trim().slice(0, 60) || p.name;
+        if ("start" in a) p.start = timeValue(a.start);
+        if ("end" in a) p.end = timeValue(a.end);
+        if (p.start != null && p.end != null && p.end <= p.start) throw new Error("A period has to end after it starts.");
+        break;
+      }
+      case "removePeriod": {
+        c.periods = c.periods.filter((x) => x.id !== a.id);
+        break;
+      }
+      case "newPeriodNow": {
+        const name = String(a.name || "").trim().slice(0, 60);
+        if (!name) throw new Error("Give the new period a name.");
+        const now = Date.now();
+        const cur = activePeriod(c, now);
+        if (cur) cur.end = now;
+        const id = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 30) + "-" + Math.random().toString(36).slice(2, 7);
+        c.periods.push({ id, name, start: now, end: timeValue(a.end) });
+        break;
+      }
+      case "setPassword": {
+        const pw = String(a.password || "");
+        if (pw.length < 6) throw new Error("Use at least 6 characters.");
+        if (pw.includes(":")) throw new Error("The password cannot contain a colon.");
+        // Kept readable, so the seminar leader can look it up on the admin
+        // console: it is a password the whole class shares, not a personal
+        // one, and only the admin can read the configuration.
+        c.password = { value: pw };
+        c.passwordChanged = Date.now();
+        break;
+      }
+      case "clearPassword": {
+        c.password = null;
+        c.passwordChanged = Date.now();
+        break;
+      }
+      default:
+        throw new Error("Unknown change.");
+    }
+    await this.ctx.storage.put("config", c);
+    return c;
+  }
+}
+
+// One object per student. Its methods run one at a time, so reading the
+// count and writing the new one cannot be split by a second request from
+// another device arriving at the same moment.
+export class StudentQuota extends DurableObject {
+  // limit null = no limit for this case; dayCap null = no daily cap.
+  async reserve(caseId, limit, day, dayCap) {
+    const key = "case:" + caseId;
+    const used = (await this.ctx.storage.get(key)) || 0;
+    if (limit != null && used >= limit) return { ok: false, reason: "case", used, limit };
+    const dkey = "day:" + day;
+    const today = (await this.ctx.storage.get(dkey)) || 0;
+    if (dayCap != null && today >= dayCap) return { ok: false, reason: "day", used, limit, today, dayCap };
+    await this.ctx.storage.put(key, used + 1);
+    await this.ctx.storage.put(dkey, today + 1);
+    return { ok: true, used: used + 1, limit, today: today + 1, dayCap };
+  }
+  // A call that failed before the patient said anything is not counted.
+  async refund(caseId, day) {
+    const key = "case:" + caseId, dkey = "day:" + day;
+    const used = (await this.ctx.storage.get(key)) || 0;
+    if (used > 0) await this.ctx.storage.put(key, used - 1);
+    const today = (await this.ctx.storage.get(dkey)) || 0;
+    if (today > 0) await this.ctx.storage.put(dkey, today - 1);
+  }
+  async status(day) {
+    const out = {};
+    for (const [k, v] of await this.ctx.storage.list({ prefix: "case:" })) out[k.slice(5)] = v;
+    if (day === undefined) return out;
+    return { cases: out, today: (await this.ctx.storage.get("day:" + day)) || 0 };
+  }
+  async reset(caseId) {
+    if (caseId) await this.ctx.storage.delete("case:" + caseId);
+    else {
+      for (const [k] of await this.ctx.storage.list({ prefix: "case:" })) await this.ctx.storage.delete(k);
+      for (const [k] of await this.ctx.storage.list({ prefix: "day:" })) await this.ctx.storage.delete(k);
+    }
+  }
+}
+
+// ---- Usage monitoring (admin console) ------------------------------------------
+// Every chat reply is recorded as one event - lane (demo / seminar / admin /
+// byok), participant, case, model, tokens in and out, cost, latency - in a
+// single Durable Object that keeps them in SQLite and pushes each new one
+// to every open admin page over a WebSocket. No conversation text is kept.
+const DEFAULT_MODEL = { anthropic: "claude-haiku-4-5-20251001", gemini: "gemini-3.5-flash", openai: "gpt-5-nano" };
+
+// US dollars per million tokens, standard (paid) tier, as published by the
+// providers in September 2026. PRICING (a JSON var) overrides any entry,
+// e.g. {"gemini-3.5-flash":[1.5,9]}. BYOK traffic is never priced: it is
+// the adopting instructor's own bill.
+const PRICES = {
+  "claude-haiku-4-5-20251001": [1, 5],
+  "claude-sonnet-5": [2, 10],
+  "gemini-3.5-flash": [1.5, 9],
+  "gemini-3.1-flash-lite": [0.25, 1.5],
+  "gemini-3.1-pro": [2, 12],
+};
+function priceTable(env) {
+  if (!env.PRICING) return PRICES;
+  try { return Object.assign({}, PRICES, JSON.parse(env.PRICING)); } catch { return PRICES; }
+}
+function priceOf(model, tin, tout, env) {
+  const p = priceTable(env)[model];
+  if (!p) return null;
+  return (tin * p[0] + tout * p[1]) / 1e6;
+}
+
+// Demo visitors are anonymous: chat.js sends a random id kept in the
+// browser, shown as "Visitor a3f2". Only its shape is checked.
+function visitorLabel(v) {
+  const id = String(v || "").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 12);
+  return id || "anon";
+}
+
+function monitorStub(env) {
+  return env.USAGE_MONITOR.get(env.USAGE_MONITOR.idFromName("global"));
+}
+async function recordUsage(env, ev) {
+  try { await monitorStub(env).record(ev); } catch (e) { console.error("monitor:", e); }
+}
+
+const RANGES = {
+  "1h": { span: 3600e3, bucket: 60e3 },
+  "24h": { span: 86400e3, bucket: 900e3 },
+  "7d": { span: 7 * 86400e3, bucket: 3 * 3600e3 },
+  "30d": { span: 30 * 86400e3, bucket: 86400e3 },
+};
+const KEEP_MS = 90 * 86400e3;
+
+export class UsageMonitor extends DurableObject {
+  constructor(ctx, env) {
+    super(ctx, env);
+    this.sql = ctx.storage.sql;
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS ev (
+      ts INTEGER NOT NULL, lane TEXT NOT NULL, pid TEXT NOT NULL, cs TEXT, model TEXT,
+      tin INTEGER, tout INTEGER, cost REAL, ok INTEGER, ms INTEGER)`);
+    this.sql.exec("CREATE INDEX IF NOT EXISTS ev_ts ON ev(ts)");
+    this.inserts = 0;
+  }
+
+  async record(e) {
+    this.sql.exec("INSERT INTO ev (ts, lane, pid, cs, model, tin, tout, cost, ok, ms) VALUES (?,?,?,?,?,?,?,?,?,?)",
+      e.ts, e.lane, e.participant, e.caseId, e.model, e.tin, e.tout, e.cost, e.ok, e.ms);
+    if (++this.inserts % 500 === 0) this.sql.exec("DELETE FROM ev WHERE ts < ?", Date.now() - KEEP_MS);
+    const msg = JSON.stringify({ type: "event", event: e });
+    for (const ws of this.ctx.getWebSockets()) { try { ws.send(msg); } catch {} }
+  }
+
+  // Totals, a time series and the participant table for each lane, plus
+  // the latest events - everything the page needs to draw itself.
+  async summary(rangeKey) {
+    const r = RANGES[rangeKey] || RANGES["24h"];
+    const now = Date.now(), from = now - r.span;
+    const start = Math.floor(from / r.bucket) * r.bucket;
+    const n = Math.ceil((now - start) / r.bucket);
+    const lanes = {};
+    const lane = (k) => lanes[k] || (lanes[k] = {
+      req: 0, fail: 0, tin: 0, tout: 0, cost: 0, priced: true, participants: 0,
+      series: Array.from({ length: n }, (_, i) => ({ t: start + i * r.bucket, req: 0, tok: 0, cost: 0 })),
+      people: [],
+    });
+    ["demo", "seminar", "admin", "byok"].forEach(lane);
+    for (const row of this.sql.exec(
+      "SELECT lane, CAST((ts - ?) / ? AS INTEGER) AS b, COUNT(*) AS req, SUM(1 - ok) AS fail, SUM(tin) AS tin, SUM(tout) AS tout, SUM(cost) AS cost, SUM(cost IS NULL AND ok = 1) AS unpriced FROM ev WHERE ts >= ? GROUP BY lane, b",
+      start, r.bucket, start)) {
+      const L = lane(row.lane), b = L.series[row.b];
+      if (b) { b.req = row.req; b.tok = (row.tin || 0) + (row.tout || 0); b.cost = row.cost || 0; }
+      L.req += row.req; L.fail += row.fail || 0; L.tin += row.tin || 0; L.tout += row.tout || 0; L.cost += row.cost || 0;
+      if (row.unpriced) L.priced = false;
+    }
+    for (const row of this.sql.exec(
+      "SELECT lane, pid, COUNT(*) AS req, SUM(tin) AS tin, SUM(tout) AS tout, SUM(cost) AS cost, MAX(ts) AS last FROM ev WHERE ts >= ? GROUP BY lane, pid ORDER BY cost DESC, req DESC",
+      start)) {
+      const L = lane(row.lane);
+      L.people.push({ pid: row.pid, req: row.req, tin: row.tin || 0, tout: row.tout || 0, cost: row.cost || 0, last: row.last });
+    }
+    for (const k in lanes) lanes[k].participants = lanes[k].people.length;
+    const feed = this.sql.exec("SELECT ts, lane, pid AS participant, cs AS caseId, model, tin, tout, cost, ok, ms FROM ev ORDER BY ts DESC LIMIT 40").toArray();
+    return { range: rangeKey in RANGES ? rangeKey : "24h", bucket: r.bucket, from: start, now, lanes, feed };
+  }
+
+  // One participant's own series, for the detail chart.
+  async participant(laneKey, pid, rangeKey) {
+    const r = RANGES[rangeKey] || RANGES["24h"];
+    const now = Date.now(), start = Math.floor((now - r.span) / r.bucket) * r.bucket;
+    const n = Math.ceil((now - start) / r.bucket);
+    const series = Array.from({ length: n }, (_, i) => ({ t: start + i * r.bucket, req: 0, tok: 0, cost: 0 }));
+    for (const row of this.sql.exec(
+      "SELECT CAST((ts - ?) / ? AS INTEGER) AS b, COUNT(*) AS req, SUM(tin) + SUM(tout) AS tok, SUM(cost) AS cost FROM ev WHERE ts >= ? AND lane = ? AND pid = ? GROUP BY b",
+      start, r.bucket, start, laneKey, pid)) {
+      const b = series[row.b]; if (b) { b.req = row.req; b.tok = row.tok || 0; b.cost = row.cost || 0; }
+    }
+    const byCase = this.sql.exec(
+      "SELECT cs AS caseId, COUNT(*) AS req, SUM(tin) AS tin, SUM(tout) AS tout, SUM(cost) AS cost FROM ev WHERE ts >= ? AND lane = ? AND pid = ? GROUP BY cs",
+      start, laneKey, pid).toArray();
+    return { lane: laneKey, pid, bucket: r.bucket, series, byCase };
+  }
+
+  async fetch(request) {
+    if (request.headers.get("Upgrade") !== "websocket") return new Response("Expected WebSocket", { status: 426 });
+    const pair = new WebSocketPair();
+    this.ctx.acceptWebSocket(pair[1]);
+    return new Response(null, { status: 101, webSocket: pair[0] });
+  }
+  async webSocketMessage(ws, msg) { if (msg === "ping") ws.send("pong"); }
+  async webSocketClose(ws, code) { try { ws.close(code, "bye"); } catch {} }
+}
+
+async function handleMonitorApi(request, url, env) {
+  const path = url.pathname.slice("/api/monitor/".length);
+  // Only the admin page itself may call these. A browser that has the admin
+  // password cached would otherwise send it along with a request made by
+  // some other site (a form post, a WebSocket) without the admin knowing.
+  const origin = request.headers.get("Origin");
+  if (origin && origin !== url.origin) return new Response("Forbidden", { status: 403 });
+  if (request.method === "POST" && request.headers.get("X-ClinCog-Admin") !== "1") {
+    return new Response("Forbidden", { status: 403 });
+  }
+  if (path === "live") {
+    if (request.headers.get("Upgrade") !== "websocket") return new Response("Expected WebSocket", { status: 426 });
+    return monitorStub(env).fetch(request);
+  }
+  if (path === "summary" && request.method === "GET") {
+    const data = await monitorStub(env).summary(url.searchParams.get("range") || "24h");
+    data.freeTierGemini = String(env.GEMINI_FREE_TIER || "").toLowerCase() === "true";
+    data.prices = priceTable(env);
+    return jsonResponse(data);
+  }
+  if (path === "participant" && request.method === "GET") {
+    return jsonResponse(await monitorStub(env).participant(
+      url.searchParams.get("lane") || "", url.searchParams.get("pid") || "", url.searchParams.get("range") || "24h"));
+  }
+  // The seminar roster with each student's quota, and a per-student reset.
+  if (path === "quotas" && request.method === "GET") {
+    const cfg = await seminarConfig(env, true);
+    const ids = Object.keys(cfg.students);
+    const period = activePeriod(cfg);
+    const defaults = studentLimits({ students: {}, caseLimits: cfg.caseLimits, defaultLimit: cfg.defaultLimit }, "");
+    if (!ids.length) return jsonResponse({ configured: false, limit: cfg.defaultLimit, limits: defaults, students: [] });
+    const used = period ? await Promise.all(ids.map((id) => quotaStub(env, period.id, id).status().catch(() => ({})))) : ids.map(() => ({}));
+    return jsonResponse({ configured: true, limit: cfg.defaultLimit, limits: defaults, period: period ? period.name : "(between periods)",
+      students: ids.map((id, i) => ({ id, used: used[i], limits: studentLimits(cfg, id), suspended: !!cfg.students[id].suspended })) });
+  }
+  if (path === "quota-reset" && request.method === "POST") {
+    const id = normaliseStudentId(url.searchParams.get("student"));
+    if (!id) return jsonResponse({ error: "student is required" }, 400);
+    const cfg = await seminarConfig(env, true);
+    const period = activePeriod(cfg);
+    if (!period) return jsonResponse({ error: "No period is running." }, 409);
+    await quotaStub(env, period.id, id).reset(url.searchParams.get("case") || null);
+    return jsonResponse({ id, used: await quotaStub(env, period.id, id).status() });
+  }
+
+  // ---- Seminar settings (the admin console's second page) ----------------
+  if (path === "seminar" && request.method === "GET") {
+    const cfg = await seminarConfig(env, true);
+    const period = activePeriod(cfg);
+    const day = dayKey(cfg);
+    const ids = Object.keys(cfg.students).sort();
+    const st = period ? await Promise.all(ids.map((id) => quotaStub(env, period.id, id).status(day).catch(() => ({ cases: {}, today: 0 })))) : ids.map(() => ({ cases: {}, today: 0 }));
+    const safe = Object.assign({}, cfg, { password: undefined, students: undefined });
+    return jsonResponse({
+      config: safe,
+      passwordSource: cfg.password ? "console" : (env.STUDENT_ACCESS_PASSWORD ? "secret" : "none"),
+      activePeriodId: period ? period.id : null,
+      now: Date.now(), today: day,
+      students: ids.map((id, i) => Object.assign({ id, effective: studentLimits(cfg, id), used: st[i].cases || {}, today: st[i].today || 0 }, cfg.students[id])),
+    });
+  }
+  // The class password, only when asked for (the page shows it on request).
+  if (path === "seminar-password" && request.method === "GET") {
+    const cfg = await seminarConfig(env, true);
+    if (cfg.password && typeof cfg.password.value === "string") return jsonResponse({ source: "console", password: cfg.password.value });
+    if (cfg.password) return jsonResponse({ source: "console", password: null, note: "Set before passwords could be shown. Set it again to see it here." });
+    if (env.STUDENT_ACCESS_PASSWORD) return jsonResponse({ source: "secret", password: env.STUDENT_ACCESS_PASSWORD });
+    return jsonResponse({ source: "none", password: null });
+  }
+  if (path === "seminar" && request.method === "POST") {
+    let body;
+    try { body = await request.json(); } catch { return jsonResponse({ error: "Could not read the change." }, 400); }
+    try {
+      await configStub(env).update(String(body.op || ""), body.args || {}, configSeed(env));
+    } catch (e) {
+      return jsonResponse({ error: String((e && e.message) || e).replace(/^Error: /, "") }, 400);
+    }
+    cfgCache = { at: 0, value: null };
+    return jsonResponse({ ok: true });
+  }
+  return new Response("Not found", { status: 404 });
+}
+
+function jsonResponse(obj, status, extra) {
+  return new Response(JSON.stringify(obj), {
+    status: status || 200,
+    headers: Object.assign({ "Content-Type": "application/json", "Cache-Control": "no-store" }, extra || {}),
+  });
+}
+
+// The browser sends the whole conversation with every question, and all of
+// it is billed as input. Anything longer or odder than the chat page itself
+// can produce is refused, so a hand-made request cannot run up the cost.
+function validHistory(history, maxExchanges) {
+  if (!Array.isArray(history) || history.length === 0) return false;
+  if (history.length > maxExchanges * 2 - 1) return false;
+  for (let i = 0; i < history.length; i++) {
+    const m = history[i];
+    if (!m || typeof m.content !== "string") return false;
+    if (m.role !== (i % 2 === 0 ? "user" : "assistant")) return false;
+    if (m.content.length > (m.role === "user" ? 2000 : 4000)) return false;
+  }
+  return history[history.length - 1].role === "user";
 }
 
 // What the browser shows when the password prompt is cancelled. The prompt
@@ -395,7 +988,7 @@ const UNAUTHORIZED_PAGE = `<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>ClinCog · Seminar access</title>
+<title>ClinCog - Seminar access</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <script>
   // The theme the student chose inside the app, if any (same key as theme-init.js).
@@ -466,6 +1059,7 @@ const UNAUTHORIZED_PAGE = `<!doctype html>
   </header>
   <main>
     <div class="stage">
+<!--cards-->
       <div class="card card-a" aria-hidden="true">
         <small><i></i>Seminar · UVT</small>
         <p>The cases open once you sign in.</p>
@@ -475,10 +1069,11 @@ const UNAUTHORIZED_PAGE = `<!doctype html>
         <small>Password</small>
         <p>The one you received in class.</p>
       </div>
+      <!--/cards-->
 
       <p class="eyebrow">Clinical Cognition · Seminar access</p>
       <h1>This space is for <em>the seminar</em>.</h1>
-      <p class="lede">ClinCog here is reserved for students enrolled in the seminar. Sign in with the password you received in class to continue.</p>
+      <p class="lede">ClinCog here is reserved for students enrolled in the seminar. Sign in with your <strong>student number</strong> as the username and the password you received in class.</p>
       <button type="button" class="btn" onclick="location.reload()">Sign in <span class="arrow" aria-hidden="true">&rarr;</span></button>
       <p class="note">Not in the seminar? The public version is open at <a href="https://clincog.net">clincog.net</a>.</p>
     </div>
@@ -494,11 +1089,22 @@ function isPublicShellAsset(request, url) {
          /^\/fonts\/[A-Za-z0-9-]+\.woff2$/.test(url.pathname);
 }
 
-function unauthorizedResponse() {
-  return new Response(UNAUTHORIZED_PAGE, {
+function unauthorizedResponse(admin) {
+  const page = admin
+    ? UNAUTHORIZED_PAGE
+        .replace("<title>ClinCog - Seminar access</title>", "<title>ClinCog - Admin</title>")
+        .replace("Clinical Cognition · Seminar access", "Clinical Cognition · Admin")
+        .replace("This space is for <em>the seminar</em>.", "This is the <em>admin</em> console.")
+        .replace(/<p class="lede">[^]*?<\/p>/, '<p class="lede">Sign in with the admin username and password.</p>')
+        .replace(/<!--cards-->[^]*?<!--\/cards-->/, "")
+        .replace(/<p class="note">[^]*?<\/p>/, "")
+    : UNAUTHORIZED_PAGE;
+  return new Response(page, {
     status: 401,
     headers: {
-      "WWW-Authenticate": 'Basic realm="ClinCog - seminar access"',
+      "WWW-Authenticate": admin
+        ? 'Basic realm="ClinCog admin", charset="UTF-8"'
+        : 'Basic realm="ClinCog seminar - username: your student number", charset="UTF-8"',
       "Content-Type": "text/html; charset=utf-8",
       "Cache-Control": "no-store",
       "X-Robots-Tag": "noindex, nofollow, noarchive",
@@ -506,14 +1112,42 @@ function unauthorizedResponse() {
   });
 }
 
+function withNoIndex(res) {
+  const headers = new Headers(res.headers);
+  headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+  return new Response(res.body, { status: res.status, statusText: res.statusText, headers });
+}
+
 // ---- Worker entry point -----------------------------------------------------
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
-    if (url.hostname === STUDENT_HOSTNAME && !checkStudentAccess(request, env) && !isPublicShellAsset(request, url)) {
-      return unauthorizedResponse();
+    if (url.hostname === STUDENT_HOSTNAME && !isPublicShellAsset(request, url) && !(await checkStudentAccess(request, env))) {
+      return unauthorizedResponse(false);
+    }
+    const isAdmin = url.hostname === ADMIN_HOSTNAME;
+    if (isAdmin && !checkAdminAccess(request, env) && !isPublicShellAsset(request, url)) {
+      return unauthorizedResponse(true);
+    }
+
+    // The admin pages (live monitoring, seminar settings) exist only on the
+    // admin console; the monitoring page is its front page.
+    if (/^\/admin-[a-z]+(\.html|\.js)?$/.test(url.pathname) && !isAdmin) {
+      return new Response("Not found", { status: 404 });
+    }
+    if (isAdmin && (url.pathname === "/" || url.pathname === "/index.html")) {
+      // The asset store serves pages without the extension ("/admin-monitor")
+      // and redirects the ".html" form, so the pretty path is fetched.
+      const page = new URL("/admin-monitor", url);
+      return withNoIndex(await env.ASSETS.fetch(new Request(page, request)));
+    }
+
+    // ---- Live monitoring API (admin console only) --------------------------
+    if (url.pathname.startsWith("/api/monitor/")) {
+      if (!isAdmin) return new Response("Not found", { status: 404 });
+      return handleMonitorApi(request, url, env);
     }
 
     // ---- Licensed instruments ----------------------------------------------
@@ -525,7 +1159,7 @@ export default {
     // Anywhere else it answers 404 rather than 403, so the public instance
     // does not advertise that restricted content exists.
     if (url.pathname === "/api/restricted/spin" && request.method === "GET") {
-      if (url.hostname !== STUDENT_HOSTNAME || !env.SPIN_CONTENT) {
+      if ((url.hostname !== STUDENT_HOSTNAME && url.hostname !== ADMIN_HOSTNAME) || !env.SPIN_CONTENT) {
         return new Response("Not found", { status: 404 });
       }
       return new Response(env.SPIN_CONTENT, {
@@ -570,14 +1204,37 @@ export default {
         });
       }
 
-      const { provider, key, model, tier } = resolveModelCredentials(url.hostname, body.byok, body.studentModel, env);
+      let { provider, key, model, tier } = resolveModelCredentials(url.hostname, body.byok, body.studentModel, env);
+
+      // On the seminar instance every request belongs to a named student on
+      // the class list, within an open period; without that there is nobody
+      // to count against, so the chat does not run rather than spend
+      // uncounted credits.
+      let studentId = null, cfg = null, period = null, limit = 20;
+      if (tier === "student") {
+        cfg = await seminarConfig(env);
+        studentId = await studentIdentity(request, env);
+        const gate = studentId ? seminarGate(cfg, studentId) : { status: 503, text: "The interview is not available right now. Tell your seminar leader." };
+        if (gate) return jsonResponse({ gate: true, text: gate.text }, gate.status);
+        period = activePeriod(cfg);
+        limit = effectiveLimit(cfg, studentId, moduleId);
+        // Only the models the seminar leader has left on; otherwise the first.
+        const allowed = cfg.models.map((m) => STUDENT_MODEL_IDS[m]);
+        if (!allowed.includes(model)) model = allowed[0];
+      }
+
+      if (!validHistory(body.history, limit == null ? UNLIMITED_HISTORY : Math.max(limit, 1))) {
+        return jsonResponse({ text: "That request is not an interview this page could have sent." }, 400);
+      }
 
       // Demo tier spends OUR demo budget, so it gets the strict limiter.
       // Student and adopted-BYOK traffic isn't costing us anything (or is
       // already generously provisioned), so it gets the loose one - purely
-      // an abuse backstop, not a budget control.
+      // an abuse backstop, not a budget control. Students are limited one
+      // by one, not per IP: a whole class shares one address on the
+      // university network.
       const limiter = tier === "demo" ? env.CHAT_RATE_LIMITER_DEMO : env.CHAT_RATE_LIMITER;
-      const { success: withinLimit } = await limiter.limit({ key: clientIp || "unknown" });
+      const { success: withinLimit } = await limiter.limit({ key: studentId ? "student:" + studentId : (clientIp || "unknown") });
       if (!withinLimit) return rateLimitedResponse();
 
       const turnstileOk = await verifyTurnstile(body.turnstileToken, clientIp, env);
@@ -588,9 +1245,91 @@ export default {
         );
       }
 
-      if (provider === "gemini") return respondAsPatientGemini(body.history, key, vignette, model);
-      if (provider === "openai") return respondAsPatientOpenAI(body.history, key, vignette, model);
-      return respondAsPatient(body.history, key, vignette, model);
+      // The quota is taken only once the request is known to be genuine,
+      // and given back if the model never answered.
+      let quota = null, day = null;
+      if (studentId) {
+        day = dayKey(cfg);
+        quota = await quotaStub(env, period.id, studentId).reserve(moduleId, limit, day, cfg.dailyCap);
+        if (!quota.ok) {
+          return jsonResponse({
+            quota: true, reason: quota.reason, used: quota.used, limit: quota.limit, dayCap: quota.dayCap,
+            text: quota.reason === "day"
+              ? "You have used today's " + quota.dayCap + " exchanges. More tomorrow."
+              : "You have used all " + quota.limit + " exchanges for this interview.",
+          }, 429);
+        }
+      }
+
+      // Every reply is metered for the admin console: who, which case,
+      // which model, how many tokens, what it cost. Recorded after the
+      // stream ends, without holding up the student's reply.
+      const started = Date.now();
+      const usedModel = model || DEFAULT_MODEL[provider];
+      const lane = { demo: "demo", student: "seminar", admin: "admin", adopted: "byok" }[tier] || "demo";
+      const participant = studentId || (tier === "admin" ? "admin" : "v:" + visitorLabel(body.visitorId));
+      const meter = (usage, ok) => {
+        const ev = {
+          ts: Date.now(), lane, participant, caseId: moduleId, model: usedModel,
+          tin: usage ? usage.in : 0, tout: usage ? usage.out : 0,
+          ok: ok ? 1 : 0, ms: Date.now() - started,
+        };
+        ev.cost = lane === "byok" ? null : priceOf(usedModel, ev.tin, ev.tout, env);
+        const p = recordUsage(env, ev);
+        if (ctx && ctx.waitUntil) ctx.waitUntil(p);
+      };
+
+      let reply;
+      if (provider === "gemini") reply = await respondAsPatientGemini(body.history, key, vignette, model, meter);
+      else if (provider === "openai") reply = await respondAsPatientOpenAI(body.history, key, vignette, model, meter);
+      else reply = await respondAsPatient(body.history, key, vignette, model, meter);
+
+      if (!quota) return reply;
+      if (!reply.ok) {
+        await quotaStub(env, period.id, studentId).refund(moduleId, day);
+        return reply;
+      }
+      const headers = new Headers(reply.headers);
+      headers.set("X-Quota-Used", String(quota.used));
+      headers.set("X-Quota-Limit", quota.limit == null ? "none" : String(quota.limit));
+      return new Response(reply.body, { status: reply.status, headers });
+    }
+
+    // ---- Quota: where the signed-in student stands, for the chat pages ----
+    if (url.pathname === "/api/quota" && request.method === "GET") {
+      if (url.hostname !== STUDENT_HOSTNAME) return new Response("Not found", { status: 404 });
+      const cfg = await seminarConfig(env);
+      const studentId = await studentIdentity(request, env);
+      if (!studentId) return jsonResponse({ available: false }, 200);
+      const gate = seminarGate(cfg, studentId);
+      const period = activePeriod(cfg);
+      if (!period) return jsonResponse({ available: true, open: false, message: gate ? gate.text : "", student: studentId, limits: studentLimits(cfg, studentId), used: {} });
+      const st = await quotaStub(env, period.id, studentId).status(dayKey(cfg));
+      return jsonResponse({
+        available: true, open: !gate, message: gate ? gate.text : "", student: studentId,
+        limits: studentLimits(cfg, studentId), used: st.cases, dayCap: cfg.dailyCap, today: st.today,
+      });
+    }
+
+    // ---- Quota administration (seminar leader) ----------------------------
+    // Look up or reset one student's counts, e.g. after a lost connection:
+    //   GET  /api/admin/quota?student=AB123
+    //   POST /api/admin/quota?student=AB123&case=anxiety   (omit case: all four)
+    // with the header  X-Admin-Token: <ADMIN_TOKEN secret>. Without that
+    // secret configured the route does not exist.
+    if (url.pathname === "/api/admin/quota") {
+      const token = request.headers.get("X-Admin-Token") || "";
+      if (url.hostname !== STUDENT_HOSTNAME || !env.ADMIN_TOKEN || token !== env.ADMIN_TOKEN) {
+        return new Response("Not found", { status: 404 });
+      }
+      const studentId = normaliseStudentId(url.searchParams.get("student"));
+      if (!studentId) return jsonResponse({ error: "student is required" }, 400);
+      const cfg = await seminarConfig(env);
+      const period = activePeriod(cfg);
+      if (!period) return jsonResponse({ student: studentId, onList: !!cfg.students[studentId], period: null, used: {} });
+      const stub = quotaStub(env, period.id, studentId);
+      if (request.method === "POST") await stub.reset(url.searchParams.get("case") || null);
+      return jsonResponse({ student: studentId, onList: !!cfg.students[studentId], period: period.name, limits: studentLimits(cfg, studentId), used: await stub.status() });
     }
 
     // ---- Contact form ----------------------------------------------------
@@ -663,16 +1402,12 @@ export default {
     // The seminar subdomain carries licensed material, so nothing on it may
     // be indexed. Basic Auth already keeps crawlers out; this makes the
     // intent explicit to any that authenticate or follow a leaked link.
-    if (url.hostname === STUDENT_HOSTNAME) {
-      const headers = new Headers(asset.headers);
-      headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
-      return new Response(asset.body, { status: asset.status, statusText: asset.statusText, headers });
-    }
+    if (url.hostname === STUDENT_HOSTNAME || isAdmin) return withNoIndex(asset);
     return asset;
   },
 };
 
-async function respondAsPatient(history, anthropicKey, vignette, model = "claude-haiku-4-5-20251001") {
+async function respondAsPatient(history, anthropicKey, vignette, model = "claude-haiku-4-5-20251001", meter = null) {
   try {
     const anthropicResponse = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -693,6 +1428,7 @@ async function respondAsPatient(history, anthropicKey, vignette, model = "claude
     if (!anthropicResponse.ok) {
       const errorText = await anthropicResponse.text();
       console.error("Anthropic error:", errorText);
+      if (meter) meter(null, false);
       return new Response(JSON.stringify({ text: "There was an error generating a response." }), {
         status: 502,
         headers: { "Content-Type": "application/json" },
@@ -705,7 +1441,16 @@ async function respondAsPatient(history, anthropicKey, vignette, model = "claude
     // or which provider is even being used underneath.
     return streamPlainTextFromSSE(anthropicResponse, (parsed) =>
       parsed.type === "content_block_delta" ? parsed.delta?.text : null
-    );
+    , meter, (parsed, u) => {
+      // message_start carries the input count, message_delta the running
+      // output count (the last one is the total).
+      const m = parsed.type === "message_start" ? parsed.message?.usage : null;
+      if (m) {
+        u.in = (m.input_tokens || 0) + (m.cache_creation_input_tokens || 0) + (m.cache_read_input_tokens || 0);
+        u.out = m.output_tokens || 0;
+      }
+      if (parsed.type === "message_delta" && parsed.usage) u.out = parsed.usage.output_tokens || u.out;
+    });
 
   } catch (err) {
     return new Response(JSON.stringify({ text: "Invalid request." }), {
@@ -729,8 +1474,9 @@ async function respondAsPatient(history, anthropicKey, vignette, model = "claude
 // provider's stream here, server-side, and re-emit a single uniform
 // format: plain text chunks, nothing else. chat.js just reads bytes and
 // appends them - it never needs to know which provider answered.
-function streamPlainTextFromSSE(providerResponse, extractDelta) {
+function streamPlainTextFromSSE(providerResponse, extractDelta, meter, extractUsage) {
   const encoder = new TextEncoder();
+  const usage = { in: 0, out: 0 };
   const decoder = new TextDecoder();
   const reader = providerResponse.body.getReader();
 
@@ -753,6 +1499,7 @@ function streamPlainTextFromSSE(providerResponse, extractDelta) {
               const parsed = JSON.parse(payload);
               const delta = extractDelta(parsed);
               if (delta) controller.enqueue(encoder.encode(delta));
+              if (extractUsage) extractUsage(parsed, usage);
             } catch {
               // Non-JSON or partial line - safe to skip, next chunk will
               // usually complete it.
@@ -763,6 +1510,7 @@ function streamPlainTextFromSSE(providerResponse, extractDelta) {
         console.error("Stream relay error:", err);
       } finally {
         controller.close();
+        if (meter) meter(usage, true);
       }
     },
   });
@@ -772,7 +1520,7 @@ function streamPlainTextFromSSE(providerResponse, extractDelta) {
   });
 }
 
-async function respondAsPatientGemini(history, geminiKey, vignette, model = "gemini-3.5-flash") {
+async function respondAsPatientGemini(history, geminiKey, vignette, model = "gemini-3.5-flash", meter = null) {
   try {
     const contents = history.map((m) => ({
       role: m.role === "assistant" ? "model" : "user",
@@ -823,6 +1571,7 @@ async function respondAsPatientGemini(history, geminiKey, vignette, model = "gem
     if (!geminiResponse.ok) {
       const errorText = await geminiResponse.text();
       console.error("Gemini error:", errorText);
+      if (meter) meter(null, false);
       return new Response(JSON.stringify({ text: "There was an error generating a response." }), {
         status: 502,
         headers: { "Content-Type": "application/json" },
@@ -837,7 +1586,15 @@ async function respondAsPatientGemini(history, geminiKey, vignette, model = "gem
     // the non-streaming response, just one incremental chunk at a time.
     return streamPlainTextFromSSE(geminiResponse, (parsed) =>
       parsed.candidates?.[0]?.content?.parts?.[0]?.text
-    );
+    , meter, (parsed, u) => {
+      // Every chunk repeats usageMetadata with the running totals. Thinking
+      // tokens are billed as output.
+      const m = parsed.usageMetadata;
+      if (m) {
+        u.in = m.promptTokenCount || u.in;
+        u.out = (m.candidatesTokenCount || 0) + (m.thoughtsTokenCount || 0);
+      }
+    });
 
   } catch (err) {
     return new Response(JSON.stringify({ text: "Invalid request." }), {
@@ -853,7 +1610,7 @@ async function respondAsPatientGemini(history, geminiKey, vignette, model = "gem
 // Gemini, which each have a separate top-level field for it), and our
 // internal history already uses "user"/"assistant", so no role
 // conversion is needed here, unlike the Gemini integration.
-async function respondAsPatientOpenAI(history, openaiKey, vignette, model = "gpt-5-nano") {
+async function respondAsPatientOpenAI(history, openaiKey, vignette, model = "gpt-5-nano", meter = null) {
   try {
     const messages = [
       { role: "system", content: buildSystemPrompt(vignette) },
@@ -876,6 +1633,7 @@ async function respondAsPatientOpenAI(history, openaiKey, vignette, model = "gpt
     if (!openaiResponse.ok) {
       const errorText = await openaiResponse.text();
       console.error("OpenAI error:", errorText);
+      if (meter) meter(null, false);
       return new Response(JSON.stringify({ text: "There was an error generating a response." }), {
         status: 502,
         headers: { "Content-Type": "application/json" },
@@ -884,6 +1642,7 @@ async function respondAsPatientOpenAI(history, openaiKey, vignette, model = "gpt
 
     const data = await openaiResponse.json();
     const text = data.choices?.[0]?.message?.content ?? "(no response)";
+    if (meter) meter({ in: data.usage?.prompt_tokens || 0, out: data.usage?.completion_tokens || 0 }, true);
 
     return new Response(JSON.stringify({ text }), {
       headers: { "Content-Type": "application/json" },

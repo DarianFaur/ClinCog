@@ -30,17 +30,27 @@ The four cases: a first psychotic episode (schizophrenia), a major
 depressive episode, social anxiety disorder, and alcohol dependence.
 
 Nothing a student types is stored on a server. Names, conversations, and
-progress live only in that browser, on that device — see `public/help.html`
-for the exact guarantees this makes and doesn't make.
+progress live only in that browser, on that device. The server keeps only a
+usage record per reply (time, case, model, token count, no text) and, on the
+course instance, how many exchanges each student number has used — see
+`public/help.html` for the exact guarantees this makes and doesn't make.
 
 ## Architecture, briefly
 
 One Cloudflare Worker (`worker.js`) serves both the static site (from
-`public/`) and a small API surface (`/api/chat/<case>`, `/api/icd/token`).
-There's no separate backend, no database — Cloudflare's static-assets
-binding and a single `fetch` handler do both jobs.
+`public/`) and a small API surface (`/api/chat/<case>`, `/api/icd/token`,
+`/api/quota`, `/api/monitor/*`). Every request passes through the Worker
+first (`run_worker_first`), so the password gates cover the static pages too.
+There's no separate backend: state that has to live on the server is kept
+in three Durable Objects (SQLite-backed, available on the free plan):
 
-The live deployment at `clincog.net` runs three access tiers from that one
+| Durable Object | Holds |
+|---|---|
+| `StudentQuota` | one per student and period: exchanges used per case, and per day |
+| `SeminarConfig` | the course instance's settings: class list, limits, periods, open/closed, allowed models, class password |
+| `UsageMonitor` | one usage record per reply (time, case, model, tokens, cost estimate — no text), kept 90 days and streamed live to the admin console |
+
+The live deployment at `clincog.net` runs four access tiers from that one
 Worker, distinguished purely by request hostname and an optional
 client-supplied key:
 
@@ -48,7 +58,20 @@ client-supplied key:
 |---|---|---|---|
 | Demo | `clincog.net` | Gemini (shared, rate-limited) | anyone trying the platform |
 | Adopted (BYOK) | `clincog.net` + saved key | Anthropic / Gemini / OpenAI, instructor's own | instructors using their own budget |
-| Course instance | `uvt.clincog.net`, password-gated | Anthropic (author's own key) | the author's own students |
+| Course instance | `uvt.clincog.net` — student number + class password | Anthropic (author's own key), per-student quotas | the author's own students |
+| Admin console | `admin.clincog.net` — admin username + password | Gemini (demo key) | the author: live usage monitoring and seminar settings |
+
+On the course instance each student signs in with their student number as
+the username. Every exchange is counted on the server against that number,
+so a second device, another browser or restarting progress does not reset
+it. The class list, per-student and per-case limits, a daily cap, periods
+(counters start from zero in each new period), opening and closing the
+interviews, the allowed models and the class password are all managed on
+the admin console's **Seminar settings** page — no terminal needed.
+
+The admin console is the same app as `clincog.net` with two extra pages:
+**Live monitoring** (its front page: cost, tokens and replies per tier and
+per participant, updated live over a WebSocket) and **Seminar settings**.
 
 If you want your own fully independent instance instead — your own
 Cloudflare account, your own domain, your own budget, nothing shared with
@@ -61,23 +84,37 @@ deploying anything, visit [clincog.net/adopt.html](https://clincog.net/adopt.htm
 ## Repository structure
 
 ```
-worker.js            the entire backend: routing, model calls, credential
-                      resolution across the three tiers, rate limiting,
-                      Turnstile verification, ICD-11 OAuth token relay
-wrangler.toml         Cloudflare Worker configuration
+worker.js             the entire backend: routing, access gates, model calls,
+                      credential resolution across the tiers, quotas, usage
+                      metering, seminar settings, rate limiting, Turnstile
+                      verification, ICD-11 OAuth token relay, contact form
+wrangler.toml         Cloudflare Worker configuration (routes, rate limiters,
+                      Durable Objects, vars)
 SELF_HOSTING.md       step-by-step deployment guide for a new instance
+DESIGN.md             the design system ("Paper & Ink")
 public/
   index.html          name-entry gate
-  dashboard.html       student's term overview
-  {case}-chat.html      conceptualization pages (×4)
-  {case}-eval.html      evaluation pages (×4)
+  dashboard.html      student's term overview
+  progress.html       progress, backup and restore
+  {case}-chat.html    conceptualization pages (×4)
+  {case}-eval.html    evaluation pages (×4)
+  cognitive-*.html, transdiagnostic*.html, icd-glossary.html,
+  cddr-guide.html     resource pages
   adopt.html          bring-your-own-key form
-  about.html, help.html
+  about.html, help.html, contact.html, benchmarks.html
+  admin-monitor.*     admin console: live monitoring (admin host only)
+  admin-seminar.*     admin console: seminar settings (admin host only)
+  tokens.css, components.css, shell.css, alpha-eval.css, report.css
+                      design tokens and shared styles
   storage.js          all client-side state (localStorage) lives here
+  shell.js            sidebar and top bar shared by every page
   chat.js             shared conceptualization chat logic
+  eval-focus.js       the "active postcard" rhythm on the evaluation pages
+  eval-memory.js      keeps a student's answers across visits
+  charts.js, norms.js severity bars, distribution panels, reference norms
   icd-select.js       ICD-11 diagnosis search widget
-  sidebar.js, nav.js, a11y.js, theme-init.js, reveal.js
-  styles.css
+  a11y.js, theme-init.js, icons.js, toast.js, reveal.js, try-tasks.js
+  fonts/              self-hosted Inter, Newsreader and DM Mono
 ```
 
 ## Required secrets (for the live three-tier deployment)
@@ -87,19 +124,34 @@ of this list scoped to a single self-hosted instance, which needs far
 fewer of these.
 
 ```
-ANTHROPIC_API_KEY          course tier (your own students)
+ANTHROPIC_API_KEY           course tier (your own students)
 ICD_CLIENT_ID
 ICD_CLIENT_SECRET
-GEMINI_API_KEY_DEMO         demo tier
+GEMINI_API_KEY_DEMO         demo tier and admin console
 ICD_CLIENT_ID_DEMO
 ICD_CLIENT_SECRET_DEMO
 TURNSTILE_SECRET_KEY        bot verification, all tiers
-STUDENT_ACCESS_PASSWORD     gates the course instance  
+ADMIN_USER, ADMIN_PASSWORD  sign-in for the admin console
+STUDENT_ACCESS_PASSWORD     class password, until one is set on the console
+STUDENT_IDS                 optional: starting class list (comma-separated);
+                            numbers added to it later are added to the list
+SPIN_CONTENT                licensed SPIN items (course instance, admin console)
+CONTACT_TO, CONTACT_NAME, CONTACT_ROLE, CONTACT_FROM
+                            contact form
+ADMIN_TOKEN                 optional: quota lookups from a terminal
 ```
+
+Non-secret settings are `[vars]` in `wrangler.toml`: `STUDENT_CASE_LIMIT`
+and `QUOTA_PERIOD` (starting values for the seminar settings),
+`GEMINI_FREE_TIER` (whether the demo Gemini key is on the free tier, so the
+console shows its cost as $0) and, optionally, `PRICING` (a JSON override of
+the per-model prices used for the console's cost estimates).
 
 ## Stack
 
 Cloudflare Workers (compute + static assets + native rate limiting) ·
+Durable Objects with SQLite storage and WebSockets (quotas, seminar
+settings, usage monitoring) ·
 Anthropic, Google Gemini, and OpenAI APIs (model calls) · WHO ICD-11 API
 (diagnosis search) · Cloudflare Turnstile (bot verification).
 
@@ -122,8 +174,9 @@ terms and passes those terms on to you.
 
 `THIRD_PARTY_NOTICES.md` lists every reproduced instrument with its source and
 licence: CDDR, ICD-11 classification, HiTOP-SR and its substance-use module,
-PHQ-9, GAD-7, AUDIT, the dot-probe word list, Inter, DM Mono, Plotly, and the
-WHO ICD-11 embedded classification widget. It also records which instruments
+PHQ-9, GAD-7, AUDIT, the dot-probe word list, the SPIN (licensed, never in
+this repository), Inter, Newsreader, DM Mono, Plotly, and the WHO ICD-11
+embedded classification widget. It also records which instruments
 were deliberately removed for being proprietary, so nobody adds them back by
 accident.
 
