@@ -140,6 +140,75 @@
     $("g-msg").value = c.closedMessage || "";
   }
 
+  // ---------- prices ----------
+  function shortDate(ms) { var d = new Date(ms); return d.getDate() + " " + MONTHS[d.getMonth()]; }
+  function priceSourceText(price) {
+    if (!price) return "No price known for this model: type one, or its cost shows as unknown.";
+    var base = "$ per million tokens, input / output. ";
+    if (price.source === "manual") return base + "Set by you - empty both fields to go back to the automatic price.";
+    if (price.source === "built-in") return base + "Built-in price; not found in the public catalogues yet.";
+    return base + "Automatic, from " + price.source + (price.at ? " (" + shortDate(price.at) + ")" : "") + ". Type a price to fix it.";
+  }
+  function renderPriceCheck(box) {
+    var pc = S.data.priceCheck, row = el("div", "row-actions");
+    var txt = pc
+      ? "Prices last checked " + fmtDate(pc.at) + ": " + pc.found + " found" + (pc.openrouter ? " (OpenRouter" + (pc.litellm ? ", LiteLLM" : "") + ")" : pc.litellm ? " (LiteLLM)" : "") +
+        (pc.missing && pc.missing.length ? "; not found: " + pc.missing.join(", ") + "." : ".")
+      : "Prices have not been checked yet. They are checked once a day.";
+    var note = el("span", "note", txt); note.style.margin = "0"; note.style.flex = "1 1 280px";
+    var b = el("button", "btn-ghost btn-sm", "Check prices now"); b.type = "button";
+    b.addEventListener("click", function () {
+      b.disabled = true; b.textContent = "Checking…";
+      fetch("/api/monitor/prices-refresh", { method: "POST", headers: { "X-ClinCog-Admin": "1" } })
+        .then(function (r) { return r.json(); })
+        .then(function () { toast("Prices checked"); return load(); })
+        .catch(function () { toast("Could not reach the price catalogues"); b.disabled = false; b.textContent = "Check prices now"; });
+    });
+    row.appendChild(note); row.appendChild(b);
+    box.appendChild(row);
+  }
+
+  // ---------- billing (Anthropic Admin key) ----------
+  function renderBilling(box) {
+    var wrap = el("div", "billing-box");
+    wrap.appendChild(el("h4", "", "What Anthropic billed"));
+    wrap.appendChild(el("p", "note", "With an Anthropic Admin key, Live monitoring also shows what Anthropic actually billed each day, next to the estimate. The key is used only to read cost reports and is never shown again."));
+    var status = el("div", "note", "Checking…"); wrap.appendChild(status);
+    var g = el("div", "grid2"); g.style.marginTop = "10px";
+    var kf = el("label", "field"); kf.appendChild(el("span", "", "Admin key"));
+    var kin = el("input", "inp"); kin.type = "password"; kin.autocomplete = "off"; kin.placeholder = "sk-ant-admin01-…";
+    kf.appendChild(kin); g.appendChild(kf);
+    var wf = el("label", "field"); wf.appendChild(el("span", "", "Count only this workspace"));
+    var wsel = el("select", "sel"); wsel.appendChild(new Option("Whole organization", ""));
+    wf.appendChild(wsel); wf.appendChild(el("small", "", "Best: keep the students' key in its own workspace, so other use of your account is not counted."));
+    g.appendChild(wf); wrap.appendChild(g);
+    var err = el("span", "err");
+    var row = el("div", "row-actions");
+    var save = el("button", "btn-ghost", "Save admin key"); save.type = "button";
+    save.addEventListener("click", function () { change("setAdminKey", { key: kin.value }, err, "Admin key saved").then(function (ok) { if (ok) kin.value = ""; }); });
+    var rm = el("button", "btn-ghost danger", "Remove saved admin key"); rm.type = "button"; rm.hidden = true;
+    rm.addEventListener("click", function () { if (confirm("Remove the admin key saved here?")) change("clearAdminKey", {}, err, "Admin key removed"); });
+    var ws = el("button", "btn-ghost", "Save workspace"); ws.type = "button"; ws.disabled = true;
+    ws.addEventListener("click", function () {
+      var o = wsel.options[wsel.selectedIndex];
+      change("billingWorkspace", { id: wsel.value || null, name: o ? o.text : null }, err, "Saved");
+    });
+    [save, rm, ws, err].forEach(function (x) { row.appendChild(x); });
+    wrap.appendChild(row);
+    box.appendChild(wrap);
+    fetch("/api/monitor/billing-status", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (b) {
+      status.textContent = b.source === "none" ? "No admin key yet." :
+        (b.source === "console" ? "Admin key saved here " : "Admin key from Cloudflare (ANTHROPIC_ADMIN_KEY) ") + b.hint +
+        (b.error ? " - " + b.error : b.workspaces ? " - working." : "");
+      rm.hidden = b.source !== "console";
+      if (b.workspaces) {
+        b.workspaces.filter(function (w) { return !w.archived; }).forEach(function (w) { wsel.appendChild(new Option(w.name, w.id)); });
+        wsel.value = b.workspace || "";
+        ws.disabled = false;
+      }
+    }).catch(function () { status.textContent = "Could not check the admin key."; });
+  }
+
   // ---------- provider ----------
   var provView = null; // which provider's details are open (defaults to the active one)
   function keyText(k) {
@@ -181,10 +250,13 @@
       var pr = el("div", "limit-pick");
       var pi = el("input", "inp"); pi.type = "number"; pi.step = "0.01"; pi.min = 0; pi.placeholder = "in"; pi.setAttribute("aria-label", "Input price per million tokens");
       var po = el("input", "inp"); po.type = "number"; po.step = "0.01"; po.min = 0; po.placeholder = "out"; po.setAttribute("aria-label", "Output price per million tokens");
-      if (price) { pi.value = price[0]; po.value = price[1]; }
+      // A price typed here is fixed; left empty, the automatic one is used
+      // (shown greyed as the placeholder) and follows the daily check.
+      if (price && price.source === "manual") { pi.value = price.in; po.value = price.out; }
+      else if (price) { pi.placeholder = String(price.in); po.placeholder = String(price.out); }
       pi.style.width = po.style.width = "50%"; pi.style.flex = po.style.flex = "1 1 0";
       pr.appendChild(pi); pr.appendChild(po); f.appendChild(pr);
-      f.appendChild(el("small", "", price ? "Price in $ per million tokens, input / output." : "No price known for this model: set one, or its cost shows as unknown."));
+      f.appendChild(el("small", "", priceSourceText(price)));
       fields[t] = { model: inp, pin: pi, pout: po };
       g.appendChild(f);
     });
@@ -200,6 +272,7 @@
         var m = fields[t].model.value.trim() || info.defaults[t];
         models[p][t] = fields[t].model.value.trim();
         if (fields[t].pin.value !== "" && fields[t].pout.value !== "") prices[m] = [Number(fields[t].pin.value), Number(fields[t].pout.value)];
+        else if (fields[t].pin.value === "" && fields[t].pout.value === "") prices[m] = null; // back to automatic
       });
       change("provider", { models: models, prices: prices }, err, "Saved");
     });
@@ -256,6 +329,8 @@
     a2.appendChild(err);
     box.appendChild(a2);
     box.appendChild(out);
+    renderPriceCheck(box);
+    if (p === "anthropic") renderBilling(box);
   }
 
   function renderPeriods() {

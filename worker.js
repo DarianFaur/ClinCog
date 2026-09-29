@@ -632,6 +632,15 @@ export class SeminarConfig extends DurableObject {
     return c;
   }
 
+  async setAutoPrices(found, meta) {
+    const c = await this.get(null);
+    c.autoPrices = c.autoPrices || {};
+    for (const id in found) c.autoPrices[id] = Object.assign({}, found[id], { at: meta.at });
+    c.priceCheck = meta;
+    await this.ctx.storage.put("config", c);
+    return meta;
+  }
+
   // Every change goes through here, validated, one at a time.
   async update(op, a, seed) {
     const c = await this.get(seed);
@@ -702,6 +711,22 @@ export class SeminarConfig extends DurableObject {
       }
       case "clearKey": {
         if (c.keys) delete c.keys[a.provider];
+        break;
+      }
+      case "setAdminKey": {
+        const k = String(a.key || "").trim();
+        if (!/^sk-ant-admin/.test(k)) throw new Error("That is not an Anthropic Admin key (they start with sk-ant-admin).");
+        c.adminKeys = c.adminKeys || {};
+        c.adminKeys.anthropic = k;
+        break;
+      }
+      case "clearAdminKey": {
+        if (c.adminKeys) delete c.adminKeys.anthropic;
+        break;
+      }
+      case "billingWorkspace": {
+        c.billingWorkspace = a.id ? String(a.id).slice(0, 80) : null;
+        c.billingWorkspaceName = a.id ? String(a.name || a.id).slice(0, 80) : null;
         break;
       }
       case "addStudents": {
@@ -859,10 +884,93 @@ function priceTable(env) {
   if (!env.PRICING) return PRICES;
   try { return Object.assign({}, PRICES, JSON.parse(env.PRICING)); } catch { return PRICES; }
 }
+// Where a model's price comes from, in order: set by hand on the console,
+// fetched automatically (daily, see refreshPrices), the PRICING var, the
+// table above.
+function priceInfo(model, env, cfg) {
+  const manual = cfg && cfg.prices && cfg.prices[model];
+  if (manual) return { in: manual[0], out: manual[1], source: "manual" };
+  const auto = cfg && cfg.autoPrices && cfg.autoPrices[model];
+  if (auto) return { in: auto.in, out: auto.out, source: auto.source, at: auto.at };
+  const t = priceTable(env)[model];
+  if (t) return { in: t[0], out: t[1], source: "built-in" };
+  return null;
+}
 function priceOf(model, tin, tout, env, cfg) {
-  const p = (cfg && cfg.prices && cfg.prices[model]) || priceTable(env)[model];
+  const p = priceInfo(model, env, cfg);
   if (!p) return null;
-  return (tin * p[0] + tout * p[1]) / 1e6;
+  return (tin * p.in + tout * p.out) / 1e6;
+}
+
+// ---- Automatic prices --------------------------------------------------------
+// No provider publishes its prices in an API, so they are read once a day
+// (and on request from the console) from two public catalogues: OpenRouter's
+// model list, which carries each model's list price, and, for anything not
+// found there, LiteLLM's price file, which uses the providers' own model
+// names. A price set by hand on the console always wins; a model found in
+// neither keeps its last known price and is reported as not found.
+const OPENROUTER_MODELS = "https://openrouter.ai/api/v1/models";
+const LITELLM_PRICES = "https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json";
+
+function vendorOf(model) {
+  if (/^claude/.test(model)) return "anthropic";
+  if (/^gemini/.test(model)) return "google";
+  if (/^(gpt|o\d)/.test(model)) return "openai";
+  return null;
+}
+// "anthropic/claude-haiku-4.5" and "claude-haiku-4-5-20251001" both become
+// "claude-haiku-4-5"; a ":free" variant stays different.
+function normModel(id) {
+  return String(id).toLowerCase().replace(/^[a-z0-9-]+\//, "").replace(/-\d{8}$/, "").replace(/[.:_]/g, "-");
+}
+function watchedModels(cfg) {
+  const set = new Set(Object.keys(PRICES));
+  const mods = seminarModels(cfg);
+  for (const p in mods) TIERS.forEach((t) => set.add(mods[p][t]));
+  Object.values(DEFAULT_MODEL).forEach((m) => set.add(m));
+  Object.keys((cfg && cfg.prices) || {}).forEach((m) => set.add(m));
+  return [...set].filter(vendorOf);
+}
+const round4 = (x) => Math.round(x * 10000) / 10000;
+
+async function refreshPrices(env) {
+  const cfg = await seminarConfig(env, true);
+  const want = watchedModels(cfg);
+  const found = {};
+  let orOk = false, llOk = false;
+  try {
+    const r = await fetch(OPENROUTER_MODELS, { headers: { "User-Agent": "ClinCog price check (clincog.net)" } });
+    if (r.ok) {
+      const list = (await r.json()).data || [];
+      orOk = true;
+      const byKey = new Map();
+      for (const m of list) byKey.set(String(m.id).split("/")[0] + "|" + normModel(m.id), m);
+      for (const id of want) {
+        const m = byKey.get(vendorOf(id) + "|" + normModel(id));
+        if (!m || !m.pricing) continue;
+        const i = Number(m.pricing.prompt) * 1e6, o = Number(m.pricing.completion) * 1e6;
+        if (isFinite(i) && isFinite(o) && i >= 0 && o >= 0 && (i > 0 || o > 0)) found[id] = { in: round4(i), out: round4(o), source: "OpenRouter" };
+      }
+    }
+  } catch (e) { /* catalogue unreachable: keep what we had */ }
+  const missing = want.filter((id) => !found[id]);
+  if (missing.length) {
+    try {
+      const r = await fetch(LITELLM_PRICES);
+      if (r.ok) {
+        const ll = await r.json();
+        llOk = true;
+        for (const id of missing) {
+          const e = ll[id] || ll["gemini/" + id] || ll["openai/" + id] || ll["anthropic/" + id];
+          if (e && e.input_cost_per_token != null) found[id] = { in: round4(e.input_cost_per_token * 1e6), out: round4((e.output_cost_per_token || 0) * 1e6), source: "LiteLLM" };
+        }
+      }
+    } catch (e) { /* same */ }
+  }
+  return configStub(env).setAutoPrices(found, {
+    at: Date.now(), openrouter: orOk, litellm: llOk,
+    found: Object.keys(found).length, missing: want.filter((id) => !found[id]),
+  });
 }
 
 // Demo visitors are anonymous: chat.js sends a random id kept in the
@@ -939,6 +1047,18 @@ export class UsageMonitor extends DurableObject {
     return { range: rangeKey in RANGES ? rangeKey : "24h", bucket: r.bucket, from: start, now, lanes, feed };
   }
 
+  // Estimated cost per UTC day for one lane, models starting with a prefix.
+  async dailyCost(days, laneKey, modelPrefix) {
+    const DAY = 86400e3, since = Math.floor(Date.now() / DAY) * DAY - (days - 1) * DAY;
+    const out = {};
+    for (const row of this.sql.exec(
+      "SELECT CAST(ts / ? AS INTEGER) AS d, SUM(cost) AS cost FROM ev WHERE ts >= ? AND lane = ? AND model LIKE ? GROUP BY d",
+      DAY, since, laneKey, modelPrefix + "%")) {
+      out[new Date(row.d * DAY).toISOString().slice(0, 10)] = row.cost || 0;
+    }
+    return out;
+  }
+
   // One participant's own series, for the detail chart.
   async participant(laneKey, pid, rangeKey) {
     const r = RANGES[rangeKey] || RANGES["24h"];
@@ -964,6 +1084,72 @@ export class UsageMonitor extends DurableObject {
   }
   async webSocketMessage(ws, msg) { if (msg === "ping") ws.send("pong"); }
   async webSocketClose(ws, code) { try { ws.close(code, "bye"); } catch {} }
+}
+
+// ---- What Anthropic actually billed (Usage & Cost Admin API) ----------------
+// Needs an Admin API key (sk-ant-admin…), either the ANTHROPIC_ADMIN_KEY
+// secret or one saved on the console. Such a key has full admin rights over
+// the Anthropic organization, so it is only ever used here, for read-only
+// cost reports, and never shown again. Anthropic reports costs per day
+// (in cents), usually within minutes; results are kept for 10 minutes.
+function anthropicAdminKey(cfg, env) {
+  return (cfg.adminKeys && cfg.adminKeys.anthropic) || env.ANTHROPIC_ADMIN_KEY || null;
+}
+async function anthropicAdmin(key, path) {
+  const r = await fetch("https://api.anthropic.com/v1/organizations/" + path, {
+    headers: { "x-api-key": key, "anthropic-version": "2023-06-01" },
+  });
+  const body = await r.json().catch(() => ({}));
+  if (!r.ok) {
+    const msg = (body && body.error && body.error.message) || ("Anthropic answered " + r.status);
+    throw new Error(r.status === 401 || r.status === 403 ? "Anthropic did not accept the admin key. " + msg : msg);
+  }
+  return body;
+}
+const billingCache = new Map();
+async function anthropicBilling(env, days) {
+  const cfg = await seminarConfig(env);
+  const key = anthropicAdminKey(cfg, env);
+  if (!key) return { configured: false };
+  const ws = cfg.billingWorkspace || null;
+  const cacheKey = days + "|" + (ws || "") + "|" + key.slice(-6);
+  const hit = billingCache.get(cacheKey);
+  if (hit && Date.now() - hit.at < 600e3) return hit.value;
+
+  const DAY = 86400e3;
+  const today = Math.floor(Date.now() / DAY) * DAY;
+  const start = new Date(today - (days - 1) * DAY).toISOString();
+  const end = new Date(today + DAY).toISOString();
+  const byDay = new Map(), byModel = {};
+  for (let i = 0; i < days; i++) byDay.set(new Date(today - (days - 1 - i) * DAY).toISOString().slice(0, 10), 0);
+  let page = null, guard = 0;
+  do {
+    const q = "cost_report?starting_at=" + encodeURIComponent(start) + "&ending_at=" + encodeURIComponent(end) +
+      "&bucket_width=1d&limit=31&group_by[]=workspace_id&group_by[]=description" + (page ? "&page=" + encodeURIComponent(page) : "");
+    const res = await anthropicAdmin(key, q);
+    for (const b of res.data || []) {
+      const d = String(b.starting_at).slice(0, 10);
+      for (const r of b.results || []) {
+        if (ws && r.workspace_id !== ws) continue;
+        const usd = (Number(r.amount) || 0) / 100; // amounts are in cents
+        byDay.set(d, (byDay.get(d) || 0) + usd);
+        const m = r.model || r.description || "other";
+        byModel[m] = (byModel[m] || 0) + usd;
+      }
+    }
+    page = res.has_more ? res.next_page : null;
+  } while (page && ++guard < 10);
+
+  // Our own estimate for the same days: the seminar lane's Claude replies.
+  const est = await monitorStub(env).dailyCost(days, "seminar", "claude");
+  const series = [...byDay.entries()].map(([date, billed]) => ({ date, billed, estimate: est[date] || 0 }));
+  const value = {
+    configured: true, workspace: ws, workspaceName: cfg.billingWorkspaceName || null,
+    days: series, billed: series.reduce((a, x) => a + x.billed, 0), estimate: series.reduce((a, x) => a + x.estimate, 0),
+    byModel, fetchedAt: Date.now(),
+  };
+  billingCache.set(cacheKey, { at: Date.now(), value });
+  return value;
 }
 
 async function handleMonitorApi(request, url, env) {
@@ -1019,7 +1205,7 @@ async function handleMonitorApi(request, url, env) {
     const day = dayKey(cfg);
     const ids = Object.keys(cfg.students).sort();
     const st = period ? await Promise.all(ids.map((id) => quotaStub(env, period.id, id).status(day).catch(() => ({ cases: {}, today: 0 })))) : ids.map(() => ({ cases: {}, today: 0 }));
-    const safe = Object.assign({}, cfg, { password: undefined, students: undefined, keys: undefined, models: seminarTiers(cfg) });
+    const safe = Object.assign({}, cfg, { password: undefined, students: undefined, keys: undefined, adminKeys: undefined, autoPrices: undefined, models: seminarTiers(cfg) });
     const providers = {};
     for (const p in SEMINAR_PROVIDERS) {
       providers[p] = { label: SEMINAR_PROVIDERS[p].label, models: seminarModels(cfg)[p], defaults: SEMINAR_PROVIDERS[p].models, key: keySource(cfg, env, p) };
@@ -1027,13 +1213,41 @@ async function handleMonitorApi(request, url, env) {
     return jsonResponse({
       config: safe,
       provider: seminarProvider(cfg), providers,
-      prices: Object.assign({}, priceTable(env), cfg.prices || {}),
+      prices: Object.fromEntries(watchedModels(cfg).map((m) => [m, priceInfo(m, env, cfg)]).filter((x) => x[1])),
+      priceCheck: cfg.priceCheck || null,
       passwordSource: cfg.password ? "console" : (env.STUDENT_ACCESS_PASSWORD ? "secret" : "none"),
       activePeriodId: period ? period.id : null,
       now: Date.now(), today: day,
       students: ids.map((id, i) => Object.assign({ id, effective: studentLimits(cfg, id), used: st[i].cases || {}, today: st[i].today || 0 }, cfg.students[id])),
     });
   }
+  // Prices: fetch now, instead of waiting for the daily run.
+  if (path === "prices-refresh" && request.method === "POST") {
+    const meta = await refreshPrices(env);
+    cfgCache = { at: 0, value: null };
+    return jsonResponse({ ok: true, check: meta });
+  }
+
+  // What Anthropic billed, next to our estimate.
+  if (path === "billing" && request.method === "GET") {
+    const days = Math.min(31, Math.max(7, parseInt(url.searchParams.get("days"), 10) || 30));
+    try { return jsonResponse(await anthropicBilling(env, days)); }
+    catch (e) { return jsonResponse({ configured: true, error: String(e.message || e) }, 200); }
+  }
+  if (path === "billing-status" && request.method === "GET") {
+    const cfg = await seminarConfig(env, true);
+    const k = (cfg.adminKeys && cfg.adminKeys.anthropic) ? "console" : env.ANTHROPIC_ADMIN_KEY ? "secret" : "none";
+    const key = anthropicAdminKey(cfg, env);
+    const out = { source: k, hint: key ? "…" + key.slice(-4) : null, workspace: cfg.billingWorkspace || null, workspaceName: cfg.billingWorkspaceName || null, workspaces: null };
+    if (key) {
+      try {
+        const res = await anthropicAdmin(key, "workspaces?limit=100");
+        out.workspaces = (res.data || []).map((w) => ({ id: w.id, name: w.name, archived: !!w.archived_at }));
+      } catch (e) { out.error = String(e.message || e); }
+    }
+    return jsonResponse(out);
+  }
+
   // Try a provider's key and model with a one-line request, before switching.
   if (path === "seminar-test" && request.method === "POST") {
     const cfg = await seminarConfig(env, true);
@@ -1254,6 +1468,11 @@ function withNoIndex(res) {
 // ---- Worker entry point -----------------------------------------------------
 
 export default {
+  // Once a day (see [triggers] in wrangler.toml): fetch current prices.
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(refreshPrices(env).catch((e) => console.error("prices:", e)));
+  },
+
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
@@ -1413,8 +1632,12 @@ export default {
           tin: usage ? usage.in : 0, tout: usage ? usage.out : 0,
           ok: ok ? 1 : 0, ms: Date.now() - started,
         };
-        ev.cost = lane === "byok" ? null : priceOf(usedModel, ev.tin, ev.tout, env, cfg || cfgCache.value);
-        const p = recordUsage(env, ev);
+        const p = (async () => {
+          let c = cfg;
+          if (!c) { try { c = await seminarConfig(env); } catch { c = null; } }
+          ev.cost = lane === "byok" ? null : priceOf(usedModel, ev.tin, ev.tout, env, c);
+          await recordUsage(env, ev);
+        })();
         if (ctx && ctx.waitUntil) ctx.waitUntil(p);
       };
 

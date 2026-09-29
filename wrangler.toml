@@ -133,3 +133,8 @@ QUOTA_PERIOD = "2026-27-S1"
 # Set to "true" while the demo Gemini key is on Google's free tier: the
 # console then labels Gemini costs as what they would be on the paid tier.
 GEMINI_FREE_TIER = "true"
+
+# Once a day, at 03:23 UTC: fetch current model prices for the admin
+# console's cost estimates (worker.js, refreshPrices).
+[triggers]
+crons = ["23 3 * * *"]

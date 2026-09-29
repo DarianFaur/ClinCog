@@ -143,14 +143,25 @@ SPIN_CONTENT                licensed SPIN items (course instance, admin console)
 CONTACT_TO, CONTACT_NAME, CONTACT_ROLE, CONTACT_FROM
                             contact form
 ADMIN_TOKEN                 optional: quota lookups from a terminal
+ANTHROPIC_ADMIN_KEY         optional: Anthropic Admin API key (sk-ant-admin…) for
+                            the "Billed by Anthropic" report; can also be saved
+                            on the console
 ```
 
 Non-secret settings are `[vars]` in `wrangler.toml`: `STUDENT_CASE_LIMIT`
 and `QUOTA_PERIOD` (starting values for the seminar settings),
 `GEMINI_FREE_TIER` (whether the demo Gemini key is on the free tier, so the
 console shows its cost as $0) and, optionally, `PRICING` (a JSON override of
-the per-model prices used for the console's cost estimates; prices set on
-the console win over both).
+the per-model prices used for the console's cost estimates).
+
+**Prices** for the cost estimates are refreshed automatically once a day (a
+Cron Trigger, `[triggers]` in `wrangler.toml`) from OpenRouter's public model
+catalogue, with LiteLLM's price file as a fallback; none of the providers
+publishes prices in an API. A price typed on the console always wins; a
+model found in neither catalogue keeps its last known price and is listed as
+not found. With an Anthropic Admin key, the console also shows what
+Anthropic actually billed per day (Usage & Cost Admin API), next to the
+estimate, optionally for one workspace only.
 
 ## Stack
 

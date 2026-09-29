@@ -344,6 +344,90 @@
     }).catch(function () { alert("The reset did not go through. Try again."); });
   }
 
+  // ---------- billed by Anthropic ----------
+  // Two series on one axis, both in dollars: what Anthropic billed per day
+  // (solid, lane colour) and this console's estimate (dashed, grey). A
+  // crosshair shows both for the day under the pointer.
+  function billChart(host, days) {
+    host.textContent = "";
+    host.classList.add("chart");
+    var W = Math.max(260, host.clientWidth || 600), H = 150, padL = 4, padR = 4, padT = 18, padB = 22, n = days.length;
+    var max = 0;
+    days.forEach(function (d) { max = Math.max(max, d.billed, d.estimate); });
+    var top = max > 0 ? max * 1.15 : 1, xw = (W - padL - padR) / Math.max(1, n - 1);
+    function X(i) { return padL + i * xw; }
+    function Y(v) { return padT + (H - padT - padB) * (1 - v / top); }
+    var NS = "http://www.w3.org/2000/svg", svg = document.createElementNS(NS, "svg");
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H); svg.setAttribute("height", H); svg.setAttribute("tabindex", "0"); svg.setAttribute("role", "img");
+    svg.setAttribute("aria-label", "Billed " + money(days.reduce(function (a, d) { return a + d.billed; }, 0)) + ", estimated " + money(days.reduce(function (a, d) { return a + d.estimate; }, 0)) + " over " + n + " days.");
+    function add(tag, attrs, cls) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (cls) e.setAttribute("class", cls); svg.appendChild(e); return e; }
+    add("line", { x1: padL, x2: W - padR, y1: Y(0), y2: Y(0) }, "grid");
+    var pk = add("text", { x: W - padR, y: Y(max) - 5, "text-anchor": "end" }, "axis"); pk.textContent = max > 0 ? "peak " + money(max) : "nothing billed yet";
+    function path(key) { return "M" + days.map(function (d, i) { return X(i).toFixed(1) + "," + Y(d[key]).toFixed(1); }).join(" L"); }
+    add("path", { d: "M" + X(0) + "," + Y(0) + " L" + days.map(function (d, i) { return X(i).toFixed(1) + "," + Y(d.billed).toFixed(1); }).join(" L") + " L" + X(n - 1) + "," + Y(0) + " Z" }, "area");
+    add("path", { d: path("billed") }, "line");
+    add("path", { d: path("estimate") }, "line est");
+    [0, Math.floor((n - 1) / 2), n - 1].forEach(function (i, k) {
+      var t = add("text", { x: X(i), y: H - 5, "text-anchor": k === 0 ? "start" : k === 2 ? "end" : "middle" }, "axis");
+      var dd = new Date(days[i].date + "T00:00:00Z"); t.textContent = dd.getUTCDate() + " " + MONTHS[dd.getUTCMonth()];
+    });
+    var cross = add("line", { y1: padT - 6, y2: Y(0), visibility: "hidden" }, "cross");
+    var dot = add("circle", { r: 4.5, visibility: "hidden" }, "dot");
+    host.appendChild(svg);
+    var tip = el("div", "tip"); tip.hidden = true; host.appendChild(tip);
+    var at = -1;
+    function show(i) {
+      if (i < 0 || i >= n) return; at = i;
+      var d = days[i], x = X(i);
+      cross.setAttribute("x1", x); cross.setAttribute("x2", x); cross.setAttribute("visibility", "visible");
+      dot.setAttribute("cx", x); dot.setAttribute("cy", Y(d.billed)); dot.setAttribute("visibility", "visible");
+      tip.textContent = "";
+      var dd = new Date(d.date + "T00:00:00Z");
+      tip.appendChild(el("div", "when", dd.getUTCDate() + " " + MONTHS[dd.getUTCMonth()] + " (UTC)"));
+      tip.appendChild(el("strong", "", money(d.billed) + " billed"));
+      tip.appendChild(el("div", "", money(d.estimate) + " estimated"));
+      tip.hidden = false;
+      var scale = host.clientWidth / W, left = x * scale + 12;
+      if (left + tip.offsetWidth > host.clientWidth) left = x * scale - tip.offsetWidth - 12;
+      tip.style.left = Math.max(0, left) + "px"; tip.style.top = "0px";
+    }
+    function hide() { at = -1; tip.hidden = true; cross.setAttribute("visibility", "hidden"); dot.setAttribute("visibility", "hidden"); }
+    svg.addEventListener("pointermove", function (e) { var r = svg.getBoundingClientRect(); show(Math.round(((e.clientX - r.left) * (W / r.width) - padL) / xw)); });
+    svg.addEventListener("pointerleave", hide); svg.addEventListener("blur", hide);
+    svg.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") { e.preventDefault(); show(Math.min(n - 1, Math.max(0, (at < 0 ? n - 1 : at) + (e.key === "ArrowLeft" ? -1 : 1)))); }
+      else if (e.key === "Escape") hide();
+    });
+  }
+  var billing = null;
+  function renderBilling() {
+    var sec = document.getElementById("billing"), body = document.getElementById("billing-body");
+    if (!billing || !billing.configured) { sec.hidden = true; return; }
+    sec.hidden = false; body.textContent = "";
+    if (billing.error) { body.appendChild(el("p", "bill-err", billing.error)); return; }
+    document.getElementById("billing-sub").textContent = "What Anthropic charged each day for the last " + billing.days.length + " days" +
+      (billing.workspaceName ? ", workspace " + billing.workspaceName : ", whole organization") + ", next to this console's estimate for the seminar.";
+    var diff = billing.estimate > 0 ? (billing.billed - billing.estimate) / billing.estimate * 100 : null;
+    var tiles = el("div", "bill-tiles");
+    [[money(billing.billed), "billed by Anthropic"], [money(billing.estimate), "estimated here (seminar)"],
+     [diff === null ? "-" : (diff >= 0 ? "+" : "") + diff.toFixed(0) + "%", "billed vs estimate"]].forEach(function (t) {
+      var d = el("div"); d.appendChild(el("b", "", t[0])); d.appendChild(el("span", "", t[1])); tiles.appendChild(d);
+    });
+    body.appendChild(tiles);
+    var lg = el("div", "legend"), a = el("span"), b = el("span");
+    a.appendChild(el("i")); a.appendChild(document.createTextNode("Billed")); b.appendChild(el("i", "est")); b.appendChild(document.createTextNode("Estimated here"));
+    lg.appendChild(a); lg.appendChild(b); body.appendChild(lg);
+    var ch = el("div"); body.appendChild(ch);
+    billChart(ch, billing.days);
+    body.appendChild(el("p", "bill-note", "Days are UTC. Anthropic adds costs within minutes; this is refreshed every 10 minutes. A difference means use outside the seminar is counted (choose a workspace in Seminar settings), or a price here is out of date."));
+  }
+  function loadBilling() {
+    return fetch("/api/monitor/billing?days=30", { cache: "no-store" })
+      .then(function (r) { return r.json(); })
+      .then(function (b) { billing = b; renderBilling(); })
+      .catch(function () {});
+  }
+
   // ---------- feed ----------
   function feedRow(e) {
     var row = el("div", "feed-row lane-" + e.lane + (e.ok ? "" : " fail"));
@@ -468,10 +552,12 @@
   var resizeT = null;
   window.addEventListener("resize", function () {
     clearTimeout(resizeT);
-    resizeT = setTimeout(function () { if (state.data) { renderLanes(); if (state.sel) loadDetail(); } }, 150);
+    resizeT = setTimeout(function () { if (state.data) { renderLanes(); renderBilling(); if (state.sel) loadDetail(); } }, 150);
   });
   // Charts use theme colours through CSS, so a theme switch needs nothing.
 
   load().then(connect);
   setInterval(load, 60000);
+  loadBilling();
+  setInterval(loadBilling, 600000);
 })();
