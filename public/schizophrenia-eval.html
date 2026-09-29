@@ -837,7 +837,7 @@ textarea.interp::placeholder,
 .reflect-block textarea::placeholder { color: var(--text-tertiary); }
 </style>
 <link rel="stylesheet" href="/alpha-eval.css">
-<style>:root { --case: var(--domain-psychosis); --case-soft: var(--domain-psychosis-soft); --case-ink: var(--domain-psychosis-ink); }</style>
+<style>:root { --case: var(--domain-psychosis); --case-soft: var(--domain-psychosis-soft); --case-ink: var(--domain-psychosis-ink); --case-line: var(--domain-psychosis-line); --case-tint: var(--domain-psychosis-tint);  --print-case-soft: #fbe1d1; --print-case-ink: #5d2a1a; --print-case-line: #5d2a1a; --print-case-tint: #fbe1d1; }</style>
 </head>
 <body>
 <script>
@@ -1214,24 +1214,20 @@ textarea.interp::placeholder,
       </section>
 
       <section class="rpt-section reflect-block" id="reflect-block">
-        <div class="rpt-section-head">
-          <span class="rpt-num">04</span>
-          <div>
-            <h3 class="rpt-section-title">What changed in your understanding?</h3>
-            <p class="rpt-section-sub">Your reflection on the three lenses</p>
-          </div>
-        </div>
+        <div class="rpt-section-head"><span class="rpt-num">04</span><div><h3 class="rpt-section-title">What changed in your understanding?</h3><p class="rpt-section-sub">Your reflection on the three lenses</p></div></div>
         <div class="rpt-section-body">
-      <p class="reflect-note">You approached Dennis from three perspectives — a categorical diagnosis, a dimensional profile, and Dennis’s results on a cognitive task. Write a few sentences on what exploring the case this way taught you, then mark it complete.</p>
-      <textarea id="reflect-text" placeholder="What did looking at Dennis's case from three angles add to your understanding?"></textarea>
-      <div id="reflect-done" style="display:none;"></div>
-      <button class="btn btn-primary" id="reflect-btn" onclick="completeCase()">Complete case →</button>
+          <p class="reflect-note">You approached Dennis from three perspectives — a categorical diagnosis, a dimensional profile, and Dennis’s results on a cognitive task. Write a few sentences on what exploring the case this way taught you, then mark it complete.</p>
+          <textarea id="reflect-text" placeholder="What did looking at Dennis's case from three angles add to your understanding?"></textarea>
+          <div class="reflect-actions">
+            <button type="button" class="btn btn-primary" id="reflect-btn" onclick="completeCase()">Complete case &rarr;</button>
+            <div id="reflect-done" style="display:none;"></div>
+          </div>
         </div>
       </section>
 
     </div><!-- /.rpt -->
     <div class="nav-row eval-footer">
-      <button class="btn btn-secondary" onclick="window.print()">Print report</button>
+      <button class="btn btn-secondary" onclick="go(4)">&larr; Previous page</button>
       <a class="btn btn-primary" href="/dashboard.html">Dashboard &rarr;</a>
     </div>
     </div>
@@ -1248,7 +1244,8 @@ textarea.interp::placeholder,
 <script src="/reveal.js"></script>
 <script src="/a11y.js"></script>
 <script>
-const STEP_LABELS = ["Overview", "Vignette", "ICD-11", "HiTOP-SR", "MATRICS", "Report"];
+/* The report is reached from the last step's own button and is not a step on the rail. */
+const STEP_LABELS = ["Overview", "Vignette", "ICD-11", "HiTOP-SR", "MATRICS"];
 
 function verticalStepperHtml() {
   const rows = STEP_LABELS.map((label, i) => `
@@ -1885,6 +1882,7 @@ initHelperFab();
 <script>window.CLINCOG_EVAL = "schizophrenia";</script>
 <script src="/charts.js"></script>
 <script src="/eval-memory.js"></script>
+<script src="/eval-focus.js"></script>
 <script>
 // A textarea prints only the slice of text that fits its box. Before the
 // print dialog opens, each one is grown to its content so the whole answer

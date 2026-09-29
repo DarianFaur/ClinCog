@@ -80,3 +80,9 @@ destination_address = "darian.faur@e-uvt.ro"
 [assets]
 directory = "./public"
 binding = "ASSETS"
+# Every request runs worker.js first, static files included. Without this,
+# Cloudflare serves any file that exists in ./public straight from the asset
+# store and the Worker never sees the request - so on uvt.clincog.net the
+# pages and chat.js loaded without the seminar password, and cancelling the
+# prompt still left a working app. The gate in worker.js now covers them.
+run_worker_first = true

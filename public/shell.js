@@ -160,6 +160,15 @@
 
   const frame = document.createElement("div");
   frame.className = "shell-frame";
+  // On a case's own pages (chat, evaluation) the chrome takes that case's
+  // colours: the Cases icon, its row in the list. Pages that already set
+  // --case-* themselves (the evaluation pages) keep their own values.
+  if (cfg.activeCaseId && DOMAIN_CLASS[cfg.activeCaseId]) {
+    const d = DOMAIN_CLASS[cfg.activeCaseId];
+    frame.style.setProperty("--shell-case-soft", `var(--domain-${d}-soft)`);
+    frame.style.setProperty("--shell-case-ink", `var(--domain-${d}-ink)`);
+    frame.style.setProperty("--shell-case-line", `var(--domain-${d}-line)`);
+  }
   frame.innerHTML = `
     <aside class="shell-sidebar" id="shell-sidebar">${sidebarHtml}</aside>
     <div class="shell-backdrop" id="shell-backdrop"></div>

@@ -996,7 +996,7 @@ textarea.interp::placeholder,
   }
 </script>
 <link rel="stylesheet" href="/alpha-eval.css">
-<style>:root { --case: var(--domain-substance); --case-soft: var(--domain-substance-soft); --case-ink: var(--domain-substance-ink); }</style>
+<style>:root { --case: var(--domain-substance); --case-soft: var(--domain-substance-soft); --case-ink: var(--domain-substance-ink); --case-line: var(--domain-substance-line); --case-tint: var(--domain-substance-tint);  --print-case-soft: #ebe6dd; --print-case-ink: #816729; --print-case-line: #816729; --print-case-tint: #ebe6dd; }</style>
 </head>
 <body>
 <script>
@@ -1288,7 +1288,7 @@ textarea.interp::placeholder,
           <div style="background:var(--color-surface-offset);border-radius:var(--radius-lg);padding:var(--space-4);">
             <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,104,44,0.15);border:2px solid rgba(255,104,44,0.5);margin:0 auto var(--space-2);"></div>
             <div style="font-size:var(--text-xs);font-weight:600;text-align:center;margin-bottom:4px">Stop signal</div>
-            <div style="font-size:var(--text-xs);color:var(--color-text-muted);text-align:center;line-height:1.5">Circle turns <span style="color:#ff682c">orange</span> → <strong>do not press</strong></div>
+            <div style="font-size:var(--text-xs);color:var(--color-text-muted);text-align:center;line-height:1.5">Circle turns <span style="display:inline-block;width:.7em;height:.7em;border-radius:50%;background:#ff682c;vertical-align:-.05em;margin-right:3px"></span><strong>orange</strong> → <strong>do not press</strong></div>
           </div>
         </div>
         <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-6)">You will receive feedback after every trial.</div>
@@ -1392,13 +1392,17 @@ textarea.interp::placeholder,
     <p>Integrated multi-method profile — for educational use only. All data are session-only and not stored.</p>
   </div>
   <div id="report-area"></div>
-  <div class="reflect-block" id="reflect-block">
-    <h3>What changed in your understanding?</h3>
-    <p class="reflect-note">You approached Jordan from three perspectives — a categorical diagnosis, a dimensional profile, and Jordan’s results on a cognitive task. Write a few sentences on what exploring the case this way taught you, then mark it complete.</p>
-    <textarea id="reflect-text" placeholder="What did looking at Jordan's case from three angles add to your understanding?"></textarea>
-    <div id="reflect-done" style="display:none;"></div>
-    <button class="btn-primary" id="reflect-btn" onclick="completeCase()" style="border-radius:999px;padding:12px 24px;">Complete case →</button>
-  </div>
+  <section class="rpt-section reflect-block" id="reflect-block">
+        <div class="rpt-section-head"><span class="rpt-num">04</span><div><h3 class="rpt-section-title">What changed in your understanding?</h3><p class="rpt-section-sub">Your reflection on the three lenses</p></div></div>
+        <div class="rpt-section-body">
+          <p class="reflect-note">You approached Jordan from three perspectives — a categorical diagnosis, a dimensional profile, and Jordan’s results on a cognitive task. Write a few sentences on what exploring the case this way taught you, then mark it complete.</p>
+          <textarea id="reflect-text" placeholder="What did looking at Jordan's case from three angles add to your understanding?"></textarea>
+          <div class="reflect-actions">
+            <button type="button" class="btn btn-primary" id="reflect-btn" onclick="completeCase()">Complete case &rarr;</button>
+            <div id="reflect-done" style="display:none;"></div>
+          </div>
+        </div>
+      </section>
   </div>
   </div>
 </div>
@@ -1692,7 +1696,8 @@ document.addEventListener('input', () => updateBar(), true);
 const STEP_LABELS_JORDAN = { intro: "Overview", vignette: "Vignette", audit: "AUDIT", icd: "ICD-11", hitop: "HiTOP", ana: "Tasks", report: "Report" };
 
 function verticalStepperHtml() {
-  const rows = ADD_STEP_ORDER.map((id, i) => `
+  /* The report is reached from the last step's own button and is not a step on the rail. */
+  const rows = ADD_STEP_ORDER.filter(id => id !== "report").map((id, i) => `
     <div class="v-step" data-step="${i}" onclick="stepClick(${i})">
       <div class="v-step-line"></div>
       <div class="v-step-dot">${i + 1}</div>
@@ -2916,7 +2921,7 @@ function buildReport() {
   </div>
 
   <div class="nav-row eval-footer">
-    <button class="btn btn-secondary" onclick="window.print()">Print report</button>
+    <button class="btn btn-secondary" onclick="showView('ana')">&larr; Previous page</button>
     <a class="btn btn-primary" href="/dashboard.html">Dashboard &rarr;</a>
   </div>`;
 
@@ -3025,7 +3030,7 @@ function getTheme() {
     text: dark ? '#fafafb' : '#17191c',
     muted: dark ? '#979799' : '#777b86',
     grid: dark ? '#2b2b2b' : '#e8e8e8',
-    primary: dark ? '#ff682c' : '#ff682c',
+    primary: dark ? '#ebe6dd' : '#816729',
     blue: dark ? '#a3a6af' : '#4d4d4d',
     error: dark ? '#fbe1d1' : '#5d2a1a',
     gold: dark ? '#ebe6dd' : '#816729',
@@ -3216,6 +3221,7 @@ initHelperFab();
 <script>window.CLINCOG_EVAL = "addiction";</script>
 <script src="/charts.js"></script>
 <script src="/eval-memory.js"></script>
+<script src="/eval-focus.js"></script>
 <script>
 // A textarea prints only the slice of text that fits its box. Before the
 // print dialog opens, each one is grown to its content so the whole answer

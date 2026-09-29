@@ -376,7 +376,7 @@
       'This is the classic move-by-move Tower of London. The CANTAB task in Darren\u2019s results (One Touch Stockings) asks for the number of moves without making them, so the two are related but not the same.'));
     const W = 560, H = 380;
     const { c, ctx, point } = makeCanvas(f.stage, W, H);
-    const CAP = [3, 2, 1], BALL = ['#ff682c', '#202020', '#816729'];
+    const CAP = [3, 2, 1], BALL = ['#5d2a1a', '#816729', '#777b86'];
     const key = s => s.map(p => p.join('')).join('|');
     const clone = s => s.map(p => p.slice());
     // Every legal arrangement, and the distance between two of them, found by

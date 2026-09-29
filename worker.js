@@ -381,10 +381,128 @@ function checkStudentAccess(request, env) {
   }
 }
 
+// What the browser shows when the password prompt is cancelled. The prompt
+// itself is the browser's own and always has a Cancel button, so the gate
+// cannot remove it - what it controls is that cancelling leads nowhere: this
+// page is all that loads, with nothing of the app on it.
+//
+// It wears the site's own theme. The few files it needs for that - the
+// design tokens, the self-hosted fonts and the logo - are let through the
+// gate (PUBLIC_SHELL_ASSET below). They are the same files anyone can load
+// from clincog.net, and none of them carries case material or app code.
+// Everything else on this page is inline.
+const UNAUTHORIZED_PAGE = `<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>ClinCog · Seminar access</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<script>
+  // The theme the student chose inside the app, if any (same key as theme-init.js).
+  (function () {
+    var pref = "system";
+    try { pref = localStorage.getItem("clincog_theme") || "system"; } catch (e) {}
+    var dark = pref === "dark" || (pref === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+    document.documentElement.style.colorScheme = dark ? "dark" : "light";
+  })();
+</script>
+<link rel="stylesheet" href="/tokens.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column;
+    background: var(--paper, #ffffff); color: var(--text-primary, #17191c);
+    font-family: var(--font-sans, system-ui, sans-serif); font-size: 16px; line-height: 1.6;
+    -webkit-font-smoothing: antialiased; overflow-x: hidden;
+  }
+  header { display: flex; align-items: center; justify-content: space-between; padding: 22px clamp(16px, 6vw, 80px); }
+  .brand { display: inline-flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; }
+  .brand img { width: 32px; height: 32px; border-radius: 8px; display: block; }
+  .brand span { font-family: var(--font-serif, Georgia, serif); font-size: 26px; font-weight: 400; letter-spacing: -0.02em; }
+  main { flex: 1; display: grid; place-items: center; padding: 24px 16px 64px; position: relative; }
+  .stage { position: relative; width: 100%; max-width: 640px; text-align: center; }
+  .eyebrow { margin: 0 0 18px; color: var(--text-tertiary, #777b86); font-size: 15px; }
+  h1 {
+    margin: 0 0 22px; font-family: var(--font-serif, Georgia, serif); font-weight: 400;
+    font-size: clamp(44px, 8vw, 80px); line-height: 1.02; letter-spacing: -0.025em;
+  }
+  h1 em { font-style: italic; }
+  .lede { margin: 0 auto 32px; max-width: 480px; color: var(--text-secondary, #4d4d4d); font-size: clamp(16px, 2vw, 19px); line-height: 1.55; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; height: 48px; padding: 0 26px; border: 0; border-radius: 999px;
+    background: var(--ink, #17191c); color: var(--ink-text, #ffffff);
+    font: 500 15px/1 var(--font-sans, system-ui, sans-serif); cursor: pointer; transition: background .15s ease;
+  }
+  .btn:hover { background: var(--ink-hover, #202020); }
+  .btn:focus-visible { outline: 2px solid var(--accent, #5d2a1a); outline-offset: 3px; }
+  .btn .arrow { transition: transform .15s ease; }
+  .btn:hover .arrow { transform: translateX(3px); }
+  .note { margin: 20px auto 0; max-width: 400px; color: var(--text-tertiary, #777b86); font-size: 14px; line-height: 1.5; }
+  .note a { color: var(--text-primary, #17191c); font-weight: 500; text-decoration: none; }
+  .note a:hover, .note a:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
+
+  /* One floating postcard, the splash page's signature device. */
+  .card {
+    position: absolute; width: 272px; padding: 18px 20px; border-radius: 20px; text-align: left;
+    background: var(--paper, #ffffff); box-shadow: var(--shadow-lg, 0 20px 25px -5px rgba(0,0,0,.1));
+  }
+  .card-a { top: -40px; left: -300px; transform: rotate(-3deg); }
+  .card-b { bottom: -20px; right: -300px; transform: rotate(2.5deg); background: var(--accent-soft, #fbe1d1); }
+  .card small { display: flex; align-items: center; gap: 8px; color: var(--text-tertiary, #777b86); font-size: 13px; }
+  .card small i { width: 7px; height: 7px; border-radius: 50%; background: var(--accent, #5d2a1a); }
+  .card p { margin: 10px 0 0; font-family: var(--font-serif, Georgia, serif); font-size: 19px; line-height: 1.3; letter-spacing: -0.01em; }
+  .card-b small, .card-b p { color: var(--accent-ink, #5d2a1a); }
+  .dots { display: flex; gap: 6px; margin-top: 14px; }
+  .dots span { width: 38px; height: 26px; border-radius: 999px; background: var(--mist, #f2f2f3); }
+  .dots span.on { background: var(--ink, #17191c); }
+  @media (max-width: 1180px) { .card { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .btn, .btn .arrow { transition: none; } }
+</style></head>
+<body>
+  <header>
+    <a class="brand" href="/" aria-label="ClinCog"><img src="/favicon.svg" alt="" width="32" height="32"><span>ClinCog</span></a>
+  </header>
+  <main>
+    <div class="stage">
+      <div class="card card-a" aria-hidden="true">
+        <small><i></i>Seminar · UVT</small>
+        <p>The cases open once you sign in.</p>
+        <div class="dots"><span></span><span></span><span class="on"></span><span></span></div>
+      </div>
+      <div class="card card-b" aria-hidden="true">
+        <small>Password</small>
+        <p>The one you received in class.</p>
+      </div>
+
+      <p class="eyebrow">Clinical Cognition · Seminar access</p>
+      <h1>This space is for <em>the seminar</em>.</h1>
+      <p class="lede">ClinCog here is reserved for students enrolled in the seminar. Sign in with the password you received in class to continue.</p>
+      <button type="button" class="btn" onclick="location.reload()">Sign in <span class="arrow" aria-hidden="true">&rarr;</span></button>
+      <p class="note">Not in the seminar? The public version is open at <a href="https://clincog.net">clincog.net</a>.</p>
+    </div>
+  </main>
+</body></html>`;
+
+// The only files served without the password: what the page above needs
+// to look like the site. Exact names, GET/HEAD only.
+function isPublicShellAsset(request, url) {
+  if (request.method !== "GET" && request.method !== "HEAD") return false;
+  return url.pathname === "/tokens.css" ||
+         url.pathname === "/favicon.svg" ||
+         /^\/fonts\/[A-Za-z0-9-]+\.woff2$/.test(url.pathname);
+}
+
 function unauthorizedResponse() {
-  return new Response("Authentication required.", {
+  return new Response(UNAUTHORIZED_PAGE, {
     status: 401,
-    headers: { "WWW-Authenticate": 'Basic realm="ClinCog - seminar access"' },
+    headers: {
+      "WWW-Authenticate": 'Basic realm="ClinCog - seminar access"',
+      "Content-Type": "text/html; charset=utf-8",
+      "Cache-Control": "no-store",
+      "X-Robots-Tag": "noindex, nofollow, noarchive",
+    },
   });
 }
 
@@ -394,7 +512,7 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    if (url.hostname === STUDENT_HOSTNAME && !checkStudentAccess(request, env)) {
+    if (url.hostname === STUDENT_HOSTNAME && !checkStudentAccess(request, env) && !isPublicShellAsset(request, url)) {
       return unauthorizedResponse();
     }
 

@@ -138,8 +138,12 @@
      Ember is for graphics only - link underlines, focus rings, progress
      fills, chart strokes, the "current step" dot. Text that needs the
      accent uses sienna. */
-  --accent: #ff682c;         /* Ventriloc ember */
-  --accent-hover: #5d2a1a;
+  /* Alpha r3: the ember accent is retired - it fought the rest of the
+     palette. The system accent is now Steep's sienna-on-peach pair, the
+     same pair Dennis wears, so no colour in the app sits outside the case
+     colours. */
+  --accent: #5d2a1a;         /* Steep sienna - lines, fills, focus */
+  --accent-hover: #17191c;
   --accent-soft: #fbe1d1;    /* Steep blush peach */
   --accent-ink: #5d2a1a;     /* Steep sienna brown - 11.6:1 */
   --accent-deep: #5d2a1a;    /* sienna on peach - 9.3:1 */
@@ -148,10 +152,23 @@
      base = dots, bars, chart strokes; soft = the case's surface;
      ink = text on that surface; action/action-text = a primary button
      placed on that surface (Darren's surface is dark, so his inverts). */
-  --domain-psychosis: #ff682c;        /* ember */
+  --domain-psychosis: #5d2a1a;        /* sienna */
   --domain-psychosis-soft: #fbe1d1;   /* blush peach */
   --domain-psychosis-ink: #5d2a1a;    /* sienna - 9.3:1 */
   --domain-psychosis-action: #17191c;
+  /* line = the case's stroke colour: progress bars, chart lines, dots.
+     Always the darker member of the pair, so it reads on paper. */
+  --domain-psychosis-line: #5d2a1a;
+  --domain-mood-line: #202020;
+  --domain-anxiety-line: #4d4d4d;
+  --domain-substance-line: #816729;
+  /* tint = a light surface that always takes the line colour as text:
+     semantic badges and marks on a case page. Darren's own surface is
+     graphite, so his tint is Ventriloc mist. */
+  --domain-psychosis-tint: #fbe1d1;
+  --domain-mood-tint: #e8e8e8;
+  --domain-anxiety-tint: #e8e8e8;
+  --domain-substance-tint: #ebe6dd;
   --domain-psychosis-action-text: #ffffff;
 
   --domain-mood: #202020;             /* graphite */
@@ -288,16 +305,24 @@ html[data-theme="dark"] {
   --ink-hover: #ffffff;
   --ink-text: #17191c;
 
-  --accent: #ff682c;
+  --accent: #fbe1d1;
   --accent-hover: #fbe1d1;
   --accent-soft: rgba(251,225,209,.12);
   --accent-ink: #fbe1d1;
   --accent-deep: #fbe1d1;
 
-  --domain-psychosis: #ff682c;
+  --domain-psychosis: #fbe1d1;
   --domain-psychosis-soft: rgba(251,225,209,.12);
   --domain-psychosis-ink: #fbe1d1;
   --domain-psychosis-action: #fafafb;
+  --domain-psychosis-line: #fbe1d1;
+  --domain-mood-line: #efefef;
+  --domain-anxiety-line: #a3a6af;
+  --domain-substance-line: #ebe6dd;
+  --domain-psychosis-tint: rgba(251,225,209,.12);
+  --domain-mood-tint: rgba(255,255,255,.08);
+  --domain-anxiety-tint: rgba(255,255,255,.08);
+  --domain-substance-tint: rgba(235,230,221,.12);
   --domain-psychosis-action-text: #17191c;
   --domain-mood: #e8e8e8;
   --domain-mood-soft: #efefef;
@@ -317,7 +342,7 @@ html[data-theme="dark"] {
 
   --success: #fafafb; --success-soft: rgba(255,255,255,.08);
   --warning: #ebe6dd; --warning-soft: rgba(235,230,221,.12);
-  --danger: #ff682c;  --danger-soft: rgba(255,104,44,.14);
+  --danger: #fbe1d1;  --danger-soft: rgba(251,225,209,.12);
   --info: #a3a6af;    --info-soft: rgba(255,255,255,.06);
 
   --shadow-xs: 0 0 0 1px rgba(255,255,255,.05);
@@ -349,16 +374,24 @@ html[data-theme="dark"] {
     --ink-hover: #ffffff;
     --ink-text: #17191c;
 
-    --accent: #ff682c;
+    --accent: #fbe1d1;
     --accent-hover: #fbe1d1;
     --accent-soft: rgba(251,225,209,.12);
     --accent-ink: #fbe1d1;
     --accent-deep: #fbe1d1;
 
-    --domain-psychosis: #ff682c;
+    --domain-psychosis: #fbe1d1;
     --domain-psychosis-soft: rgba(251,225,209,.12);
     --domain-psychosis-ink: #fbe1d1;
     --domain-psychosis-action: #fafafb;
+    --domain-psychosis-line: #fbe1d1;
+    --domain-mood-line: #efefef;
+    --domain-anxiety-line: #a3a6af;
+    --domain-substance-line: #ebe6dd;
+    --domain-psychosis-tint: rgba(251,225,209,.12);
+    --domain-mood-tint: rgba(255,255,255,.08);
+    --domain-anxiety-tint: rgba(255,255,255,.08);
+    --domain-substance-tint: rgba(235,230,221,.12);
     --domain-psychosis-action-text: #17191c;
     --domain-mood: #e8e8e8;
     --domain-mood-soft: #efefef;
@@ -378,7 +411,7 @@ html[data-theme="dark"] {
 
     --success: #fafafb; --success-soft: rgba(255,255,255,.08);
     --warning: #ebe6dd; --warning-soft: rgba(235,230,221,.12);
-    --danger: #ff682c;  --danger-soft: rgba(255,104,44,.14);
+    --danger: #fbe1d1;  --danger-soft: rgba(251,225,209,.12);
     --info: #a3a6af;    --info-soft: rgba(255,255,255,.06);
 
     --shadow-xs: 0 0 0 1px rgba(255,255,255,.05);
@@ -412,7 +445,7 @@ html[data-theme="dark"] {
   --toast-bg: rgba(23,25,28,.92);
   --toast-fg: #fafafb;
   --toast-fg-dim: rgba(250,250,251,.64);
-  --toast-mark: #ff682c;
+  --toast-mark: #fbe1d1;
   --toast-ring: rgba(255,255,255,.10);
   --toast-track: rgba(255,255,255,.12);
 }
@@ -420,7 +453,7 @@ html[data-theme="dark"] {
   --toast-bg: rgba(46,44,41,.92);
   --toast-fg: #fafafb;
   --toast-fg-dim: rgba(250,250,251,.60);
-  --toast-mark: #ff682c;
+  --toast-mark: #fbe1d1;
   --toast-ring: rgba(255,255,255,.14);
   --toast-track: rgba(255,255,255,.14);
 }
@@ -429,7 +462,7 @@ html[data-theme="dark"] {
     --toast-bg: rgba(46,44,41,.92);
     --toast-fg: #fafafb;
     --toast-fg-dim: rgba(250,250,251,.60);
-    --toast-mark: #ff682c;
+    --toast-mark: #fbe1d1;
     --toast-ring: rgba(255,255,255,.14);
     --toast-track: rgba(255,255,255,.14);
   }

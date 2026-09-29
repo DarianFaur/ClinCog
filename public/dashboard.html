@@ -242,7 +242,9 @@
     const nextLabel = s.exchanges === 0 ? "Start case" : (!s.evalReached ? "Continue interview" : "Continue evaluation");
     const dom = DOMAIN_CLASS[current.id];
     const steps = [
-      { label: "Interview the patient", done: s.exchanges > 0 },
+      // Reaching the evaluation means the interview step is behind the student,
+      // even if they went straight to it without chatting.
+      { label: "Interview the patient", done: s.exchanges > 0 || s.evalReached },
       { label: "Evaluate through three lenses", done: s.evalReached && s.pct >= 100 },
       { label: "Write the report", done: s.pct >= 100 }
     ];

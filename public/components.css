@@ -150,12 +150,17 @@ a:not([class]):focus-visible, .text-link:focus-visible {
   height: 8px; border-radius: var(--radius-pill);
   background: var(--mist-strong); overflow: hidden; width: 100%;
 }
+/* The hatch is drawn in the surrounding text colour at low strength, not in
+   a fixed grey: the track sits on paper, on mist and on every case colour
+   (Alex's card is the same #e8e8e8 the hatch used to be, which made the
+   remainder vanish), and currentColor is by definition legible on all of
+   them. */
 .progress-track.hatched {
   background:
     repeating-linear-gradient(
       -45deg,
-      var(--mist-strong) 0 4px,
-      transparent 4px 8px
+      color-mix(in srgb, currentColor 22%, transparent) 0 3px,
+      color-mix(in srgb, currentColor 7%, transparent) 3px 7px
     );
 }
 .progress-track.slim { height: 6px; }
@@ -794,7 +799,7 @@ a:not([class]):focus-visible, .text-link:focus-visible {
 .sev-band {
   padding: 5px 12px; border-radius: var(--radius-pill);
   background: var(--select-fill); border: 1px solid var(--select-line);
-  color: var(--text-primary); font-size: var(--text-xs); font-weight: 500;
+  color: var(--select-ink, var(--text-primary)); font-size: var(--text-xs); font-weight: 500;
 }
 .sev-answered { font-size: var(--text-xs); color: var(--text-tertiary); margin-left: auto; }
 

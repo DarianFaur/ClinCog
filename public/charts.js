@@ -57,6 +57,11 @@
     /* color() serialises components as 0-1, rgb() as 0-255. */
     return String(value).indexOf("color(") === 0 ? n.map(function (x) { return x * 255; }) : n;
   }
+  function contrast(a, b) {
+    var L = function (c) { return rgbParts(c).map(function (v) { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); })
+      .reduce(function (s, v, i) { return s + v * [.2126, .7152, .0722][i]; }, 0); };
+    var x = L(a), y = L(b); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05);
+  }
   function mix(a, b, ratio) {
     var A = rgbParts(a), B = rgbParts(b);
     return "rgb(" + [0, 1, 2].map(function (i) {
@@ -105,10 +110,16 @@
         resolve(css("--bg-surface-alt", "#f4f4f5"), "#f4f4f5"),
         strength
       );
+      // The darkest bands were labelled in the secondary grey, which fell
+      // to ~2.9:1. Each label now takes whichever of the page's ink or
+      // paper contrasts more with its own band, in either theme.
+      var inkC = resolve(css("--text-primary", "#17191c"), "#17191c");
+      var paperC = resolve(css("--paper", "#ffffff"), "#ffffff");
+      var labelC = contrast(inkC, bg) >= contrast(paperC, bg) ? inkC : paperC;
       return (
         '<div class="sev-seg' + (i === active ? " is-active" : "") + '"' +
         ' style="flex:' + width.toFixed(3) + ";background:" + bg + '"' +
-        ' title="' + b.label + '"><span>' + b.label + "</span></div>"
+        ' title="' + b.label + '"><span style="color:' + labelC + '">' + b.label + "</span></div>"
       );
     });
 
@@ -240,21 +251,35 @@
   function drawPanel(host, opts) {
     var canvas = host.querySelector("canvas");
     if (!canvas) return;
-    var W = Math.max(240, host.clientWidth || 420);
-    var H = opts.height || 190;
-    var DPR = window.devicePixelRatio || 1;
+    /* A panel on its own gets more room than one of a pair or a grid of
+       four: it is the only picture in its section. When printing, the
+       size is fixed rather than taken from the screen, so the page gets
+       the same proportions whatever window the report was opened in; the
+       CSS then scales it to the column. */
+    var row = host.parentElement;
+    var single = !row || row.querySelectorAll(".dist-panel").length === 1;
+    var cs = getComputedStyle(host);
+    var inner = host.clientWidth - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0);
+    // A panel drawn while its step is hidden has no width yet; it gets a
+    // provisional size and is redrawn by the ResizeObserver once shown.
+    var W = printing ? (single ? 680 : 400) : Math.max(240, inner > 0 ? inner : (single ? 720 : 420));
+    var H = opts.height || (single ? (printing ? 280 : 260) : (printing ? 250 : 210));
+    var DPR = Math.max(window.devicePixelRatio || 1, printing ? 2 : 1);
     canvas.width = W * DPR; canvas.height = H * DPR;
     canvas.style.width = W + "px"; canvas.style.height = H + "px";
+    var big = single ? 1.2 : (printing ? 1.15 : 1);
     var ctx = canvas.getContext("2d");
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     ctx.clearRect(0, 0, W, H);
 
-    var line = resolve(css("--accent", "#ff682c"), "#ff682c");
-    var fill = resolve(css("--accent-soft", "#fbe1d1"), "#fbe1d1");
+    var line = resolve(css("--case-line", "") || css("--accent", "#5d2a1a"), "#5d2a1a");
     var grid = resolve(css("--border", "#e4e4e7"), "#e4e4e7");
     var faint = resolve(css("--text-tertiary", "#706c65"), "#706c65");
     var ink = resolve(css("--text-primary", "#1a1a1a"), "#1a1a1a");
     var alt = resolve(css("--bg-surface-alt", "#f4f4f5"), "#f4f4f5");
+    // The area under the curve is a light tint of the case line, not the
+    // case surface: Darren's surface is graphite and would flood the chart.
+    var fill = mix(line, alt, 0.16);
 
     var tMin = 25, tMax = 80;
     var padL = 12, padR = 12, padT = 26, padB = 30;
@@ -297,12 +322,12 @@
     ctx.setLineDash([]);
 
     ctx.fillStyle = faint;
-    ctx.font = "400 9px 'DM Mono', ui-monospace, monospace";
+    ctx.font = "400 " + Math.round(10 * big) + "px 'DM Mono', ui-monospace, monospace";
     ctx.textAlign = "center";
     ctx.fillText("mean", x(50), padT - 8);
     ctx.fillText("T60", x(60), padT - 8);
     ctx.fillText("T70", x(70), padT - 8);
-    [30, 40, 50, 60, 70, 80].forEach(function (v3) { ctx.fillText(String(v3), x(v3), baseY + 13); });
+    [30, 40, 50, 60, 70, 80].forEach(function (v3) { ctx.fillText(String(v3), x(v3), baseY + 15); });
 
     if (opts.t != null) {
       var clamped = Math.min(Math.max(opts.t, tMin), tMax);
@@ -313,7 +338,7 @@
       ctx.fillStyle = ink; ctx.fill();
       ctx.beginPath(); ctx.moveTo(mx, my - 14); ctx.lineTo(mx, baseY);
       ctx.strokeStyle = ink; ctx.lineWidth = 1.5; ctx.stroke();
-      ctx.font = "600 11px 'DM Mono', ui-monospace, monospace";
+      ctx.font = "600 " + Math.round(11 * big) + "px 'DM Mono', ui-monospace, monospace";
       var label = "T = " + opts.t.toFixed(1) + (opts.t > tMax ? " (off scale)" : "");
       var lw = ctx.measureText(label).width;
       var lx = Math.min(Math.max(mx, padL + lw / 2 + 2), W - padR - lw / 2 - 2);
@@ -321,7 +346,7 @@
       /* A plate behind the label: at high T the marker sits inside the
          shaded band and plain text on it is hard to read. */
       ctx.fillStyle = resolve(css("--bg-surface", "#ffffff"), "#ffffff");
-      ctx.fillRect(lx - lw / 2 - 4, ly - 10, lw + 8, 14);
+      ctx.fillRect(lx - lw / 2 - 5, ly - 11 * big, lw + 10, 15 * big);
       ctx.fillStyle = ink;
       ctx.fillText(label, lx, ly);
     }
@@ -329,6 +354,18 @@
   }
 
   var panels = [];
+  var printing = false;
+  /* Redraw a panel whenever its box changes width - the report step is
+     hidden when the panels are first drawn, so their real size is only
+     known once it is shown. */
+  var panelRO = window.ResizeObserver ? new ResizeObserver(function (entries) {
+    entries.forEach(function (en) {
+      var host = en.target, w = Math.round(en.contentRect.width);
+      if (!w || host._clinW === w || printing) return;
+      host._clinW = w;
+      panels.forEach(function (p) { if (p.host === host) drawPanel(p.host, p.opts); });
+    });
+  }) : null;
   function distribution(el, items) {
     var host = node(el);
     if (!host) return;
@@ -343,6 +380,7 @@
       if (!panels.some(function (p) { return p.host === hosts[i]; })) panels.push({ host: hosts[i], opts: it });
       else panels.forEach(function (p) { if (p.host === hosts[i]) p.opts = it; });
       drawPanel(hosts[i], it);
+      if (panelRO) panelRO.observe(hosts[i]);
     });
   }
 
@@ -399,12 +437,12 @@
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     ctx.clearRect(0, 0, W, H);
 
-    var line = resolve(css("--accent", "#ff682c"), "#ff682c");
-    var fill = resolve(css("--accent-soft", "#fbe1d1"), "#fbe1d1");
+    var line = resolve(css("--case-line", "") || css("--accent", "#5d2a1a"), "#5d2a1a");
     var grid = resolve(css("--border", "#e4e4e7"), "#e4e4e7");
     var faint = resolve(css("--text-tertiary", "#706c65"), "#706c65");
     var ink = resolve(css("--text-primary", "#1a1a1a"), "#1a1a1a");
     var surface = resolve(css("--bg-surface", "#ffffff"), "#ffffff");
+    var fill = mix(line, surface, 0.16);
 
     /* Either a T computed here from a mean and an SD, or one handed in
        already standardised - the questionnaire norms come from percentile
@@ -539,6 +577,10 @@
       window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", redrawAll);
     } catch (e) { /* older Safari */ }
   }
+  /* Distribution panels are redrawn at print size for the length of the
+     print, then back to the window's size. */
+  window.addEventListener("beforeprint", function () { printing = true; redrawAll(); });
+  window.addEventListener("afterprint", function () { printing = false; redrawAll(); });
   new MutationObserver(redrawAll).observe(document.documentElement, {
     attributes: true, attributeFilter: ["data-theme"],
   });

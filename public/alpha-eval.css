@@ -63,13 +63,13 @@
 /* ---- The progress hairline under the topbar ----
    #bar was pinned at top:56px, i.e. inside the 72px topbar, where the
    bar's frosted glass blurred it into a grey smear beside the title.
-   It now sits exactly on the topbar's bottom edge as a clay reading-
-   progress line. */
+   It now sits exactly on the topbar's bottom edge as a reading-progress
+   line in the case's own line colour. */
 #bar {
   top: var(--topbar-h) !important; height: 2px !important;
   background: transparent !important; z-index: 31 !important;
 }
-#bar-fill { background: var(--accent) !important; }
+#bar-fill { background: var(--case-line, var(--accent)) !important; }
 
 /* ---- Answer controls: one geometry everywhere ----
    The pages mark up an answer three ways:
@@ -121,14 +121,15 @@
   border-color: var(--text-tertiary) !important; color: var(--text-primary);
 }
 
-/* Chosen: filled mist with the ink line on the outer edge. */
+/* Chosen: the case's surface, its line on the outer edge, its ink for the
+   label - the same pair the answered chip wears. */
 .eval-layout .rating-btn input:checked + label,
 .eval-layout .likert label:has(input:checked) .num,
 .eval-layout .likert-btn.selected,
 .eval-layout .likert-buttons button.selected {
   background: var(--select-fill) !important;
   border-color: var(--select-line) !important;
-  color: var(--text-primary) !important;
+  color: var(--select-ink) !important;
   font-weight: 600;
 }
 
@@ -206,3 +207,541 @@
    contrast to spare). */
 .eval-layout .layer-row:nth-child(2) .ls,
 .eval-layout .layer-item:nth-child(2) .layer-desc { opacity: 1; }
+
+
+/* ============================================================
+   Case colour system (alpha r3)
+   Every "this is chosen / done / here" signal on an evaluation page is
+   drawn from the case's own pair - surface (--case-soft), text on it
+   (--case-ink), and a stroke colour (--case-line) - declared per page next
+   to where this file is linked:
+     Dennis  peach / sienna      Darren  graphite / paper
+     Alex    mist / steel        Jordan  ivory / brass
+   The pages already route every selected state through --select-*, so
+   re-pointing those five tokens here recolours all of them at once: ICD
+   rows, PHQ rows, HiTOP circles, GAD pills, AUDIT options, the diagnostic
+   conclusion, the step rail. Declared on body so it wins over the theme
+   blocks on <html> in both light and dark.
+   ============================================================ */
+body {
+  --select-fill: var(--case-soft);
+  --select-line: var(--case-line);
+  --select-ink: var(--case-ink);
+  --select-solid: var(--case-line);
+  --select-on: var(--paper);
+  --select-ring: transparent;
+  /* Semantic states on a case's page speak in that case's colours too:
+     an "impaired" bar or an "elevated" pill in Darren's report was
+     otherwise drawn in sienna - Dennis's colour. */
+  --danger: var(--case-line);   --danger-soft: var(--case-tint);
+  --warning: var(--case-line);  --warning-soft: var(--case-tint);
+}
+
+/* Step rail: done steps sit on the case surface, the current step is the
+   surface with the case line around it. */
+.eval-layout .v-step.done .v-step-dot {
+  background: var(--case-soft) !important; color: var(--case-ink) !important; border: none !important;
+}
+.eval-layout .v-step.done .v-step-line { background: var(--case-line) !important; }
+.eval-layout .v-step.current .v-step-dot {
+  background: var(--case-soft) !important; color: var(--case-ink) !important;
+  border: 2px solid var(--case-line) !important;
+}
+
+/* The inset bar that marked an answered ICD / PHQ question is the kind of
+   coloured ribbon that was removed from the content notes; an answered
+   question now folds instead (eval-focus.js). */
+.eval-layout .scid-q:has(.radio-row label:has(input:checked)),
+.eval-layout .item-q:has(input:checked) { box-shadow: none !important; padding-left: 0 !important; }
+
+/* Progress fills inside the side panels follow the case line. */
+.eval-layout .progress-fill,
+.eval-layout .mini-bar-fill,
+.eval-layout .bar-fill { background: var(--case-line) !important; }
+
+/* ============================================================
+   Active postcard (alpha r3) - see eval-focus.js
+   ============================================================ */
+.eval-layout .ef-item { position: relative; transition: background var(--duration-hover) var(--ease-standard); }
+.eval-layout .ef-chip { display: none; }
+
+/* ---- Answered: folds to one line with the answer as a chip ---- */
+.eval-layout .ef-item.ef-answered {
+  cursor: pointer; border-radius: 16px;
+  padding-top: 12px !important; padding-bottom: 12px !important;
+  /* room for the chip: its real width, measured by eval-focus.js */
+  padding-right: calc(var(--ef-chip-w, 170px) + 30px) !important;
+  color: var(--text-secondary);
+  min-height: 0 !important;
+}
+.eval-layout .ef-item.ef-answered:hover { background: var(--mist-strong); }
+.eval-layout .ef-item.ef-answered > .ef-controls,
+.eval-layout .ef-item.ef-answered .ef-controls { display: none !important; }
+/* Supporting lines (rationale notes, follow-up probes) fold away with the
+   options; the question itself stays readable. */
+.eval-layout .ef-item.ef-answered :is(.scid-note, .question-followup, .item-note, .scid-hint) { display: none !important; }
+.eval-layout .ef-item.ef-answered :is(.scid-q-text, .hitop-item-text, .likert-item-text, .question-label, .question-probe, .sr-label, .item-text) {
+  font-size: var(--text-sm) !important; font-style: normal !important; font-family: var(--font-sans) !important;
+  color: var(--text-secondary) !important; margin: 0 !important;
+  /* long criteria fold to two lines */
+  display: -webkit-box !important; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+}
+.eval-layout .ef-item.ef-answered > .ef-chip {
+  display: inline-block; position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  /* The whole answer is shown. It used to stop at 170px and, being a flex
+     box, cut the text mid-word with no ellipsis ("More than half the"). */
+  max-width: min(48%, 360px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  border: 0; cursor: pointer; font: inherit;
+  font-family: var(--font-mono); font-size: 12px; line-height: 1;
+  padding: 7px 12px; border-radius: 999px;
+  background: var(--case-soft); color: var(--case-ink);
+}
+
+/* ---- Current: the postcard ---- */
+.eval-layout .ef-item:is(.ef-current, .ef-open) {
+  --bg-surface-alt: var(--mist); --soft: var(--mist); --accent-bg: var(--mist);
+  --color-surface-2: var(--mist); --color-surface-offset: var(--mist); --teal-pale: var(--mist);
+  --opt-bg: var(--mist);
+  background: var(--paper) !important;
+  border: 0 !important; border-radius: 22px !important;
+  box-shadow: var(--shadow-lg) !important;
+  padding: 24px 26px 22px !important;
+  margin: 14px -6px 16px !important;
+  transform: rotate(-.35deg);
+  z-index: 1;
+}
+.eval-layout .ef-item:is(.ef-current, .ef-open) .question-label { font-family: var(--font-mono) !important; font-size: 12px !important; font-weight: 400 !important; color: var(--text-tertiary) !important; margin-bottom: 6px !important; }
+.eval-layout .ef-item:is(.ef-current, .ef-open) :is(.scid-q-text, .hitop-item-text, .likert-item-text, .question-probe, .sr-label) {
+  font-family: var(--font-serif) !important; font-weight: 400 !important; font-style: normal !important;
+  font-size: clamp(1.25rem, 1.1rem + .6vw, 1.625rem) !important; line-height: 1.25 !important;
+  letter-spacing: -.012em; color: var(--text-primary) !important;
+}
+/* Short-scale items were a row (text left, circles right). As the
+   postcard they stack: the question on top, the scale full width below. */
+.eval-layout :is(.hitop-item, .likert-row, .sr-body):is(.ef-current, .ef-open) {
+  display: flex !important; flex-direction: column !important; align-items: stretch !important; gap: 16px !important;
+}
+.eval-layout :is(.ef-current, .ef-open) :is(.likert, .likert-buttons, .rating-row) { display: flex !important; width: 100% !important; gap: 10px !important; }
+.eval-layout :is(.ef-current, .ef-open) :is(.likert label, .rating-btn) { flex: 1 1 0 !important; }
+.eval-layout :is(.ef-current, .ef-open) .likert label .num,
+.eval-layout :is(.ef-current, .ef-open) .likert-buttons button,
+.eval-layout :is(.ef-current, .ef-open) .rating-btn label {
+  width: 100% !important; height: auto !important; min-height: 52px !important; border-radius: 16px !important;
+  flex-direction: column !important; gap: 2px; padding: 8px 6px !important;
+  background: var(--mist) !important; font-size: var(--text-base) !important;
+}
+.eval-layout :is(.ef-current, .ef-open) [data-ef-label]::after {
+  content: attr(data-ef-label); display: block;
+  font-size: 11.5px; font-weight: 400; line-height: 1.2; color: var(--text-tertiary);
+  white-space: normal; text-align: center;
+}
+.eval-layout :is(.ef-current, .ef-open) .likert label:has(input:checked) .num,
+.eval-layout :is(.ef-current, .ef-open) .likert-buttons button.selected,
+.eval-layout :is(.ef-current, .ef-open) .rating-btn input:checked + label { background: var(--select-fill) !important; }
+.eval-layout :is(.ef-current, .ef-open) :is(.likert label:has(input:checked) .num, .likert-buttons button.selected, .rating-btn input:checked + label)[data-ef-label]::after { color: inherit; }
+
+/* ---- Pending: waiting below the postcard ---- */
+.eval-layout .ef-item.ef-pending { opacity: .82; }
+.eval-layout .ef-item.ef-pending:hover { opacity: 1; }
+
+/* ---- Reopened for a change: it becomes the postcard again (every
+   rule above covers .ef-open), untilted so it reads as "editing". ---- */
+.eval-layout .ef-item.ef-open { transform: none; }
+
+@media (max-width: 767px) {
+  .eval-layout .ef-item:is(.ef-current, .ef-open) { transform: none; margin: 12px 0 14px !important; padding: 20px 18px !important; }
+  /* On a phone the chip goes under the question instead of beside it,
+     where it would sit on top of a wrapped line. */
+  .eval-layout .ef-item.ef-answered { padding-right: 14px !important; }
+  .eval-layout .ef-item.ef-answered > .ef-chip {
+    position: static; transform: none; margin-top: 8px; max-width: 100%; align-self: flex-start;
+    white-space: normal; line-height: 1.35;
+  }
+  /* Jordan's HiTOP rows kept text and four buttons on one line at 375px,
+     squeezing the statement into a narrow column. Stack them. */
+  .eval-layout .likert-row { flex-wrap: wrap !important; }
+  .eval-layout .likert-row .likert-item-text { flex: 1 1 100% !important; }
+  .eval-layout :is(.ef-current, .ef-open) :is(.likert, .likert-buttons, .rating-row) { gap: 6px !important; }
+  .eval-layout :is(.ef-current, .ef-open) [data-ef-label]::after { font-size: 10.5px; }
+}
+@media (prefers-reduced-motion: reduce) { .eval-layout .ef-item:is(.ef-current, .ef-open) { transform: none; } }
+@media print {
+  .eval-layout .ef-item { transform: none !important; box-shadow: none !important; opacity: 1 !important; }
+  .eval-layout .ef-chip { display: none !important; }
+  .eval-layout .ef-item.ef-answered .ef-controls { display: flex !important; }
+}
+
+
+/* Step rail, compact (icons only): the connector sat at a fixed 12px
+   from the left and missed the centred dots, drawing short stray bars. */
+.eval-layout.rail-compact .v-step-line { left: 50% !important; transform: translateX(-1px); }
+
+/* ============================================================
+   Report (alpha r3): the case's surface as the cover, then each
+   lens as a postcard. Screen only - the print stylesheet in
+   report.css keeps the A4 layout untouched.
+   ============================================================ */
+@media screen {
+  .report-doc .report-head {
+    background: var(--case-soft); color: var(--case-ink);
+    border-radius: 28px; padding: clamp(28px, 3vw, 44px) clamp(24px, 3vw, 44px);
+    margin-bottom: 40px; box-shadow: none; align-items: flex-end;
+  }
+  .report-doc .report-head-title {
+    font-family: var(--font-serif) !important; font-weight: 400 !important;
+    font-size: clamp(2rem, 1.6rem + 1.6vw, 3rem) !important; line-height: 1.05 !important;
+    letter-spacing: -.025em !important; color: inherit !important;
+  }
+  .report-doc .report-head-meta { color: inherit; opacity: .85; margin-top: 12px; }
+  .report-doc .report-head-meta span strong { color: inherit; }
+  .report-doc .report-print-btn {
+    background: transparent; color: inherit; border-color: currentColor; font-weight: 500;
+  }
+  .report-doc .report-print-btn:hover { background: var(--case-ink); color: var(--case-soft); border-color: var(--case-ink); box-shadow: none; }
+
+  .report-doc .rpt-section {
+    --bg-surface: var(--paper); --bg-surface-alt: var(--mist); --border: var(--hairline);
+    background: var(--paper) !important; border: 0 !important; border-radius: 22px !important;
+    box-shadow: var(--shadow-lg) !important; overflow: visible;
+    margin-bottom: 30px !important;
+    transform: rotate(-.25deg);
+  }
+  .report-doc .rpt-section:nth-of-type(even) { transform: rotate(.2deg); }
+  .report-doc .rpt-section-head { box-shadow: none; padding: 26px 28px 8px; align-items: center; }
+  .report-doc .rpt-num {
+    font-weight: 400; font-size: 12px; padding: 5px 11px; border-radius: 999px;
+    background: var(--case-soft); color: var(--case-ink);
+  }
+  .report-doc .rpt-section-title {
+    font-family: var(--font-serif) !important; font-weight: 400 !important;
+    font-size: clamp(1.5rem, 1.3rem + .7vw, 2rem) !important; letter-spacing: -.015em !important;
+  }
+  .report-doc .rpt-section-body { padding: 18px 28px 28px; }
+  .report-doc .rpt-section > :not(.rpt-section-head):not(.rpt-section-body) { padding-left: 28px; padding-right: 28px; }
+  .report-doc .rpt-section > :last-child:not(.rpt-section-body) { padding-bottom: 28px; }
+}
+@media screen and (max-width: 767px) {
+  .report-doc .rpt-section, .report-doc .rpt-section:nth-of-type(even) { transform: none; }
+  .report-doc .rpt-section-head { padding: 22px 18px 6px; }
+  .report-doc .rpt-section-body { padding: 14px 18px 22px; }
+  .report-doc .rpt-section > :not(.rpt-section-head):not(.rpt-section-body) { padding-left: 18px; padding-right: 18px; }
+}
+@media screen and (prefers-reduced-motion: reduce) {
+  .report-doc .rpt-section, .report-doc .rpt-section:nth-of-type(even) { transform: none; }
+}
+
+
+/* ============================================================
+   Report page (alpha r4)
+   The step rail is gone from the report: the report is the end of the
+   case, reached from the last step's button, and "Previous page" at the
+   bottom goes back to where the rail lives. The report takes the full
+   column.
+   ============================================================ */
+.eval-layout:has(> .report-doc) > .eval-context,
+.eval-layout:has(.report-doc) > .eval-context,
+.eval-layout:has(.report-doc) > aside { display: none !important; }
+.eval-layout:has(.report-doc) { grid-template-columns: minmax(0, 1fr) !important; }
+.eval-layout .report-doc { max-width: 1080px; margin-left: auto !important; margin-right: auto !important; width: 100%; }
+.report-doc .eval-footer { justify-content: space-between; margin-top: 36px; }
+
+/* ============================================================
+   Report, second pass (alpha r4) - richer on screen, and the same
+   look carried onto paper.
+   Every figure a student produced is set in the case's colours:
+   numbers in serif on the case tint, the verdict on the case surface,
+   pills on the tint, charts on mist panels, written answers as quiet
+   serif quotes. One shared layer for all four reports; the markup of
+   each case is not touched.
+   ============================================================ */
+.report-doc { --r-tile: var(--case-tint); }
+
+/* ---- figures in numbers: tiles ---- */
+.report-doc :is(.count-row, .count-strip) {
+  display: grid !important; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px !important;
+  border: 0 !important; background: none !important; overflow: visible !important; margin: 6px 0 14px !important;
+}
+.report-doc :is(.count-cell, .report-kpi) {
+  background: var(--r-tile) !important; border: 0 !important; border-radius: 16px !important;
+  padding: 18px 20px 16px !important; box-shadow: none !important; text-align: left !important;
+  display: flex !important; flex-direction: column !important; gap: 6px !important; align-items: flex-start !important;
+}
+.report-doc :is(.cn, .count-num, .kpi-value, .score-big) {
+  font-family: var(--font-serif) !important; font-weight: 400 !important;
+  font-size: clamp(2rem, 1.7rem + 1vw, 2.75rem) !important; line-height: 1 !important;
+  letter-spacing: -.02em !important; color: var(--case-line) !important;
+}
+.report-doc .sev-score strong { font-family: var(--font-serif) !important; font-weight: 400 !important; color: var(--case-line) !important; }
+.report-doc :is(.cl, .count-desc, .kpi-label) {
+  text-transform: none !important; letter-spacing: 0 !important; font-weight: 450 !important;
+  font-size: 13px !important; color: var(--text-secondary) !important;
+}
+.report-doc .kpi-note { font-size: 12.5px !important; color: var(--text-tertiary) !important; }
+
+/* ---- the categorical verdict: on the case surface ---- */
+.report-doc :is(.dx-badge, .verdict) {
+  display: flex !important; align-items: center !important; gap: 14px !important;
+  background: var(--case-soft) !important; color: var(--case-ink) !important;
+  border: 0 !important; border-radius: 18px !important; box-shadow: none !important;
+  padding: 16px 22px !important; margin: 4px 0 14px !important; width: fit-content; max-width: 100%;
+}
+.report-doc :is(.dx-icon, .verdict-mark) {
+  flex: 0 0 auto; width: 30px !important; height: 30px !important; border-radius: 50% !important;
+  display: inline-flex !important; align-items: center; justify-content: center;
+  background: var(--case-ink) !important; color: var(--case-soft) !important;
+  font-size: 15px !important; font-weight: 600;
+}
+.report-doc :is(.dx-name, .verdict-text) {
+  font-family: var(--font-serif) !important; font-weight: 400 !important;
+  font-size: clamp(1.125rem, 1.05rem + .3vw, 1.3125rem) !important; line-height: 1.25; color: inherit !important;
+}
+.report-doc .dx-sub { color: inherit !important; opacity: .8; font-size: 12.5px !important; }
+/* In the dark theme the case surfaces are translucent, so a glyph cut out
+   of a filled disc disappears into it; the mark becomes an outlined disc
+   in the badge's own text colour instead. */
+html[data-theme="dark"] .report-doc :is(.dx-icon, .verdict-mark) {
+  background: transparent !important; color: inherit !important; box-shadow: inset 0 0 0 1.5px currentColor;
+}
+
+/* ---- small state pills ---- */
+.report-doc :is(.cpill, .score-pill, .sev-band, .severity-pill) {
+  background: var(--case-tint) !important; color: var(--case-line) !important;
+  border: 0 !important; border-radius: 999px !important; padding: 6px 13px !important;
+  font-size: 12.5px !important; font-weight: 500 !important; text-transform: none !important; letter-spacing: 0 !important;
+}
+.report-doc .cpills { gap: 8px !important; }
+
+/* ---- tables: a mist header strip, hairline rows ---- */
+.report-doc table thead th {
+  background: var(--mist) !important; border: 0 !important;
+  text-transform: none !important; letter-spacing: 0 !important;
+  font-family: var(--font-sans) !important; font-weight: 500 !important; font-size: 12.5px !important;
+  color: var(--text-secondary) !important; padding-top: 10px !important; padding-bottom: 10px !important;
+}
+.report-doc table thead th:first-child { border-radius: 12px 0 0 12px; }
+.report-doc table thead th:last-child { border-radius: 0 12px 12px 0; }
+.report-doc table tbody td { border-color: var(--hairline) !important; }
+.report-doc :is(.mini-fill, .ss-fill, .profile-bar, .tbars-fill) { background: var(--case-line) !important; }
+
+/* ---- figures on mist panels ---- */
+.report-doc :is(.dist-panel, .canvas-wrap, .chart-container) {
+  background: var(--mist) !important; border: 0 !important; border-radius: 18px !important;
+  padding: 16px 18px 12px !important; box-shadow: none !important;
+}
+.report-doc :is(.dist-panel figcaption, .chart-title) {
+  font-family: var(--font-serif) !important; font-weight: 400 !important; font-size: 1.0625rem !important;
+  color: var(--text-primary) !important; text-transform: none !important; letter-spacing: -.005em !important; margin-bottom: 8px !important;
+}
+
+/* ---- the student's written answers: quiet serif quotes ---- */
+.report-doc :is(.rpt-answer, .interp-block) {
+  background: var(--mist) !important; border: 0 !important; border-radius: 16px !important;
+  padding: 16px 20px 18px !important; box-shadow: none !important; margin: 0 0 10px !important;
+}
+.report-doc :is(.rpt-answer-q, .interp-block .q, .interp-q-label) {
+  font-family: var(--font-sans) !important; font-size: 12.5px !important; font-weight: 500 !important;
+  text-transform: none !important; letter-spacing: 0 !important; color: var(--text-tertiary) !important; margin: 0 0 6px !important;
+}
+.report-doc :is(.rpt-answer-a, .interp-block p, .interp-text) {
+  font-family: var(--font-serif) !important; font-size: 1.125rem !important; line-height: 1.45 !important;
+  color: var(--text-primary) !important; margin: 0 !important;
+}
+
+/* ---- section heads: a hairline under the title, sub in secondary ---- */
+.report-doc .rpt-section-head { border-bottom: 1px solid var(--hairline); padding-bottom: 16px !important; margin-bottom: 4px; }
+.report-doc .rpt-num { min-width: 36px; text-align: center; }
+
+/* ============================================================
+   Print: the same report on A4.
+   report.css deliberately flattens sections so they can run over a page
+   break without a box being cut in half; that stays. What comes back is
+   everything else that makes the screen version read well: the cover on
+   the case surface, serif titles with the numbered chip, tinted tiles,
+   the coloured verdict, pills, table strips, colour bars and mist figure
+   panels. Colours are forced to print, and a dark-theme session prints
+   in the light palette.
+   ============================================================ */
+@media print {
+  html body .report-doc, html body .report-doc * {
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+  }
+  /* Paper is always light, whichever theme the student is using.
+     eval-focus.js switches the page to the light theme for the length of
+     the print and rebuilds the report; this is the fallback for a browser
+     that prints without firing beforeprint. Declared on the root so every
+     alias the pages derive from these tokens is recomputed too. */
+  html[data-theme="dark"] {
+    --paper: #ffffff; --mist: #f2f2f3; --mist-strong: #e8e8e8; --fog: #fafafb; --hairline: #e8e8e8; --hairline-on-mist: #e8e8e8;
+    --bg-app: #ffffff; --bg-surface: #ffffff; --bg-surface-alt: #f2f2f3; --border: #e8e8e8;
+    --text-primary: #17191c; --text-secondary: #4d4d4d; --text-tertiary: #777b86;
+    --ink: #17191c; --ink-text: #ffffff;
+    --case-soft: var(--print-case-soft); --case-ink: var(--print-case-ink);
+    --case-line: var(--print-case-line); --case-tint: var(--print-case-tint);
+  }
+  html body .report-doc { font-family: var(--font-sans); color: var(--text-primary); }
+
+  html body .report-doc .report-head {
+    display: block !important;
+    background: var(--case-soft) !important; color: var(--case-ink) !important;
+    border-radius: 5mm !important; padding: 8mm 9mm 7mm !important; margin: 0 0 8mm !important;
+    box-shadow: none !important; break-inside: avoid;
+  }
+  html body .report-doc .report-head-title {
+    font-family: var(--font-serif) !important; font-weight: 400 !important; font-size: 24pt !important;
+    line-height: 1.05 !important; letter-spacing: -.02em !important; color: inherit !important;
+  }
+  html body .report-doc .report-head-meta { color: inherit !important; font-size: 9.5pt !important; margin-top: 3mm !important; }
+  html body .report-doc .report-head-meta strong { color: inherit !important; }
+
+  html body .report-doc .rpt-section { transform: none !important; margin-bottom: 9mm !important; }
+  html body .report-doc .rpt-section-head {
+    display: flex !important; align-items: center !important; gap: 3mm !important;
+    border-bottom: .4mm solid var(--case-line) !important; padding: 0 0 2.5mm !important; margin-bottom: 4mm !important;
+  }
+  html body .report-doc .rpt-num {
+    background: var(--case-soft) !important; color: var(--case-ink) !important;
+    border-radius: 999px !important; padding: 1mm 2.6mm !important; font-size: 8.5pt !important; font-weight: 400 !important;
+  }
+  html body .report-doc .rpt-section-title { font-family: var(--font-serif) !important; font-weight: 400 !important; font-size: 16pt !important; letter-spacing: -.01em !important; }
+  html body .report-doc .rpt-section-sub { font-size: 9pt !important; color: var(--text-secondary) !important; }
+
+  html body .report-doc :is(.count-row, .count-strip) {
+    display: grid !important; grid-template-columns: repeat(auto-fit, minmax(38mm, 1fr)) !important; gap: 3mm !important; margin: 1mm 0 4mm !important;
+  }
+  html body .report-doc :is(.count-cell, .report-kpi) {
+    background: var(--case-tint) !important; border-radius: 3mm !important; padding: 3.5mm 4mm 3mm !important; break-inside: avoid;
+  }
+  html body .report-doc :is(.cn, .count-num, .kpi-value, .score-big) { font-size: 20pt !important; }
+  html body .report-doc :is(.dx-badge, .verdict) {
+    background: var(--case-soft) !important; color: var(--case-ink) !important;
+    border-radius: 3.5mm !important; padding: 3mm 4.5mm !important; margin: 0 0 4mm !important; break-inside: avoid;
+  }
+  html body .report-doc :is(.dx-name, .verdict-text) { font-size: 12.5pt !important; }
+  html body .report-doc :is(.cpill, .score-pill, .sev-band, .severity-pill) {
+    background: var(--case-tint) !important; color: var(--case-line) !important;
+    border-radius: 999px !important; padding: 1mm 3mm !important; font-size: 8.5pt !important;
+  }
+  html body .report-doc table thead th { background: var(--mist) !important; border: 0 !important; font-weight: 500 !important; color: var(--text-secondary) !important; }
+  html body .report-doc :is(.mini-fill, .ss-fill, .tbars-fill, .profile-bar) { background: var(--case-line) !important; }
+  html body .report-doc :is(.dist-panel, .canvas-wrap, .chart-container) {
+    background: var(--mist) !important; border-radius: 3.5mm !important; padding: 3mm 3.5mm 2mm !important; break-inside: avoid;
+  }
+  html body .report-doc :is(.rpt-answer, .interp-block) {
+    background: var(--mist) !important; border-radius: 3mm !important; padding: 3mm 4mm !important; break-inside: avoid;
+  }
+  html body .report-doc :is(.rpt-answer-a, .interp-block p, .interp-text) { font-size: 11pt !important; }
+}
+
+/* Report tables on a phone: the profile bars were a fixed 120px and the
+   HiTOP table ran ~45px past the screen. Bars narrow, and a table that is
+   still too wide scrolls inside its card instead of pushing the page. */
+@media screen and (max-width: 767px) {
+  .report-doc :is(.mini-bar, .profile-bar-wrap) { width: 56px !important; min-width: 0 !important; }
+  .report-doc :is(.ht-table, .hitop-table, .ctab, .rpt-table, .report-items-table) {
+    display: block !important; max-width: 100% !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch;
+  }
+  .report-doc table :is(th, td) { padding-left: 8px !important; padding-right: 8px !important; }
+}
+
+/* ============================================================
+   "What changed in your understanding?" - one block, four cases.
+   The markup is now identical on every case (a numbered report section
+   with a body); these rules outrank each page's older reflect-block
+   styles so the note, the field, the button and the "complete" state
+   look and sit exactly the same everywhere.
+   ============================================================ */
+.report-doc #reflect-block .rpt-section-body {
+  display: flex !important; flex-direction: column !important; gap: 16px !important;
+  padding: 18px 28px 28px !important;
+}
+.report-doc #reflect-block .reflect-note {
+  margin: 0 !important; padding: 0 !important; max-width: none !important;
+  font-family: var(--font-sans) !important; font-size: 15px !important; font-weight: 400 !important;
+  line-height: 1.6 !important; color: var(--text-secondary) !important;
+}
+.report-doc #reflect-block textarea {
+  display: block; width: 100% !important; box-sizing: border-box !important; min-height: 120px !important;
+  margin: 0 !important; padding: 14px 16px !important;
+  border: 1px solid transparent !important; border-radius: 16px !important; box-shadow: none !important;
+  background: var(--mist) !important; color: var(--text-primary) !important;
+  font-family: var(--font-sans) !important; font-size: 16px !important; font-weight: 400 !important; line-height: 1.55 !important;
+  resize: vertical;
+}
+.report-doc #reflect-block textarea::placeholder { color: var(--text-placeholder) !important; }
+.report-doc #reflect-block textarea:focus { outline: none !important; background: var(--paper) !important; border-color: var(--case-line) !important; }
+.report-doc #reflect-block .reflect-actions { display: flex !important; align-items: center !important; gap: 14px !important; flex-wrap: wrap; margin: 0 !important; }
+.report-doc #reflect-block #reflect-btn {
+  display: inline-flex !important; align-items: center; justify-content: center;
+  width: auto !important; height: 44px !important; min-height: 0 !important; margin: 0 !important;
+  padding: 0 22px !important; border: 0 !important; border-radius: 999px !important;
+  background: var(--ink) !important; color: var(--ink-text) !important;
+  font-family: var(--font-sans) !important; font-size: 15px !important; font-weight: 500 !important; letter-spacing: 0 !important;
+  box-shadow: none !important; cursor: pointer;
+}
+.report-doc #reflect-block #reflect-btn:hover { background: var(--ink-hover) !important; }
+/* The "complete" confirmation: a chip in the case's colours beside the button. */
+.report-doc #reflect-block #reflect-done {
+  align-items: center; gap: 6px; margin: 0 !important;
+  padding: 9px 14px; border-radius: 999px;
+  background: var(--case-tint); color: var(--case-line);
+  font-family: var(--font-sans); font-size: 14px; font-weight: 500;
+}
+@media print { .report-doc #reflect-block .reflect-actions { display: none !important; } }
+
+/* ---- r7: the two answer layouts the postcard rules had not covered ----
+   Both are Alex's. His HiTOP scale is drawn with .option-row / .opt-btn
+   (fixed 40px squares) instead of .rating-row / .rating-btn, so on the
+   postcard the numbers stayed squares and the scale labels spilled out of
+   them. His CDDR criteria put question, note and answers side by side in a
+   .scid-row, which left the criterion squeezed into a narrow column. Both
+   now take the same form as every other case. */
+.eval-layout :is(.ef-current, .ef-open) .option-row { display: flex !important; flex-wrap: nowrap !important; width: 100% !important; gap: 10px !important; }
+.eval-layout :is(.ef-current, .ef-open) .opt-btn { flex: 1 1 0 !important; min-width: 0; }
+.eval-layout :is(.ef-current, .ef-open) .opt-btn label {
+  display: flex !important; align-items: center; justify-content: center;
+  width: 100% !important; height: auto !important; min-height: 52px !important; border-radius: 16px !important;
+  flex-direction: column !important; gap: 2px; padding: 8px 6px !important;
+  background: var(--mist) !important; border: 1.5px solid transparent !important; color: var(--text-primary) !important;
+  font-size: var(--text-base) !important; font-weight: 500 !important;
+}
+.eval-layout :is(.ef-current, .ef-open) .opt-btn input:not(:checked) + label:hover { border-color: var(--text-tertiary) !important; }
+.eval-layout :is(.ef-current, .ef-open) .opt-btn input:checked + label { background: var(--select-fill) !important; border-color: var(--select-line) !important; color: var(--select-ink) !important; font-weight: 600 !important; }
+.eval-layout :is(.ef-current, .ef-open) .opt-btn input:checked + label[data-ef-label]::after { color: inherit; }
+
+.eval-layout .scid-row:is(.ef-current, .ef-open) { flex-direction: column !important; align-items: stretch !important; gap: 14px !important; }
+.eval-layout .scid-row:is(.ef-current, .ef-open) .item-code { font-family: var(--font-mono) !important; font-size: 14px !important; font-style: normal !important; font-weight: 400 !important; color: var(--text-tertiary) !important; }
+.eval-layout .scid-row:is(.ef-current, .ef-open) .item-q {
+  margin: 0 !important; font-family: var(--font-serif) !important; font-weight: 400 !important; font-style: normal !important;
+  font-size: clamp(1.25rem, 1.1rem + .6vw, 1.625rem) !important; line-height: 1.25 !important;
+  letter-spacing: -.012em !important; color: var(--text-primary) !important;
+}
+.eval-layout .scid-row:is(.ef-current, .ef-open) .item-sublabel { display: block; margin-top: 10px; font-family: var(--font-sans) !important; font-size: var(--text-sm) !important; line-height: 1.5 !important; letter-spacing: 0 !important; color: var(--text-secondary) !important; }
+.eval-layout .scid-row:is(.ef-current, .ef-open) .rating-group { display: flex !important; flex-wrap: wrap !important; gap: 12px !important; width: 100% !important; }
+.eval-layout .scid-row:is(.ef-current, .ef-open) .rating-group .rating-btn { flex: 0 0 auto !important; }
+.eval-layout .scid-row:is(.ef-current, .ef-open) .rating-group .rating-btn label {
+  display: inline-flex !important; flex-direction: row !important; align-items: center !important; white-space: nowrap;
+  width: auto !important; min-height: 0 !important; height: auto !important;
+  padding: 9px 18px !important; border-radius: 999px !important;
+  font-family: var(--font-sans) !important; font-size: 16px !important; font-weight: 500 !important; letter-spacing: 0 !important;
+}
+.eval-layout .scid-row.ef-answered .item-sublabel { display: none !important; }
+@media (max-width: 640px) {
+  .eval-layout .scid-row:is(.ef-current, .ef-open) .rating-group .rating-btn label { padding: 8px 16px !important; font-size: 15px !important; }
+  .eval-layout .scid-row:is(.ef-current, .ef-open) { gap: 10px !important; }
+}
+
+/* ---- r8: distribution panels. A panel alone in its section is centred
+   at a reading width instead of stretching edge to edge (on screen) or
+   filling only the left half of a two-column grid (in print). charts.js
+   draws it taller and with larger labels. ---- */
+.report-doc .dist-row:has(> .dist-panel:only-child) { grid-template-columns: minmax(0, 760px) !important; justify-content: center !important; }
+.report-doc .dist-panel canvas { margin: 0 auto; }
+@media print {
+  html body .report-doc .dist-row { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; justify-content: center !important; }
+  html body .report-doc .dist-row:has(> .dist-panel:only-child) { grid-template-columns: minmax(0, 150mm) !important; }
+  html body .report-doc .dist-panel canvas { width: 100% !important; height: auto !important; max-height: none !important; }
+  /* report.css caps every direct child of a chart container at 46mm - meant
+     for the old Plotly charts - which cut Jordan's T-score bars and let
+     the source note run over the last rows. */
+  html body .report-doc .chart-container > :is(.tbars, .dist-row) { max-height: none !important; overflow: visible !important; }
+}

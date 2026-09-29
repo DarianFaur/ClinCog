@@ -133,22 +133,11 @@ h1,h2,h3,h4,h5{font-family:var(--serif)}
 .diag-opt{display:flex;align-items:center;gap:10px}
 .diag-opt input{accent-color:var(--teal);width:16px;height:16px;flex-shrink:0}
 .diag-opt label{font-size:15px;cursor:pointer}
-/* Restricted instrument. Laid out as a grid of items against response
-   columns, matching the paper form rather than restyling it: the licence
-   allows electronic administration but permits formatting changes only
-   after review by the author. */
+/* Restricted instrument. Drawn with the same markup as the GAD-7 (legend,
+   .sr-item rows, number tiles), so it gets the same postcards. The
+   copyright statement follows the items, in full. */
 .rs-copyright { font-size: var(--text-xs); line-height: 1.55; color: var(--text-secondary);
-  background: var(--bg-surface-alt); border-radius: var(--radius-sm); padding: 10px 14px; margin: 12px 0; }
-.rs-instructions { font-size: var(--text-sm); margin: 0 0 6px; }
-.rs-roleplay { font-size: var(--text-sm); color: var(--text-secondary); font-style: italic; margin: 0 0 14px; }
-.rs-table-wrap { overflow-x: auto; }
-.rs-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); min-width: 560px; }
-.rs-table th { font-weight: 500; font-size: var(--text-xs); color: var(--text-secondary);
-  text-align: center; padding: 8px 4px; vertical-align: bottom; }
-.rs-table th:first-child { text-align: left; }
-.rs-table td { padding: 10px 4px; border-top: 1px solid var(--border); text-align: center; }
-.rs-table td:first-child { text-align: left; padding-right: 12px; }
-.rs-table input[type=radio] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent); }
+  background: var(--bg-surface-alt); border-radius: var(--radius-sm); padding: 12px 16px; margin: 16px 0 0; }
 
 /* SELF-REPORT ITEM ROWS */
 .sr-item{display:block;padding:16px 0;border-bottom:1px solid var(--border)}
@@ -1051,7 +1040,7 @@ textarea.interp::placeholder,
   }
 </script>
 <link rel="stylesheet" href="/alpha-eval.css">
-<style>:root { --case: var(--domain-anxiety); --case-soft: var(--domain-anxiety-soft); --case-ink: var(--domain-anxiety-ink); }</style>
+<style>:root { --case: var(--domain-anxiety); --case-soft: var(--domain-anxiety-soft); --case-ink: var(--domain-anxiety-ink); --case-line: var(--domain-anxiety-line); --case-tint: var(--domain-anxiety-tint);  --print-case-soft: #e8e8e8; --print-case-ink: #4d4d4d; --print-case-line: #4d4d4d; --print-case-tint: #e8e8e8; }</style>
 </head>
 <body>
 <script>
@@ -1306,7 +1295,7 @@ textarea.interp::placeholder,
   <div class="eval-work">
 
   <p style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-primary);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px">Layer 2 — Dimensional–Psychological Evaluation</p>
-  <h1 class="page-title">GAD-7 &amp; HiTOP</h1>
+  <h1 class="page-title" id="p4-title">GAD-7 &amp; HiTOP</h1>
   <p class="page-tagline">Complete all items as they apply to Alex based on the vignette.</p>
 
   <!-- PART A: GAD-7 -->
@@ -1339,10 +1328,19 @@ textarea.interp::placeholder,
       <div class="part-tag">Part A2 &middot; licensed instance only</div>
       <div class="part-title" id="rs-title"></div>
     </div>
+
+    <div class="sub-hdr" style="margin-top:32px">
+      <h3>SPIN</h3>
+      <p><span id="rs-instructions"></span> Answer as Alex would, based on the vignette and your conversation.</p>
+    </div>
+
+    <!-- Same markup as the GAD-7 above, so eval-focus.js turns every item
+         into the same postcard and the legend labels the number tiles. -->
+    <div id="rs-items" class="instrument-card">
+      <div class="likert-legend" id="rs-legend"></div>
+    </div>
+
     <p class="rs-copyright" id="rs-copyright"></p>
-    <p class="rs-instructions" id="rs-instructions"></p>
-    <p class="rs-roleplay">Answer as Alex would, based on the vignette and your conversation.</p>
-    <div class="rs-table-wrap"><table class="rs-table" id="rs-table"></table></div>
   </section>
 
   <!-- PART B: HiTOP -->
@@ -1668,22 +1666,26 @@ textarea.interp::placeholder,
   <p style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-primary);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px">Comparative Report</p>
   <h1 class="page-title">Evaluation Summary</h1>
   <p class="page-tagline" id="report-subtitle">Auto-generated from your responses across all three layers.</p>
-  <p id="report-ts" style="font-family:var(--mono);font-size:11px;color:#bbb;margin-top:-36px;margin-bottom:48px"></p>
+  <p id="report-ts" style="font-family:var(--mono);font-size:11px;color:var(--text-tertiary);margin-top:-36px;margin-bottom:48px"></p>
 
   <div id="report-content">
     <!-- Dynamically generated -->
   </div>
 
-  <div class="reflect-block" id="reflect-block">
-    <h3>What changed in your understanding?</h3>
-    <p class="reflect-note">You approached Alex from three perspectives — a categorical diagnosis, a dimensional profile, and Alex’s results on a cognitive task. Write a few sentences on what exploring the case this way taught you, then mark it complete.</p>
-    <textarea id="reflect-text" placeholder="What did looking at Alex's case from three angles add to your understanding?"></textarea>
-    <div id="reflect-done" style="display:none;"></div>
-    <button class="btn btn-primary" id="reflect-btn" onclick="completeCase()">Complete case →</button>
-  </div>
+  <section class="rpt-section reflect-block" id="reflect-block">
+        <div class="rpt-section-head"><span class="rpt-num">05</span><div><h3 class="rpt-section-title">What changed in your understanding?</h3><p class="rpt-section-sub">Your reflection on the three lenses</p></div></div>
+        <div class="rpt-section-body">
+          <p class="reflect-note">You approached Alex from three perspectives — a categorical diagnosis, a dimensional profile, and Alex’s results on a cognitive task. Write a few sentences on what exploring the case this way taught you, then mark it complete.</p>
+          <textarea id="reflect-text" placeholder="What did looking at Alex's case from three angles add to your understanding?"></textarea>
+          <div class="reflect-actions">
+            <button type="button" class="btn btn-primary" id="reflect-btn" onclick="completeCase()">Complete case &rarr;</button>
+            <div id="reflect-done" style="display:none;"></div>
+          </div>
+        </div>
+      </section>
 
   <div class="nav-row eval-footer">
-      <button class="btn btn-secondary" onclick="window.print()">Print report</button>
+      <button class="btn btn-secondary" onclick="goTo(5)">&larr; Previous page</button>
       <a class="btn btn-primary" href="/dashboard.html">Dashboard &rarr;</a>
     </div>
 
@@ -2026,7 +2028,8 @@ function tryNext(from) {
 const STEP_LABELS_1IDX = ["", "Overview", "Vignette", "ICD-11", "GAD-7 & HiTOP", "Dot-probe", "Report"];
 
 function verticalStepperHtml() {
-  const rows = [1,2,3,4,5,6].map(i => `
+  /* The report is reached from the last step's own button and is not a step on the rail. */
+  const rows = [1,2,3,4,5].map(i => `
     <div class="v-step" data-step="${i}" onclick="stepClick(${i})">
       <div class="v-step-line"></div>
       <div class="v-step-dot">${i}</div>
@@ -2340,36 +2343,71 @@ const RestrictedSPIN = {
 
   render() {
     const sp = this.spec;
-    document.getElementById('rs-title').textContent = sp.title;
+    const title = RestrictedSPIN.clean(sp.title, 'title');
+    document.getElementById('rs-title').textContent = title;
     // The licence requires the full copyright statement, verbatim, with every
     // presentation of the scale.
-    document.getElementById('rs-copyright').textContent = sp.copyright;
-    document.getElementById('rs-instructions').textContent = sp.instructions;
+    document.getElementById('rs-copyright').textContent = RestrictedSPIN.clean(sp.copyright, 'copyright');
+    const instr = RestrictedSPIN.clean(sp.instructions);
+    document.getElementById('rs-instructions').textContent = instr;
 
-    const table = document.getElementById('rs-table');
-    const head = document.createElement('tr');
-    head.appendChild(document.createElement('th'));
-    sp.anchors.forEach(a => { const th = document.createElement('th'); th.textContent = a; head.appendChild(th); });
-    const thead = document.createElement('thead'); thead.appendChild(head); table.appendChild(thead);
+    const anchors = sp.anchors.map(a => RestrictedSPIN.clean(a));
+    const legend = document.getElementById('rs-legend');
+    anchors.forEach((a, score) => {
+      const item = document.createElement('div');
+      item.className = 'likert-legend-item';
+      const num = document.createElement('div'); num.className = 'likert-legend-num'; num.textContent = score;
+      const lbl = document.createElement('div'); lbl.className = 'likert-legend-label'; lbl.textContent = a;
+      item.append(num, lbl); legend.appendChild(item);
+    });
 
-    const tbody = document.createElement('tbody');
-    sp.items.forEach((text, i) => {
-      const n = i + 1, tr = document.createElement('tr');
-      const label = document.createElement('td');
-      label.textContent = n + '. ' + text;
-      tr.appendChild(label);
-      sp.anchors.forEach((anchor, score) => {
-        const td = document.createElement('td');
+    const box = document.getElementById('rs-items');
+    sp.items.forEach((raw, i) => {
+      const n = i + 1;
+      const row = document.createElement('div'); row.className = 'sr-item';
+      const body = document.createElement('div'); body.className = 'sr-body';
+      const label = document.createElement('div'); label.className = 'sr-label';
+      label.textContent = n + '. ' + RestrictedSPIN.clean(raw);
+      const opts = document.createElement('div'); opts.className = 'rating-row';
+      anchors.forEach((anchor, score) => {
+        const wrap = document.createElement('div'); wrap.className = 'rating-btn';
         const input = document.createElement('input');
-        input.type = 'radio'; input.name = 'rs' + n; input.value = String(score);
+        input.type = 'radio'; input.name = 'rs' + n; input.id = 'rs' + n + '_' + score; input.value = String(score);
         input.setAttribute('aria-label', `Item ${n}: ${anchor}`);
         input.addEventListener('change', () => { this.answers[n] = score; if (typeof updateNav === 'function') updateNav(); });
-        td.appendChild(input); tr.appendChild(td);
+        const lab = document.createElement('label'); lab.htmlFor = input.id; lab.textContent = score;
+        wrap.append(input, lab); opts.appendChild(wrap);
       });
-      tbody.appendChild(tr);
+      body.append(label, opts); row.appendChild(body); box.appendChild(row);
     });
-    table.appendChild(tbody);
     document.getElementById('restricted-spin').hidden = false;
+    // Where the SPIN is served (the seminar instance only), the step is
+    // named after all three scales: page title and step rail both.
+    const stepName = 'GAD-7, SPIN & HiTOP';
+    STEP_LABELS_1IDX[4] = stepName;
+    document.getElementById('p4-title').textContent = stepName;
+    document.querySelectorAll('.v-step[data-step="4"] .v-step-label').forEach(el => { el.textContent = stepName; });
+    // The scale arrives after the page has settled: put back saved answers.
+    if (window.ClinCogEvalMemory && ClinCogEvalMemory.restore) ClinCogEvalMemory.restore();
+    if (window.ClinCogEvalFocus) ClinCogEvalFocus.refresh();
+  },
+
+  // The content comes from a server secret whose non-ASCII characters were
+  // turned into question marks on the way in (one "?" per UTF-8 byte). A
+  // real question mark never comes in twos, so runs of them are repaired:
+  // three between letters were an apostrophe (don’t), three around a word a
+  // quotation mark, three between spaces a dash, two a © or ®. The © stays
+  // in the copyright statement, which must be verbatim; in the title the
+  // mark is dropped.
+  clean(text, kind) {
+    let t = String(text == null ? '' : text);
+    t = t.replace(/(\w)\?{3}(\w)/g, '$1’$2')
+         .replace(/(^|\s)\?{3}(?=\w)/g, '$1“')
+         .replace(/([\w.,!])\?{3}(?=\s|$|[.,;:)])/g, '$1”')
+         .replace(/\s\?{3}\s/g, ' – ');
+    if (kind === 'copyright') t = t.replace(/\?{2,}/g, '©');
+    else t = t.replace(/\s*\?{2,}/g, '');
+    return t.replace(/\s{2,}/g, ' ').trim();
   },
 
   answered() { return Object.keys(this.answers).length; },
@@ -2832,7 +2870,7 @@ function buildSection3() {
     <div class="canvas-wrap">
       <div id="canvas-hitop-fear-wrap"></div>
       <p class="canvas-footnote">Each subscale is compared with its own community norm; the spectrum total uses those four norms combined, which assumes independence between subscales and therefore understates the spread. Read the spectrum T as approximate.</p>
-      <p class="canvas-footnote" style="font-style:italic;color:#999;">Source: ${HITOP_NORM_CITATION}</p>
+      <p class="canvas-footnote" style="font-style:italic;">Source: ${HITOP_NORM_CITATION}</p>
     </div>
 
   </div>`;
@@ -2960,8 +2998,13 @@ function _renderCanvas(canvasId, mean, sd, rawScore) {
   }
   ctx.lineTo(tToX(fillT), baseY);                         // close down to baseline
   ctx.closePath();
-  ctx.fillStyle = 'rgba(255,104,44,0.13)';
-  ctx.fill();
+  // Case colours, read live so the figure follows the theme.
+  const _cs = getComputedStyle(document.documentElement);
+  const _line = (_cs.getPropertyValue('--case-line') || '#4d4d4d').trim();
+  const _grid = (_cs.getPropertyValue('--hairline') || '#e8e8e8').trim();
+  const _faint = (_cs.getPropertyValue('--text-tertiary') || '#777b86').trim();
+  ctx.globalAlpha = 0.14; ctx.fillStyle = _line;
+  ctx.fill(); ctx.globalAlpha = 1;
 
   // ── Bell curve (full extent) ──
   ctx.beginPath();
@@ -2970,7 +3013,7 @@ function _renderCanvas(canvasId, mean, sd, rawScore) {
     const y = densityToY(normDensity(t));
     t === tMin ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
   }
-  ctx.strokeStyle = '#ff682c';
+  ctx.strokeStyle = _line;
   ctx.lineWidth = 1.5;
   ctx.stroke();
 
@@ -2978,7 +3021,7 @@ function _renderCanvas(canvasId, mean, sd, rawScore) {
   ctx.beginPath();
   ctx.moveTo(padL, baseY);
   ctx.lineTo(W - padR, baseY);
-  ctx.strokeStyle = '#e2e2e0';
+  ctx.strokeStyle = _grid;
   ctx.lineWidth = 1;
   ctx.stroke();
 
@@ -2987,7 +3030,7 @@ function _renderCanvas(canvasId, mean, sd, rawScore) {
   ctx.setLineDash([4, 4]);
   ctx.moveTo(tToX(50), padT);
   ctx.lineTo(tToX(50), baseY);
-  ctx.strokeStyle = '#ccc';
+  ctx.strokeStyle = _faint;
   ctx.lineWidth = 1;
   ctx.stroke();
   ctx.setLineDash([]);
@@ -2997,7 +3040,7 @@ function _renderCanvas(canvasId, mean, sd, rawScore) {
   ctx.beginPath();
   ctx.moveTo(markerX, padT);
   ctx.lineTo(markerX, baseY);
-  ctx.strokeStyle = '#ff682c';
+  ctx.strokeStyle = _line;
   ctx.lineWidth = 2;
   ctx.stroke();
 
@@ -3076,6 +3119,7 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
 <script>window.CLINCOG_EVAL = "anxiety";</script>
 <script src="/charts.js"></script>
 <script src="/eval-memory.js"></script>
+<script src="/eval-focus.js"></script>
 <script>
 // A textarea prints only the slice of text that fits its box. Before the
 // print dialog opens, each one is grown to its content so the whole answer

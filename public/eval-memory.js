@@ -49,6 +49,16 @@
     document.querySelectorAll("textarea[id], input[type=text][id]").forEach(function (el) {
       if (el.value) state.text[el.id] = el.value;
     });
+    /* Keep answers to questions that are not on the page yet. A scale that
+       arrives later from the server (the SPIN) would otherwise have its
+       saved answers erased by the first save made before it loads. */
+    var before = read().radios || {};
+    Object.keys(before).forEach(function (name) {
+      if (!(name in state.radios) &&
+          !document.querySelector('input[type=radio][name="' + CSS.escape(name) + '"]')) {
+        state.radios[name] = before[name];
+      }
+    });
     try {
       localStorage.setItem(KEY, JSON.stringify(state));
     } catch (e) {
@@ -149,6 +159,9 @@
       }
       return cur;
     },
+    /* For controls built after the page settled (the SPIN arrives from the
+       server): puts their saved answers back once they exist. */
+    restore: function () { restore(); },
     key: KEY,
   };
 })();
