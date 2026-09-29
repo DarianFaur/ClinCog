@@ -357,8 +357,9 @@ username and password, where you manage the course without a terminal:
 **Live monitoring** (who is using how much, live, with cost estimates) and
 **Seminar settings** (add or remove students, change limits per student or
 per patient, set a daily cap, schedule terms — each new term starts every
-student from zero — close the interviews, choose the models, and change or
-look up the class password).
+student from zero — close the interviews, switch the patients between
+Anthropic, Google Gemini and OpenAI with their keys and model names, and
+change or look up the class password).
 
 It needs an address of its own, so it needs your own domain (Step 11):
 

@@ -58,7 +58,7 @@ client-supplied key:
 |---|---|---|---|
 | Demo | `clincog.net` | Gemini (shared, rate-limited) | anyone trying the platform |
 | Adopted (BYOK) | `clincog.net` + saved key | Anthropic / Gemini / OpenAI, instructor's own | instructors using their own budget |
-| Course instance | `uvt.clincog.net` — student number + class password | Anthropic (author's own key), per-student quotas | the author's own students |
+| Course instance | `uvt.clincog.net` — student number + class password | Anthropic by default; switchable to Gemini or OpenAI on the console (author's own keys), per-student quotas | the author's own students |
 | Admin console | `admin.clincog.net` — admin username + password | Gemini (demo key) | the author: live usage monitoring and seminar settings |
 
 On the course instance each student signs in with their student number as
@@ -66,8 +66,10 @@ the username. Every exchange is counted on the server against that number,
 so a second device, another browser or restarting progress does not reset
 it. The class list, per-student and per-case limits, a daily cap, periods
 (counters start from zero in each new period), opening and closing the
-interviews, the allowed models and the class password are all managed on
-the admin console's **Seminar settings** page — no terminal needed.
+interviews, which company plays the patients (Anthropic, Google Gemini or
+OpenAI, each with a "fast" and a "thoughtful" model, a key and prices) and
+the class password are all managed on the admin console's **Seminar
+settings** page — no terminal needed.
 
 The admin console is the same app as `clincog.net` with two extra pages:
 **Live monitoring** (its front page: cost, tokens and replies per tier and
@@ -124,7 +126,9 @@ of this list scoped to a single self-hosted instance, which needs far
 fewer of these.
 
 ```
-ANTHROPIC_API_KEY           course tier (your own students)
+ANTHROPIC_API_KEY           course tier (your own students), default provider
+GEMINI_API_KEY_SEMINAR      optional: course tier on Gemini (a key can also be
+OPENAI_API_KEY_SEMINAR      saved on the console instead)
 ICD_CLIENT_ID
 ICD_CLIENT_SECRET
 GEMINI_API_KEY_DEMO         demo tier and admin console
@@ -145,7 +149,8 @@ Non-secret settings are `[vars]` in `wrangler.toml`: `STUDENT_CASE_LIMIT`
 and `QUOTA_PERIOD` (starting values for the seminar settings),
 `GEMINI_FREE_TIER` (whether the demo Gemini key is on the free tier, so the
 console shows its cost as $0) and, optionally, `PRICING` (a JSON override of
-the per-model prices used for the console's cost estimates).
+the per-model prices used for the console's cost estimates; prices set on
+the console win over both).
 
 ## Stack
 

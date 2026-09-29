@@ -103,7 +103,7 @@
 
   // ---------- render ----------
   function render() {
-    renderStatus(); renderAccess(); renderPeriods(); renderLimits(); renderStudents(); renderPassword();
+    renderStatus(); renderAccess(); renderProvider(); renderPeriods(); renderLimits(); renderStudents(); renderPassword();
     if (S.editing) renderEditor();
   }
 
@@ -114,7 +114,7 @@
     var students = d.students.length, paused = d.students.filter(function (s) { return s.suspended; }).length;
     var open = c.open && ap;
     [
-      ["Interviews", (open ? "Open" : "Closed"), open ? "Students can chat." : (!c.open ? "Closed by you." : "No period is running."), open],
+      ["Interviews", (open ? "Open" : "Closed"), (open ? "Students can chat" : (!c.open ? "Closed by you" : "No period is running")) + " · " + d.providers[d.provider].label + ".", open],
       ["Current period", ap ? ap.name : "None", ap ? (ap.end ? "Until " + fmtDate(ap.end) : "No end set") : "Add or start one below."],
       ["Students", String(students), paused ? paused + " paused" : "All active"],
       ["Class password", d.passwordSource === "console" ? "Set here" : d.passwordSource === "secret" ? "From Cloudflare" : "Not set", d.passwordSource === "none" ? "Nobody can sign in yet." : "Change it below."],
@@ -132,9 +132,130 @@
     var c = S.data.config;
     $("g-open").checked = !!c.open;
     $("g-open-label").textContent = c.open ? "Interviews open" : "Interviews closed";
-    $("g-haiku").checked = c.models.indexOf("haiku") >= 0;
-    $("g-sonnet").checked = c.models.indexOf("sonnet") >= 0;
+    var mods = S.data.providers[S.data.provider].models;
+    $("g-fast").checked = c.models.indexOf("fast") >= 0;
+    $("g-thoughtful").checked = c.models.indexOf("thoughtful") >= 0;
+    $("g-fast-label").textContent = "Fast (" + mods.fast + ")";
+    $("g-thoughtful-label").textContent = "Thoughtful (" + mods.thoughtful + ")";
     $("g-msg").value = c.closedMessage || "";
+  }
+
+  // ---------- provider ----------
+  var provView = null; // which provider's details are open (defaults to the active one)
+  function keyText(k) {
+    if (k.source === "console") return "Key saved here " + k.hint;
+    if (k.source === "secret") return "Key from Cloudflare (" + k.secret + ") " + k.hint;
+    return "No key yet";
+  }
+  function renderProvider() {
+    var d = S.data, host = $("prov-cards");
+    if (!provView || !d.providers[provView]) provView = d.provider;
+    host.textContent = "";
+    Object.keys(d.providers).forEach(function (p) {
+      var info = d.providers[p];
+      var card = el("button", "prov-card"); card.type = "button";
+      card.setAttribute("role", "radio");
+      card.setAttribute("aria-checked", p === provView ? "true" : "false");
+      var t = el("b", "", info.label); card.appendChild(t);
+      if (p === d.provider) card.appendChild(el("span", "pill run", "In use"));
+      card.appendChild(el("small", "", info.models.fast + " · " + info.models.thoughtful));
+      card.appendChild(el("small", "", keyText(info.key)));
+      card.addEventListener("click", function () { provView = p; renderProvider(); });
+      host.appendChild(card);
+    });
+    renderProviderDetail();
+  }
+  function renderProviderDetail() {
+    var d = S.data, p = provView, info = d.providers[p], box = $("prov-detail");
+    box.textContent = "";
+    box.appendChild(el("h3", "", info.label + (p === d.provider ? " - in use" : "")));
+    var g = el("div", "grid2");
+    var fields = {};
+    ["fast", "thoughtful"].forEach(function (t) {
+      var f = el("div", "field");
+      f.appendChild(el("span", "", (t === "fast" ? "Fast" : "Thoughtful") + " model"));
+      var inp = el("input", "inp"); inp.value = info.models[t]; inp.placeholder = info.defaults[t];
+      inp.setAttribute("aria-label", t + " model name");
+      f.appendChild(inp);
+      var price = d.prices[info.models[t]];
+      var pr = el("div", "limit-pick");
+      var pi = el("input", "inp"); pi.type = "number"; pi.step = "0.01"; pi.min = 0; pi.placeholder = "in"; pi.setAttribute("aria-label", "Input price per million tokens");
+      var po = el("input", "inp"); po.type = "number"; po.step = "0.01"; po.min = 0; po.placeholder = "out"; po.setAttribute("aria-label", "Output price per million tokens");
+      if (price) { pi.value = price[0]; po.value = price[1]; }
+      pi.style.width = po.style.width = "50%"; pi.style.flex = po.style.flex = "1 1 0";
+      pr.appendChild(pi); pr.appendChild(po); f.appendChild(pr);
+      f.appendChild(el("small", "", price ? "Price in $ per million tokens, input / output." : "No price known for this model: set one, or its cost shows as unknown."));
+      fields[t] = { model: inp, pin: pi, pout: po };
+      g.appendChild(f);
+    });
+    box.appendChild(g);
+
+    var err = el("span", "err");
+    var a1 = el("div", "row-actions");
+    var save = el("button", "btn-ghost", "Save models and prices"); save.type = "button";
+    save.addEventListener("click", function () {
+      var models = {}; models[p] = {};
+      var prices = {};
+      ["fast", "thoughtful"].forEach(function (t) {
+        var m = fields[t].model.value.trim() || info.defaults[t];
+        models[p][t] = fields[t].model.value.trim();
+        if (fields[t].pin.value !== "" && fields[t].pout.value !== "") prices[m] = [Number(fields[t].pin.value), Number(fields[t].pout.value)];
+      });
+      change("provider", { models: models, prices: prices }, err, "Saved");
+    });
+    a1.appendChild(save);
+    box.appendChild(a1);
+
+    var kf = el("div", "grid2"); kf.style.marginTop = "16px";
+    var kfield = el("label", "field");
+    kfield.appendChild(el("span", "", "API key"));
+    var kin = el("input", "inp"); kin.type = "password"; kin.autocomplete = "off"; kin.placeholder = info.key.source === "none" ? "Paste the key" : "Paste a new key to replace it";
+    kfield.appendChild(kin);
+    kfield.appendChild(el("small", "", keyText(info.key)));
+    kf.appendChild(kfield);
+    box.appendChild(kf);
+    var a2 = el("div", "row-actions");
+    var sk = el("button", "btn-ghost", "Save key"); sk.type = "button";
+    sk.addEventListener("click", function () { change("setKey", { provider: p, key: kin.value }, err, "Key saved").then(function (ok) { if (ok) kin.value = ""; }); });
+    a2.appendChild(sk);
+    if (info.key.source === "console") {
+      var rk = el("button", "btn-ghost danger", "Remove saved key"); rk.type = "button";
+      rk.addEventListener("click", function () {
+        if (!confirm("Remove the key saved here? " + (info.key.secret ? "The one in Cloudflare (" + info.key.secret + ") will be used, if it is set." : ""))) return;
+        change("clearKey", { provider: p }, err, "Key removed");
+      });
+      a2.appendChild(rk);
+    }
+    var tb = el("button", "btn-ghost", "Try the key"); tb.type = "button";
+    var out = el("div", "test-out");
+    tb.addEventListener("click", function () {
+      out.textContent = "Asking " + info.label + "…";
+      fetch("/api/monitor/seminar-test?provider=" + p, { method: "POST", headers: { "X-ClinCog-Admin": "1" } })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          out.textContent = "";
+          if (res.error) { out.appendChild(el("span", "bad", res.error)); return; }
+          ["fast", "thoughtful"].forEach(function (t) {
+            var r = res.results[t];
+            out.appendChild(el("span", r.ok ? "ok" : "bad", (r.ok ? "✓ " : "✗ ") + r.model + ": " + (r.ok ? "answered in " + (r.ms / 1000).toFixed(1) + " s - \u201c" + r.sample + "\u201d" : r.error)));
+          });
+        })
+        .catch(function () { out.textContent = "No answer from the server."; });
+    });
+    a2.appendChild(tb);
+    if (p !== d.provider) {
+      var use = el("button", "btn-ink", "Use " + info.label + " for the students"); use.type = "button";
+      use.disabled = info.key.source === "none";
+      use.title = use.disabled ? "Save a key first" : "";
+      use.addEventListener("click", function () {
+        if (!confirm("Switch the patients to " + info.label + "? The next message any student sends goes to " + info.label + ".")) return;
+        change("provider", { provider: p }, err, "Now using " + info.label);
+      });
+      a2.appendChild(use);
+    }
+    a2.appendChild(err);
+    box.appendChild(a2);
+    box.appendChild(out);
   }
 
   function renderPeriods() {
@@ -340,8 +461,8 @@
   $("g-open").addEventListener("change", function () { $("g-open-label").textContent = this.checked ? "Interviews open" : "Interviews closed"; });
   $("g-save").addEventListener("click", function () {
     var models = [];
-    if ($("g-haiku").checked) models.push("haiku");
-    if ($("g-sonnet").checked) models.push("sonnet");
+    if ($("g-fast").checked) models.push("fast");
+    if ($("g-thoughtful").checked) models.push("thoughtful");
     change("general", { open: $("g-open").checked, closedMessage: $("g-msg").value, models: models }, $("g-err"), "Interview settings saved");
   });
 

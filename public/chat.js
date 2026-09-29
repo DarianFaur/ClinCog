@@ -69,36 +69,42 @@
   const restartBtn = null;
 
   // ---- Student model choice (uvt.clincog.net only): a small, optional
-  // toggle between Haiku (fast) and Sonnet (more thoughtful replies).
-  // Not shown anywhere else - the demo tier stays fixed on Gemini Flash,
-  // and adopted instructors pick their model on the adopt.html page
-  // instead. Deliberately just these two; there is no path to Opus here.
+  // toggle between a fast and a more thoughtful model. Not shown anywhere
+  // else - the demo tier stays fixed on Gemini Flash, and adopted
+  // instructors pick their model on the adopt.html page instead.
   if (window.location.hostname === "uvt.clincog.net") {
-    // Styled in components.css (.chat-model). It used inline styles on
-    // variables from the old theme (--brand, --line, --surface) that no
-    // longer exist, so the selected button came out white on nothing.
-    const modelBar = document.createElement("div");
+    // Styled in components.css (.chat-model). The choices come from the
+    // server (/api/quota, below): the seminar leader decides which company
+    // plays the patients and which of its two tiers students may pick.
+    // With a single tier left on there is nothing to choose, so no bar.
+    var modelBar = document.createElement("div");
     modelBar.className = "chat-model";
-    modelBar.innerHTML = `
-      <span class="chat-model-label" id="student-model-label">Model</span>
-      <div id="student-model-toggle" class="chat-model-toggle" role="group" aria-labelledby="student-model-label">
-        <button type="button" data-model="claude-haiku-4-5-20251001">Fast <span>Haiku</span></button>
-        <button type="button" data-model="claude-sonnet-5">Thoughtful <span>Sonnet</span></button>
-      </div>`;
+    modelBar.hidden = true;
     chatDiv.parentNode.insertBefore(modelBar, chatDiv);
-
-    const modelButtons = modelBar.querySelectorAll("button");
-    function paintModelButtons() {
-      const current = ClinCog.getStudentModel();
-      modelButtons.forEach((b) => b.setAttribute("aria-pressed", b.dataset.model === current ? "true" : "false"));
-    }
-    modelButtons.forEach((b) => {
-      b.addEventListener("click", () => {
-        ClinCog.setStudentModel(b.dataset.model);
-        paintModelButtons();
+    window.__clincogModelChoices = function (models) {
+      if (!models || models.length < 2) { modelBar.hidden = true; return; }
+      modelBar.innerHTML = '<span class="chat-model-label" id="student-model-label">Model</span>' +
+        '<div id="student-model-toggle" class="chat-model-toggle" role="group" aria-labelledby="student-model-label"></div>';
+      const group = modelBar.querySelector("#student-model-toggle");
+      models.forEach((m) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.dataset.model = m.tier;
+        b.appendChild(document.createTextNode(m.label + " "));
+        const sub = document.createElement("span");
+        sub.textContent = m.model;
+        b.appendChild(sub);
+        b.addEventListener("click", () => { ClinCog.setStudentModel(m.tier); paint(); });
+        group.appendChild(b);
       });
-    });
-    paintModelButtons();
+      function paint() {
+        const current = ClinCog.getStudentModel();
+        const known = models.some((m) => m.tier === current) ? current : models[0].tier;
+        group.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.model === known ? "true" : "false"));
+      }
+      paint();
+      modelBar.hidden = false;
+    };
   }
 
   // ---- Turnstile: an invisible, dormant widget we trigger on demand,
@@ -207,6 +213,7 @@
         serverUsed = (q.used && q.used[moduleId]) || 0;
         serverClosed = q.open === false ? (q.message || "The interviews are closed right now.") : "";
         dayCap = q.dayCap || null; dayUsed = q.today || 0;
+        if (window.__clincogModelChoices) window.__clincogModelChoices(q.models);
         updateStatus();
       })
       .catch(() => {});

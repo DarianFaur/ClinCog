@@ -441,6 +441,7 @@
       fetch("/api/monitor/quotas", { cache: "no-store" }).then(function (r) { return r.json(); }).catch(function () { return null; }),
     ]).then(function (res) {
       state.data = res[0];
+      LANES.seminar.where = "uvt.clincog.net · " + (res[0].seminarProvider || "Anthropic");
       state.quotas = res[1];
       renderLanes(); renderPeople(); renderFeed();
       document.querySelectorAll(".lane-card").forEach(function (c) { c.classList.remove("stale"); });

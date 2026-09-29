@@ -281,18 +281,23 @@ const ClinCog = {
     localStorage.removeItem(this.BYOK_KEY);
   },
 
-  // ---- Student model choice (uvt.clincog.net only) - deliberately just
-  // two options, Haiku or Sonnet. Global across cases, not per-case,
-  // since a student's preference for speed vs. depth is unlikely to
-  // change from one week's patient to the next.
+  // ---- Student model choice (uvt.clincog.net only) - two tiers, "fast"
+  // and "thoughtful"; which models they are depends on the provider the
+  // seminar leader picked. Global across cases, not per-case, since a
+  // student's preference for speed vs. depth is unlikely to change from one
+  // week's patient to the next. Older browsers stored the Anthropic model
+  // name; it is read as the matching tier.
   STUDENT_MODEL_KEY: "clincog_student_model",
-  STUDENT_MODEL_OPTIONS: ["claude-haiku-4-5-20251001", "claude-sonnet-5"],
+  STUDENT_MODEL_OPTIONS: ["fast", "thoughtful"],
+  STUDENT_MODEL_LEGACY: { "claude-haiku-4-5-20251001": "fast", "claude-sonnet-5": "thoughtful" },
   setStudentModel(model) {
+    model = this.STUDENT_MODEL_LEGACY[model] || model;
     if (!this.STUDENT_MODEL_OPTIONS.includes(model)) return;
     localStorage.setItem(this.STUDENT_MODEL_KEY, model);
   },
   getStudentModel() {
-    const saved = localStorage.getItem(this.STUDENT_MODEL_KEY);
+    let saved = localStorage.getItem(this.STUDENT_MODEL_KEY);
+    saved = this.STUDENT_MODEL_LEGACY[saved] || saved;
     return this.STUDENT_MODEL_OPTIONS.includes(saved) ? saved : this.STUDENT_MODEL_OPTIONS[0];
   },
 

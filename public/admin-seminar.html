@@ -112,6 +112,21 @@
   .pw-current { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: var(--paper); border-radius: 16px; padding: 12px 14px; }
   .pw-label { font-size: 13px; font-weight: 500; margin-right: 4px; }
   .pw-value { font-family: var(--font-mono); font-size: 15px; letter-spacing: .04em; padding: 4px 10px; border-radius: 8px; background: var(--mist); color: var(--text-primary); margin-right: auto; overflow-wrap: anywhere; }
+  .prov-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  @media (max-width: 760px) { .prov-grid { grid-template-columns: 1fr; } }
+  .prov-card { text-align: left; background: var(--paper); border: 1.5px solid transparent; border-radius: 18px; padding: 16px 18px; cursor: pointer; font: inherit; color: var(--text-primary); display: flex; flex-direction: column; gap: 6px; }
+  .prov-card:hover { border-color: var(--text-tertiary); }
+  .prov-card[aria-checked="true"] { border-color: var(--text-primary); box-shadow: var(--shadow-xs); }
+  .prov-card b { font-family: var(--font-serif); font-weight: 400; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
+  .prov-card small { color: var(--text-tertiary); font-size: 12.5px; }
+  .prov-card .pill { align-self: flex-start; }
+  .prov-detail { margin-top: 14px; background: var(--paper); border-radius: 18px; padding: 18px 20px; }
+  .prov-detail .inp, .editor .inp, .editor .sel { background: var(--mist); }
+  .editor .case-box .inp, .editor .case-box .sel { background: var(--paper); }
+  .prov-detail h3 { margin: 0 0 12px; font-family: var(--font-serif); font-weight: 400; font-size: 1.25rem; }
+  .test-out { margin-top: 12px; font-size: 13px; display: flex; flex-direction: column; gap: 4px; }
+  .test-out .ok { color: var(--text-primary); }
+  .test-out .bad { color: var(--domain-psychosis-line); }
   .note { font-size: 12.5px; color: var(--text-tertiary); margin: 10px 0 0; line-height: 1.5; }
   .err { color: var(--domain-psychosis-line); font-size: 13px; margin-top: 8px; min-height: 1em; }
   .empty { padding: 24px 16px; text-align: center; color: var(--text-tertiary); }
@@ -133,7 +148,7 @@
     <header>
       <div>
         <h2>Interviews</h2>
-        <p>Close the chat for everyone (the rest of the site stays open), say why, and choose which models students may pick.</p>
+        <p>Close the chat for everyone (the rest of the site stays open), say why, and choose which of the two models students may pick.</p>
       </div>
     </header>
     <div class="grid2">
@@ -144,10 +159,10 @@
       <div class="field">
         <span>Models students may use</span>
         <div class="checks">
-          <label class="check"><input type="checkbox" id="g-haiku"> Fast (Haiku)</label>
-          <label class="check"><input type="checkbox" id="g-sonnet"> Thoughtful (Sonnet)</label>
+          <label class="check"><input type="checkbox" id="g-fast"> <span id="g-fast-label">Fast</span></label>
+          <label class="check"><input type="checkbox" id="g-thoughtful"> <span id="g-thoughtful-label">Thoughtful</span></label>
         </div>
-        <small>With only one on, the model switch in the chat has no effect.</small>
+        <small>With only one on, students do not see a model switch. The models themselves are set under Model provider.</small>
       </div>
       <label class="field" style="grid-column: 1 / -1">
         <span>Message when closed</span>
@@ -155,6 +170,19 @@
       </label>
     </div>
     <div class="row-actions"><button type="button" class="btn-ink" id="g-save">Save</button><span class="err" id="g-err"></span></div>
+  </section>
+
+  <!-- 1b. Provider -->
+  <section class="set-section" id="sec-provider">
+    <header>
+      <div>
+        <h2>Model provider</h2>
+        <p>Which company plays the patients for your students. Switching takes effect for the next message anyone sends; conversations carry on where they were. Try a key before switching to it.</p>
+      </div>
+    </header>
+    <div class="prov-grid" id="prov-cards" role="radiogroup" aria-label="Provider"></div>
+    <div class="prov-detail" id="prov-detail"></div>
+    <p class="note">A key saved here is used instead of the one stored in Cloudflare, and is never shown again after saving - only its last four characters. Use a paid (billing-enabled) key: on free tiers some providers may use conversations to improve their products, which is not what the Help page promises students.</p>
   </section>
 
   <!-- 2. Periods -->

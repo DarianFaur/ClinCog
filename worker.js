@@ -154,20 +154,13 @@ const ALLOWED_MODELS = {
   openai: ["gpt-5-nano", "gpt-5.6-terra", "gpt-5.6-sol"],
 };
 
-// Students get a choice too, but a deliberately narrower one than BYOK -
-// Haiku or Sonnet, never Opus. This list is intentionally separate from
-// ALLOWED_MODELS.anthropic (which does include Opus, for adopting
-// instructors spending their own money) so the exclusion can't drift by
-// accident if that list is ever edited.
-const STUDENT_ALLOWED_MODELS = ["claude-haiku-4-5-20251001", "claude-sonnet-5"];
-
 function resolveModelCredentials(hostname, byok, studentModel, env) {
   if (hostname === ADMIN_HOSTNAME) {
     return { provider: "gemini", key: env.GEMINI_API_KEY_DEMO, tier: "admin" };
   }
   if (hostname === STUDENT_HOSTNAME) {
-    const model = STUDENT_ALLOWED_MODELS.includes(studentModel) ? studentModel : undefined;
-    return { provider: "anthropic", key: env.ANTHROPIC_API_KEY, model, tier: "student" };
+    // Provider, key and model come from the seminar settings (chat route).
+    return { provider: null, key: null, model: undefined, tier: "student" };
   }
   if (byok && byok.llmProvider && byok.llmKey && SUPPORTED_BYOK_PROVIDERS.has(byok.llmProvider)) {
     const allowed = ALLOWED_MODELS[byok.llmProvider];
@@ -433,7 +426,63 @@ function normaliseStudentId(v) {
 // Each Worker instance keeps a copy for 20 seconds, so a change made in the
 // console reaches every student within that time.
 const CASE_IDS = ["schizophrenia", "depression", "anxiety", "addiction"];
-const STUDENT_MODEL_IDS = { haiku: "claude-haiku-4-5-20251001", sonnet: "claude-sonnet-5" };
+// Which company plays the patients on the course instance is a setting.
+// Students choose between two tiers, "fast" and "thoughtful"; each provider
+// maps them to one of its models. Model names and prices can be changed on
+// the console as providers release new ones.
+const SEMINAR_PROVIDERS = {
+  anthropic: { label: "Anthropic", secret: "ANTHROPIC_API_KEY",
+    models: { fast: "claude-haiku-4-5-20251001", thoughtful: "claude-sonnet-5" } },
+  gemini: { label: "Google Gemini", secret: "GEMINI_API_KEY_SEMINAR",
+    models: { fast: "gemini-3.1-flash-lite", thoughtful: "gemini-3.5-flash" } },
+  openai: { label: "OpenAI", secret: "OPENAI_API_KEY_SEMINAR",
+    models: { fast: "gpt-5.6-luna", thoughtful: "gpt-5.6-terra" } },
+};
+const TIERS = ["fast", "thoughtful"];
+const TIER_LABEL = { fast: "Fast", thoughtful: "Thoughtful" };
+// Older settings and older browsers name the tiers by the Anthropic model.
+const LEGACY_TIER = { haiku: "fast", sonnet: "thoughtful", "claude-haiku-4-5-20251001": "fast", "claude-sonnet-5": "thoughtful" };
+
+// "claude-haiku-4-5-20251001" -> "Haiku 4.5", "gpt-5.6-luna" -> "GPT 5.6 Luna":
+// the name students see on the model switch.
+function prettyModel(id) {
+  const parts = String(id).replace(/-\d{8}$/, "").replace(/^claude-/, "").split("-");
+  const out = [];
+  for (const part of parts) {
+    if (/^\d+$/.test(part) && out.length && /\d$/.test(out[out.length - 1])) out[out.length - 1] += "." + part;
+    else if (part === "gpt") out.push("GPT");
+    else out.push(part.charAt(0).toUpperCase() + part.slice(1));
+  }
+  return out.join(" ");
+}
+
+function seminarModels(cfg) {
+  const out = {};
+  for (const p in SEMINAR_PROVIDERS) {
+    out[p] = Object.assign({}, SEMINAR_PROVIDERS[p].models, (cfg.providerModels || {})[p] || {});
+  }
+  return out;
+}
+function seminarProvider(cfg) {
+  return SEMINAR_PROVIDERS[cfg.provider] ? cfg.provider : "anthropic";
+}
+function seminarTiers(cfg) {
+  const t = (cfg.models || []).map((m) => LEGACY_TIER[m] || m).filter((m) => TIERS.includes(m));
+  return t.length ? [...new Set(t)] : ["fast"];
+}
+// The key a provider uses: one saved on the console wins over the secret.
+function seminarKey(cfg, env, provider) {
+  const k = (cfg.keys || {})[provider];
+  if (k) return k;
+  return env[SEMINAR_PROVIDERS[provider].secret] || null;
+}
+function keySource(cfg, env, provider) {
+  const k = (cfg.keys || {})[provider];
+  if (k) return { source: "console", hint: "…" + k.slice(-4) };
+  const e = env[SEMINAR_PROVIDERS[provider].secret];
+  if (e) return { source: "secret", hint: "…" + String(e).slice(-4), secret: SEMINAR_PROVIDERS[provider].secret };
+  return { source: "none", secret: SEMINAR_PROVIDERS[provider].secret };
+}
 const UNLIMITED_HISTORY = 200; // exchanges a conversation may reach when a limit is lifted
 
 function configStub(env) {
@@ -534,7 +583,8 @@ function initialConfig(seed) {
   const caseLimits = {};
   CASE_IDS.forEach((c) => { caseLimits[c] = null; });
   return {
-    version: 1, open: true, closedMessage: "", models: ["haiku", "sonnet"],
+    version: 1, open: true, closedMessage: "", models: ["fast", "thoughtful"],
+    provider: "anthropic", providerModels: {}, prices: {}, keys: {},
     defaultLimit: seed.defaultLimit, caseLimits, dailyCap: null, timezone: "Europe/Bucharest",
     periods: [{ id: seed.period, name: seed.period, start: null, end: null }],
     students, password: null, passwordChanged: null,
@@ -591,7 +641,7 @@ export class SeminarConfig extends DurableObject {
         if ("open" in a) c.open = !!a.open;
         if ("closedMessage" in a) c.closedMessage = String(a.closedMessage || "").slice(0, 300);
         if ("models" in a) {
-          const m = (Array.isArray(a.models) ? a.models : []).filter((x) => STUDENT_MODEL_IDS[x]);
+          const m = (Array.isArray(a.models) ? a.models : []).map((x) => LEGACY_TIER[x] || x).filter((x) => TIERS.includes(x));
           if (!m.length) throw new Error("Leave at least one model on.");
           c.models = [...new Set(m)];
         }
@@ -609,6 +659,49 @@ export class SeminarConfig extends DurableObject {
           try { new Intl.DateTimeFormat("en", { timeZone: a.timezone }); c.timezone = a.timezone; }
           catch { throw new Error("Unknown time zone."); }
         }
+        break;
+      }
+      case "provider": {
+        if ("provider" in a) {
+          if (!SEMINAR_PROVIDERS[a.provider]) throw new Error("Unknown provider.");
+          c.provider = a.provider;
+        }
+        if (a.models) {
+          c.providerModels = c.providerModels || {};
+          for (const p in a.models) {
+            if (!SEMINAR_PROVIDERS[p]) continue;
+            const cur = Object.assign({}, c.providerModels[p] || {});
+            TIERS.forEach((t) => {
+              if (!(t in a.models[p])) return;
+              const v = String(a.models[p][t] || "").trim();
+              if (v && !/^[A-Za-z0-9._:\-\/]{2,80}$/.test(v)) throw new Error("\"" + v + "\" does not look like a model name.");
+              if (v) cur[t] = v; else delete cur[t];
+            });
+            c.providerModels[p] = cur;
+          }
+        }
+        if (a.prices) {
+          c.prices = c.prices || {};
+          for (const model in a.prices) {
+            const pr = a.prices[model];
+            if (pr === null) { delete c.prices[model]; continue; }
+            const i = Number(pr[0]), o = Number(pr[1]);
+            if (!(i >= 0 && i < 1000 && o >= 0 && o < 1000)) throw new Error("Prices are dollars per million tokens, from 0 to 999.");
+            c.prices[model] = [i, o];
+          }
+        }
+        break;
+      }
+      case "setKey": {
+        if (!SEMINAR_PROVIDERS[a.provider]) throw new Error("Unknown provider.");
+        const k = String(a.key || "").trim();
+        if (k.length < 20 || /\s/.test(k)) throw new Error("That does not look like an API key.");
+        c.keys = c.keys || {};
+        c.keys[a.provider] = k;
+        break;
+      }
+      case "clearKey": {
+        if (c.keys) delete c.keys[a.provider];
         break;
       }
       case "addStudents": {
@@ -757,13 +850,17 @@ const PRICES = {
   "gemini-3.5-flash": [1.5, 9],
   "gemini-3.1-flash-lite": [0.25, 1.5],
   "gemini-3.1-pro": [2, 12],
+  // OpenAI, as listed after the July 2026 price cut - check before relying
+  // on them; they can be corrected on the console's Seminar settings page.
+  "gpt-5.6-luna": [0.2, 1.2],
+  "gpt-5.6-terra": [2, 12],
 };
 function priceTable(env) {
   if (!env.PRICING) return PRICES;
   try { return Object.assign({}, PRICES, JSON.parse(env.PRICING)); } catch { return PRICES; }
 }
-function priceOf(model, tin, tout, env) {
-  const p = priceTable(env)[model];
+function priceOf(model, tin, tout, env, cfg) {
+  const p = (cfg && cfg.prices && cfg.prices[model]) || priceTable(env)[model];
   if (!p) return null;
   return (tin * p[0] + tout * p[1]) / 1e6;
 }
@@ -886,6 +983,7 @@ async function handleMonitorApi(request, url, env) {
   if (path === "summary" && request.method === "GET") {
     const data = await monitorStub(env).summary(url.searchParams.get("range") || "24h");
     data.freeTierGemini = String(env.GEMINI_FREE_TIER || "").toLowerCase() === "true";
+    try { data.seminarProvider = SEMINAR_PROVIDERS[seminarProvider(await seminarConfig(env))].label; } catch { data.seminarProvider = "Anthropic"; }
     data.prices = priceTable(env);
     return jsonResponse(data);
   }
@@ -921,15 +1019,50 @@ async function handleMonitorApi(request, url, env) {
     const day = dayKey(cfg);
     const ids = Object.keys(cfg.students).sort();
     const st = period ? await Promise.all(ids.map((id) => quotaStub(env, period.id, id).status(day).catch(() => ({ cases: {}, today: 0 })))) : ids.map(() => ({ cases: {}, today: 0 }));
-    const safe = Object.assign({}, cfg, { password: undefined, students: undefined });
+    const safe = Object.assign({}, cfg, { password: undefined, students: undefined, keys: undefined, models: seminarTiers(cfg) });
+    const providers = {};
+    for (const p in SEMINAR_PROVIDERS) {
+      providers[p] = { label: SEMINAR_PROVIDERS[p].label, models: seminarModels(cfg)[p], defaults: SEMINAR_PROVIDERS[p].models, key: keySource(cfg, env, p) };
+    }
     return jsonResponse({
       config: safe,
+      provider: seminarProvider(cfg), providers,
+      prices: Object.assign({}, priceTable(env), cfg.prices || {}),
       passwordSource: cfg.password ? "console" : (env.STUDENT_ACCESS_PASSWORD ? "secret" : "none"),
       activePeriodId: period ? period.id : null,
       now: Date.now(), today: day,
       students: ids.map((id, i) => Object.assign({ id, effective: studentLimits(cfg, id), used: st[i].cases || {}, today: st[i].today || 0 }, cfg.students[id])),
     });
   }
+  // Try a provider's key and model with a one-line request, before switching.
+  if (path === "seminar-test" && request.method === "POST") {
+    const cfg = await seminarConfig(env, true);
+    const p = url.searchParams.get("provider");
+    if (!SEMINAR_PROVIDERS[p]) return jsonResponse({ ok: false, error: "Unknown provider." }, 400);
+    const k = seminarKey(cfg, env, p);
+    if (!k) return jsonResponse({ ok: false, error: "No key is set for " + SEMINAR_PROVIDERS[p].label + "." });
+    const results = {};
+    for (const t of TIERS) {
+      const model = seminarModels(cfg)[p][t];
+      const started = Date.now();
+      let reply;
+      const history = [{ role: "user", content: "Say hello in five words." }];
+      const vignette = { name: "Sam", text: "Sam, 30, is here for a routine check-up and feels well." };
+      try {
+        if (p === "gemini") reply = await respondAsPatientGemini(history, k, vignette, model);
+        else if (p === "openai") reply = await respondAsPatientOpenAI(history, k, vignette, model);
+        else reply = await respondAsPatient(history, k, vignette, model);
+        const text = await reply.text();
+        results[t] = reply.ok && text.trim()
+          ? { ok: true, model, ms: Date.now() - started, sample: text.trim().slice(0, 80) }
+          : { ok: false, model, error: "The provider refused the request. Check the key and the model name." };
+      } catch (e) {
+        results[t] = { ok: false, model, error: "No answer from the provider." };
+      }
+    }
+    return jsonResponse({ ok: TIERS.every((t) => results[t].ok), results });
+  }
+
   // The class password, only when asked for (the page shows it on request).
   if (path === "seminar-password" && request.method === "GET") {
     const cfg = await seminarConfig(env, true);
@@ -1218,9 +1351,15 @@ export default {
         if (gate) return jsonResponse({ gate: true, text: gate.text }, gate.status);
         period = activePeriod(cfg);
         limit = effectiveLimit(cfg, studentId, moduleId);
-        // Only the models the seminar leader has left on; otherwise the first.
-        const allowed = cfg.models.map((m) => STUDENT_MODEL_IDS[m]);
-        if (!allowed.includes(model)) model = allowed[0];
+        // The provider and key the seminar leader chose; the tier the student
+        // picked if it is one left on, otherwise the first one that is.
+        provider = seminarProvider(cfg);
+        key = seminarKey(cfg, env, provider);
+        if (!key) return jsonResponse({ gate: true, text: "The interviews are not set up yet. Tell your seminar leader." }, 503);
+        const tiers = seminarTiers(cfg);
+        let want = LEGACY_TIER[body.studentModel] || body.studentModel;
+        if (!tiers.includes(want)) want = tiers[0];
+        model = seminarModels(cfg)[provider][want];
       }
 
       if (!validHistory(body.history, limit == null ? UNLIMITED_HISTORY : Math.max(limit, 1))) {
@@ -1274,7 +1413,7 @@ export default {
           tin: usage ? usage.in : 0, tout: usage ? usage.out : 0,
           ok: ok ? 1 : 0, ms: Date.now() - started,
         };
-        ev.cost = lane === "byok" ? null : priceOf(usedModel, ev.tin, ev.tout, env);
+        ev.cost = lane === "byok" ? null : priceOf(usedModel, ev.tin, ev.tout, env, cfg || cfgCache.value);
         const p = recordUsage(env, ev);
         if (ctx && ctx.waitUntil) ctx.waitUntil(p);
       };
@@ -1305,9 +1444,12 @@ export default {
       const period = activePeriod(cfg);
       if (!period) return jsonResponse({ available: true, open: false, message: gate ? gate.text : "", student: studentId, limits: studentLimits(cfg, studentId), used: {} });
       const st = await quotaStub(env, period.id, studentId).status(dayKey(cfg));
+      const prov = seminarProvider(cfg), mods = seminarModels(cfg)[prov];
       return jsonResponse({
         available: true, open: !gate, message: gate ? gate.text : "", student: studentId,
         limits: studentLimits(cfg, studentId), used: st.cases, dayCap: cfg.dailyCap, today: st.today,
+        provider: SEMINAR_PROVIDERS[prov].label,
+        models: seminarTiers(cfg).map((t) => ({ tier: t, label: TIER_LABEL[t], model: prettyModel(mods[t]) })),
       });
     }
 
@@ -1617,6 +1759,10 @@ async function respondAsPatientOpenAI(history, openaiKey, vignette, model = "gpt
       ...history.map((m) => ({ role: m.role, content: m.content })),
     ];
 
+    // Streamed like the other two, so the page shows the reply as it is
+    // written. The GPT-5 family takes max_completion_tokens (not
+    // max_tokens) and spends part of it on reasoning, hence the headroom;
+    // include_usage adds the token counts to the last chunk.
     const openaiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -1625,8 +1771,10 @@ async function respondAsPatientOpenAI(history, openaiKey, vignette, model = "gpt
       },
       body: JSON.stringify({
         model,
-        max_tokens: 300,
+        max_completion_tokens: 1024,
         messages,
+        stream: true,
+        stream_options: { include_usage: true },
       }),
     });
 
@@ -1640,12 +1788,13 @@ async function respondAsPatientOpenAI(history, openaiKey, vignette, model = "gpt
       });
     }
 
-    const data = await openaiResponse.json();
-    const text = data.choices?.[0]?.message?.content ?? "(no response)";
-    if (meter) meter({ in: data.usage?.prompt_tokens || 0, out: data.usage?.completion_tokens || 0 }, true);
-
-    return new Response(JSON.stringify({ text }), {
-      headers: { "Content-Type": "application/json" },
+    return streamPlainTextFromSSE(openaiResponse, (parsed) =>
+      parsed.choices?.[0]?.delta?.content
+    , meter, (parsed, u) => {
+      if (parsed.usage) {
+        u.in = parsed.usage.prompt_tokens || 0;
+        u.out = parsed.usage.completion_tokens || 0;
+      }
     });
 
   } catch (err) {
