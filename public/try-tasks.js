@@ -1,4 +1,4 @@
-/* ClinCog — "Try the task yourself" modules for the schizophrenia and depression
+/* ClinCog - "Try the task yourself" modules for the schizophrenia and depression
    cases. Four open re-implementations written for this platform:
 
      tmt  Trail-making, part A style: connect 1-25 in order
@@ -284,7 +284,7 @@
     function finish() {
       form.style.display = 'none'; show.textContent = '\u2713';
       f.status.textContent = 'Done.'; f.btn.textContent = 'Run again'; f.btn.disabled = false;
-      showResult(f.result, [['Series correct', String(correct)], ['Longest correct length', longest ? String(longest) : '\u2014']]);
+      showResult(f.result, [['Series correct', String(correct)], ['Longest correct length', longest ? String(longest) : '-']]);
     }
     ok.addEventListener('click', submit);
     input.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
@@ -293,7 +293,7 @@
       f.btn.disabled = true; f.result.textContent = ''; present();
     });
     host.__probe = () => ({ current: current ? current.slice() : null, answer: current ? answer(current) : null, len, correct });
-    show.textContent = '\u2014';
+    show.textContent = '-';
   }
 
   // ---------- 3. spatial working memory --------------------------------------
@@ -358,7 +358,7 @@
       running = false; f.status.textContent = 'Done.'; f.btn.textContent = 'Run again'; f.btn.disabled = false;
       // Two rounds share each set size now, so the row has to name the round
       // as well, or the table shows the same label twice.
-      const rows = perLevel.map((p, i) => ['Round ' + (i + 1) + ' \u00b7 ' + p.n + ' boxes \u2014 between / within errors', p.between + ' / ' + p.within]);
+      const rows = perLevel.map((p, i) => ['Round ' + (i + 1) + ' \u00b7 ' + p.n + ' boxes - between / within errors', p.between + ' / ' + p.within]);
       rows.push(['Total between-search errors', String(perLevel.reduce((a, p) => a + p.between, 0))]);
       showResult(f.result, rows);
     }

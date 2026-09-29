@@ -5,7 +5,7 @@
 <meta name="color-scheme" content="light dark">
 <script src="/theme-init.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>ClinCog · Dashboard</title>
+<title>ClinCog - Dashboard</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/favicon-180.png">
@@ -220,7 +220,7 @@
   });
   document.getElementById("restart-progress").addEventListener("click", () => {
     const ok = confirm(
-      "This clears every case's chat history, evaluation progress, and reflections — for all cases, not just one. Your name stays saved. This can't be undone. Restart the whole term?"
+      "This clears every case's chat history, evaluation progress, and reflections - for all cases, not just one. Your name stays saved. This can't be undone. Restart the whole term?"
     );
     if (ok) {
       ClinCog.resetAllProgress();
@@ -362,7 +362,7 @@
         </div>
         <div class="case-card-grid">
           <div class="case-card-grid-item"><span class="val">${s.exchanges}</span><span class="lbl">Messages exchanged</span></div>
-          <div class="case-card-grid-item"><span class="val">${s.state === "not-started" ? "—" : s.stageLabel}</span><span class="lbl">Stage</span></div>
+          <div class="case-card-grid-item"><span class="val">${s.state === "not-started" ? "-" : s.stageLabel}</span><span class="lbl">Stage</span></div>
         </div>
         <div class="progress-row"><div class="progress-track hatched slim"><div class="progress-fill" style="width:${s.pct}%;background:var(--progress-fill)"></div></div><span class="progress-pct">${s.pct}%</span></div>
         <div class="case-card-footer">

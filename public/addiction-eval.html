@@ -5,7 +5,7 @@
 <meta name="color-scheme" content="light dark">
 <script src="/theme-init.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ClinCog · Addiction Assessment Seminar</title>
+<title>ClinCog - Evaluate</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/favicon-180.png">
@@ -1017,9 +1017,9 @@ textarea.interp::placeholder,
     <h1 style="font-size:2.35rem;font-weight:700;letter-spacing:-.01em;line-height:1.15;margin-bottom:16px;">Three Ways to Evaluate<br>Substance Use</h1>
     <p style="font-size:16px;line-height:1.7;color:var(--color-text-muted);max-width:560px;margin-bottom:32px;">You will read a clinical vignette and evaluate the same patient through three different conceptual frameworks. The lens shapes what you see.</p>
     <div class="layers">
-      <div class="layer-row"><span class="layer-num">01</span><div class="layer-text"><span class="lt">Categorical — ICD-11 via AUDIT &amp; CDDR</span><span class="ls">Screening plus structured diagnostic interview · criterion-based decision</span></div></div>
-      <div class="layer-row"><span class="layer-num">02</span><div class="layer-text"><span class="lt">Dimensional–Psychological — HiTOP-SR</span><span class="ls">Quantified severity · spectrum position</span></div></div>
-      <div class="layer-row"><span class="layer-num">03</span><div class="layer-text"><span class="lt">Dimensional–Cognitive — ANA Tasks</span><span class="ls">Self-administered task · mechanistic interpretation</span></div></div>
+      <div class="layer-row"><span class="layer-num">01</span><div class="layer-text"><span class="lt">Categorical - ICD-11 via AUDIT &amp; CDDR</span><span class="ls">Screening plus structured diagnostic interview · criterion-based decision</span></div></div>
+      <div class="layer-row"><span class="layer-num">02</span><div class="layer-text"><span class="lt">Dimensional–Psychological - HiTOP-SR</span><span class="ls">Quantified severity · spectrum position</span></div></div>
+      <div class="layer-row"><span class="layer-num">03</span><div class="layer-text"><span class="lt">Dimensional–Cognitive - ANA Tasks</span><span class="ls">Self-administered task · mechanistic interpretation</span></div></div>
     </div>
     <button class="btn-primary" style="border-radius:999px;padding:12px 24px;" onclick="showView('vignette')">Begin →</button>
   </div>
@@ -1077,8 +1077,8 @@ textarea.interp::placeholder,
   <aside class="eval-context" data-for-view="audit"></aside>
   <div class="eval-work">
   <div class="page-header">
-    <h1>AUDIT — Alcohol Use Disorders Identification Test</h1>
-    <p>WHO Alcohol Use Disorders Identification Test — 10 items covering hazardous use, dependence symptoms and harmful use. A total of 8 or more indicates hazardous and harmful alcohol use, as well as possible alcohol dependence.</p>
+    <h1>AUDIT - Alcohol Use Disorders Identification Test</h1>
+    <p>WHO Alcohol Use Disorders Identification Test - 10 items covering hazardous use, dependence symptoms and harmful use. A total of 8 or more indicates hazardous and harmful alcohol use, as well as possible alcohol dependence.</p>
     <p><strong>Answer every item as Jordan would</strong>, based on the vignette and your conversation with him. The questions are worded in the second person because that is how the instrument is written; they are about Jordan, not about you.</p>
   </div>
   <div class="tool-section">
@@ -1113,7 +1113,7 @@ textarea.interp::placeholder,
   <aside class="eval-context" data-for-view="icd"></aside>
   <div class="eval-work">
   <div class="page-header">
-    <h1>ICD-11 — Alcohol Dependence</h1>
+    <h1>ICD-11 - Alcohol Dependence</h1>
     <p>Clinical Descriptions and Diagnostic Requirements (CDDR), reproduced verbatim. Rate each feature based on the past 12 months.</p>
   </div>
   <div class="tool-section">
@@ -1123,7 +1123,7 @@ textarea.interp::placeholder,
       </div>
       <div>
         <div class="tool-section-title">ICD-11 CDDR · 3 essential features</div>
-        <div class="tool-section-sub">Impaired control · increasing precedence · physiological features — two or more required</div>
+        <div class="tool-section-sub">Impaired control · increasing precedence · physiological features - two or more required</div>
         <ul class="cddr-frame">
           <li id="icd-stem"></li>
           <li id="icd-duration"></li>
@@ -1146,7 +1146,7 @@ textarea.interp::placeholder,
       <!-- Diagnostic conclusion -->
       <div id="icd-specifier-box" style="display:none;margin-top:var(--space-5);padding:var(--space-4);background:var(--color-surface-offset);border-radius:var(--radius-lg);border:1px solid var(--color-divider);">
         <div style="font-size:var(--text-sm);font-weight:600;margin-bottom:var(--space-3)">Diagnostic Conclusion</div>
-        <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-3)">Based on the features endorsed above \u2014 particularly whether the core triad (a\u2013c) is present \u2014 select your conclusion:</div>
+        <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-3)">Based on the features endorsed above - particularly whether the core triad (a\u2013c) is present - select your conclusion:</div>
         <div class="radio-group" style="flex-wrap:wrap">
           <label class="radio-option" onclick="setConclusion('with',this)"><input type="radio" name="specifier"> Meets diagnostic requirements for Alcohol Dependence (6C40.2)</label>
           <label class="radio-option" onclick="setConclusion('without',this)"><input type="radio" name="specifier"> Does not meet diagnostic requirements for Alcohol Dependence (6C40.2)</label>
@@ -1171,7 +1171,7 @@ textarea.interp::placeholder,
   <aside class="eval-context" data-for-view="hitop"></aside>
   <div class="eval-work">
   <div class="page-header">
-    <h1>HiTOP-SR — Dimensional Profile</h1>
+    <h1>HiTOP-SR - Dimensional Profile</h1>
     <p>Rate each item on the 1–4 scale for the past 12 months. Two spectra are assessed: Disinhibited Externalizing (8 subscales) and Harmful Substance Use (6 subscales).</p>
   </div>
   <div class="tool-section">
@@ -1225,7 +1225,7 @@ textarea.interp::placeholder,
   <div class="session-head">
     <div class="kv-row"><span class="kv-key">Subject ID:</span> <span class="kv-val">JM</span></div>
     <div class="kv-row"><span class="kv-key">Age:</span> <span class="kv-val">25</span></div>
-    <div class="kv-row"><span class="kv-key">Session start time:</span> <span class="kv-val" data-session-start>—</span></div>
+    <div class="kv-row"><span class="kv-key">Session start time:</span> <span class="kv-val" data-session-start>-</span></div>
     <div class="kv-row"><span class="kv-key">Tasks:</span> <span class="kv-val">Stop-signal · Alcohol purchase task</span></div>
   </div>
   <div class="ctab-wrap">
@@ -1249,7 +1249,7 @@ textarea.interp::placeholder,
         <span class="try-task-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l6 3.5-6 3.5z" fill="currentColor" stroke="none"/></svg></span>
         <span class="try-task-copy">
           <span class="try-task-title">Try the task yourself</span>
-          <span class="try-task-sub">Run the stop-signal task Jordan completed — about three minutes.</span>
+          <span class="try-task-sub">Run the stop-signal task Jordan completed - about three minutes.</span>
           
         </span>
         <span class="try-task-cta"><span class="cta-open">Try it yourself</span><span class="cta-close">Hide the task</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
@@ -1373,10 +1373,10 @@ textarea.interp::placeholder,
   <div class="eval-work report-doc" style="max-width:1700px;">
     <div class="report-head">
       <div>
-        <h2 class="report-head-title">Case report — Jordan, 25</h2>
+        <h2 class="report-head-title">Case report - Jordan, 25</h2>
         <div class="report-head-meta">
           <span><strong>Substance use</strong></span>
-          <span>Prepared by <strong id="rh-student-view-report">—</strong></span>
+          <span>Prepared by <strong id="rh-student-view-report">-</strong></span>
           <span id="rh-date-view-report"></span>
         </div>
       </div>
@@ -1385,17 +1385,17 @@ textarea.interp::placeholder,
         Print or save as PDF
       </button>
     </div>
-    <p class="print-only" style="font-size:9pt;color:#555;margin:0 0 6mm">ClinCog — teaching platform. Fictional case. For educational use only; not for assessing real people.</p>
+    <p class="print-only" style="font-size:9pt;color:#555;margin:0 0 6mm">ClinCog - teaching platform. Fictional case. For educational use only; not for assessing real people.</p>
 
   <div class="page-header">
     <h1>Assessment Report</h1>
-    <p>Integrated multi-method profile — for educational use only. All data are session-only and not stored.</p>
+    <p>Integrated multi-method profile - for educational use only. All data are session-only and not stored.</p>
   </div>
   <div id="report-area"></div>
   <section class="rpt-section reflect-block" id="reflect-block">
         <div class="rpt-section-head"><span class="rpt-num">04</span><div><h3 class="rpt-section-title">What changed in your understanding?</h3><p class="rpt-section-sub">Your reflection on the three lenses</p></div></div>
         <div class="rpt-section-body">
-          <p class="reflect-note">You approached Jordan from three perspectives — a categorical diagnosis, a dimensional profile, and Jordan’s results on a cognitive task. Write a few sentences on what exploring the case this way taught you, then mark it complete.</p>
+          <p class="reflect-note">You approached Jordan from three perspectives - a categorical diagnosis, a dimensional profile, and Jordan’s results on a cognitive task. Write a few sentences on what exploring the case this way taught you, then mark it complete.</p>
           <textarea id="reflect-text" placeholder="What did looking at Jordan's case from three angles add to your understanding?"></textarea>
           <div class="reflect-actions">
             <button type="button" class="btn btn-primary" id="reflect-btn" onclick="completeCase()">Complete case &rarr;</button>
@@ -1585,7 +1585,7 @@ function renderJordanCog() {
            `<td>${chart(zz.z, cls)}</td><td>${zz.pct}%</td><td>${domain}</td></tr>`;
   };
   const plainRow = (m, raw, domain) =>
-    `<tr><td class="mn">${m}</td><td>${raw}</td><td>\u2014</td><td></td><td>\u2014</td><td>${domain}</td></tr>`;
+    `<tr><td class="mn">${m}</td><td>${raw}</td><td>-</td><td></td><td>-</td><td>${domain}</td></tr>`;
   body.innerHTML =
     `<tr class="tr-head"><td colspan="6">Stop-signal task</td></tr>` +
     zRow('Mean go reaction time', JORDAN_SST.meanGoRT + ' ms', JORDAN_COG_Z.meanGoRT, 'Processing speed') +
@@ -1980,7 +1980,7 @@ function buildIcd() {
   const container = document.getElementById('icd-questions');
   container.innerHTML = ICD_ITEMS.map((item, i) => `
     <div class="question-item">
-      <div class="question-label">${item.id} — ${item.criterion}</div>
+      <div class="question-label">${item.id} - ${item.criterion}</div>
       <div class="question-probe">${item.probe}</div>
       <div class="question-followup">↳ ${item.followup}</div>
       <div class="radio-group">
@@ -2092,7 +2092,7 @@ function icdDone()  { return state.icd.every(v => v !== null); }
 function icdDiagnosis(n) {
   if (n === 0) return 'No features endorsed';
   const met = n >= ICD_THRESHOLD;
-  return n + ' of 3 features present \u2014 ' +
+  return n + ' of 3 features present - ' +
     (met ? 'threshold of \u2265 2 met' : '\u2265 2 required');
 }
 
@@ -2232,7 +2232,7 @@ function updateAll() {
   if(document.getElementById('badge-audit')) document.getElementById('badge-audit').textContent = state.audit.filter(v=>v!==null).length + '/10';
   if (auditDone()) {
     const z = auditZone(cs);
-    document.getElementById('audit-interp').textContent = z.zone + ' \u2014 ' + z.label + ' (\u2265 8 indicates hazardous and harmful use)';
+    document.getElementById('audit-interp').textContent = z.zone + ' - ' + z.label + ' (\u2265 8 indicates hazardous and harmful use)';
     document.getElementById('audit-badge').className = 'instrument-badge badge-completed';
     document.getElementById('audit-badge').textContent = 'Completed';
   }
@@ -2617,8 +2617,8 @@ function sstRenderResults(r){
     if(!reliable){
       const dir = commPct<25?'below 25%':'above 75%';
       const reason = commPct<25
-        ? 'Too few commission errors suggest the participant may have slowed their Go responses strategically to avoid stop errors — violating the independence assumption.'
-        : 'Too many commission errors suggest the participant rarely inhibited — the stop process may not have engaged reliably.';
+        ? 'Too few commission errors suggest the participant may have slowed their Go responses strategically to avoid stop errors - violating the independence assumption.'
+        : 'Too many commission errors suggest the participant rarely inhibited - the stop process may not have engaged reliably.';
       bannerEl.innerHTML=`<div style="display:flex;gap:var(--space-3);align-items:flex-start;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:2px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         <div>
@@ -2641,11 +2641,11 @@ function sstRenderResults(r){
       The <strong>Stop-Signal Reaction Time (SSRT)</strong> is an estimate of how long it takes
       your brain to cancel a movement that has already started. On Go trials you initiate a keypress;
       on Stop trials an orange signal asks you to abort that movement. Because the stop and go processes
-      race against each other in parallel, we cannot directly observe the stop process — but we can
+      race against each other in parallel, we cannot directly observe the stop process - but we can
       estimate its duration mathematically.
     </p>
     <p style="font-size:var(--text-sm);color:var(--color-text-muted);line-height:1.75">
-      A <strong>shorter SSRT</strong> means faster inhibitory control — the brain cancels actions
+      A <strong>shorter SSRT</strong> means faster inhibitory control - the brain cancels actions
       quickly. A <strong>longer SSRT</strong> (typically &gt; 250 ms) suggests slower inhibition,
       which is associated with impulsivity and difficulty stopping habitual behaviours such as
       substance use.
@@ -2675,7 +2675,7 @@ function sstRenderResults(r){
     </div>
     <div style="margin-top:var(--space-3);font-size:var(--text-xs);color:var(--color-text-muted);">
       SSRT is valid when commission rate is between 25% and 75% (observed: ${r.commissionRate}%)
-      ${reliable?'✓':'— this estimate may be biased'}.
+      ${reliable?'✓':'- this estimate may be biased'}.
     </div>`;
 }
 
@@ -2714,7 +2714,7 @@ function sstLoadPasted(){
 }
 
 
-function loadStopSignal() { /* inline SST — nothing to load */ }
+function loadStopSignal() { /* inline SST - nothing to load */ }
 
 function displayStopResults(r, metricsId, pillId) {
   metricsId = metricsId || 'stop-metrics'; pillId = pillId || 'stop-result-pill';
@@ -2813,7 +2813,7 @@ function buildReport() {
     <h2 style="font-size:var(--text-lg);font-weight:600;margin-bottom:var(--space-4)">Categorical Assessment</h2>
     <div class="rpt-section report-tool-card">
       <div class="report-tool-header">
-        <div class="rpt-section-head" style="padding:0 0 var(--sp-4);box-shadow:inset 0 -1px 0 var(--border);"><span class="rpt-num">01</span><div><h3 class="rpt-section-title">Categorical — screening</h3><p class="rpt-section-sub">AUDIT (WHO), 10 items</p></div></div>
+        <div class="rpt-section-head" style="padding:0 0 var(--sp-4);box-shadow:inset 0 -1px 0 var(--border);"><span class="rpt-num">01</span><div><h3 class="rpt-section-title">Categorical - screening</h3><p class="rpt-section-sub">AUDIT (WHO), 10 items</p></div></div>
 
       </div>
       <!-- The item-by-item table repeated back what the student had just
@@ -2829,7 +2829,7 @@ function buildReport() {
 
     <div class="rpt-section report-tool-card">
       <div class="report-tool-header">
-        <div class="rpt-section-head" style="padding:0 0 var(--sp-4);box-shadow:inset 0 -1px 0 var(--border);"><span class="rpt-num">02</span><div><h3 class="rpt-section-title">Categorical — diagnosis</h3><p class="rpt-section-sub">ICD-11 essential features for alcohol dependence</p></div></div>
+        <div class="rpt-section-head" style="padding:0 0 var(--sp-4);box-shadow:inset 0 -1px 0 var(--border);"><span class="rpt-num">02</span><div><h3 class="rpt-section-title">Categorical - diagnosis</h3><p class="rpt-section-sub">ICD-11 essential features for alcohol dependence</p></div></div>
         <span class="score-pill score-neutral">${ss}/3 · ${state.icdConclusion==='with'?'Meets requirements':state.icdConclusion==='without'?'Does not meet requirements':'No conclusion recorded'}</span>
       </div>
       <table class="report-items-table">
@@ -2846,10 +2846,10 @@ function buildReport() {
 
   <!-- HITOP CHARTS -->
   <div class="report-section">
-    <h2 style="font-size:var(--text-lg);font-weight:600;margin-bottom:var(--space-4)">Dimensional Assessment — HiTOP-SR</h2>
+    <h2 style="font-size:var(--text-lg);font-weight:600;margin-bottom:var(--space-4)">Dimensional Assessment - HiTOP-SR</h2>
 
     <div class="chart-container">
-      <div class="chart-title">Profile — 6 complete subscales</div>
+      <div class="chart-title">Profile - 6 complete subscales</div>
       <div class="chart-sub">T-scores (M=50, SD=10). The three externalising subscales use the HiTOP-SR community norms. The three substance subscales use the German HiTOP-SR norms and carry the caution below.</div>
       <div class="callout" style="margin:var(--space-3) 0;font-size:var(--text-xs);">⚠ ${HITOP_SUD_WARNING}</div>
       <div id="chart-hitop-bar"></div>
@@ -2857,7 +2857,7 @@ function buildReport() {
     </div>
 
     <div class="chart-container">
-      <div class="chart-title">Disinhibited Externalizing & Harmful Substance Use — T-Score Distribution</div>
+      <div class="chart-title">Disinhibited Externalizing & Harmful Substance Use - T-Score Distribution</div>
       <div class="chart-sub">Each panel shows a reference normal distribution (M=50, SD=10) with the client's spectrum-level T-score marked. Shading indicates clinical elevation thresholds.</div>
       <div id="chart-hitop-hist"></div>
     </div>
@@ -2867,7 +2867,7 @@ function buildReport() {
   <!-- STOP SIGNAL -->
   ${JORDAN_SST ? `
   <div class="report-section">
-    <h2 style="font-size:var(--text-lg);font-weight:600;margin-bottom:var(--space-4)">Inhibitory Control — Stop-Signal Task</h2>
+    <h2 style="font-size:var(--text-lg);font-weight:600;margin-bottom:var(--space-4)">Inhibitory Control - Stop-Signal Task</h2>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:var(--space-3);margin-bottom:var(--space-5);">
       ${[
         ['SSRT', (JORDAN_SST.ssrt||'--')+' ms'],
@@ -2886,20 +2886,20 @@ function buildReport() {
 
   <!-- DEMAND CURVE -->
   <div class="report-section">
-    <h2 style="font-size:var(--text-lg);font-weight:600;margin-bottom:var(--space-4)">Alcohol Demand — Hypothetical Purchase Task</h2>
+    <h2 style="font-size:var(--text-lg);font-weight:600;margin-bottom:var(--space-4)">Alcohol Demand - Hypothetical Purchase Task</h2>
     <div class="chart-container">
       <div class="chart-title">Alcohol Demand Curve</div>
       <div class="chart-sub">Log–linear plot of quantity consumed as a function of price per standard drink. Key demand indices: Q0 = free consumption; Omax = maximum expenditure; Pmax = price at Omax; Breakpoint = first price at Q=0.</div>
       <div id="chart-demand" style="height:380px"></div>
     </div>
     <div class="rpt-section report-tool-card">
-      <div class="report-tool-header"><div class="rpt-section-head" style="padding:0 0 var(--sp-4);box-shadow:inset 0 -1px 0 var(--border);"><span class="rpt-num">03</span><div><h3 class="rpt-section-title">Cognitive — alcohol demand</h3><p class="rpt-section-sub">Hypothetical purchase task indices</p></div></div></div>
+      <div class="report-tool-header"><div class="rpt-section-head" style="padding:0 0 var(--sp-4);box-shadow:inset 0 -1px 0 var(--border);"><span class="rpt-num">03</span><div><h3 class="rpt-section-title">Cognitive - alcohol demand</h3><p class="rpt-section-sub">Hypothetical purchase task indices</p></div></div></div>
       <table class="report-items-table">
         <tr><th>Index</th><th>Value</th><th>Interpretation</th></tr>
-        <tr><td><strong>Q0</strong></td><td>${di.Q0} drinks</td><td style="color:var(--color-text-muted);font-size:var(--text-xs)">Intensity — consumption at zero cost; reflects baseline motivation</td></tr>
-        <tr><td><strong>Omax</strong></td><td>$${di.Omax}</td><td style="color:var(--color-text-muted);font-size:var(--text-xs)">Maximum expenditure — highest amount spent at any price point</td></tr>
-        <tr><td><strong>Pmax</strong></td><td>$${di.Pmax}</td><td style="color:var(--color-text-muted);font-size:var(--text-xs)">Price at Omax — transition from inelastic to elastic demand</td></tr>
-        <tr><td><strong>Breakpoint</strong></td><td>$${di.Breakpoint}</td><td style="color:var(--color-text-muted);font-size:var(--text-xs)">First price at which consumption reaches zero — reinforcing efficacy</td></tr>
+        <tr><td><strong>Q0</strong></td><td>${di.Q0} drinks</td><td style="color:var(--color-text-muted);font-size:var(--text-xs)">Intensity - consumption at zero cost; reflects baseline motivation</td></tr>
+        <tr><td><strong>Omax</strong></td><td>$${di.Omax}</td><td style="color:var(--color-text-muted);font-size:var(--text-xs)">Maximum expenditure - highest amount spent at any price point</td></tr>
+        <tr><td><strong>Pmax</strong></td><td>$${di.Pmax}</td><td style="color:var(--color-text-muted);font-size:var(--text-xs)">Price at Omax - transition from inelastic to elastic demand</td></tr>
+        <tr><td><strong>Breakpoint</strong></td><td>$${di.Breakpoint}</td><td style="color:var(--color-text-muted);font-size:var(--text-xs)">First price at which consumption reaches zero - reinforcing efficacy</td></tr>
       </table>
       <div style="margin-top:var(--space-3);font-size:var(--text-xs);color:var(--color-text-muted)">Higher Q0, Omax, and later breakpoint indicate stronger reinforcing value of alcohol.</div>
     </div>
@@ -2964,40 +2964,40 @@ function buildFormulationBoxes(cs, ss, disAvgT, hsuAvgT, hsuAvgRaw, di) {
   const boxes = [
     {
       id: 'fb-audit',
-      label: 'AUDIT — Screening Result',
+      label: 'AUDIT - Screening Result',
       meta: 'Total ' + cs + '/40 · ' + auditZone(cs).zone + ' · ' + auditZone(cs).label,
-      hint: 'What does a total of ' + cs + '/40 indicate? The AUDIT separates hazardous use, dependence symptoms and harmful use across its three domains \u2014 which of them is driving Jordan\u2019s score, and what follow-up is warranted?'
+      hint: 'What does a total of ' + cs + '/40 indicate? The AUDIT separates hazardous use, dependence symptoms and harmful use across its three domains - which of them is driving Jordan\u2019s score, and what follow-up is warranted?'
     },
     {
       id: 'fb-icd',
-      label: 'ICD-11 CDDR — Alcohol Dependence',
+      label: 'ICD-11 CDDR - Alcohol Dependence',
       meta: icdDiagnosis(ss),
-      hint: 'Which of the three essential features does Jordan show \u2014 impaired control, increasing precedence of drinking (including persistence despite harm), and physiological features? ICD-11 requires at least two of the three. Does the duration requirement hold?'
+      hint: 'Which of the three essential features does Jordan show - impaired control, increasing precedence of drinking (including persistence despite harm), and physiological features? ICD-11 requires at least two of the three. Does the duration requirement hold?'
     },
     {
       id: 'fb-dis',
-      label: 'HiTOP — Disinhibited Externalizing Spectrum',
+      label: 'HiTOP - Disinhibited Externalizing Spectrum',
       meta: 'Spectrum average T = ' + disAvgT + (disAvgT >= 70 ? ' · Clinically elevated' : disAvgT >= 60 ? ' · Elevated' : ' · Within normal limits'),
       hint: 'What does the T-score indicate relative to the normative reference? Which subscales were most elevated? What are the clinical implications for impulse regulation and risk behaviour?'
     },
     {
       id: 'fb-hsu',
-      label: 'HiTOP — Harmful Substance Use Spectrum',
+      label: 'HiTOP - Harmful Substance Use Spectrum',
       meta: 'Spectrum average T = ' + hsuAvgT + ' \u00b7 raw mean ' + hsuAvgRaw + ' (1\u20134) \u00b7 \u26a0 floor-bound reference distribution',
-      hint: 'Which of the three substance subscales \u2014 Impaired Control, Role Interference, Tolerance \u2014 are most elevated? Given the floor-bound reference distribution, what does a high T here tell you, and what does it not?'
+      hint: 'Which of the three substance subscales - Impaired Control, Role Interference, Tolerance - are most elevated? Given the floor-bound reference distribution, what does a high T here tell you, and what does it not?'
     }
   ];
 
   boxes.push({
     id: 'fb-sst',
-    label: 'Stop-Signal Task — Inhibitory Control',
+    label: 'Stop-Signal Task - Inhibitory Control',
     meta: 'SSRT = ' + ssrtStr + ' · Go Accuracy = ' + r.goAccPct + '% · Commission Rate = ' + r.commissionRate + '%',
     hint: 'Jordan\u2019s SSRT is 1.6 standard deviations poorer than the case\u2019s reference, while his go reaction time is ordinary. What does that pattern say about inhibitory control specifically, and how might it connect to the impaired control over drinking described in the vignette?'
   });
 
   boxes.push({
     id: 'fb-hpt',
-    label: 'Hypothetical Purchase Task — Demand Curve',
+    label: 'Hypothetical Purchase Task - Demand Curve',
     meta: 'Q\u2080 = ' + di.Q0 + ' drinks · Omax = $' + di.Omax + ' · Pmax = $' + di.Pmax + ' · Breakpoint = $' + di.Breakpoint,
     hint: 'Jordan would drink 12 drinks at no cost and keeps buying until the price reaches $20. What do intensity and breakpoint suggest about how reinforcing alcohol is for him, and what might that mean for treatment?'
   });
@@ -3200,7 +3200,7 @@ initHelperFab();
 })();
 
 // Stop-signal base64 constant
-// STOP_SIGNAL_B64 removed — using inline SST
+// STOP_SIGNAL_B64 removed - using inline SST
 
 </script>
 <script>
@@ -3209,7 +3209,7 @@ initHelperFab();
 (function fillReportHead() {
   const set = () => {
     document.querySelectorAll('[id^="rh-student-"]').forEach(el => {
-      el.textContent = (typeof ClinCog !== 'undefined' && ClinCog.getName && ClinCog.getName()) || '\u2014';
+      el.textContent = (typeof ClinCog !== 'undefined' && ClinCog.getName && ClinCog.getName()) || '-';
     });
     document.querySelectorAll('[id^="rh-date-"]').forEach(el => {
       el.textContent = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });

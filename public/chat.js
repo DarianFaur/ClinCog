@@ -1,8 +1,8 @@
 // ============================================================
-// chat.js — shared conceptualization chat logic.
+// chat.js - shared conceptualization chat logic.
 // Reused by every case's -chat.html page. Which case it talks
 // to is set by the <script data-module="..."> attribute, e.g.
-// "depression", "anxiety", "addiction" — this must match a key
+// "depression", "anxiety", "addiction" - this must match a key
 // in the VIGNETTES map on the server (worker.js).
 //
 // Conversation history is restored from and saved to this
@@ -74,25 +74,23 @@
   // and adopted instructors pick their model on the adopt.html page
   // instead. Deliberately just these two; there is no path to Opus here.
   if (window.location.hostname === "uvt.clincog.net") {
+    // Styled in components.css (.chat-model). It used inline styles on
+    // variables from the old theme (--brand, --line, --surface) that no
+    // longer exist, so the selected button came out white on nothing.
     const modelBar = document.createElement("div");
-    modelBar.style.cssText = "display:flex;align-items:center;gap:10px;margin:0 0 14px;font-size:13px;color:var(--ink-muted)";
+    modelBar.className = "chat-model";
     modelBar.innerHTML = `
-      <span>Model:</span>
-      <div id="student-model-toggle" style="display:flex;gap:6px;">
-        <button type="button" data-model="claude-haiku-4-5-20251001" style="padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:13px;cursor:pointer;">Fast (Haiku)</button>
-        <button type="button" data-model="claude-sonnet-5" style="padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:13px;cursor:pointer;">Thoughtful (Sonnet)</button>
+      <span class="chat-model-label" id="student-model-label">Model</span>
+      <div id="student-model-toggle" class="chat-model-toggle" role="group" aria-labelledby="student-model-label">
+        <button type="button" data-model="claude-haiku-4-5-20251001">Fast <span>Haiku</span></button>
+        <button type="button" data-model="claude-sonnet-5">Thoughtful <span>Sonnet</span></button>
       </div>`;
     chatDiv.parentNode.insertBefore(modelBar, chatDiv);
 
     const modelButtons = modelBar.querySelectorAll("button");
     function paintModelButtons() {
       const current = ClinCog.getStudentModel();
-      modelButtons.forEach((b) => {
-        const active = b.dataset.model === current;
-        b.style.background = active ? "var(--brand)" : "var(--surface)";
-        b.style.borderColor = active ? "var(--brand)" : "var(--line)";
-        b.style.color = active ? "#fff" : "var(--ink)";
-      });
+      modelButtons.forEach((b) => b.setAttribute("aria-pressed", b.dataset.model === current ? "true" : "false"));
     }
     modelButtons.forEach((b) => {
       b.addEventListener("click", () => {
@@ -215,8 +213,8 @@
     wrap.innerHTML =
       '<div class="chat-empty-icon">' + HEAD_ICON + "</div>" +
       "<p class=\"chat-empty-title\">No questions asked yet</p>" +
-      '<p class="chat-empty-hint">Open with something broad &mdash; what brought ' +
-      patientName + " here, and when it started &mdash; then follow what you hear.</p>";
+      '<p class="chat-empty-hint">Open with something broad - what brought ' +
+      patientName + " here, and when it started - then follow what you hear.</p>";
     chatDiv.appendChild(wrap);
   }
 
@@ -265,11 +263,11 @@
       });
 
       if (response.status === 429) {
-        statusDiv.textContent = "Too many requests right now — please wait a moment and try again. That question wasn't counted.";
+        statusDiv.textContent = "Too many requests right now - please wait a moment and try again. That question wasn't counted.";
         return;
       }
       if (response.status === 403) {
-        statusDiv.textContent = "We couldn't verify your browser — please refresh the page and try again. That question wasn't counted.";
+        statusDiv.textContent = "We couldn't verify your browser - please refresh the page and try again. That question wasn't counted.";
         return;
       }
       if (!response.ok) throw new Error("Server error: " + response.status);
@@ -286,10 +284,15 @@
       const decoder = new TextDecoder();
       let fullText = "";
 
+      // The site uses a plain hyphen, never the long dash; the model
+      // writes long dashes freely, so its replies are normalised as they
+      // arrive (and stored that way, so the transcript and report match).
+      const plainDash = (t) => t.replace(/[ \t]*\u2014[ \t]*/g, " - ");
+
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        fullText += decoder.decode(value, { stream: true });
+        fullText = plainDash(fullText + decoder.decode(value, { stream: true }));
         patientBubble.textContent = fullText;
         chatDiv.scrollTop = chatDiv.scrollHeight;
       }
@@ -299,7 +302,7 @@
       if (!fullText) patientBubble.textContent = "(no response)";
       updateStatus();
     } catch (err) {
-      statusDiv.textContent = "Something went wrong — that question wasn't counted. Try again.";
+      statusDiv.textContent = "Something went wrong - that question wasn't counted. Try again.";
       console.error(err);
     } finally {
       hideTypingIndicator();

@@ -333,13 +333,12 @@ html:not(.shell-ready) .shell-main { transition: none !important; }
 .shell-footer a:hover { text-decoration: underline; text-underline-offset: 3px; }
 
 /* ---------------------------------------------------------------
-   Nav icons (alpha r4): glyphs only, no circles, coloured from the
-   palette one section at a time - Main in sienna, Resources in brass,
-   Seminar in steel. On a case's pages the Cases glyph takes that case's
-   line colour. The active item's glyph is ink, like its label.
+   Nav icons (alpha r9): glyphs only, no circles, all in the one accent
+   of the palette - sienna in the light theme, peach in the dark. The
+   three-colour version (sienna / brass / steel, plus the case colour on
+   the Cases glyph) read as mismatched rather than as sections. The active
+   item's glyph is ink, like its label.
 --------------------------------------------------------------- */
-.shell-nav-group:nth-child(1) .shell-nav-icon { color: var(--accent); }
-.shell-nav-group:nth-child(2) .shell-nav-icon { color: var(--domain-substance-line); }
-.shell-nav-group:nth-child(3) .shell-nav-icon { color: var(--domain-anxiety-line); }
-#shell-cases-toggle .shell-nav-icon { color: var(--shell-case-line, var(--accent)); }
+.shell-nav-group .shell-nav-icon,
+#shell-cases-toggle .shell-nav-icon { color: var(--accent); }
 .shell-nav .shell-nav-item.active .shell-nav-icon { color: var(--text-primary); }

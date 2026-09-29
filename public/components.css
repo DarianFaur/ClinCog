@@ -916,3 +916,36 @@ a:not([class]):focus-visible, .text-link:focus-visible {
    box. The reading measure that caps prose elsewhere left these stopping
    halfway across, beside an empty right half. */
 .try-task-body p { max-width: none !important; }
+
+/* ---------------------------------------------------------------
+   Student model choice (seminar instance only, built by chat.js):
+   a two-way segmented pill at the top of the chat card. The chosen
+   model is an ink pill, like every other selected control.
+--------------------------------------------------------------- */
+.chat-model {
+  /* A header strip across the top of the chat card: same left inset as the
+     messages, clear of the fullscreen button (top/right 10px, 32px), and
+     vertically centred on it. */
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap; flex-shrink: 0;
+  margin: 0; padding: 7px 56px 7px var(--sp-5);
+  border-bottom: 1px solid var(--hairline);
+}
+.chat-model-label { font-size: var(--text-sm); color: var(--text-tertiary); }
+.chat-model-toggle { display: inline-flex; gap: 2px; padding: 3px; border-radius: var(--radius-pill); background: var(--mist); }
+.chat-model-toggle button {
+  display: inline-flex; align-items: baseline; gap: 6px; height: 32px; align-items: center;
+  padding: 0 14px; border: 0; border-radius: var(--radius-pill); background: transparent;
+  font: 500 var(--text-sm)/1 var(--font-sans); color: var(--text-secondary); cursor: pointer;
+  transition: background var(--duration-hover, .15s) ease, color var(--duration-hover, .15s) ease;
+}
+.chat-model-toggle button span { font-weight: 400; color: var(--text-tertiary); }
+.chat-model-toggle button:hover { color: var(--text-primary); }
+.chat-model-toggle button[aria-pressed="true"] { background: var(--ink); color: var(--ink-text); }
+.chat-model-toggle button[aria-pressed="true"] span { color: inherit; opacity: .7; }
+.chat-model-toggle button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* On a phone the word "Model" would push the toggle onto a second line;
+   the buttons name the models themselves, so the label is kept for
+   screen readers only. */
+@media (max-width: 480px) {
+  .chat-model-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}

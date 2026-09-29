@@ -1,4 +1,4 @@
-/* ClinCog — published norm defaults, in one place.
+/* ClinCog - published norm defaults, in one place.
    ------------------------------------------------------------------
    The evaluation pages read these through ClinCog.getBenchmark(), so an
    instructor's edits on the benchmarks page override them; the benchmarks
@@ -11,7 +11,7 @@
    shown to instructors next to the fields. */
 window.CLINCOG_NORMS = {
   hitopScz: {
-    title: 'HiTOP-SR — Detachment and Thought Disorder',
+    title: 'HiTOP-SR - Detachment and Thought Disorder',
     usedIn: [{ name: 'Dennis', color: 'var(--domain-psychosis)' }],
     citation: 'HiTOP-SR scoring workbook, "Descriptives prolific final" (Prolific community sample, N = 780).',
     subscales: {
@@ -22,7 +22,7 @@ window.CLINCOG_NORMS = {
     },
   },
   hitopDep: {
-    title: 'HiTOP-SR — Distress subscales',
+    title: 'HiTOP-SR - Distress subscales',
     usedIn: [{ name: 'Darren', color: 'var(--domain-mood)' }],
     citation: 'HiTOP-SR scoring workbook, "Descriptives prolific final" (Prolific community sample, N = 772–780).',
     subscales: {
@@ -35,7 +35,7 @@ window.CLINCOG_NORMS = {
     },
   },
   hitopFear: {
-    title: 'HiTOP-SR — Fear subscales',
+    title: 'HiTOP-SR - Fear subscales',
     usedIn: [{ name: 'Alex', color: 'var(--domain-anxiety)' }],
     citation: 'HiTOP-SR scoring workbook, "Descriptives prolific final" (Prolific community sample, N = 780).',
     subscales: {
@@ -46,7 +46,7 @@ window.CLINCOG_NORMS = {
     },
   },
   hitopExt: {
-    title: 'HiTOP-SR — Disinhibited Externalizing subscales',
+    title: 'HiTOP-SR - Disinhibited Externalizing subscales',
     usedIn: [{ name: 'Jordan', color: 'var(--domain-substance)' }],
     citation: 'HiTOP-SR scoring workbook, "Descriptives prolific final" (Prolific community sample, N = 780).',
     subscales: {
@@ -56,7 +56,7 @@ window.CLINCOG_NORMS = {
     },
   },
   hitopSud: {
-    title: 'HiTOP Harmful Substance Use Module — alcohol subscales',
+    title: 'HiTOP Harmful Substance Use Module - alcohol subscales',
     usedIn: [{ name: 'Jordan', color: 'var(--domain-substance)' }],
     citation: 'Zimmermann J, Wendt LP, et al. Development and initial evaluation of the German version of the ' +
       'HiTOP Self-Report. PsyArXiv, 2024. doi:10.31234/osf.io/dc8u6, Supplementary Table S1 (German general-population ' +
@@ -93,11 +93,11 @@ window.CLINCOG_NORMS = {
      fields are pre-filled with the values its paper does state.
      ------------------------------------------------------------------ */
   phq9: {
-    title: 'PHQ-9 — German population norms',
+    title: 'PHQ-9 - German population norms',
     usedIn: [{ name: 'Darren', color: 'var(--domain-mood)' }],
     citation: 'Kliem, S., Sachser, C., Lohmann, A., Baier, D., Brähler, E., Gündel, H., & Fegert, J. M. (2024). ' +
       'Psychometric evaluation and community norms of the PHQ-9, based on a representative German sample. ' +
-      'Frontiers in Psychiatry, 15, 1483782. https://doi.org/10.3389/fpsyt.2024.1483782 — cumulative percentiles ' +
+      'Frontiers in Psychiatry, 15, 1483782. https://doi.org/10.3389/fpsyt.2024.1483782 - cumulative percentiles ' +
       'from Table 2 (total sample) and Supplementary Tables C8 and C9 (male and female subsamples); severity ' +
       'frequencies from Table 3; total-score mean and SD from Supplementary Table C5 (total 2.69/3.87, ' +
       'male 2.38/3.68, female 2.95/3.98), N = 2,519.',
@@ -149,15 +149,15 @@ window.CLINCOG_NORMS = {
     sample: 'Representative German adult sample, N = 2,519',
   },
   gad7: {
-    title: 'GAD-7 — German population norms',
+    title: 'GAD-7 - German population norms',
     usedIn: [{ name: 'Alex', color: 'var(--domain-anxiety)' }],
     citation: 'Kliem, S., Sachser, C., Lohmann, A., Baier, D., Brähler, E., Fegert, J. M., & Gündel, H. (2025). ' +
       'Psychometric evaluation and community norms of the GAD-7, based on a representative German sample. ' +
-      'Frontiers in Psychology, 16, 1526181. https://doi.org/10.3389/fpsyg.2025.1526181 — cumulative percentiles ' +
+      'Frontiers in Psychology, 16, 1526181. https://doi.org/10.3389/fpsyg.2025.1526181 - cumulative percentiles ' +
       'from Table 3 (total sample) and Supplementary Tables A9 and A11 (male and female subsamples); severity ' +
       'frequencies from Table 2; total-score mean and SD from Supplementary Table A3 (total 2.18/3.28, ' +
       'male 1.97/3.21, female 2.35/3.32), confirmed in Supplementary Table A5; N = 2,519. Supplementary Table C7 ' +
-      'of the companion PHQ-9 paper gives the GAD-7 as 2.17/3.26 for the same survey — a last-digit difference, ' +
+      'of the companion PHQ-9 paper gives the GAD-7 as 2.17/3.26 for the same survey - a last-digit difference, ' +
       'and the value from the GAD-7 paper and its own supplement is the one used here.',
     params: [
       { key: 'mean',   label: 'Reference mean' },
@@ -205,15 +205,15 @@ window.CLINCOG_NORMS = {
     sample: 'Representative German adult sample, N = 2,519',
   },
   dotProbe: {
-    title: 'Dot-probe — group bias reference values',
+    title: 'Dot-probe - group bias reference values',
     usedIn: [{ name: 'Alex', color: 'var(--domain-anxiety)' }],
     citation: 'Computed from the group mean latencies in Table 3 (p. 17) of MacLeod, C., Mathews, A., & Tata, P. ' +
       '(1986). Attentional bias in emotional disorders. Journal of Abnormal Psychology, 95(1), 15–20, using the bias ' +
       'equation on p. 18 with the sign reversed so that attention toward threat is positive. The paper reports no ' +
       'standard deviations, so no z-score or percentile can be derived from these.',
     params: [
-      { key: 'anxiousBias', label: 'Anxious patients — bias index (ms)' },
-      { key: 'controlBias', label: 'Controls — bias index (ms)' },
+      { key: 'anxiousBias', label: 'Anxious patients - bias index (ms)' },
+      { key: 'controlBias', label: 'Controls - bias index (ms)' },
     ],
     anxiousBias: 91,
     controlBias: -49,

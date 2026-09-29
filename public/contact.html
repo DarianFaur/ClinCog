@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Contact · ClinCog</title>
+<title>ClinCog - Contact</title>
 <script src="/theme-init.js"></script>
 <link rel="preload" as="script" href="/shell.js?v=2">
 <link rel="preload" as="style" href="/shell.css">
@@ -108,7 +108,7 @@
   <div style="margin-bottom:var(--sp-6);">
     <p class="ct-lede">
       Something unclear, something broken, or an idea for a case? Write to the person
-      who maintains this platform. Every message goes straight to a single inbox &mdash; there is
+      who maintains this platform. Every message goes straight to a single inbox - there is
       no ticket system and no one else in between.
     </p>
   </div>
@@ -180,7 +180,7 @@
   </div>
 
   <p class="ct-foot">
-    Your message is delivered to the address above and nothing else is kept &mdash; no account,
+    Your message is delivered to the address above and nothing else is kept - no account,
     no log of what you wrote. Leaving your email is optional; without it the message still
     arrives, there is just no way to answer it. If sending fails for any reason, the button
     switches to <strong>Copy message</strong> so you can paste it into your own email instead.
@@ -319,8 +319,8 @@
     sendBtn.textContent = "Copy message";
     sendBtn.onclick = function () {
       var text = "To: " + ADDRESS +
-                 "\nSubject: ClinCog \u2014 " + (f.topic || "Message") + "\n\n" +
-                 f.message + (f.name ? "\n\n\u2014 " + f.name : "") +
+                 "\nSubject: ClinCog - " + (f.topic || "Message") + "\n\n" +
+                 f.message + (f.name ? "\n\n- " + f.name : "") +
                  (f.email ? "\n" + f.email : "");
       copyText(text, "Copied", sendBtn, "Copy message");
     };
@@ -333,7 +333,7 @@
       '<span class="icon-tile domain-anxiety" id="ct-sent-icon"></span>' +
       '<div><div class="ct-sent-title">Message sent</div>' +
       '<p class="ct-sent-note">It has gone to the inbox above. If you left an email, ' +
-      'a reply will come from there \u2014 usually within a few days, sooner in term time.</p></div></div>';
+      'a reply will come from there - usually within a few days, sooner in term time.</p></div></div>';
     document.getElementById("ct-sent-icon").innerHTML = ClinIcons.get("check-square", 22);
   }
 

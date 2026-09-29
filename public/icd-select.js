@@ -1,5 +1,5 @@
 // ============================================================
-// icd-select.js — the "what's your probable diagnosis?" step
+// icd-select.js - the "what's your probable diagnosis?" step
 // between the conceptualization chat and the structured
 // evaluation. Renders the WHO Embedded Classification Tool
 // (ECT), a free-text ICD-11 search, and saves the student's
@@ -76,14 +76,14 @@
   wrap.innerHTML = `
     <span class="text-eyebrow">Before the evaluation</span>
     <h3>What do you think is the most likely diagnosis?</h3>
-    <span class="no-wrong-answer">There's no wrong answer here — this is just your working hypothesis, for comparison later.</span>
+    <span class="no-wrong-answer">There's no wrong answer here - this is just your working hypothesis, for comparison later.</span>
     <input type="text" class="ctw-input" autocomplete="off" data-ctw-ino="${INO}" placeholder="Start typing a diagnosis (ICD-11 search)…" />
     <div class="ctw-window" data-ctw-ino="${INO}"></div>
     <div class="icd-confirmed" id="icd-confirmed-${INO}">
       <span class="label">Your hypothesis: <span id="icd-confirmed-label-${INO}"></span></span>
       <button type="button" id="icd-change-${INO}">Change</button>
     </div>
-    <div class="icd-error" id="icd-error-${INO}">ICD-11 search is temporarily unavailable — you can still proceed and pick a hypothesis later.</div>
+    <div class="icd-error" id="icd-error-${INO}">ICD-11 search is temporarily unavailable - you can still proceed and pick a hypothesis later.</div>
     <div class="icd-continue-row" id="icd-continue-row-${INO}">
       <a class="btn btn-secondary" href="${evalHref}">Proceed to evaluation →</a>
     </div>
