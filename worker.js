@@ -1433,6 +1433,8 @@ function isPublicShellAsset(request, url) {
   if (request.method !== "GET" && request.method !== "HEAD") return false;
   return url.pathname === "/tokens.css" ||
          url.pathname === "/favicon.svg" ||
+         url.pathname === "/manifest.webmanifest" ||
+         /^\/(favicon|icon)-[a-z0-9-]+\.png$/.test(url.pathname) ||
          /^\/fonts\/[A-Za-z0-9-]+\.woff2$/.test(url.pathname);
 }
 
@@ -1457,6 +1459,46 @@ function unauthorizedResponse(admin) {
       "X-Robots-Tag": "noindex, nofollow, noarchive",
     },
   });
+}
+
+// ---- Installable web app ----------------------------------------------------
+// One manifest per address, so the public site, the course instance and the
+// admin console install side by side as three apps with their own names.
+function appIdentity(hostname) {
+  if (hostname === ADMIN_HOSTNAME) return { name: "ClinCog Admin", short: "ClinCog Admin", desc: "Live usage monitoring and seminar settings for ClinCog." };
+  if (hostname === STUDENT_HOSTNAME) return { name: "ClinCog UVT", short: "ClinCog UVT", desc: "ClinCog for the seminar: interview simulated patients and evaluate them through three lenses." };
+  return { name: "ClinCog", short: "ClinCog", desc: "Clinical cognition: interview simulated patients and evaluate them through three lenses." };
+}
+function manifestResponse(url) {
+  const id = appIdentity(url.hostname);
+  const isAdmin = url.hostname === ADMIN_HOSTNAME;
+  const manifest = {
+    id: "/", name: id.name, short_name: id.short, description: id.desc,
+    start_url: "/", scope: "/", display: "standalone", lang: "en", dir: "ltr",
+    background_color: "#ffffff", theme_color: "#ffffff", categories: ["education", "medical"],
+    icons: [
+      { src: "/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+      { src: "/favicon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
+      { src: "/icon-maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+      { src: "/favicon.svg", sizes: "any", type: "image/svg+xml" },
+    ],
+    shortcuts: isAdmin
+      ? [{ name: "Live monitoring", url: "/" }, { name: "Seminar settings", url: "/admin-seminar" }, { name: "Dashboard", url: "/dashboard.html" }]
+      : [{ name: "Dashboard", url: "/dashboard.html" }, { name: "My progress", url: "/progress.html" }],
+  };
+  return new Response(JSON.stringify(manifest), {
+    headers: { "Content-Type": "application/manifest+json; charset=utf-8", "Cache-Control": "public, max-age=3600" },
+  });
+}
+// On iOS the home-screen name comes from a meta tag in each page, which is
+// the same file on every address; it is renamed here on the way out.
+function withAppTitle(res, hostname) {
+  const type = res.headers.get("Content-Type") || "";
+  if (!type.includes("text/html") || (hostname !== ADMIN_HOSTNAME && hostname !== STUDENT_HOSTNAME)) return res;
+  const title = appIdentity(hostname).short;
+  return new HTMLRewriter()
+    .on('meta[name="apple-mobile-web-app-title"]', { element(e) { e.setAttribute("content", title); } })
+    .transform(res);
 }
 
 function withNoIndex(res) {
@@ -1484,6 +1526,8 @@ export default {
       return unauthorizedResponse(true);
     }
 
+    if (url.pathname === "/manifest.webmanifest" && request.method === "GET") return manifestResponse(url);
+
     // The admin pages (live monitoring, seminar settings) exist only on the
     // admin console; the monitoring page is its front page.
     if (/^\/admin-[a-z]+(\.html|\.js)?$/.test(url.pathname) && !isAdmin) {
@@ -1493,7 +1537,7 @@ export default {
       // The asset store serves pages without the extension ("/admin-monitor")
       // and redirects the ".html" form, so the pretty path is fetched.
       const page = new URL("/admin-monitor", url);
-      return withNoIndex(await env.ASSETS.fetch(new Request(page, request)));
+      return withAppTitle(withNoIndex(await env.ASSETS.fetch(new Request(page, request))), url.hostname);
     }
 
     // ---- Live monitoring API (admin console only) --------------------------
@@ -1767,7 +1811,7 @@ export default {
     // The seminar subdomain carries licensed material, so nothing on it may
     // be indexed. Basic Auth already keeps crawlers out; this makes the
     // intent explicit to any that authenticate or follow a leaked link.
-    if (url.hostname === STUDENT_HOSTNAME || isAdmin) return withNoIndex(asset);
+    if (url.hostname === STUDENT_HOSTNAME || isAdmin) return withAppTitle(withNoIndex(asset), url.hostname);
     return asset;
   },
 };
