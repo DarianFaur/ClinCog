@@ -365,7 +365,7 @@
             <div class="case-card-name">${m.patient}, ${m.age}</div>
             <div class="case-card-meta">Week ${m.week} · ${DOMAIN_LABEL[m.id]}</div>
           </div>
-          ${badge}
+          <span data-case-badge="${m.id}">${badge}</span>
         </div>
         <div class="case-card-grid">
           <div class="case-card-grid-item"><span class="val">${s.exchanges}</span><span class="lbl">Messages exchanged</span></div>
@@ -378,6 +378,24 @@
         </div>
       </div>`;
   }).join("");
+
+  // On the seminar instance the seminar leader can close a patient or
+  // schedule when it opens (Seminar settings > Case schedule); the card's
+  // badge then says so. The interview page explains it in full.
+  if (location.hostname === "uvt.clincog.net") {
+    fetch("/api/quota", { credentials: "same-origin", cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((q) => {
+        if (!q || !q.cases) return;
+        ClinCog.MODULES.forEach((m) => {
+          const cs = q.cases[m.id], slot = document.querySelector(`[data-case-badge="${m.id}"]`);
+          if (!cs || cs.open !== false || !slot) return;
+          const label = cs.opensAt ? "Opens " + new Date(cs.opensAt).toLocaleDateString(undefined, { day: "numeric", month: "short" }) : "Closed";
+          slot.innerHTML = `<span class="badge badge-locked" title="${(cs.text || "").replace(/"/g, "&quot;")}">${ClinIcons.get("clock", 12)}${label}</span>`;
+        });
+      })
+      .catch(() => {});
+  }
 
   // ---- recent activity: only real, timestamped events (eval reached /
   // case completed) - nothing here is simulated. An empty list gets an

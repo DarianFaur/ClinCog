@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow">
+<script>
+  try { if (!localStorage.getItem("clincog_name")) localStorage.setItem("clincog_name", "Admin"); } catch (e) {}
+</script>
+<script src="/theme-init.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClinCog - Course</title>
+<link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17191c" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ClinCog">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="/favicon-180.png">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preload" as="script" href="/shell.js?v=2">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
+<link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+<div id="shell-content" data-admin-page="course">
+
+  <div class="set-head">
+    <h1 class="text-page-title">Course</h1>
+    <p>What students see, and when: whether the interviews are open, when each patient is released, the periods that count exchanges, and notes at the top of every page.</p>
+  </div>
+
+  <section class="set-section" id="sec-access">
+    <header>
+      <div>
+        <h2>Interviews</h2>
+        <p>Close the chat for everyone (the rest of the site stays open), say why, and choose which of the two models students may pick.</p>
+      </div>
+    </header>
+    <div class="grid2">
+      <div class="field">
+        <label class="switch"><input type="checkbox" id="g-open"><i></i><span id="g-open-label">Interviews open</span></label>
+        <small>When closed, students see the message below instead of the chat box.</small>
+      </div>
+      <div class="field">
+        <span>Models students may use</span>
+        <div class="checks">
+          <label class="check"><input type="checkbox" id="g-fast"> <span id="g-fast-label">Fast</span></label>
+          <label class="check"><input type="checkbox" id="g-thoughtful"> <span id="g-thoughtful-label">Thoughtful</span></label>
+        </div>
+        <small>With only one on, students do not see a model switch. The models themselves are set under AI provider.</small>
+      </div>
+      <label class="field" style="grid-column: 1 / -1">
+        <span>Message when closed</span>
+        <input class="inp" id="g-msg" maxlength="300" placeholder="The interviews are closed right now.">
+      </label>
+    </div>
+    <div class="row-actions"><button type="button" class="btn-ink" id="g-save">Save</button><span class="err" id="g-err"></span></div>
+  </section>
+
+  <section class="set-section" id="sec-cases">
+    <header>
+      <div>
+        <h2>Case schedule</h2>
+        <p>Release the patients week by week, or close one. A closed patient's interview stops; what students already wrote and their evaluation pages stay. The dashboard shows when each one opens.</p>
+      </div>
+    </header>
+    <div class="sched-grid" id="c-grid"></div>
+    <div class="row-actions"><button type="button" class="btn-ink" id="c-save">Save schedule</button><span class="err" id="c-err"></span></div>
+  </section>
+
+  <section class="set-section" id="sec-periods">
+    <header>
+      <div>
+        <h2>Periods</h2>
+        <p>Exchanges are counted per period. When a new period starts, every student starts again from zero; the old counts stay with the old period. Outside every period the interviews are closed. A period with no end runs until the next one starts.</p>
+      </div>
+    </header>
+    <div class="twrap" id="p-table"></div>
+    <div class="grid4" style="margin-top:18px">
+      <label class="field"><span>Name</span><input class="inp" id="p-name" placeholder="e.g. 2026-27 Semester 2"></label>
+      <label class="field"><span>Starts</span><input class="inp" type="datetime-local" id="p-start"><small>Empty: already started.</small></label>
+      <label class="field"><span>Ends</span><input class="inp" type="datetime-local" id="p-end"><small>Empty: no end.</small></label>
+      <div class="field"><span>&nbsp;</span><button type="button" class="btn-ink" id="p-add">Add period</button></div>
+    </div>
+    <div class="row-actions">
+      <button type="button" class="btn-ghost" id="p-now">Start a new period now…</button>
+      <span class="err" id="p-err"></span>
+    </div>
+  </section>
+
+  <section class="set-section" id="sec-announce">
+    <header>
+      <div>
+        <h2>Announcements</h2>
+        <p>A note at the top of every page on uvt.clincog.net, for example "Jordan opens on Monday" or "The chat is down until 14:00". Students can close it; each new one shows again.</p>
+      </div>
+    </header>
+    <div class="ann-list" id="a-list"></div>
+    <div class="grid2">
+      <label class="field" style="grid-column: 1 / -1"><span>Text</span><textarea class="inp" id="a-text" maxlength="400" placeholder="What students should know"></textarea></label>
+      <label class="field"><span>Shows from</span><input class="inp" type="datetime-local" id="a-from"><small>Empty: now.</small></label>
+      <label class="field"><span>Until</span><input class="inp" type="datetime-local" id="a-until"><small>Empty: until you remove it.</small></label>
+    </div>
+    <div class="row-actions">
+      <label class="check"><input type="checkbox" id="a-important"> Important (dark banner)</label>
+      <button type="button" class="btn-ink" id="a-add">Publish</button>
+      <span class="err" id="a-err"></span>
+    </div>
+  </section>
+
+</div>
+
+<script>window.CLINCOG_SHELL = { activeNav: "admin-course", breadcrumb: [{ label: "Course" }] };</script>
+<script src="/storage.js"></script>
+<script src="/icons.js"></script>
+<script src="/shell.js?v=2"></script>
+<script src="/toast.js"></script>
+<script src="/a11y.js"></script>
+<script src="/admin-settings.js"></script>
+</body>
+</html>

@@ -44,6 +44,7 @@
   }
   function who(lane, pid) {
     if (lane === "admin") return "You";
+    if (pid === "key test") return "Key test (console)";
     if (pid && pid.indexOf("v:") === 0) return "Visitor " + pid.slice(2, 6);
     return pid;
   }
@@ -230,7 +231,7 @@
     }
     var sub = document.getElementById("people-sub");
     if (state.lane === "seminar" && state.quotas && !state.quotas.configured) sub.textContent = "No class list yet: set the STUDENT_IDS secret to open the seminar chat.";
-    else if (state.lane === "seminar" && state.quotas) sub.textContent = "The whole class, " + state.quotas.students.length + " students, period " + state.quotas.period + ". Limits are set on the Seminar settings page. Select a row for their chart and to reset a quota.";
+    else if (state.lane === "seminar" && state.quotas) sub.textContent = "The whole class, " + state.quotas.students.length + " students, period " + state.quotas.period + ". Limits are set on the Students page. Select a row for their chart and to reset a quota.";
     else sub.textContent = "Who has used how much in the selected range. Select a row for their own chart.";
     if (!rows.length) { host.appendChild(el("div", "empty", "Nobody yet in this range.")); return; }
     var maxv = 0;
@@ -400,26 +401,47 @@
     });
   }
   var billing = null;
+  function dayLabel(iso) { var d = new Date(iso + "T00:00:00Z"); return d.getUTCDate() + " " + MONTHS[d.getUTCMonth()]; }
   function renderBilling() {
     var sec = document.getElementById("billing"), body = document.getElementById("billing-body");
     if (!billing || !billing.configured) { sec.hidden = true; return; }
     sec.hidden = false; body.textContent = "";
     if (billing.error) { body.appendChild(el("p", "bill-err", billing.error)); return; }
-    document.getElementById("billing-sub").textContent = "What Anthropic charged each day for the last " + billing.days.length + " days" +
-      (billing.workspaceName ? ", workspace " + billing.workspaceName : ", whole organization") + ", next to this console's estimate for the seminar.";
-    var diff = billing.estimate > 0 ? (billing.billed - billing.estimate) / billing.estimate * 100 : null;
+    var scope = billing.workspaceName ? "workspace " + billing.workspaceName : "whole organization";
+    // Only the days monitored from start to finish are compared; what was
+    // billed before (tests, earlier use) is shown on one line, apart.
+    var cmp = billing.days.filter(function (d) { return d.compared; });
+    var pre = billing.before || { billed: 0 };
+    if (!cmp.length) {
+      document.getElementById("billing-sub").textContent = "What Anthropic charged, next to this console's estimate for the seminar (" + scope + ").";
+      var t0 = el("div", "bill-tiles");
+      [[money(pre.billed), "billed by Anthropic, last " + billing.days.length + " days"], ["-", "estimated here"], ["-", "billed vs estimate"]].forEach(function (t) {
+        var d = el("div"); d.appendChild(el("b", "", t[0])); d.appendChild(el("span", "", t[1])); t0.appendChild(d);
+      });
+      body.appendChild(t0);
+      body.appendChild(el("p", "bill-note", billing.compareFrom
+        ? "The comparison starts on " + dayLabel(billing.compareFrom) + " (UTC), the first whole day this console watched. Until then there is nothing to compare: what was billed before includes use from before monitoring started."
+        : "No seminar reply on Anthropic has been recorded here yet, so there is nothing to compare. The comparison starts with the first whole day this console watches."));
+      return;
+    }
+    document.getElementById("billing-sub").textContent = "What Anthropic charged each day since " + dayLabel(cmp[0].date) + ", when this console started watching (" + scope + "), next to its estimate for the seminar.";
+    var diff = billing.billed - billing.estimate;
+    // A percentage of a few cents says nothing; below a dollar the gap is in dollars.
+    var diffText = billing.estimate >= 1 ? (diff >= 0 ? "+" : "") + (diff / billing.estimate * 100).toFixed(0) + "%" : (diff >= 0 ? "+" : "-") + money(Math.abs(diff));
     var tiles = el("div", "bill-tiles");
     [[money(billing.billed), "billed by Anthropic"], [money(billing.estimate), "estimated here (seminar)"],
-     [diff === null ? "-" : (diff >= 0 ? "+" : "") + diff.toFixed(0) + "%", "billed vs estimate"]].forEach(function (t) {
+     [diffText, billing.estimate >= 1 ? "billed vs estimate" : "billed minus estimate"]].forEach(function (t) {
       var d = el("div"); d.appendChild(el("b", "", t[0])); d.appendChild(el("span", "", t[1])); tiles.appendChild(d);
     });
     body.appendChild(tiles);
     var lg = el("div", "legend"), a = el("span"), b = el("span");
     a.appendChild(el("i")); a.appendChild(document.createTextNode("Billed")); b.appendChild(el("i", "est")); b.appendChild(document.createTextNode("Estimated here"));
-    lg.appendChild(a); lg.appendChild(b); body.appendChild(lg);
-    var ch = el("div"); body.appendChild(ch);
-    billChart(ch, billing.days);
-    body.appendChild(el("p", "bill-note", "Days are UTC. Anthropic adds costs within minutes; this is refreshed every 10 minutes. A difference means use outside the seminar is counted (choose a workspace in Seminar settings), or a price here is out of date."));
+    lg.appendChild(a); lg.appendChild(b);
+    var ch = el("div");
+    if (cmp.length >= 2) { body.appendChild(lg); body.appendChild(ch); billChart(ch, cmp); }
+    else body.appendChild(ch).appendChild(el("p", "bill-note", "One day so far (" + dayLabel(cmp[0].date) + "): " + money(cmp[0].billed) + " billed, " + money(cmp[0].estimate) + " estimated. The chart appears from the second day."));
+    if (pre.billed > 0) body.appendChild(el("p", "bill-note", "Left out: " + money(pre.billed) + " billed " + (pre.to && pre.to !== pre.from ? "from " + dayLabel(pre.from) + " to " + dayLabel(pre.to) : "on " + dayLabel(pre.from)) + ", before this console was watching - tests and earlier use it has no estimate for."));
+    body.appendChild(el("p", "bill-note", "Days are UTC. Anthropic adds costs within minutes; this is refreshed every 10 minutes. A difference means use outside the seminar is counted (choose a workspace under AI provider), or a price here is out of date."));
   }
   function loadBilling() {
     return fetch("/api/monitor/billing?days=30", { cache: "no-store" })
@@ -428,13 +450,142 @@
       .catch(function () {});
   }
 
+  // ---------- now: the strip at the top ----------
+  var overview = null;
+  function post(op, args, okText) {
+    return fetch("/api/monitor/seminar", { method: "POST", headers: { "Content-Type": "application/json", "X-ClinCog-Admin": "1" }, body: JSON.stringify({ op: op, args: args || {} }) })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (window.ClinCogToast) window.ClinCogToast.show(j.ok ? { title: okText } : { title: "Not changed", detail: j.error || "" });
+        return loadOverview();
+      });
+  }
+  function fmtShort(ms) { var d = new Date(ms); return d.toLocaleDateString(undefined, { day: "numeric", month: "short" }) + ", " + pad(d.getHours()) + ":" + pad(d.getMinutes()); }
+  function nowCard(label, on, big, sub, extra, acts) {
+    var c = el("div", "now-card");
+    c.appendChild(el("small", "", label));
+    var b = el("b"); b.appendChild(el("i", on ? "on" : "")); b.appendChild(document.createTextNode(big)); c.appendChild(b);
+    c.appendChild(el("span", "", sub));
+    if (extra) c.appendChild(extra);
+    var a = el("div", "acts");
+    acts.forEach(function (x) {
+      var n = x.href ? el("a", "btn-ghost", x.label) : el("button", "btn-ghost", x.label);
+      if (x.href) n.href = x.href; else { n.type = "button"; n.addEventListener("click", function () { if (!x.confirm || confirm(x.confirm)) x.run(); }); }
+      a.appendChild(n);
+    });
+    c.appendChild(a);
+    return c;
+  }
+  function bar(v, max, warnAt) {
+    var b = el("div", "bar" + (v >= warnAt ? " warn" : "")), i = el("i"); i.style.width = Math.min(100, max ? v / max * 100 : 0) + "%"; b.appendChild(i); return b;
+  }
+  function renderOverview() {
+    var host = document.getElementById("now"), o = overview;
+    if (!o) return;
+    host.textContent = "";
+    var iv = o.interviews;
+    var closedCases = CASES.filter(function (c) { return o.cases[c.id] && o.cases[c.id].open === false; }).map(function (c) { return c.name; });
+    host.appendChild(nowCard("Seminar interviews", iv.open, iv.open ? "Open" : "Closed",
+      iv.open ? (iv.period || "") + " \u00b7 " + o.provider + (closedCases.length ? " \u00b7 not yet: " + closedCases.join(", ") : "") : iv.text,
+      null, iv.blocked ? [{ label: "Reopen past the budget", confirm: "Reopen the interviews for the rest of this month? Spending continues past the budget.", run: function () { post("reopenBudget", {}, "Interviews reopened"); } }, { label: "Budget", href: "/admin/provider#sec-budget" }]
+        : [{ label: iv.closedByYou ? "Open the interviews" : "Close the interviews", confirm: iv.closedByYou ? null : "Close the interviews for every student now?", run: function () { post("general", { open: iv.closedByYou }, iv.closedByYou ? "Interviews open" : "Interviews closed"); } },
+           { label: "Course", href: "/admin/course" }]));
+    var d = o.demo;
+    host.appendChild(nowCard("Public demo", d.open, !d.enabled ? "Off" : d.open ? "On" : "Paused",
+      !d.enabled ? "Switched off" : !d.open ? "Until " + fmtShort(d.pausedUntil) : d.today + (d.dailyCap ? " of " + d.dailyCap : "") + " replies today",
+      d.dailyCap && d.enabled && d.open ? bar(d.today, d.dailyCap, d.dailyCap * 0.8) : null,
+      [!d.enabled ? { label: "Switch on", run: function () { post("demo", { enabled: true }, "Demo on"); } }
+        : !d.open ? { label: "Resume now", run: function () { post("demo", { pausedUntil: null }, "Demo resumed"); } }
+        : { label: "Switch off", confirm: "Switch the public demo off? Visitors with their own key are not affected.", run: function () { post("demo", { enabled: false }, "Demo off"); } },
+       { label: "Demo", href: "/admin/demo" }]));
+    var b = o.budget, spent = b.spent || 0;
+    host.appendChild(nowCard("Seminar spend this month", !iv.blocked, money(spent),
+      b.monthly ? "of " + money(b.monthly) + " (" + Math.round(spent / b.monthly * 100) + "%)" : "No monthly budget set",
+      b.monthly ? bar(spent, b.monthly, b.monthly * b.alertPct / 100) : null, [{ label: "Budget and alerts", href: "/admin/provider#sec-budget" }]));
+    host.appendChild(nowCard("Announcements", o.announcements > 0, String(o.announcements), o.announcements === 1 ? "showing to students now" : "showing to students now",
+      null, [{ label: o.announcements ? "Manage" : "Write one", href: "/admin/course#sec-announce" }]));
+  }
+  function loadOverview() {
+    return fetch("/api/monitor/overview", { cache: "no-store" }).then(function (r) { return r.json(); })
+      .then(function (o) { overview = o; renderOverview(); }).catch(function () {});
+  }
+
+  // ---------- health ----------
+  var health = null;
+  function secs(ms) { return ms == null ? "-" : (ms / 1000).toFixed(1) + " s"; }
+  function renderHealth() {
+    var box = document.getElementById("health");
+    if (!health) return;
+    box.textContent = "";
+    // The verdict: any lane with at least 3 replies and a fifth of them failing.
+    var bad = ORDER.filter(function (k) { var L = health.lanes[k]; return L && L.req >= 3 && L.fail / L.req >= 0.2; });
+    var b = health.budget || {};
+    var v = el("div", "health-verdict" + (bad.length || b.blocked ? "" : " ok"));
+    v.appendChild(el("i"));
+    v.appendChild(el("span", "", b.blocked ? "Seminar closed: the monthly budget ran out"
+      : bad.length ? bad.map(function (k) { return LANES[k].name; }).join(", ") + ": replies are failing" : "Working normally"));
+    v.appendChild(el("small", "", "Checked " + clock(health.now)));
+    box.appendChild(v);
+
+    var grid = el("div", "hlanes");
+    ORDER.forEach(function (k) {
+      var L = health.lanes[k] || { req: 0, fail: 0 };
+      var c = el("div", "hlane lane-" + k), nm = el("div", "nm");
+      nm.appendChild(el("i")); nm.appendChild(el("span", "", LANES[k].name)); c.appendChild(nm);
+      var dl = el("dl");
+      var rate = L.req ? Math.round(L.fail / L.req * 100) : null;
+      [["Replies", num(L.req), ""], ["Failed", L.req ? L.fail + " (" + rate + "%)" : "-", rate >= 20 && L.req >= 3 ? "bad" : ""],
+       ["Typical", secs(L.p50), ""], ["Slowest 10%", secs(L.p90), L.p90 > 30000 ? "bad" : ""]].forEach(function (r) {
+        dl.appendChild(el("dt", "", r[0])); dl.appendChild(el("dd", r[2], r[1]));
+      });
+      c.appendChild(dl); grid.appendChild(c);
+    });
+    box.appendChild(grid);
+
+    var month = (health.lanes.seminar || {}).month || 0;
+    var hb = el("div", "hbudget");
+    if (b.monthly) {
+      var pct = month / b.monthly * 100;
+      hb.appendChild(el("span", "", "Seminar this month: " + money(month) + " of the " + money(b.monthly) + " budget (" + Math.round(pct) + "%)" +
+        (b.blocked ? " - interviews closed." : (b.state && b.state.reopened && pct >= 100) ? " - reopened by you past the budget." : b.autoClose ? " - closes at 100%." : " - stays open past it.")));
+      var bar = el("div", "bar" + (pct >= b.alertPct ? " warn" : "")), i = el("i"); i.style.width = Math.min(100, pct) + "%";
+      bar.appendChild(i); hb.appendChild(bar);
+    } else {
+      hb.appendChild(el("span", "", "Seminar this month: " + money(month) + ". No monthly budget is set (AI provider > Budget and alerts)."));
+    }
+    box.appendChild(hb);
+
+    var errs = el("div", "herrors");
+    errs.appendChild(el("h3", "", "Recent failures"));
+    if (!health.errors.length) errs.appendChild(el("div", "empty", "None in the last 90 days."));
+    health.errors.forEach(function (e) {
+      var r = el("div", "herr lane-" + e.lane);
+      r.appendChild(el("span", "t", ago(e.ts)));
+      var l = el("span", "l"); l.appendChild(el("i")); l.appendChild(el("span", "", LANES[e.lane] ? LANES[e.lane].name : e.lane)); r.appendChild(l);
+      var why = el("span", "r", e.err || "No reason recorded");
+      why.appendChild(el("small", "", who(e.lane, e.participant) + " · " + caseName(e.caseId) + (e.model ? " · " + e.model : "")));
+      r.appendChild(why);
+      errs.appendChild(r);
+    });
+    box.appendChild(errs);
+  }
+  function loadHealth() {
+    return fetch("/api/monitor/health", { cache: "no-store" })
+      .then(function (r) { return r.json(); })
+      .then(function (h) { health = h; renderHealth(); })
+      .catch(function () {});
+  }
+
+
   // ---------- feed ----------
   function feedRow(e) {
     var row = el("div", "feed-row lane-" + e.lane + (e.ok ? "" : " fail"));
     row.appendChild(el("span", "t", clock(e.ts)));
     var l = el("span", "l"); l.appendChild(el("i")); l.appendChild(el("span", "", LANES[e.lane] ? LANES[e.lane].name : e.lane)); row.appendChild(l);
     var p = el("span", "p", who(e.lane, e.participant)); p.appendChild(el("small", "", caseName(e.caseId) + " · " + (e.model || ""))); row.appendChild(p);
-    row.appendChild(el("span", "n tok", e.ok ? compact(e.tin) + " / " + compact(e.tout) + " tok" : "failed"));
+    var tok = el("span", "n tok", e.ok ? compact(e.tin) + " / " + compact(e.tout) + " tok" : "failed");
+    if (!e.ok && e.err) tok.title = e.err;
+    row.appendChild(tok);
     row.appendChild(el("span", "n", (e.ms / 1000).toFixed(1) + " s"));
     row.appendChild(el("span", "c", e.lane === "byok" ? "-" : money(e.cost)));
     return row;
@@ -447,7 +598,10 @@
   }
 
   // ---------- live events ----------
+  var healthT = null;
   function apply(e) {
+    // A failure should show in Health straight away, not at the next minute.
+    if (!e.ok) { clearTimeout(healthT); healthT = setTimeout(loadHealth, 800); }
     var d = state.data;
     if (!d) return;
     var L = d.lanes[e.lane];
@@ -560,4 +714,9 @@
   setInterval(load, 60000);
   loadBilling();
   setInterval(loadBilling, 600000);
+  loadHealth();
+  setInterval(loadHealth, 60000);
+  loadOverview();
+  setInterval(loadOverview, 60000);
+  if (typeof ClinIcons !== "undefined") document.getElementById("export-ico").innerHTML = ClinIcons.get("download", 15);
 })();

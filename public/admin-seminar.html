@@ -141,6 +141,28 @@
   .err { color: var(--domain-psychosis-line); font-size: 13px; margin-top: 8px; min-height: 1em; }
   .empty { padding: 24px 16px; text-align: center; color: var(--text-tertiary); }
   .busy { opacity: .6; pointer-events: none; }
+  .sched-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  @media (max-width: 760px) { .sched-grid { grid-template-columns: 1fr; } }
+  .sched-card { background: var(--paper); border-radius: 18px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+  .sched-card .top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .sched-card b { font-family: var(--font-serif); font-weight: 400; font-size: 1.2rem; }
+  .seg { display: inline-flex; background: var(--mist); border-radius: 999px; padding: 3px; gap: 2px; }
+  .seg button { border: 0; background: transparent; border-radius: 999px; padding: 6px 12px; font: 500 12.5px var(--font-sans); color: var(--text-secondary); cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--ink-text); }
+  .sched-card .win { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .sched-card .win .inp { background: var(--mist); }
+  .sched-card .state { font-size: 12.5px; color: var(--text-tertiary); }
+  .ann-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  .ann-item { display: flex; gap: 12px; align-items: flex-start; background: var(--paper); border-radius: 16px; padding: 12px 14px; }
+  .ann-item.is-important { box-shadow: inset 3px 0 0 var(--ink); }
+  .ann-item .txt { flex: 1; min-width: 0; font-size: 14px; white-space: pre-line; overflow-wrap: anywhere; }
+  .ann-item .meta { display: block; font-size: 12px; color: var(--text-tertiary); margin-top: 4px; white-space: normal; }
+  .meter { height: 10px; border-radius: 999px; background: var(--paper); overflow: hidden; margin: 6px 0 4px; }
+  .meter i { display: block; height: 100%; background: var(--ink); border-radius: 999px; }
+  .meter.warn i { background: var(--domain-psychosis-line); }
+  .budget-now { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .budget-now b { font-family: var(--font-serif); font-weight: 400; font-size: 1.6rem; }
+  .budget-now span { color: var(--text-secondary); font-size: 13px; }
 </style>
 </head>
 <body>
@@ -182,7 +204,67 @@
     <div class="row-actions"><button type="button" class="btn-ink" id="g-save">Save</button><span class="err" id="g-err"></span></div>
   </section>
 
-  <!-- 1b. Provider -->
+  <!-- 1a. Case schedule -->
+  <section class="set-section" id="sec-cases">
+    <header>
+      <div>
+        <h2>Case schedule</h2>
+        <p>Release the patients week by week, or close one. A closed patient's interview stops; what students already wrote and their evaluation pages stay. The dashboard shows when each one opens.</p>
+      </div>
+    </header>
+    <div class="sched-grid" id="c-grid"></div>
+    <div class="row-actions"><button type="button" class="btn-ink" id="c-save">Save schedule</button><span class="err" id="c-err"></span></div>
+  </section>
+
+  <!-- 1b. Announcements -->
+  <section class="set-section" id="sec-announce">
+    <header>
+      <div>
+        <h2>Announcements</h2>
+        <p>A note at the top of every page on uvt.clincog.net, for example "Jordan opens on Monday" or "The chat is down until 14:00". Students can close it; each new one shows again.</p>
+      </div>
+    </header>
+    <div class="ann-list" id="a-list"></div>
+    <div class="grid2">
+      <label class="field" style="grid-column: 1 / -1"><span>Text</span><textarea class="inp" id="a-text" maxlength="400" placeholder="What students should know"></textarea></label>
+      <label class="field"><span>Shows from</span><input class="inp" type="datetime-local" id="a-from"><small>Empty: now.</small></label>
+      <label class="field"><span>Until</span><input class="inp" type="datetime-local" id="a-until"><small>Empty: until you remove it.</small></label>
+    </div>
+    <div class="row-actions">
+      <label class="check"><input type="checkbox" id="a-important"> Important (dark banner)</label>
+      <button type="button" class="btn-ink" id="a-add">Publish</button>
+      <span class="err" id="a-err"></span>
+    </div>
+  </section>
+
+  <!-- 1c. Budget and alerts -->
+  <section class="set-section" id="sec-budget">
+    <header>
+      <div>
+        <h2>Budget and alerts</h2>
+        <p>A monthly ceiling on the seminar's estimated spend, and emails when something needs you: when the budget reaches the alert level, when it runs out, and when patient replies start failing (a key refused, a provider down).</p>
+      </div>
+    </header>
+    <div id="b-now" style="margin-bottom:18px"></div>
+    <div class="grid2">
+      <label class="field"><span>Monthly budget (USD)</span><input class="inp" type="number" min="1" step="1" id="b-monthly" placeholder="No budget"><small>Calendar month, estimated from the token counts. Empty for none.</small></label>
+      <label class="field"><span>Alert at (% of the budget)</span><input class="inp" type="number" min="10" max="100" step="5" id="b-alert"></label>
+    </div>
+    <div class="checks" style="margin-top:16px; flex-direction: column; gap: 10px">
+      <label class="switch"><input type="checkbox" id="b-auto"><i></i><span>Close the interviews when the budget runs out</span></label>
+      <label class="switch"><input type="checkbox" id="b-email"><i></i><span>Email me the alerts</span></label>
+      <label class="switch"><input type="checkbox" id="b-fail"><i></i><span>Also when replies keep failing (at most one email an hour)</span></label>
+    </div>
+    <p class="note" id="b-mail"></p>
+    <div class="row-actions">
+      <button type="button" class="btn-ink" id="b-save">Save</button>
+      <button type="button" class="btn-ghost" id="b-test">Send a test email</button>
+      <button type="button" class="btn-ghost" id="b-reopen" hidden>Reopen for this month</button>
+      <span class="err" id="b-err"></span>
+    </div>
+  </section>
+
+  <!-- 1d. Provider -->
   <section class="set-section" id="sec-provider">
     <header>
       <div>

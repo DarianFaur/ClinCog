@@ -1,5 +1,7 @@
 /* ============================================================
-   admin-seminar.js - Seminar settings on the admin console.
+   admin-settings.js - the settings pages on the admin console:
+   Course, Students, Demo, AI provider, History & backup. One script for
+   all of them; each part draws itself only on the page that has it.
 
    Reads   GET  /api/monitor/seminar       the whole configuration, the
                                            class list and what each
@@ -20,6 +22,7 @@
   var S = { data: null, selected: {}, editing: null, search: "" };
 
   function $(id) { return document.getElementById(id); }
+  function on(id, ev, fn) { var e = $(id); if (e) e.addEventListener(ev, fn); }
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
   function toast(title, detail) { if (window.ClinCogToast) window.ClinCogToast.show({ title: title, detail: detail || "" }); }
   function pad(n) { return n < 10 ? "0" + n : "" + n; }
@@ -38,7 +41,9 @@
   function limitText(v) { return v === null ? "no limit" : String(v); }
 
   // ---------- server ----------
+  var PAGE = (document.querySelector("[data-admin-page]") || { getAttribute: function () { return ""; } }).getAttribute("data-admin-page");
   function load() {
+    if (PAGE === "history") { icons(); return loadHistory(); }
     return fetch("/api/monitor/seminar", { cache: "no-store" })
       .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
       .then(function (d) { S.data = d; render(); })
@@ -102,9 +107,18 @@
   }
 
   // ---------- render ----------
+  // Each part is drawn only where its page has it.
   function render() {
-    renderStatus(); renderAccess(); renderCases(); renderAnnouncements(); renderBudget(); renderProvider(); renderPeriods(); renderLimits(); renderStudents(); renderPassword();
-    if (S.editing) renderEditor();
+    [["status", renderStatus], ["g-open", renderAccess], ["c-grid", renderCases], ["a-list", renderAnnouncements],
+     ["b-now", renderBudget], ["prov-cards", renderProvider], ["p-table", renderPeriods],
+     ["l-cases", renderLimits], ["s-table", renderStudents], ["pw-source", renderPassword], ["d-now", renderDemo]]
+      .forEach(function (x) { if ($(x[0])) x[1](); });
+    if (S.editing && $("s-editor")) renderEditor();
+    icons();
+  }
+  function icons() {
+    if (typeof ClinIcons === "undefined") return;
+    [].forEach.call(document.querySelectorAll("[data-ico]"), function (e) { if (!e.firstChild) e.innerHTML = ClinIcons.get(e.getAttribute("data-ico"), 16); });
   }
 
   function renderStatus() {
@@ -613,34 +627,136 @@
     $("b-test").disabled = !e.configured;
   }
 
+  // ---------- Demo ----------
+  function localIn(ms) { return toLocalInput(ms); }
+  function renderDemo() {
+    var d = S.data.demo, now = $("d-now"); now.textContent = "";
+    var st = d.state || {};
+    var row = el("div", "status-row demo-now"); row.style.marginBottom = "0";
+    [["Demo", !d.enabled ? "Off" : st.open ? "On" : "Paused", !d.enabled ? "Switched off by you" : st.open ? "Visitors can chat" : "Until " + fmtDate(d.pausedUntil), d.enabled && st.open],
+     ["Replies today", String(d.today || 0) + (d.dailyCap ? " of " + d.dailyCap : ""), d.dailyCap ? (d.today >= d.dailyCap ? "Cap reached: closed until midnight" : (d.dailyCap - d.today) + " left today") : "No daily cap"],
+     ["Model", "Gemini", "Your demo key, " + (S.data.freeTierGemini === false ? "paid tier" : "free tier")]].forEach(function (x) {
+      var s = el("div", "stat"); s.style.background = "var(--paper)";
+      s.appendChild(el("small", "", x[0]));
+      var b = el("b"); if (x[3] !== undefined) b.appendChild(el("span", "dot" + (x[3] ? " on" : "")));
+      b.appendChild(document.createTextNode(x[1])); s.appendChild(b); s.appendChild(el("span", "", x[2])); row.appendChild(s);
+    });
+    now.appendChild(row);
+    if (d.dailyCap) {
+      var m = el("div", "meter" + (d.today >= d.dailyCap * 0.8 ? " warn" : "")), i = el("i");
+      i.style.width = Math.min(100, (d.today || 0) / d.dailyCap * 100) + "%"; m.appendChild(i); m.style.marginTop = "12px"; now.appendChild(m);
+    }
+    $("d-on").checked = !!d.enabled; $("d-on-label").textContent = d.enabled ? "Demo on" : "Demo off";
+    $("d-cap").value = d.dailyCap == null ? "" : d.dailyCap;
+    $("d-msg").value = d.message || "";
+    var p = $("d-pause-now"); p.textContent = "";
+    if (d.pausedUntil && d.pausedUntil > S.data.now) p.appendChild(el("p", "note", "Paused now. Visitors see: \u201c" + (st.text || "") + "\u201d"));
+    $("d-resume").hidden = !(d.pausedUntil && d.pausedUntil > S.data.now);
+    var q = $("d-quick"); q.textContent = "";
+    [["2 hours", 2], ["Until tomorrow 12:00", "noon"], ["24 hours", 24]].forEach(function (x) {
+      var b = el("button", "btn-ghost btn-sm", x[0]); b.type = "button";
+      b.addEventListener("click", function () {
+        var t = new Date();
+        if (x[1] === "noon") { t.setDate(t.getDate() + 1); t.setHours(12, 0, 0, 0); } else t = new Date(Date.now() + x[1] * 3600e3);
+        $("d-until").value = localIn(t.getTime());
+      });
+      q.appendChild(b);
+    });
+  }
+  on("d-on", "change", function () { $("d-on-label").textContent = this.checked ? "Demo on" : "Demo off"; });
+  on("d-save", "click", function () {
+    var cap = $("d-cap").value.trim();
+    change("demo", { enabled: $("d-on").checked, dailyCap: cap === "" ? null : Number(cap), message: $("d-msg").value }, $("d-err"), "Demo settings saved");
+  });
+  on("d-pause", "click", function () {
+    var t = fromLocalInput($("d-until").value);
+    if (!t) { $("d-perr").textContent = "Pick the time the demo should reopen."; return; }
+    change("demo", { pausedUntil: t }, $("d-perr"), "Demo paused");
+  });
+  on("d-resume", "click", function () { change("demo", { pausedUntil: null }, $("d-perr"), "Demo resumed"); });
+
+  // ---------- History & backup ----------
+  function loadHistory() {
+    return fetch("/api/monitor/history", { cache: "no-store" }).then(function (r) { return r.json(); }).then(renderHistory)
+      .catch(function () { toast("Could not load the history", "Reload the page to try again."); });
+  }
+  function renderHistory(d) {
+    var host = $("h-list"); host.textContent = "";
+    if (!d.entries.length) { host.appendChild(el("div", "empty", "No changes yet. Everything changed on this console from now on is listed here.")); return; }
+    d.entries.forEach(function (h, i) {
+      var row = el("div", "hist-row");
+      row.appendChild(el("span", "t", fmtDate(h.at)));
+      var ul = el("ul"); h.summary.forEach(function (x) { ul.appendChild(el("li", "", x)); }); row.appendChild(ul);
+      var cell = el("div");
+      if (h.undoable) {
+        var b = el("button", "btn-ghost btn-sm", "Undo"); b.type = "button";
+        b.addEventListener("click", function () {
+          var msg = "Put the settings back as they were before this change" + (i ? ", undoing the " + i + " later change" + (i > 1 ? "s" : "") + " too" : "") + "?";
+          if (!confirm(msg)) return;
+          change("undo", { id: h.id }, $("h-err"), "Undone");
+        });
+        cell.appendChild(b);
+      }
+      row.appendChild(cell);
+      host.appendChild(row);
+    });
+  }
+  var restoreData = null;
+  on("b-file", "change", function () {
+    var f = this.files && this.files[0]; if (!f) return;
+    $("r-err").textContent = "";
+    f.text().then(function (t) {
+      try { restoreData = JSON.parse(t); } catch (e) { throw new Error("This file is not a ClinCog backup."); }
+      return fetch("/api/monitor/seminar", { method: "POST", headers: { "Content-Type": "application/json", "X-ClinCog-Admin": "1" },
+        body: JSON.stringify({ op: "restore", args: { config: restoreData, dryRun: true } }) }).then(function (r) { return r.json(); });
+    }).then(function (res) {
+      var box = $("r-preview"); box.hidden = false; box.textContent = "";
+      var c = el("div", "check-box");
+      if (res.error) { c.appendChild(el("b", "", res.error)); $("r-actions").hidden = true; box.appendChild(c); return; }
+      c.appendChild(el("b", "", "Restoring " + f.name + (restoreData.at ? " (saved " + fmtDate(restoreData.at) + ")" : "") + " changes:"));
+      if (!res.preview.length) c.appendChild(el("div", "ok", "Nothing: the settings are already the same."));
+      else { var ul = el("ul"); ul.style.listStyle = "disc"; res.preview.forEach(function (x) { var li = el("li", "", x); li.style.color = "var(--text-primary)"; ul.appendChild(li); }); c.appendChild(ul); }
+      c.appendChild(el("div", "meta", "Keys, the class password and what students have used stay as they are. The restore can be undone in History."));
+      box.appendChild(c);
+      $("r-actions").hidden = !res.preview.length;
+    }).catch(function (e) { $("r-err").textContent = e.message || "The file could not be read."; $("r-actions").hidden = false; });
+  });
+  on("r-apply", "click", function () {
+    if (!restoreData) return;
+    change("restore", { config: restoreData }, $("r-err"), "Settings restored").then(function (ok) {
+      if (ok) { restoreData = null; $("r-preview").hidden = true; $("r-actions").hidden = true; $("b-file").value = ""; }
+    });
+  });
+  on("r-cancel", "click", function () { restoreData = null; $("r-preview").hidden = true; $("r-actions").hidden = true; $("b-file").value = ""; });
+
   // ---------- actions ----------
-  $("g-open").addEventListener("change", function () { $("g-open-label").textContent = this.checked ? "Interviews open" : "Interviews closed"; });
-  $("g-save").addEventListener("click", function () {
+  on("g-open", "change", function () { $("g-open-label").textContent = this.checked ? "Interviews open" : "Interviews closed"; });
+  on("g-save", "click", function () {
     var models = [];
     if ($("g-fast").checked) models.push("fast");
     if ($("g-thoughtful").checked) models.push("thoughtful");
     change("general", { open: $("g-open").checked, closedMessage: $("g-msg").value, models: models }, $("g-err"), "Interview settings saved");
   });
 
-  $("c-save").addEventListener("click", function () {
+  on("c-save", "click", function () {
     var cases = {};
     [].forEach.call(document.querySelectorAll("#c-grid .sched-card"), function (c) { cases[c.dataset.case] = c.read(); });
     change("cases", { cases: cases }, $("c-err"), "Schedule saved");
   });
-  $("a-add").addEventListener("click", function () {
+  on("a-add", "click", function () {
     change("announce", { text: $("a-text").value, level: $("a-important").checked ? "important" : "info",
       from: fromLocalInput($("a-from").value), until: fromLocalInput($("a-until").value) }, $("a-err"), "Announcement published")
       .then(function (ok) { if (ok) { $("a-text").value = ""; $("a-from").value = ""; $("a-until").value = ""; $("a-important").checked = false; } });
   });
-  $("b-save").addEventListener("click", function () {
+  on("b-save", "click", function () {
     var v = $("b-monthly").value.trim();
     change("budget", { monthly: v === "" ? null : Number(v), alertPct: Number($("b-alert").value || 80),
       autoClose: $("b-auto").checked, emailAlerts: $("b-email").checked, failureAlerts: $("b-fail").checked }, $("b-err"), "Budget saved");
   });
-  $("b-reopen").addEventListener("click", function () {
+  on("b-reopen", "click", function () {
     if (confirm("Reopen the interviews for the rest of this month? Spending continues past the budget until you close them or raise it.")) change("reopenBudget", {}, $("b-err"), "Interviews reopened");
   });
-  $("b-test").addEventListener("click", function () {
+  on("b-test", "click", function () {
     $("b-err").textContent = "";
     fetch("/api/monitor/test-email", { method: "POST", headers: { "X-ClinCog-Admin": "1" } })
       .then(function (r) { return r.json(); })
@@ -648,17 +764,17 @@
       .catch(function () { $("b-err").textContent = "No connection to the server."; });
   });
 
-  $("p-add").addEventListener("click", function () {
+  on("p-add", "click", function () {
     change("addPeriod", { name: $("p-name").value, start: fromLocalInput($("p-start").value), end: fromLocalInput($("p-end").value) }, $("p-err"), "Period added")
       .then(function (ok) { if (ok) { $("p-name").value = ""; $("p-start").value = ""; $("p-end").value = ""; } });
   });
-  $("p-now").addEventListener("click", function () {
+  on("p-now", "click", function () {
     var name = prompt("Name of the new period (the running one ends now, and every student starts again from zero):", "");
     if (!name) return;
     change("newPeriodNow", { name: name }, $("p-err"), "New period started");
   });
 
-  $("l-save").addEventListener("click", function () {
+  on("l-save", "click", function () {
     var caseLimits = {};
     [].forEach.call(document.querySelectorAll("#l-cases .limit-pick"), function (p) { caseLimits[p.dataset.case] = p.read(); });
     var daily = $("l-daily").value.trim();
@@ -666,7 +782,7 @@
       dailyCap: daily === "" ? null : Number(daily), timezone: $("l-tz").value }, $("l-err"), "Limits saved");
   });
 
-  $("s-add-btn").addEventListener("click", function () {
+  on("s-add-btn", "click", function () {
     var raw = $("s-add").value;
     // One per line or comma-separated; spaces inside a number are ignored.
     var ids = raw.split(/[\n\r\t,;]+/).map(function (x) { return x.replace(/\s+/g, ""); }).filter(Boolean);
@@ -674,8 +790,8 @@
     change("addStudents", { ids: ids, note: $("s-note").value }, $("s-err"), ids.length === 1 ? "Student added" : ids.length + " students added")
       .then(function (ok) { if (ok) { $("s-add").value = ""; $("s-note").value = ""; } });
   });
-  $("s-search").addEventListener("input", function () { S.search = this.value; renderStudents(); });
-  $("s-bulk").addEventListener("click", function (e) {
+  on("s-search", "input", function () { S.search = this.value; renderStudents(); });
+  on("s-bulk", "click", function (e) {
     var b = e.target.closest("button[data-bulk]"); if (!b) return;
     var ids = Object.keys(S.selected), what = b.getAttribute("data-bulk"), n = ids.length;
     if (!n) return;
@@ -702,7 +818,7 @@
   function fetchPw() {
     return fetch("/api/monitor/seminar-password", { cache: "no-store" }).then(function (r) { return r.json(); });
   }
-  $("pw-show").addEventListener("click", function () {
+  on("pw-show", "click", function () {
     if (pwShown) { hidePw(); return; }
     fetchPw().then(function (d) {
       var note = $("pw-note");
@@ -718,19 +834,19 @@
       clearTimeout(pwTimer); pwTimer = setTimeout(hidePw, 60000);
     }).catch(function () { toast("Could not read the password"); });
   });
-  $("pw-copy").addEventListener("click", function () {
+  on("pw-copy", "click", function () {
     fetchPw().then(function (d) {
       if (d.password === null) { toast("No password to copy", d.note || ""); return; }
       return navigator.clipboard.writeText(d.password).then(function () { toast("Password copied"); });
     }).catch(function () { toast("Could not copy", "Use Show and copy it by hand."); });
   });
 
-  $("pw-save").addEventListener("click", function () {
+  on("pw-save", "click", function () {
     var a = $("pw-1").value, b = $("pw-2").value;
     if (a !== b) { $("pw-err").textContent = "The two passwords are not the same."; return; }
     change("setPassword", { password: a }, $("pw-err"), "Class password changed").then(function (ok) { if (ok) { $("pw-1").value = ""; $("pw-2").value = ""; hidePw(); } });
   });
-  $("pw-clear").addEventListener("click", function () {
+  on("pw-clear", "click", function () {
     if (!confirm("Go back to the password stored in Cloudflare?")) return;
     change("clearPassword", {}, $("pw-err"), "Using the Cloudflare password again");
   });

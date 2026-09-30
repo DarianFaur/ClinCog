@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow">
+<script>
+  try { if (!localStorage.getItem("clincog_name")) localStorage.setItem("clincog_name", "Admin"); } catch (e) {}
+</script>
+<script src="/theme-init.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClinCog - History &amp; backup</title>
+<link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17191c" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ClinCog">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="/favicon-180.png">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preload" as="script" href="/shell.js?v=2">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
+<link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+<div id="shell-content" data-admin-page="history">
+
+  <div class="set-head">
+    <h1 class="text-page-title">History &amp; <em>backup</em></h1>
+    <p>What changed on this console and when, with undo, and a copy of the settings you can restore after a mistake.</p>
+  </div>
+
+  <section class="set-section" id="sec-history">
+    <header>
+      <div>
+        <h2>History</h2>
+        <p>Every change made on this console, newest first, with the last 50 kept. Undo puts the settings back as they were before that change; changes made after it are undone with it, and the undo itself is written here too.</p>
+      </div>
+    </header>
+    <div class="hist" id="h-list"></div>
+    <span class="err" id="h-err"></span>
+  </section>
+
+  <section class="set-section" id="sec-backup">
+    <header>
+      <div>
+        <h2>Backup</h2>
+        <p>A copy of every seminar setting as a file: students, limits, periods, schedule, announcements, provider, budget and demo. API keys and the class password are never in it, so it can be kept anywhere; restoring leaves the current ones in place.</p>
+      </div>
+    </header>
+    <div class="row-actions" style="margin-top:0">
+      <a class="btn-ink" href="/api/monitor/backup" download><span class="ico" data-ico="download"></span>Download backup</a>
+      <label class="btn-ghost file-btn"><input type="file" id="b-file" accept=".json,application/json"><span class="ico" data-ico="upload"></span>Restore from a file…</label>
+    </div>
+    <div id="r-preview" hidden></div>
+    <div class="row-actions" id="r-actions" hidden>
+      <button type="button" class="btn-ink" id="r-apply">Restore these settings</button>
+      <button type="button" class="btn-ghost" id="r-cancel">Cancel</button>
+      <span class="err" id="r-err"></span>
+    </div>
+  </section>
+
+</div>
+
+<script>window.CLINCOG_SHELL = { activeNav: "admin-history", breadcrumb: [{ label: "History &amp; backup" }] };</script>
+<script src="/storage.js"></script>
+<script src="/icons.js"></script>
+<script src="/shell.js?v=2"></script>
+<script src="/toast.js"></script>
+<script src="/a11y.js"></script>
+<script src="/admin-settings.js"></script>
+</body>
+</html>

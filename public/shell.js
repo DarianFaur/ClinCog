@@ -78,10 +78,17 @@
       </a>
     </div>
     <nav class="shell-nav">
+      ${isAdminHost ? `<div class="shell-nav-group">
+        <div class="shell-nav-eyebrow">Admin</div>
+        ${navItem("activity", "Live monitoring", "/", "monitor")}
+        ${navItem("calendar", "Course", "/admin/course", "admin-course")}
+        ${navItem("users", "Students", "/admin/students", "admin-students")}
+        ${navItem("globe", "Demo", "/admin/demo", "admin-demo")}
+        ${navItem("cpu", "AI provider", "/admin/provider", "admin-provider")}
+        ${navItem("history", "History & backup", "/admin/history", "admin-history")}
+      </div>` : ""}
       <div class="shell-nav-group">
         <div class="shell-nav-eyebrow">Main</div>
-        ${isAdminHost ? navItem("activity", "Live monitoring", "/", "monitor") : ""}
-        ${isAdminHost ? navItem("sliders", "Seminar settings", "/admin-seminar", "seminar-settings") : ""}
         ${navItem("grid", "Dashboard", "/dashboard.html", "dashboard")}
         <div class="shell-nav-item shell-nav-expandable${cfg.activeNav === "cases" || cfg.activeCaseId ? " active" : ""}" id="shell-cases-toggle" data-icon="layers">
           <span class="shell-nav-icon"></span><span class="shell-nav-label">Cases</span>
@@ -199,6 +206,52 @@
   frame.querySelector("#shell-body").appendChild(footer);
 
   promoteTopbarTitle();
+
+  // ---- announcements (seminar instance) -----------------------------------
+  // Notes the seminar leader posts from the admin console (Course >
+  // Announcements), shown above every page's content. A student can close one;
+  // it stays closed in this browser, and a new announcement shows again.
+  if (location.hostname === "uvt.clincog.net") {
+    fetch("/api/announcements", { credentials: "same-origin", cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!d || !Array.isArray(d.announcements) || !d.announcements.length) return;
+        let seen = [];
+        try { seen = JSON.parse(localStorage.getItem("clincog_announce_seen") || "[]"); } catch (e) {}
+        const list = d.announcements.filter((a) => !seen.includes(a.id));
+        if (!list.length) return;
+        const stack = document.createElement("div");
+        stack.className = "announce-stack";
+        stack.setAttribute("role", "region");
+        stack.setAttribute("aria-label", "Announcements");
+        list.forEach((a) => {
+          const row = document.createElement("div");
+          row.className = "announce" + (a.level === "important" ? " is-important" : "");
+          row.innerHTML = '<span class="announce-icon"></span><div class="announce-text"></div>' +
+            '<button type="button" class="announce-close" aria-label="Close this announcement"></button>';
+          row.querySelector(".announce-text").textContent = a.text;
+          if (typeof ClinIcons !== "undefined") {
+            row.querySelector(".announce-icon").innerHTML = ClinIcons.get("info", 18);
+            row.querySelector(".announce-close").innerHTML = ClinIcons.get("x", 16);
+          } else {
+            row.querySelector(".announce-close").textContent = "\u00d7";
+          }
+          row.querySelector(".announce-close").addEventListener("click", () => {
+            try {
+              const s2 = JSON.parse(localStorage.getItem("clincog_announce_seen") || "[]");
+              s2.push(a.id);
+              localStorage.setItem("clincog_announce_seen", JSON.stringify(s2.slice(-50)));
+            } catch (e) {}
+            row.remove();
+            if (!stack.children.length) stack.remove();
+          });
+          stack.appendChild(row);
+        });
+        const body = frame.querySelector("#shell-body");
+        body.insertBefore(stack, body.firstChild);
+      })
+      .catch(() => {});
+  }
 
   // ---- icons --------------------------------------------------------------
   if (typeof ClinIcons !== "undefined") {

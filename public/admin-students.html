@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow">
+<script>
+  try { if (!localStorage.getItem("clincog_name")) localStorage.setItem("clincog_name", "Admin"); } catch (e) {}
+</script>
+<script src="/theme-init.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClinCog - Students</title>
+<link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17191c" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ClinCog">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="/favicon-180.png">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preload" as="script" href="/shell.js?v=2">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
+<link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+<div id="shell-content" data-admin-page="students">
+
+  <div class="set-head">
+    <h1 class="text-page-title">Students</h1>
+    <p>Who can sign in, how many exchanges each one gets, and the class password. Export the use per student as a spreadsheet.</p>
+  </div>
+
+  <section class="set-section" id="sec-students">
+    <header>
+      <div>
+        <h2>Students</h2>
+        <p>Only the student numbers on this list can sign in. Select a row to change one student's limits, pause them, or reset what they have used.</p>
+      </div>
+      <a class="btn-ghost" href="/api/monitor/export.csv" download><span class="ico" data-ico="download"></span>Export CSV</a>
+    </header>
+    <div class="grid2">
+      <label class="field"><span>Add student numbers</span><textarea class="inp" id="s-add" placeholder="PSI1234, PSI1235&#10;PSI1236"></textarea><small>One per line, or separated by commas. Capitals and spaces inside a number do not matter.</small></label>
+      <div class="field">
+        <label class="field"><span>Note for these students (optional)</span><input class="inp" id="s-note" maxlength="120" placeholder="e.g. Group 2"></label>
+        <div class="row-actions" style="margin-top:6px"><button type="button" class="btn-ink" id="s-add-btn">Add to the list</button><span class="err" id="s-err"></span></div>
+      </div>
+    </div>
+    <div class="toolbar">
+      <span class="count" id="s-count"></span>
+      <input class="inp" id="s-search" placeholder="Search number or note" aria-label="Search students">
+    </div>
+    <div class="bulk" id="s-bulk">
+      <b id="s-bulk-n"></b>
+      <button type="button" class="btn-ghost btn-sm" data-bulk="unlimited">No limit</button>
+      <button type="button" class="btn-ghost btn-sm" data-bulk="default">Default limits</button>
+      <button type="button" class="btn-ghost btn-sm" data-bulk="pause">Pause</button>
+      <button type="button" class="btn-ghost btn-sm" data-bulk="resume">Resume</button>
+      <button type="button" class="btn-ghost btn-sm" data-bulk="reset">Reset used</button>
+      <button type="button" class="btn-ghost btn-sm danger" data-bulk="remove">Remove</button>
+    </div>
+    <div class="twrap" id="s-table"></div>
+    <div class="editor" id="s-editor" hidden></div>
+  </section>
+
+  <section class="set-section" id="sec-limits">
+    <header>
+      <div>
+        <h2>Limits</h2>
+        <p>How many exchanges (one question and one answer) a student gets for each patient in a period. A student's own settings, above, override these.</p>
+      </div>
+    </header>
+    <div class="grid2">
+      <label class="field"><span>Default per patient</span><input class="inp" type="number" min="0" max="1000" id="l-default"></label>
+      <label class="field"><span>Daily cap across all patients</span><input class="inp" type="number" min="1" max="5000" id="l-daily" placeholder="No daily cap"><small>Resets at midnight in the time zone below. Empty for none.</small></label>
+    </div>
+    <div class="grid4" style="margin-top:16px" id="l-cases"></div>
+    <div class="grid2" style="margin-top:16px">
+      <label class="field"><span>Time zone</span>
+        <select class="sel" id="l-tz">
+          <option>Europe/Bucharest</option><option>Europe/London</option><option>Europe/Berlin</option><option>UTC</option>
+        </select>
+      </label>
+    </div>
+    <div class="row-actions"><button type="button" class="btn-ink" id="l-save">Save</button><span class="err" id="l-err"></span></div>
+  </section>
+
+  <section class="set-section" id="sec-password">
+    <header>
+      <div>
+        <h2>Class password</h2>
+        <p id="pw-source"></p>
+      </div>
+    </header>
+    <div class="pw-current">
+      <span class="pw-label">Current password</span>
+      <code class="pw-value" id="pw-value" aria-live="polite">••••••••</code>
+      <button type="button" class="btn-ghost btn-sm" id="pw-show">Show</button>
+      <button type="button" class="btn-ghost btn-sm" id="pw-copy">Copy</button>
+    </div>
+    <p class="note" id="pw-note" hidden></p>
+    <div class="grid2" style="margin-top:18px">
+      <label class="field"><span>New password</span><input class="inp" type="password" id="pw-1" autocomplete="new-password"></label>
+      <label class="field"><span>Repeat it</span><input class="inp" type="password" id="pw-2" autocomplete="new-password"></label>
+    </div>
+    <div class="row-actions">
+      <button type="button" class="btn-ink" id="pw-save">Change password</button>
+      <button type="button" class="btn-ghost" id="pw-clear" hidden>Use the password set in Cloudflare again</button>
+      <span class="err" id="pw-err"></span>
+    </div>
+    <p class="note">Students who are signed in keep working until their browser asks again; everyone signing in after the change needs the new password.</p>
+  </section>
+
+</div>
+
+<script>window.CLINCOG_SHELL = { activeNav: "admin-students", breadcrumb: [{ label: "Students" }] };</script>
+<script src="/storage.js"></script>
+<script src="/icons.js"></script>
+<script src="/shell.js?v=2"></script>
+<script src="/toast.js"></script>
+<script src="/a11y.js"></script>
+<script src="/admin-settings.js"></script>
+</body>
+</html>

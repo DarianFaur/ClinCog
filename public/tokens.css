@@ -228,7 +228,7 @@
   --font-display: var(--font-serif);
   --font-mono: 'DM Mono', ui-monospace, monospace;
 
-  --measure: 72ch;
+  --measure: none;   /* text runs the full width of its box */
 
   --topbar-h: 72px;
   --topbar-gap: 12px;

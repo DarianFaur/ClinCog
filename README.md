@@ -68,12 +68,36 @@ it. The class list, per-student and per-case limits, a daily cap, periods
 (counters start from zero in each new period), opening and closing the
 interviews, which company plays the patients (Anthropic, Google Gemini or
 OpenAI, each with a "fast" and a "thoughtful" model, a key and prices) and
-the class password are all managed on the admin console's **Seminar
-settings** page — no terminal needed.
+the class password are all managed on the admin console — no terminal
+needed.
 
-The admin console is the same app as `clincog.net` with two extra pages:
-**Live monitoring** (its front page: cost, tokens and replies per tier and
-per participant, updated live over a WebSocket) and **Seminar settings**.
+The admin console is the same app as `clincog.net` with an **Admin** group
+of pages in the sidebar, above the student pages:
+
+- **Live monitoring** (its front page): a strip with what can stop a student
+  or a visitor — interviews open or closed, the public demo, this month's
+  spend against the budget, active announcements — each with its switch;
+  cost, tokens and replies per tier and per participant, updated live over
+  a WebSocket; a **Health** panel with the last hour's failure rate and
+  response times and the reason for each recent failure; Export CSV.
+- **Course**: opening and closing the interviews, a **case schedule** (a
+  patient open, closed, or open between two dates, so the cases can be
+  released week by week), periods, and **announcements** shown as a banner
+  on every page of the seminar instance.
+- **Students**: the class list, per-student and per-case limits, a daily
+  cap, the class password, and a CSV of use per student.
+- **Demo**: the public chat on `clincog.net` switched on or off, paused
+  until a set time (to keep the free Gemini quota for a presentation), and
+  a daily cap on its replies. Visitors with their own key are not affected.
+- **AI provider**: the company, models, prices and keys for the seminar,
+  Anthropic billing, and a **monthly budget** with email alerts — at a
+  chosen share of the budget, when it runs out (the interviews can then
+  close by themselves until the next month), and when patient replies keep
+  failing, at most hourly. Alerts go to `CONTACT_TO` through the same
+  `send_email` binding as the contact form.
+- **History & backup**: every change made on the console, described in
+  words, with undo for the last 50; a settings backup (without keys
+  or passwords) to download and restore, with a preview first.
 
 If you want your own fully independent instance instead — your own
 Cloudflare account, your own domain, your own budget, nothing shared with
@@ -105,7 +129,11 @@ public/
   adopt.html          bring-your-own-key form
   about.html, help.html, contact.html, benchmarks.html
   admin-monitor.*     admin console: live monitoring (admin host only)
-  admin-seminar.*     admin console: seminar settings (admin host only)
+  admin-course.html, admin-students.html, admin-demo.html,
+  admin-provider.html, admin-history.html
+                      admin console: the settings pages, served at /admin/…
+  admin-settings.js, admin.css
+                      shared by the settings pages
   tokens.css, components.css, shell.css, alpha-eval.css, report.css
                       design tokens and shared styles
   storage.js          all client-side state (localStorage) lives here

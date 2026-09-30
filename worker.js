@@ -563,7 +563,215 @@ function seminarGate(cfg, studentId) {
   if (s.suspended) return { status: 403, text: "Your access to the interviews is paused. Talk to your seminar leader." };
   if (!cfg.open) return { status: 503, text: cfg.closedMessage || "The interviews are closed right now." };
   if (!activePeriod(cfg)) return { status: 503, text: cfg.closedMessage || "The interviews are closed between periods." };
+  if (budgetBlocked(cfg)) return { status: 503, text: "The interviews are closed for the rest of the month. Talk to your seminar leader." };
   return null;
+}
+
+// ---- Case schedule ------------------------------------------------------------
+// Each patient can be open, closed, or open only between two dates, so the
+// cases can be released week by week. Closing a case stops its interview;
+// the student's evaluation pages stay available.
+const CASE_NAMES = { schizophrenia: "Dennis", depression: "Darren", anxiety: "Alex", addiction: "Jordan" };
+function fmtWhen(ms, cfg) {
+  try {
+    return new Intl.DateTimeFormat("en-GB", { timeZone: (cfg && cfg.timezone) || "Europe/Bucharest", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }).format(new Date(ms));
+  } catch { return new Date(ms).toUTCString(); }
+}
+function caseState(cfg, caseId, now) {
+  now = now || Date.now();
+  const c = (cfg.cases || {})[caseId] || { mode: "open" };
+  const name = CASE_NAMES[caseId] || caseId;
+  if (c.mode === "closed") return { open: false, text: "The interview with " + name + " is closed for now." };
+  if (c.mode === "window") {
+    if (c.opensAt != null && now < c.opensAt) return { open: false, opensAt: c.opensAt, text: "The interview with " + name + " opens on " + fmtWhen(c.opensAt, cfg) + "." };
+    if (c.closesAt != null && now >= c.closesAt) return { open: false, closedAt: c.closesAt, text: "The interview with " + name + " closed on " + fmtWhen(c.closesAt, cfg) + "." };
+    return { open: true, closesAt: c.closesAt || null };
+  }
+  return { open: true };
+}
+
+// ---- Announcements --------------------------------------------------------------
+function activeAnnouncements(cfg, now) {
+  now = now || Date.now();
+  return (cfg.announcements || []).filter((a) => (a.from == null || a.from <= now) && (a.until == null || a.until > now))
+    .map((a) => ({ id: a.id, text: a.text, level: a.level }));
+}
+
+// ---- Budget and alerts ----------------------------------------------------------
+// A monthly cap on the seminar's estimated spend (calendar month, UTC). At the
+// alert threshold an email goes out; at 100% the interviews can close by
+// themselves until the next month, a higher cap, or "Reopen" on the console.
+// Failure alerts: when half or more of the last 10 minutes' replies (at least
+// five) failed, at most one email an hour.
+function budgetOf(cfg) {
+  return Object.assign({ monthly: null, alertPct: 80, autoClose: true, emailAlerts: true, failureAlerts: true }, cfg.budget || {});
+}
+function budgetBlocked(cfg) {
+  const b = budgetOf(cfg), st = cfg.budgetState;
+  return !!(b.autoClose && st && st.blocked && st.month === monthKey());
+}
+function adminMailDomain(env) {
+  const parts = ADMIN_HOSTNAME.split(".");
+  return parts.length > 2 ? parts.slice(1).join(".") : ADMIN_HOSTNAME;
+}
+async function sendAdminEmail(env, subject, lines) {
+  const to = contactAddress(env);
+  if (!to || !env.CONTACT_EMAIL) return { ok: false, error: "Email is not set up (CONTACT_TO and the send_email binding)." };
+  const from = contactSender(env, adminMailDomain(env));
+  const headers = [
+    "From: " + encodeHeaderWord("ClinCog alerts") + " <" + from + ">",
+    "To: " + to,
+    "Subject: " + encodeHeaderWord(headerSafe("ClinCog - " + subject, 180)),
+    "Message-ID: <" + crypto.randomUUID() + "@" + adminMailDomain(env) + ">",
+    "Date: " + rfc5322Date(new Date()),
+    "MIME-Version: 1.0",
+    'Content-Type: text/plain; charset="utf-8"',
+    "Content-Transfer-Encoding: base64",
+  ];
+  const text = lines.concat(["", "Live monitoring: https://" + ADMIN_HOSTNAME + "/"]).join("\r\n") + "\r\n";
+  try {
+    const { EmailMessage } = await import("cloudflare:email");
+    await env.CONTACT_EMAIL.send(new EmailMessage(from, to, headers.join("\r\n") + "\r\n\r\n" + base64Body(text)));
+    return { ok: true, to };
+  } catch (e) {
+    console.error("alert email:", e);
+    return { ok: false, error: "The email could not be sent." };
+  }
+}
+// After each seminar reply: let the config object decide (once, atomically)
+// whether a threshold was just crossed, then send what it asks for.
+async function watchSeminar(env, after, ev) {
+  let actions = [];
+  try { actions = await configStub(env).tick(after, configSeed(env)); } catch (e) { console.error("tick:", e); return; }
+  if (!actions.length) return;
+  // Crossing the alert level and the whole budget in one reply: one email.
+  if (actions.some((a) => a.type === "budget-closed")) actions = actions.filter((a) => a.type !== "budget-alert");
+  cfgCache = { at: 0, value: null };
+  const cfg = await seminarConfig(env, true);
+  const b = budgetOf(cfg);
+  for (const a of actions) {
+    if (!b.emailAlerts) continue;
+    if (a.type === "budget-alert") {
+      await sendAdminEmail(env, "seminar budget at " + Math.round(a.pct) + "%", [
+        "The seminar has used an estimated $" + a.cost.toFixed(2) + " of its $" + b.monthly.toFixed(2) + " monthly budget (" + Math.round(a.pct) + "%).",
+        b.autoClose ? "At 100% the interviews close by themselves until the next month, a higher budget, or Reopen under AI provider on the console." : "The interviews stay open when the budget is reached (automatic closing is off).",
+      ]);
+    } else if (a.type === "budget-closed") {
+      await sendAdminEmail(env, "interviews closed: monthly budget reached", [
+        "The seminar reached its $" + b.monthly.toFixed(2) + " monthly budget (estimated $" + a.cost.toFixed(2) + "), so the interviews are now closed.",
+        "They reopen on the 1st of next month, or now if you raise the budget or press Reopen under AI provider > Budget and alerts on the console.",
+      ]);
+    } else if (a.type === "failures") {
+      await sendAdminEmail(env, "patient replies are failing", [
+        a.fail + " of the last " + a.n + " replies in the seminar failed in the past 10 minutes.",
+        "Most recent reason: " + (a.lastError || "unknown") + ".",
+        "Check the key and the model under AI provider on the console, and the Health panel on Live monitoring.",
+      ]);
+    }
+  }
+}
+
+// ---- Demo control (clincog.net) ------------------------------------------------
+// The public demo runs on the author's own Gemini key, on the free tier. It
+// can be switched off, paused until a given time (so the day's free quota is
+// still there for a presentation) and capped at a number of replies a day.
+function demoOf(cfg) {
+  return Object.assign({ enabled: true, message: "", dailyCap: null, pausedUntil: null }, cfg.demo || {});
+}
+function demoState(cfg, now) {
+  now = now || Date.now();
+  const d = demoOf(cfg);
+  const extra = " You can still try ClinCog with your own key (Adopt with your own keys).";
+  if (!d.enabled) return { open: false, text: (d.message || "The public demo is switched off for now.") + extra };
+  if (d.pausedUntil && now < d.pausedUntil) return { open: false, pausedUntil: d.pausedUntil, text: (d.message || "The public demo is paused until " + fmtWhen(d.pausedUntil, cfg) + ".") + extra };
+  return { open: true };
+}
+const DEMO_QUOTA = ["demo", "all"];
+
+// ---- History of changes -----------------------------------------------------------
+// Every change made on the console is described in words and kept, with the
+// settings as they were before it, so it can be undone. Runtime state that
+// the Worker keeps for itself is never part of a change, a backup or an undo.
+const RUNTIME_KEYS = ["budgetState", "alertState", "autoPrices", "priceCheck", "seedIds"];
+const SECRET_KEYS = ["password", "keys", "adminKeys"];
+const HISTORY_MAX = 50;
+function pick(o, keys) { const r = {}; keys.forEach((k) => { if (o && k in o) r[k] = o[k]; }); return r; }
+function limitWords(v) { return v === null || v === undefined ? "default" : v < 0 ? "no limit" : String(v); }
+function whenWords(ms, cfg) { return ms == null ? "none" : fmtWhen(ms, cfg); }
+function same(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
+function describeChange(b, a) {
+  const out = [], cn = (id) => CASE_NAMES[id] || id;
+  const val = (label, x, y, f) => { if (!same(x, y)) out.push(label + ": " + (f ? f(x) : String(x)) + " \u2192 " + (f ? f(y) : String(y))); };
+  val("Interviews", b.open, a.open, (v) => (v ? "open" : "closed"));
+  val("Message when closed", b.closedMessage || "", a.closedMessage || "", (v) => (v ? "\u201c" + v + "\u201d" : "none"));
+  val("Models students may use", b.models, a.models, (v) => (v || []).join(", "));
+  val("Default limit", b.defaultLimit, a.defaultLimit, limitWords);
+  CASE_IDS.forEach((k) => val("Limit for " + cn(k), (b.caseLimits || {})[k] ?? null, (a.caseLimits || {})[k] ?? null, limitWords));
+  val("Daily cap", b.dailyCap, a.dailyCap, (v) => (v == null ? "none" : String(v)));
+  val("Time zone", b.timezone, a.timezone);
+  // periods
+  const pb = Object.fromEntries((b.periods || []).map((p) => [p.id, p])), pa = Object.fromEntries((a.periods || []).map((p) => [p.id, p]));
+  for (const id in pa) if (!pb[id]) out.push("Period added: " + pa[id].name);
+  for (const id in pb) if (!pa[id]) out.push("Period removed: " + pb[id].name);
+  for (const id in pa) if (pb[id] && !same(pb[id], pa[id])) out.push("Period changed: " + pa[id].name);
+  // students
+  const sb = b.students || {}, sa = a.students || {};
+  const added = Object.keys(sa).filter((k) => !sb[k]), removed = Object.keys(sb).filter((k) => !sa[k]);
+  const list = (ids) => ids.slice(0, 8).join(", ") + (ids.length > 8 ? " and " + (ids.length - 8) + " more" : "");
+  if (added.length) out.push("Students added: " + list(added));
+  if (removed.length) out.push("Students removed: " + list(removed));
+  const changed = Object.keys(sa).filter((k) => sb[k] && !same(sb[k], sa[k]));
+  if (changed.length === 1) {
+    const k = changed[0], x = sb[k], y = sa[k];
+    if (x.suspended !== y.suspended) out.push(k + ": " + (y.suspended ? "paused" : "active again"));
+    if ((x.note || "") !== (y.note || "")) out.push(k + ": note \u2192 \u201c" + (y.note || "") + "\u201d");
+    const lx = x.limits || {}, ly = y.limits || {};
+    ["all"].concat(CASE_IDS).forEach((c) => { if (!same(lx[c] ?? null, ly[c] ?? null)) out.push(k + ": limit " + (c === "all" ? "for every patient" : "for " + cn(c)) + " " + limitWords(lx[c]) + " \u2192 " + limitWords(ly[c])); });
+  } else if (changed.length > 1) out.push("Settings changed for " + changed.length + " students: " + list(changed));
+  // secrets: never the values
+  if (!same(b.password, a.password)) out.push(a.password ? "Class password changed" : "Class password cleared (the Cloudflare one applies)");
+  for (const p of new Set(Object.keys(b.keys || {}).concat(Object.keys(a.keys || {})))) {
+    if (!same((b.keys || {})[p], (a.keys || {})[p])) out.push(((SEMINAR_PROVIDERS[p] || {}).label || p) + " key " + ((a.keys || {})[p] ? "saved" : "removed"));
+  }
+  if (!same(b.adminKeys, a.adminKeys)) out.push("Anthropic admin key " + ((a.adminKeys || {}).anthropic ? "saved" : "removed"));
+  val("Provider", b.provider || "anthropic", a.provider || "anthropic", (v) => (SEMINAR_PROVIDERS[v] || {}).label || v);
+  if (!same(b.providerModels, a.providerModels)) out.push("Model names changed");
+  if (!same(b.prices, a.prices)) out.push("Prices changed");
+  val("Billing workspace", b.billingWorkspaceName || b.billingWorkspace || "whole organization", a.billingWorkspaceName || a.billingWorkspace || "whole organization");
+  // schedule
+  CASE_IDS.forEach((k) => {
+    const x = (b.cases || {})[k] || { mode: "open" }, y = (a.cases || {})[k] || { mode: "open" };
+    if (same(x, y)) return;
+    out.push(cn(k) + ": " + (y.mode === "closed" ? "closed" : y.mode === "window"
+      ? "scheduled" + (y.opensAt ? ", opens " + whenWords(y.opensAt, a) : "") + (y.closesAt ? ", closes " + whenWords(y.closesAt, a) : "") : "open"));
+  });
+  // announcements
+  const ab = new Set((b.announcements || []).map((x) => x.id));
+  const aa = new Set((a.announcements || []).map((x) => x.id));
+  const short = (t) => "\u201c" + (t.length > 60 ? t.slice(0, 57) + "\u2026" : t) + "\u201d";
+  (a.announcements || []).forEach((x) => { if (!ab.has(x.id)) out.push("Announcement published: " + short(x.text)); });
+  (b.announcements || []).forEach((x) => { if (!aa.has(x.id)) out.push("Announcement removed: " + short(x.text)); });
+  // budget
+  const bb = budgetOf(b), ba = budgetOf(a);
+  val("Monthly budget", bb.monthly, ba.monthly, (v) => (v == null ? "none" : "$" + v));
+  val("Budget alert", bb.alertPct, ba.alertPct, (v) => v + "%");
+  val("Close at 100% of the budget", bb.autoClose, ba.autoClose, (v) => (v ? "on" : "off"));
+  val("Alert emails", bb.emailAlerts, ba.emailAlerts, (v) => (v ? "on" : "off"));
+  val("Failure emails", bb.failureAlerts, ba.failureAlerts, (v) => (v ? "on" : "off"));
+  if (!(b.budgetState || {}).reopened && (a.budgetState || {}).reopened) out.push("Interviews reopened past this month's budget");
+  // demo
+  const db = demoOf(b), da = demoOf(a);
+  val("Public demo", db.enabled, da.enabled, (v) => (v ? "on" : "off"));
+  val("Demo paused until", db.pausedUntil, da.pausedUntil, (v) => whenWords(v, a));
+  val("Demo daily cap", db.dailyCap, da.dailyCap, (v) => (v == null ? "none" : String(v)));
+  val("Demo message", db.message || "", da.message || "", (v) => (v ? "\u201c" + v + "\u201d" : "default"));
+  return out;
+}
+// A backup is the settings without keys, passwords or runtime state.
+function backupOf(cfg) {
+  const out = {};
+  for (const k in cfg) if (!RUNTIME_KEYS.includes(k) && !SECRET_KEYS.includes(k)) out[k] = cfg[k];
+  return out;
 }
 
 function quotaStub(env, periodId, studentId) {
@@ -632,6 +840,29 @@ export class SeminarConfig extends DurableObject {
     return c;
   }
 
+  // Called after each seminar reply with the month's spend and the last ten
+  // minutes' failures; returns which alerts to send, each at most once.
+  async tick(after, seed) {
+    const c = await this.get(seed);
+    const b = budgetOf(c), actions = [];
+    let changed = false;
+    if (!c.budgetState || c.budgetState.month !== after.month) { c.budgetState = { month: after.month, alerted: false, blocked: false }; changed = true; }
+    const st = c.budgetState;
+    if (b.monthly) {
+      const pct = after.monthCost / b.monthly * 100;
+      if (!st.alerted && pct >= b.alertPct) { st.alerted = true; changed = true; actions.push({ type: "budget-alert", pct, cost: after.monthCost }); }
+      if (b.autoClose && !st.blocked && !st.reopened && pct >= 100) { st.blocked = true; changed = true; actions.push({ type: "budget-closed", cost: after.monthCost }); }
+    }
+    const r = after.recent || { n: 0, fail: 0 };
+    c.alertState = c.alertState || {};
+    if (b.failureAlerts && r.n >= 5 && r.fail / r.n >= 0.5 && (!c.alertState.failureAt || Date.now() - c.alertState.failureAt > 3600e3)) {
+      c.alertState.failureAt = Date.now(); changed = true;
+      actions.push({ type: "failures", n: r.n, fail: r.fail, lastError: r.lastError });
+    }
+    if (changed) await this.ctx.storage.put("config", c);
+    return actions;
+  }
+
   async setAutoPrices(found, meta) {
     const c = await this.get(null);
     c.autoPrices = c.autoPrices || {};
@@ -641,11 +872,46 @@ export class SeminarConfig extends DurableObject {
     return meta;
   }
 
-  // Every change goes through here, validated, one at a time.
+  // Every change goes through here, validated, one at a time, and is
+  // written down with the settings as they were before (History).
   async update(op, a, seed) {
-    const c = await this.get(seed);
+    let c = await this.get(seed);
     a = a || {};
+    const before = structuredClone(c);
+    let note = null;
     switch (op) {
+      case "undo": {
+        const hist = (await this.ctx.storage.get("history")) || [];
+        const i = hist.findIndex((h) => h.id === a.id);
+        if (i < 0 || !hist[i].before) throw new Error("That change can no longer be undone.");
+        c = Object.assign({}, hist[i].before, pick(c, RUNTIME_KEYS));
+        note = "Undone: " + hist[i].summary[0] + (i ? " (with the " + i + " later change" + (i > 1 ? "s" : "") + ")" : "");
+        break;
+      }
+      case "restore": {
+        const b = a.config && a.config.clincog_backup ? a.config.settings : a.config;
+        if (!b || typeof b !== "object" || !b.students || typeof b.students !== "object" || !Array.isArray(b.periods)) throw new Error("This is not a ClinCog settings backup.");
+        c = Object.assign(initialConfig(null), backupOf(b), pick(c, RUNTIME_KEYS.concat(SECRET_KEYS)));
+        note = "Settings restored from a backup" + (a.config.at ? " of " + fmtWhen(a.config.at, c) : "");
+        break;
+      }
+      case "demo": {
+        const d = demoOf(c);
+        if ("enabled" in a) d.enabled = !!a.enabled;
+        if ("message" in a) d.message = String(a.message || "").trim().slice(0, 300);
+        if ("dailyCap" in a) {
+          const v = a.dailyCap === null || a.dailyCap === "" ? null : Number(a.dailyCap);
+          if (v !== null && (!Number.isInteger(v) || v < 1 || v > 100000)) throw new Error("The daily cap is a whole number of replies, or empty for none.");
+          d.dailyCap = v;
+        }
+        if ("pausedUntil" in a) {
+          const v = timeValue(a.pausedUntil);
+          if (v !== null && v <= Date.now()) throw new Error("Pick a time in the future.");
+          d.pausedUntil = v;
+        }
+        c.demo = d;
+        break;
+      }
       case "general": {
         if ("open" in a) c.open = !!a.open;
         if ("closedMessage" in a) c.closedMessage = String(a.closedMessage || "").slice(0, 300);
@@ -711,6 +977,58 @@ export class SeminarConfig extends DurableObject {
       }
       case "clearKey": {
         if (c.keys) delete c.keys[a.provider];
+        break;
+      }
+      case "cases": {
+        c.cases = c.cases || {};
+        for (const id in (a.cases || {})) {
+          if (!CASE_IDS.includes(id)) continue;
+          const v = a.cases[id] || {};
+          const mode = ["open", "closed", "window"].includes(v.mode) ? v.mode : "open";
+          const opensAt = mode === "window" ? timeValue(v.opensAt) : null;
+          const closesAt = mode === "window" ? timeValue(v.closesAt) : null;
+          if (mode === "window" && opensAt == null && closesAt == null) throw new Error("Give " + CASE_NAMES[id] + " an opening or a closing date, or choose Open.");
+          if (opensAt != null && closesAt != null && closesAt <= opensAt) throw new Error(CASE_NAMES[id] + " has to close after it opens.");
+          c.cases[id] = { mode, opensAt, closesAt };
+        }
+        break;
+      }
+      case "announce": {
+        const text = String(a.text || "").trim().slice(0, 400);
+        if (!text) throw new Error("Write the announcement first.");
+        const from = timeValue(a.from), until = timeValue(a.until);
+        if (from != null && until != null && until <= from) throw new Error("An announcement has to end after it starts.");
+        c.announcements = (c.announcements || []).concat([{ id: crypto.randomUUID().slice(0, 8), text, level: a.level === "important" ? "important" : "info", from, until, created: Date.now() }]);
+        if (c.announcements.length > 30) throw new Error("Remove some old announcements first.");
+        break;
+      }
+      case "removeAnnouncement": {
+        c.announcements = (c.announcements || []).filter((x) => x.id !== a.id);
+        break;
+      }
+      case "budget": {
+        const b = budgetOf(c);
+        if ("monthly" in a) {
+          const v = a.monthly === null || a.monthly === "" ? null : Number(a.monthly);
+          if (v !== null && !(v > 0 && v < 100000)) throw new Error("The budget is an amount in dollars, or empty for none.");
+          b.monthly = v;
+        }
+        if ("alertPct" in a) {
+          const v = Number(a.alertPct);
+          if (!(v >= 10 && v <= 100)) throw new Error("The alert is a percentage from 10 to 100.");
+          b.alertPct = v;
+        }
+        ["autoClose", "emailAlerts", "failureAlerts"].forEach((k) => { if (k in a) b[k] = !!a[k]; });
+        c.budget = b;
+        // A higher budget than what was spent reopens a month that was closed.
+        // A new budget is judged afresh: the month reopens, and the alert and
+        // the closing apply again against the new amount.
+        if (c.budgetState && "monthly" in a) { c.budgetState.blocked = false; c.budgetState.alerted = false; c.budgetState.reopened = false; }
+        break;
+      }
+      case "reopenBudget": {
+        // Stays open for the rest of this month, past the budget.
+        if (c.budgetState) { c.budgetState.blocked = false; c.budgetState.reopened = true; }
         break;
       }
       case "setAdminKey": {
@@ -814,9 +1132,24 @@ export class SeminarConfig extends DurableObject {
       default:
         throw new Error("Unknown change.");
     }
+    const summary = describeChange(before, c);
+    if (a.dryRun) return { preview: summary };
+    if (note) summary.unshift(note);
     await this.ctx.storage.put("config", c);
-    return c;
+    if (summary.length) await this.addHistory(op, summary, before);
+    return { ok: true, changed: summary.length > 0 };
   }
+
+  async addHistory(op, summary, before) {
+    const hist = (await this.ctx.storage.get("history")) || [];
+    hist.unshift({ id: crypto.randomUUID().slice(0, 8), at: Date.now(), op, summary, before: before || null });
+    await this.ctx.storage.put("history", hist.slice(0, HISTORY_MAX));
+  }
+  async history() {
+    const hist = (await this.ctx.storage.get("history")) || [];
+    return hist.map((h) => ({ id: h.id, at: h.at, op: h.op, summary: h.summary, undoable: !!h.before }));
+  }
+
 }
 
 // One object per student. Its methods run one at a time, so reading the
@@ -876,7 +1209,7 @@ const PRICES = {
   "gemini-3.1-flash-lite": [0.25, 1.5],
   "gemini-3.1-pro": [2, 12],
   // OpenAI, as listed after the July 2026 price cut - check before relying
-  // on them; they can be corrected on the console's Seminar settings page.
+  // on them; they can be corrected on the console's AI provider page.
   "gpt-5.6-luna": [0.2, 1.2],
   "gpt-5.6-terra": [2, 12],
 };
@@ -984,7 +1317,7 @@ function monitorStub(env) {
   return env.USAGE_MONITOR.get(env.USAGE_MONITOR.idFromName("global"));
 }
 async function recordUsage(env, ev) {
-  try { await monitorStub(env).record(ev); } catch (e) { console.error("monitor:", e); }
+  try { return await monitorStub(env).record(ev); } catch (e) { console.error("monitor:", e); return null; }
 }
 
 const RANGES = {
@@ -994,6 +1327,7 @@ const RANGES = {
   "30d": { span: 30 * 86400e3, bucket: 86400e3 },
 };
 const KEEP_MS = 90 * 86400e3;
+function monthKey(ts) { return new Date(ts || Date.now()).toISOString().slice(0, 7); }
 
 export class UsageMonitor extends DurableObject {
   constructor(ctx, env) {
@@ -1003,15 +1337,53 @@ export class UsageMonitor extends DurableObject {
       ts INTEGER NOT NULL, lane TEXT NOT NULL, pid TEXT NOT NULL, cs TEXT, model TEXT,
       tin INTEGER, tout INTEGER, cost REAL, ok INTEGER, ms INTEGER)`);
     this.sql.exec("CREATE INDEX IF NOT EXISTS ev_ts ON ev(ts)");
+    // Added later: why a reply failed (status and provider message only).
+    try { this.sql.exec("ALTER TABLE ev ADD COLUMN err TEXT"); } catch (e) { /* already there */ }
     this.inserts = 0;
   }
 
   async record(e) {
-    this.sql.exec("INSERT INTO ev (ts, lane, pid, cs, model, tin, tout, cost, ok, ms) VALUES (?,?,?,?,?,?,?,?,?,?)",
-      e.ts, e.lane, e.participant, e.caseId, e.model, e.tin, e.tout, e.cost, e.ok, e.ms);
+    this.sql.exec("INSERT INTO ev (ts, lane, pid, cs, model, tin, tout, cost, ok, ms, err) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+      e.ts, e.lane, e.participant, e.caseId, e.model, e.tin, e.tout, e.cost, e.ok, e.ms, e.err || null);
     if (++this.inserts % 500 === 0) this.sql.exec("DELETE FROM ev WHERE ts < ?", Date.now() - KEEP_MS);
     const msg = JSON.stringify({ type: "event", event: e });
     for (const ws of this.ctx.getWebSockets()) { try { ws.send(msg); } catch {} }
+    // What the budget and failure alerts need, returned to the caller.
+    return { month: monthKey(e.ts), monthCost: this.monthCost(e.lane, e.ts), recent: this.recentFailures(e.lane, 10 * 60e3) };
+  }
+  monthCost(laneKey, ts) {
+    const d = new Date(ts || Date.now());
+    const from = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1);
+    const row = this.sql.exec("SELECT SUM(cost) AS c FROM ev WHERE lane = ? AND ts >= ?", laneKey, from).toArray()[0];
+    return (row && row.c) || 0;
+  }
+  byParticipant(laneKey, from) {
+    const out = {};
+    for (const r of this.sql.exec("SELECT pid, SUM(cost) AS cost, COUNT(*) AS req, MAX(ts) AS last FROM ev WHERE lane = ? AND ts >= ? GROUP BY pid", laneKey, from || 0)) out[r.pid] = { cost: r.cost || 0, req: r.req, last: r.last };
+    return out;
+  }
+  recentFailures(laneKey, span) {
+    const row = this.sql.exec("SELECT COUNT(*) AS n, SUM(1 - ok) AS f FROM ev WHERE lane = ? AND ts >= ?", laneKey, Date.now() - span).toArray()[0];
+    const last = this.sql.exec("SELECT err FROM ev WHERE lane = ? AND ok = 0 AND ts >= ? ORDER BY ts DESC LIMIT 1", laneKey, Date.now() - span).toArray()[0];
+    return { n: (row && row.n) || 0, fail: (row && row.f) || 0, lastError: last ? last.err : null };
+  }
+  // The last hour, per lane: replies, failures, latency; the latest errors;
+  // and this month's cost per lane.
+  async health() {
+    const since = Date.now() - 3600e3, lanes = {};
+    for (const k of ["seminar", "demo", "admin", "byok"]) lanes[k] = { req: 0, fail: 0, p50: null, p90: null, month: this.monthCost(k) };
+    const ms = {};
+    for (const row of this.sql.exec("SELECT lane, ok, ms FROM ev WHERE ts >= ?", since)) {
+      const L = lanes[row.lane]; if (!L) continue;
+      L.req++; if (!row.ok) L.fail++; else (ms[row.lane] = ms[row.lane] || []).push(row.ms);
+    }
+    for (const k in ms) {
+      const a = ms[k].sort((x, y) => x - y);
+      lanes[k].p50 = a[Math.floor((a.length - 1) * 0.5)];
+      lanes[k].p90 = a[Math.floor((a.length - 1) * 0.9)];
+    }
+    const errors = this.sql.exec("SELECT ts, lane, pid AS participant, cs AS caseId, model, err FROM ev WHERE ok = 0 ORDER BY ts DESC LIMIT 12").toArray();
+    return { lanes, errors, now: Date.now() };
   }
 
   // Totals, a time series and the participant table for each lane, plus
@@ -1043,11 +1415,17 @@ export class UsageMonitor extends DurableObject {
       L.people.push({ pid: row.pid, req: row.req, tin: row.tin || 0, tout: row.tout || 0, cost: row.cost || 0, last: row.last });
     }
     for (const k in lanes) lanes[k].participants = lanes[k].people.length;
-    const feed = this.sql.exec("SELECT ts, lane, pid AS participant, cs AS caseId, model, tin, tout, cost, ok, ms FROM ev ORDER BY ts DESC LIMIT 40").toArray();
+    const feed = this.sql.exec("SELECT ts, lane, pid AS participant, cs AS caseId, model, tin, tout, cost, ok, ms, err FROM ev ORDER BY ts DESC LIMIT 40").toArray();
     return { range: rangeKey in RANGES ? rangeKey : "24h", bucket: r.bucket, from: start, now, lanes, feed };
   }
 
   // Estimated cost per UTC day for one lane, models starting with a prefix.
+  // When this console first saw a reply of this kind: billing before that
+  // cannot be compared with an estimate that did not exist yet.
+  firstEvent(laneKey, modelPrefix) {
+    const row = this.sql.exec("SELECT MIN(ts) AS t FROM ev WHERE lane = ? AND model LIKE ?", laneKey, modelPrefix + "%").toArray()[0];
+    return row && row.t ? row.t : null;
+  }
   async dailyCost(days, laneKey, modelPrefix) {
     const DAY = 86400e3, since = Math.floor(Date.now() / DAY) * DAY - (days - 1) * DAY;
     const out = {};
@@ -1142,10 +1520,23 @@ async function anthropicBilling(env, days) {
 
   // Our own estimate for the same days: the seminar lane's Claude replies.
   const est = await monitorStub(env).dailyCost(days, "seminar", "claude");
-  const series = [...byDay.entries()].map(([date, billed]) => ({ date, billed, estimate: est[date] || 0 }));
+  // Only days this console watched from start to finish are compared: what
+  // was billed before monitoring started (tests, earlier use) has no
+  // estimate to set against it. The first day counts only if monitoring
+  // was on from its first hour (UTC).
+  const first = await monitorStub(env).firstEvent("seminar", "claude");
+  let compareFrom = null;
+  if (first != null) {
+    const d0 = Math.floor(first / DAY) * DAY;
+    compareFrom = new Date(first - d0 < 3600e3 ? d0 : d0 + DAY).toISOString().slice(0, 10);
+  }
+  const series = [...byDay.entries()].map(([date, billed]) => ({ date, billed, estimate: est[date] || 0, compared: !!compareFrom && date >= compareFrom }));
+  const cmp = series.filter((x) => x.compared), pre = series.filter((x) => !x.compared);
   const value = {
     configured: true, workspace: ws, workspaceName: cfg.billingWorkspaceName || null,
-    days: series, billed: series.reduce((a, x) => a + x.billed, 0), estimate: series.reduce((a, x) => a + x.estimate, 0),
+    days: series, compareFrom, monitoringSince: first,
+    billed: cmp.reduce((a, x) => a + x.billed, 0), estimate: cmp.reduce((a, x) => a + x.estimate, 0),
+    before: { billed: pre.reduce((a, x) => a + x.billed, 0), from: series[0].date, to: pre.length ? pre[pre.length - 1].date : null },
     byModel, fetchedAt: Date.now(),
   };
   billingCache.set(cacheKey, { at: Date.now(), value });
@@ -1198,7 +1589,7 @@ async function handleMonitorApi(request, url, env) {
     return jsonResponse({ id, used: await quotaStub(env, period.id, id).status() });
   }
 
-  // ---- Seminar settings (the admin console's second page) ----------------
+  // ---- Settings (the admin console's Course, Students, Demo, AI provider pages)
   if (path === "seminar" && request.method === "GET") {
     const cfg = await seminarConfig(env, true);
     const period = activePeriod(cfg);
@@ -1218,9 +1609,79 @@ async function handleMonitorApi(request, url, env) {
       passwordSource: cfg.password ? "console" : (env.STUDENT_ACCESS_PASSWORD ? "secret" : "none"),
       activePeriodId: period ? period.id : null,
       now: Date.now(), today: day,
+      cases: Object.fromEntries(CASE_IDS.map((c) => [c, caseState(cfg, c)])),
+      budget: Object.assign(budgetOf(cfg), { blocked: budgetBlocked(cfg), month: monthKey(),
+        spent: await monitorStub(env).monthCost("seminar", Date.now()).catch(() => null) }),
+      email: { configured: !!(contactAddress(env) && env.CONTACT_EMAIL), to: contactAddress(env) || null },
+      freeTierGemini: String(env.GEMINI_FREE_TIER || "").toLowerCase() === "true",
+      demo: Object.assign(demoOf(cfg), { state: demoState(cfg),
+        today: await quotaStub(env, DEMO_QUOTA[0], DEMO_QUOTA[1]).status(day).then((x) => x.today || 0).catch(() => 0) }),
       students: ids.map((id, i) => Object.assign({ id, effective: studentLimits(cfg, id), used: st[i].cases || {}, today: st[i].today || 0 }, cfg.students[id])),
     });
   }
+  // The strip at the top of Live monitoring: everything that can stop a
+  // student or a visitor, in one call.
+  if (path === "overview" && request.method === "GET") {
+    const cfg = await seminarConfig(env, true);
+    const period = activePeriod(cfg);
+    const why = !cfg.open ? "Closed by you" : !period ? "No period is running" : budgetBlocked(cfg) ? "The monthly budget ran out" : "";
+    const d = demoOf(cfg), ds = demoState(cfg);
+    const demoToday = await quotaStub(env, DEMO_QUOTA[0], DEMO_QUOTA[1]).status(dayKey(cfg)).then((x) => x.today || 0).catch(() => 0);
+    const b = budgetOf(cfg);
+    return jsonResponse({
+      interviews: { open: !!(cfg.open && period && !budgetBlocked(cfg)), closedByYou: !cfg.open, blocked: budgetBlocked(cfg), period: period ? period.name : null, text: why },
+      cases: Object.fromEntries(CASE_IDS.map((c) => [c, caseState(cfg, c)])),
+      demo: { enabled: d.enabled, open: ds.open, pausedUntil: ds.pausedUntil || null, dailyCap: d.dailyCap, today: demoToday },
+      budget: { monthly: b.monthly, alertPct: b.alertPct, spent: await monitorStub(env).monthCost("seminar", Date.now()).catch(() => null) },
+      announcements: activeAnnouncements(cfg).length,
+      provider: SEMINAR_PROVIDERS[seminarProvider(cfg)].label,
+      now: Date.now(),
+    });
+  }
+  // Consumption per student, for a spreadsheet.
+  if (path === "export.csv" && request.method === "GET") {
+    const cfg = await seminarConfig(env, true);
+    const period = activePeriod(cfg);
+    const day = dayKey(cfg);
+    const ids = Object.keys(cfg.students).sort();
+    const st = period ? await Promise.all(ids.map((id) => quotaStub(env, period.id, id).status(day).catch(() => ({ cases: {}, today: 0 })))) : ids.map(() => ({ cases: {}, today: 0 }));
+    const cost = await monitorStub(env).byParticipant("seminar", period && period.start ? period.start : 0).catch(() => ({}));
+    const q = (v) => { const t = v == null ? "" : String(v); return /[",\n;]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
+    const rows = [["student", "note", "status", "period"].concat(CASE_IDS.map((c) => CASE_NAMES[c].toLowerCase())).concat(["total", "today", "estimated_cost_usd", "last_reply"])];
+    ids.forEach((id, i) => {
+      const s = cfg.students[id], used = st[i].cases || {}, c = cost[id] || {};
+      const total = CASE_IDS.reduce((n, k) => n + (used[k] || 0), 0);
+      rows.push([id, s.note || "", s.suspended ? "paused" : "active", period ? period.name : ""].concat(CASE_IDS.map((k) => used[k] || 0))
+        .concat([total, st[i].today || 0, c.cost != null ? c.cost.toFixed(4) : "0", c.last ? new Date(c.last).toISOString() : ""]));
+    });
+    const body = "\uFEFF" + rows.map((r) => r.map(q).join(",")).join("\r\n") + "\r\n";
+    return new Response(body, { headers: {
+      "Content-Type": "text/csv; charset=utf-8", "Cache-Control": "no-store",
+      "Content-Disposition": 'attachment; filename="clincog-usage-' + day + '.csv"',
+    } });
+  }
+  // History of changes, and a backup of the settings.
+  if (path === "history" && request.method === "GET") return jsonResponse({ entries: await configStub(env).history(), now: Date.now() });
+  if (path === "backup" && request.method === "GET") {
+    const cfg = await seminarConfig(env, true);
+    const at = Date.now();
+    return new Response(JSON.stringify({ clincog_backup: 1, at, host: STUDENT_HOSTNAME, settings: backupOf(cfg) }, null, 2), { headers: {
+      "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store",
+      "Content-Disposition": 'attachment; filename="clincog-settings-' + dayKey(cfg) + '.json"',
+    } });
+  }
+  // Health: the last hour per lane, recent errors, this month's spend.
+  if (path === "health" && request.method === "GET") {
+    const cfg = await seminarConfig(env, true);
+    const h = await monitorStub(env).health();
+    h.budget = Object.assign(budgetOf(cfg), { blocked: budgetBlocked(cfg), state: cfg.budgetState || null });
+    return jsonResponse(h);
+  }
+  if (path === "test-email" && request.method === "POST") {
+    const r = await sendAdminEmail(env, "test alert", ["This is a test of the ClinCog alerts. If you are reading it, alerts will reach you."]);
+    return jsonResponse(r);
+  }
+
   // Prices: fetch now, instead of waiting for the daily run.
   if (path === "prices-refresh" && request.method === "POST") {
     const meta = await refreshPrices(env);
@@ -1255,17 +1716,25 @@ async function handleMonitorApi(request, url, env) {
     if (!SEMINAR_PROVIDERS[p]) return jsonResponse({ ok: false, error: "Unknown provider." }, 400);
     const k = seminarKey(cfg, env, p);
     if (!k) return jsonResponse({ ok: false, error: "No key is set for " + SEMINAR_PROVIDERS[p].label + "." });
-    const results = {};
+    const results = {}, pending = [];
     for (const t of TIERS) {
       const model = seminarModels(cfg)[p][t];
       const started = Date.now();
       let reply;
       const history = [{ role: "user", content: "Say hello in five words." }];
       const vignette = { name: "Sam", text: "Sam, 30, is here for a routine check-up and feels well." };
+      // Billed on the seminar's key like any reply, so counted like one
+      // (participant "key test"), or the billing comparison would miss it.
+      const meter = (usage, ok, reason) => {
+        const ev = { ts: Date.now(), lane: "seminar", participant: "key test", caseId: null, model,
+          tin: usage ? usage.in : 0, tout: usage ? usage.out : 0, ok: ok ? 1 : 0, ms: Date.now() - started, err: ok ? null : (reason || "Failed") };
+        ev.cost = priceOf(model, ev.tin, ev.tout, env, cfg);
+        pending.push(recordUsage(env, ev));
+      };
       try {
-        if (p === "gemini") reply = await respondAsPatientGemini(history, k, vignette, model);
-        else if (p === "openai") reply = await respondAsPatientOpenAI(history, k, vignette, model);
-        else reply = await respondAsPatient(history, k, vignette, model);
+        if (p === "gemini") reply = await respondAsPatientGemini(history, k, vignette, model, meter);
+        else if (p === "openai") reply = await respondAsPatientOpenAI(history, k, vignette, model, meter);
+        else reply = await respondAsPatient(history, k, vignette, model, meter);
         const text = await reply.text();
         results[t] = reply.ok && text.trim()
           ? { ok: true, model, ms: Date.now() - started, sample: text.trim().slice(0, 80) }
@@ -1274,6 +1743,7 @@ async function handleMonitorApi(request, url, env) {
         results[t] = { ok: false, model, error: "No answer from the provider." };
       }
     }
+    await Promise.all(pending).catch(() => {});
     return jsonResponse({ ok: TIERS.every((t) => results[t].ok), results });
   }
 
@@ -1288,11 +1758,13 @@ async function handleMonitorApi(request, url, env) {
   if (path === "seminar" && request.method === "POST") {
     let body;
     try { body = await request.json(); } catch { return jsonResponse({ error: "Could not read the change." }, 400); }
+    let r;
     try {
-      await configStub(env).update(String(body.op || ""), body.args || {}, configSeed(env));
+      r = await configStub(env).update(String(body.op || ""), body.args || {}, configSeed(env));
     } catch (e) {
       return jsonResponse({ error: String((e && e.message) || e).replace(/^Error: /, "") }, 400);
     }
+    if (r && r.preview) return jsonResponse({ ok: true, preview: r.preview });
     cfgCache = { at: 0, value: null };
     return jsonResponse({ ok: true });
   }
@@ -1483,7 +1955,7 @@ function manifestResponse(url) {
       { src: "/favicon.svg", sizes: "any", type: "image/svg+xml" },
     ],
     shortcuts: isAdmin
-      ? [{ name: "Live monitoring", url: "/" }, { name: "Seminar settings", url: "/admin-seminar" }, { name: "Dashboard", url: "/dashboard.html" }]
+      ? [{ name: "Live monitoring", url: "/" }, { name: "Course", url: "/admin/course" }, { name: "Students", url: "/admin/students" }, { name: "Demo", url: "/admin/demo" }]
       : [{ name: "Dashboard", url: "/dashboard.html" }, { name: "My progress", url: "/progress.html" }],
   };
   return new Response(JSON.stringify(manifest), {
@@ -1530,8 +2002,16 @@ export default {
 
     // The admin pages (live monitoring, seminar settings) exist only on the
     // admin console; the monitoring page is its front page.
-    if (/^\/admin-[a-z]+(\.html|\.js)?$/.test(url.pathname) && !isAdmin) {
+    if ((/^\/admin-[a-z]+(\.html|\.js|\.css)?$/.test(url.pathname) || url.pathname.startsWith("/admin/")) && !isAdmin) {
       return new Response("Not found", { status: 404 });
+    }
+    // Settings pages: /admin/course, /admin/students, /admin/demo,
+    // /admin/provider, /admin/history. The old single page redirects.
+    if (isAdmin && /^\/admin-seminar(\.html)?$/.test(url.pathname)) return Response.redirect(new URL("/admin/course", url), 301);
+    const adminPage = isAdmin && url.pathname.match(/^\/admin\/(course|students|demo|provider|history)\/?$/);
+    if (adminPage) {
+      const page = new URL("/admin-" + adminPage[1], url);
+      return withAppTitle(withNoIndex(await env.ASSETS.fetch(new Request(page, request))), url.hostname);
     }
     if (isAdmin && (url.pathname === "/" || url.pathname === "/index.html")) {
       // The asset store serves pages without the extension ("/admin-monitor")
@@ -1607,11 +2087,19 @@ export default {
       // to count against, so the chat does not run rather than spend
       // uncounted credits.
       let studentId = null, cfg = null, period = null, limit = 20;
+      // The public demo: switched off, paused, or at its daily cap.
+      if (tier === "demo") {
+        cfg = await seminarConfig(env);
+        const ds = demoState(cfg);
+        if (!ds.open) return jsonResponse({ gate: true, text: ds.text }, 503);
+      }
       if (tier === "student") {
         cfg = await seminarConfig(env);
         studentId = await studentIdentity(request, env);
         const gate = studentId ? seminarGate(cfg, studentId) : { status: 503, text: "The interview is not available right now. Tell your seminar leader." };
         if (gate) return jsonResponse({ gate: true, text: gate.text }, gate.status);
+        const cs = caseState(cfg, moduleId);
+        if (!cs.open) return jsonResponse({ gate: true, text: cs.text }, 503);
         period = activePeriod(cfg);
         limit = effectiveLimit(cfg, studentId, moduleId);
         // The provider and key the seminar leader chose; the tier the student
@@ -1649,7 +2137,16 @@ export default {
 
       // The quota is taken only once the request is known to be genuine,
       // and given back if the model never answered.
-      let quota = null, day = null;
+      let quota = null, day = null, demoDay = null;
+      if (tier === "demo" && demoOf(cfg).dailyCap) {
+        demoDay = dayKey(cfg);
+        const r = await quotaStub(env, DEMO_QUOTA[0], DEMO_QUOTA[1]).reserve("demo", null, demoDay, demoOf(cfg).dailyCap);
+        if (!r.ok) return jsonResponse({ gate: true, text: "The public demo has had all its conversations for today. Come back tomorrow, or try ClinCog with your own key (Adopt with your own keys)." }, 429);
+      } else if (tier === "demo") {
+        // Counted even without a cap, so the console can show today's use.
+        demoDay = dayKey(cfg);
+        await quotaStub(env, DEMO_QUOTA[0], DEMO_QUOTA[1]).reserve("demo", null, demoDay, null);
+      }
       if (studentId) {
         day = dayKey(cfg);
         quota = await quotaStub(env, period.id, studentId).reserve(moduleId, limit, day, cfg.dailyCap);
@@ -1670,17 +2167,18 @@ export default {
       const usedModel = model || DEFAULT_MODEL[provider];
       const lane = { demo: "demo", student: "seminar", admin: "admin", adopted: "byok" }[tier] || "demo";
       const participant = studentId || (tier === "admin" ? "admin" : "v:" + visitorLabel(body.visitorId));
-      const meter = (usage, ok) => {
+      const meter = (usage, ok, reason) => {
         const ev = {
           ts: Date.now(), lane, participant, caseId: moduleId, model: usedModel,
           tin: usage ? usage.in : 0, tout: usage ? usage.out : 0,
-          ok: ok ? 1 : 0, ms: Date.now() - started,
+          ok: ok ? 1 : 0, ms: Date.now() - started, err: ok ? null : (reason || "Failed"),
         };
         const p = (async () => {
           let c = cfg;
           if (!c) { try { c = await seminarConfig(env); } catch { c = null; } }
           ev.cost = lane === "byok" ? null : priceOf(usedModel, ev.tin, ev.tout, env, c);
-          await recordUsage(env, ev);
+          const after = await recordUsage(env, ev);
+          if (lane === "seminar" && after) await watchSeminar(env, after, ev);
         })();
         if (ctx && ctx.waitUntil) ctx.waitUntil(p);
       };
@@ -1690,6 +2188,7 @@ export default {
       else if (provider === "openai") reply = await respondAsPatientOpenAI(body.history, key, vignette, model, meter);
       else reply = await respondAsPatient(body.history, key, vignette, model, meter);
 
+      if (demoDay && !reply.ok) await quotaStub(env, DEMO_QUOTA[0], DEMO_QUOTA[1]).refund("demo", demoDay);
       if (!quota) return reply;
       if (!reply.ok) {
         await quotaStub(env, period.id, studentId).refund(moduleId, day);
@@ -1709,15 +2208,31 @@ export default {
       if (!studentId) return jsonResponse({ available: false }, 200);
       const gate = seminarGate(cfg, studentId);
       const period = activePeriod(cfg);
-      if (!period) return jsonResponse({ available: true, open: false, message: gate ? gate.text : "", student: studentId, limits: studentLimits(cfg, studentId), used: {} });
+      const cases = Object.fromEntries(CASE_IDS.map((c) => [c, caseState(cfg, c)]));
+      if (!period) return jsonResponse({ available: true, open: false, message: gate ? gate.text : "", student: studentId, limits: studentLimits(cfg, studentId), used: {}, cases });
       const st = await quotaStub(env, period.id, studentId).status(dayKey(cfg));
       const prov = seminarProvider(cfg), mods = seminarModels(cfg)[prov];
       return jsonResponse({
         available: true, open: !gate, message: gate ? gate.text : "", student: studentId,
         limits: studentLimits(cfg, studentId), used: st.cases, dayCap: cfg.dailyCap, today: st.today,
-        provider: SEMINAR_PROVIDERS[prov].label,
+        provider: SEMINAR_PROVIDERS[prov].label, cases,
         models: seminarTiers(cfg).map((t) => ({ tier: t, label: TIER_LABEL[t], model: prettyModel(mods[t]) })),
       });
+    }
+
+    // ---- Demo status, for the chat pages on the public site ---------------
+    if (url.pathname === "/api/demo" && request.method === "GET") {
+      if (url.hostname === STUDENT_HOSTNAME || isAdmin) return jsonResponse({ open: true });
+      const cfg = await seminarConfig(env);
+      const ds = demoState(cfg);
+      return jsonResponse({ open: ds.open, text: ds.open ? "" : ds.text });
+    }
+
+    // ---- Announcements for students (seminar instance) ---------------------
+    if (url.pathname === "/api/announcements" && request.method === "GET") {
+      if (url.hostname !== STUDENT_HOSTNAME) return jsonResponse({ announcements: [] });
+      const cfg = await seminarConfig(env);
+      return jsonResponse({ announcements: activeAnnouncements(cfg) });
     }
 
     // ---- Quota administration (seminar leader) ----------------------------
@@ -1837,7 +2352,7 @@ async function respondAsPatient(history, anthropicKey, vignette, model = "claude
     if (!anthropicResponse.ok) {
       const errorText = await anthropicResponse.text();
       console.error("Anthropic error:", errorText);
-      if (meter) meter(null, false);
+      if (meter) meter(null, false, providerReason(anthropicResponse.status, errorText));
       return new Response(JSON.stringify({ text: "There was an error generating a response." }), {
         status: 502,
         headers: { "Content-Type": "application/json" },
@@ -1862,6 +2377,7 @@ async function respondAsPatient(history, anthropicKey, vignette, model = "claude
     });
 
   } catch (err) {
+    if (meter) meter(null, false, "No connection to the provider");
     return new Response(JSON.stringify({ text: "Invalid request." }), {
       status: 400,
       headers: { "Content-Type": "application/json" },
@@ -1876,6 +2392,16 @@ async function respondAsPatient(history, anthropicKey, vignette, model = "claude
 //   - roles are "user"/"model", not "user"/"assistant"
 //   - the system prompt is its own top-level "systemInstruction" field
 //   - response text lives at candidates[0].content.parts[0].text
+// A short, content-free reason for a failed reply, for the admin console:
+// the HTTP status and the provider's own error message, never the student's
+// text.
+function providerReason(status, body) {
+  let msg = "";
+  try { const j = JSON.parse(body); msg = (j.error && (j.error.message || j.error.type)) || j.message || ""; } catch { msg = ""; }
+  const label = { 400: "Bad request", 401: "Key not accepted", 403: "Not allowed", 404: "Model not found", 429: "Provider limit reached", 500: "Provider error", 503: "Provider overloaded", 529: "Provider overloaded" }[status] || "Error";
+  return (status + " " + label + (msg ? ": " + String(msg).replace(/\s+/g, " ").slice(0, 140) : "")).trim();
+}
+
 // ---- Streaming helper ------------------------------------------------------
 // Every provider streams Server-Sent Events, but each wraps the actual
 // text delta in a differently-shaped JSON payload. Rather than have the
@@ -1980,7 +2506,7 @@ async function respondAsPatientGemini(history, geminiKey, vignette, model = "gem
     if (!geminiResponse.ok) {
       const errorText = await geminiResponse.text();
       console.error("Gemini error:", errorText);
-      if (meter) meter(null, false);
+      if (meter) meter(null, false, providerReason(geminiResponse.status, errorText));
       return new Response(JSON.stringify({ text: "There was an error generating a response." }), {
         status: 502,
         headers: { "Content-Type": "application/json" },
@@ -2006,6 +2532,7 @@ async function respondAsPatientGemini(history, geminiKey, vignette, model = "gem
     });
 
   } catch (err) {
+    if (meter) meter(null, false, "No connection to the provider");
     return new Response(JSON.stringify({ text: "Invalid request." }), {
       status: 400,
       headers: { "Content-Type": "application/json" },
@@ -2048,7 +2575,7 @@ async function respondAsPatientOpenAI(history, openaiKey, vignette, model = "gpt
     if (!openaiResponse.ok) {
       const errorText = await openaiResponse.text();
       console.error("OpenAI error:", errorText);
-      if (meter) meter(null, false);
+      if (meter) meter(null, false, providerReason(openaiResponse.status, errorText));
       return new Response(JSON.stringify({ text: "There was an error generating a response." }), {
         status: 502,
         headers: { "Content-Type": "application/json" },
@@ -2065,6 +2592,7 @@ async function respondAsPatientOpenAI(history, openaiKey, vignette, model = "gpt
     });
 
   } catch (err) {
+    if (meter) meter(null, false, "No connection to the provider");
     return new Response(JSON.stringify({ text: "Invalid request." }), {
       status: 400,
       headers: { "Content-Type": "application/json" },

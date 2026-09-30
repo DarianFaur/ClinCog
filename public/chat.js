@@ -212,11 +212,26 @@
         serverLimit = q.limits && moduleId in q.limits ? q.limits[moduleId] : (q.limit || MAX_EXCHANGES);
         serverUsed = (q.used && q.used[moduleId]) || 0;
         serverClosed = q.open === false ? (q.message || "The interviews are closed right now.") : "";
+        // This patient can be closed, or scheduled to open later.
+        const cs = q.cases && q.cases[moduleId];
+        if (!serverClosed && cs && cs.open === false) serverClosed = cs.text || "This interview is closed for now.";
         dayCap = q.dayCap || null; dayUsed = q.today || 0;
         if (window.__clincogModelChoices) window.__clincogModelChoices(q.models);
         updateStatus();
       })
       .catch(() => {});
+  }
+  // On the public site the demo can be switched off or paused from the
+  // admin console; say so before the visitor types. Visitors using their
+  // own key are not affected.
+  if (window.location.hostname !== "uvt.clincog.net" && window.location.hostname !== "admin.clincog.net") {
+    const own = (ClinCog.getByok && ClinCog.getByok()) || null;
+    if (!(own && own.llmKey)) {
+      fetch("/api/demo", { cache: "no-store" })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => { if (d && d.open === false) { serverClosed = d.text || "The public demo is not available right now."; updateStatus(); } })
+        .catch(() => {});
+    }
   }
   // How many exchanges this conversation may reach, and how many it has.
   function limitNow() {

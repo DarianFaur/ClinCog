@@ -35,7 +35,8 @@
 
   .mon-head { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--sp-5); flex-wrap: wrap; margin-bottom: var(--sp-6); }
   .mon-head h1 { margin: 0 0 6px; }
-  .mon-head p { margin: 0; color: var(--text-secondary); max-width: 620px; }
+  .mon-head p { margin: 0; color: var(--text-secondary); }
+  .mon-head > div:first-child { flex: 1 1 100%; }
   .mon-controls { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
   .live-pill { display: inline-flex; align-items: center; gap: 8px; font-size: var(--text-sm); color: var(--text-secondary); }
   .live-pill i { width: 8px; height: 8px; border-radius: 50%; background: var(--text-tertiary); }
@@ -154,6 +155,53 @@
     .feed-row { grid-template-columns: 64px minmax(0, 1fr) 84px; }
     .feed-row .l, .feed-row .n.tok { display: none; }
   }
+
+  /* ---- now: what can stop a student or a visitor, with the switches ---- */
+  .now { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: var(--sp-8); }
+  @media (max-width: 1100px) { .now { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 560px) { .now { grid-template-columns: 1fr; } }
+  .now-card { background: var(--mist); border-radius: 20px; padding: 16px 18px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .now-card small { font-size: 12px; color: var(--text-tertiary); }
+  .now-card b { display: flex; align-items: center; gap: 8px; font-family: var(--font-serif); font-weight: 400; font-size: 1.35rem; line-height: 1.2; }
+  .now-card b i { width: 8px; height: 8px; border-radius: 50%; background: var(--text-tertiary); flex-shrink: 0; }
+  .now-card b i.on { background: var(--domain-psychosis-line); box-shadow: 0 0 0 4px var(--domain-psychosis-soft); }
+  .now-card > span { font-size: 12.5px; color: var(--text-secondary); min-height: 1.2em; }
+  .now-card .bar { height: 6px; border-radius: 999px; background: var(--paper); overflow: hidden; margin-top: 4px; }
+  .now-card .bar i { display: block; height: 100%; background: var(--ink); border-radius: 999px; }
+  .now-card .bar.warn i { background: var(--domain-psychosis-line); }
+  .now-card .acts { display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto; padding-top: 10px; }
+  .now-card .acts a, .now-card .acts button { height: 30px; font-size: 12.5px; padding: 0 12px; text-decoration: none; }
+  .btn-export { gap: 6px; text-decoration: none; }
+  .btn-export svg { width: 15px; height: 15px; }
+  /* ---- health ---- */
+  .health { background: var(--mist); border-radius: 24px; padding: 22px 24px 18px; }
+  .health-verdict { display: flex; align-items: center; gap: 10px; font-family: var(--font-serif); font-size: 1.3rem; margin-bottom: 14px; }
+  .health-verdict i { width: 10px; height: 10px; border-radius: 50%; background: var(--domain-psychosis-line); box-shadow: 0 0 0 4px var(--domain-psychosis-soft); flex-shrink: 0; }
+  .health-verdict.ok i { background: var(--text-tertiary); box-shadow: 0 0 0 4px var(--hairline); }
+  .health-verdict small { font-family: var(--font-sans); font-size: 12.5px; color: var(--text-tertiary); margin-left: auto; }
+  .hlanes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  @media (max-width: 900px) { .hlanes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .hlane { background: var(--paper); border-radius: 16px; padding: 12px 14px; min-width: 0; }
+  .hlane .nm { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; margin-bottom: 8px; }
+  .hlane .nm i { width: 8px; height: 8px; border-radius: 2px; background: var(--lane); }
+  .hlane dl { display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; margin: 0; font-size: 12.5px; }
+  .hlane dt { color: var(--text-tertiary); }
+  .hlane dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+  .hlane dd.bad { color: var(--domain-psychosis-line); font-weight: 500; }
+  .hbudget { margin-top: 14px; background: var(--paper); border-radius: 16px; padding: 12px 14px; font-size: 13px; }
+  .hbudget .bar { height: 8px; border-radius: 999px; background: var(--mist); overflow: hidden; margin-top: 8px; }
+  .hbudget .bar i { display: block; height: 100%; background: var(--ink); border-radius: 999px; }
+  .hbudget .bar.warn i { background: var(--domain-psychosis-line); }
+  .herrors { margin-top: 14px; }
+  .herrors h3 { margin: 0 0 8px; font-size: 13px; font-weight: 500; color: var(--text-secondary); font-family: var(--font-sans); }
+  .herr { display: grid; grid-template-columns: 88px 100px minmax(0, 1fr); gap: 12px; padding: 8px 12px; border-radius: 12px; font-size: 13px; align-items: baseline; }
+  .herr + .herr { border-top: 1px solid var(--hairline); }
+  .herr .t { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-tertiary); }
+  .herr .l { display: inline-flex; align-items: center; gap: 7px; }
+  .herr .l i { width: 8px; height: 8px; border-radius: 2px; background: var(--lane); }
+  .herr .r { min-width: 0; overflow-wrap: anywhere; }
+  .herr .r small { display: block; color: var(--text-tertiary); font-size: 12px; }
+  @media (max-width: 640px) { .herr { grid-template-columns: 1fr; gap: 2px; } }
 </style>
 </head>
 <body>
@@ -172,10 +220,23 @@
         <button type="button" data-range="7d">7 days</button>
         <button type="button" data-range="30d">30 days</button>
       </div>
+      <a class="btn-ghost btn-export" href="/api/monitor/export.csv" download id="export"><span id="export-ico"></span>Export CSV</a>
     </div>
   </div>
 
+  <div class="now" id="now" aria-live="polite"></div>
+
   <div class="lanes" id="lanes"></div>
+
+  <section class="mon-section" id="health-sec">
+    <div class="mon-section-head">
+      <div>
+        <h2>Health</h2>
+        <p>The last hour: how many replies failed and how long patients took to answer, with the reason for each recent failure.</p>
+      </div>
+    </div>
+    <div class="health" id="health"><div class="empty">Loading…</div></div>
+  </section>
 
   <section class="mon-section" id="billing" hidden>
     <div class="mon-section-head">
@@ -220,6 +281,7 @@
 <script src="/storage.js"></script>
 <script src="/icons.js"></script>
 <script src="/shell.js?v=2"></script>
+<script src="/toast.js"></script>
 <script src="/a11y.js"></script>
 <script src="/admin-monitor.js"></script>
 </body>

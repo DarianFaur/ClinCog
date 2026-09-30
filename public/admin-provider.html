@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow">
+<script>
+  try { if (!localStorage.getItem("clincog_name")) localStorage.setItem("clincog_name", "Admin"); } catch (e) {}
+</script>
+<script src="/theme-init.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClinCog - AI provider</title>
+<link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17191c" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ClinCog">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="/favicon-180.png">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preload" as="script" href="/shell.js?v=2">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
+<link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+<div id="shell-content" data-admin-page="provider">
+
+  <div class="set-head">
+    <h1 class="text-page-title">AI <em>provider</em></h1>
+    <p>Which company plays the patients, with its models, prices and keys, and a monthly budget with email alerts.</p>
+  </div>
+
+  <section class="set-section" id="sec-provider">
+    <header>
+      <div>
+        <h2>Model provider</h2>
+        <p>Which company plays the patients for your students. Switching takes effect for the next message anyone sends; conversations carry on where they were. Try a key before switching to it.</p>
+      </div>
+    </header>
+    <div class="prov-grid" id="prov-cards" role="radiogroup" aria-label="Provider"></div>
+    <div class="prov-detail" id="prov-detail"></div>
+    <p class="note">A key saved here is used instead of the one stored in Cloudflare, and is never shown again after saving - only its last four characters. Use a paid (billing-enabled) key: on free tiers some providers may use conversations to improve their products, which is not what the Help page promises students.</p>
+  </section>
+
+  <section class="set-section" id="sec-budget">
+    <header>
+      <div>
+        <h2>Budget and alerts</h2>
+        <p>A monthly ceiling on the seminar's estimated spend, and emails when something needs you: when the budget reaches the alert level, when it runs out, and when patient replies start failing (a key refused, a provider down).</p>
+      </div>
+    </header>
+    <div id="b-now" style="margin-bottom:18px"></div>
+    <div class="grid2">
+      <label class="field"><span>Monthly budget (USD)</span><input class="inp" type="number" min="1" step="1" id="b-monthly" placeholder="No budget"><small>Calendar month, estimated from the token counts. Empty for none.</small></label>
+      <label class="field"><span>Alert at (% of the budget)</span><input class="inp" type="number" min="10" max="100" step="5" id="b-alert"></label>
+    </div>
+    <div class="checks" style="margin-top:16px; flex-direction: column; gap: 10px">
+      <label class="switch"><input type="checkbox" id="b-auto"><i></i><span>Close the interviews when the budget runs out</span></label>
+      <label class="switch"><input type="checkbox" id="b-email"><i></i><span>Email me the alerts</span></label>
+      <label class="switch"><input type="checkbox" id="b-fail"><i></i><span>Also when replies keep failing (at most one email an hour)</span></label>
+    </div>
+    <p class="note" id="b-mail"></p>
+    <div class="row-actions">
+      <button type="button" class="btn-ink" id="b-save">Save</button>
+      <button type="button" class="btn-ghost" id="b-test">Send a test email</button>
+      <button type="button" class="btn-ghost" id="b-reopen" hidden>Reopen for this month</button>
+      <span class="err" id="b-err"></span>
+    </div>
+  </section>
+
+</div>
+
+<script>window.CLINCOG_SHELL = { activeNav: "admin-provider", breadcrumb: [{ label: "AI provider" }] };</script>
+<script src="/storage.js"></script>
+<script src="/icons.js"></script>
+<script src="/shell.js?v=2"></script>
+<script src="/toast.js"></script>
+<script src="/a11y.js"></script>
+<script src="/admin-settings.js"></script>
+</body>
+</html>

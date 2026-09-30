@@ -354,12 +354,23 @@ without it — just without the extra anti-bot layer.
 
 The admin console is a second address for the same Worker, with its own
 username and password, where you manage the course without a terminal:
-**Live monitoring** (who is using how much, live, with cost estimates) and
-**Seminar settings** (add or remove students, change limits per student or
-per patient, set a daily cap, schedule terms — each new term starts every
-student from zero — close the interviews, switch the patients between
-Anthropic, Google Gemini and OpenAI with their keys and model names, and
-change or look up the class password).
+**Live monitoring** (who is using how much, live, with cost estimates and
+the switches that matter during a class) and the settings pages: **Course**
+(open or close the interviews, release the patients on a schedule, terms —
+each new term starts every student from zero — and announcements for
+students), **Students** (add or remove
+students, limits per student or per patient, a daily cap, the class
+password, a CSV of use), **Demo** (switch off, pause or cap the public demo
+on your main address), **AI provider** (Anthropic, Google Gemini or OpenAI
+with their keys and model names, and a monthly budget) and **History &
+backup** (every change, with undo, and a settings file to download and
+restore).
+
+The budget and failure alerts are emailed to the `CONTACT_TO` address from
+Step 9, through the `send_email` binding from Step 8 — nothing else to set
+up. Without them the budget still closes the interviews when it runs out;
+only the emails are missing. "Send a test email" under AI provider > Budget
+and alerts checks the whole path.
 
 It needs an address of its own, so it needs your own domain (Step 11):
 
@@ -424,7 +435,7 @@ which are password-protected. Do not commit licensed content to your fork.
   be accepted.
 - **The chat says the interviews are closed** — there is no class list yet
   (Step 9), or they were closed, or no term is running, on the admin
-  console's Seminar settings page.
+  console's Course page.
 - **The site opens, but the patient conversation doesn't reply** — check
   Cloudflare Dashboard → Workers & Pages → your worker → Logs for the
   exact error (often a mistyped Anthropic key, or no credit left on the

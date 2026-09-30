@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow">
+<script>
+  try { if (!localStorage.getItem("clincog_name")) localStorage.setItem("clincog_name", "Admin"); } catch (e) {}
+</script>
+<script src="/theme-init.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClinCog - Demo</title>
+<link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17191c" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ClinCog">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="/favicon-180.png">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preload" as="script" href="/shell.js?v=2">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
+<link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+<div id="shell-content" data-admin-page="demo">
+
+  <div class="set-head">
+    <h1 class="text-page-title">Demo</h1>
+    <p>The public chat on clincog.net, which runs on your own key.</p>
+  </div>
+
+  <section class="set-section" id="sec-demo">
+    <header>
+      <div>
+        <h2>Public demo</h2>
+        <p>The chat on clincog.net runs on your Gemini key. Switch it off, pause it so the day's free quota is still there for a presentation, or cap how many replies it may give in a day. Visitors with their own key are never affected, and neither are you here on the admin console.</p>
+      </div>
+    </header>
+    <div id="d-now"></div>
+    <div class="grid2" style="margin-top:18px">
+      <div class="field">
+        <label class="switch"><input type="checkbox" id="d-on"><i></i><span id="d-on-label">Demo on</span></label>
+        <small>Off: visitors see the message below instead of a reply.</small>
+      </div>
+      <label class="field"><span>Replies per day</span><input class="inp" type="number" min="1" step="1" id="d-cap" placeholder="No daily cap"><small>Counted from midnight in the seminar's time zone. Empty for none.</small></label>
+      <label class="field" style="grid-column: 1 / -1"><span>Message for visitors when it is off or paused</span><input class="inp" id="d-msg" maxlength="300" placeholder="The public demo is switched off for now."></label>
+    </div>
+    <div class="row-actions"><button type="button" class="btn-ink" id="d-save">Save</button><span class="err" id="d-err"></span></div>
+  </section>
+
+  <section class="set-section" id="sec-pause">
+    <header>
+      <div>
+        <h2>Keep it for a presentation</h2>
+        <p>Pause the demo for everyone else until a set time, so nobody uses up the free tier before you present. It reopens by itself.</p>
+      </div>
+    </header>
+    <div id="d-pause-now"></div>
+    <div class="grid2">
+      <label class="field"><span>Paused until</span><input class="inp" type="datetime-local" id="d-until"></label>
+      <div class="field"><span>&nbsp;</span><div class="quick" id="d-quick"></div></div>
+    </div>
+    <div class="row-actions">
+      <button type="button" class="btn-ink" id="d-pause">Pause until then</button>
+      <button type="button" class="btn-ghost" id="d-resume" hidden>Resume now</button>
+      <span class="err" id="d-perr"></span>
+    </div>
+  </section>
+
+</div>
+
+<script>window.CLINCOG_SHELL = { activeNav: "admin-demo", breadcrumb: [{ label: "Demo" }] };</script>
+<script src="/storage.js"></script>
+<script src="/icons.js"></script>
+<script src="/shell.js?v=2"></script>
+<script src="/toast.js"></script>
+<script src="/a11y.js"></script>
+<script src="/admin-settings.js"></script>
+</body>
+</html>
