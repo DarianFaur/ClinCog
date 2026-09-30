@@ -78,8 +78,13 @@ of pages in the sidebar, above the student pages:
   or a visitor — interviews open or closed, the public demo, this month's
   spend against the budget, active announcements — each with its switch;
   cost, tokens and replies per tier and per participant, updated live over
-  a WebSocket; a **Health** panel with the last hour's failure rate and
-  response times and the reason for each recent failure; Export CSV.
+  a WebSocket (the "Since restart" range is a running estimate that can be
+  started again from zero, deleting nothing); the **bill from Anthropic**
+  next to the estimate over any chosen period of UTC days (the two agree for
+  days on which the key was used only through ClinCog); a **Health** panel with the last hour's failure rate and
+  response times and the reason for each recent failure; Export CSV;
+  **Usage records**, with buttons to delete them per lane or all at once
+  (optionally only before a day), which sets the estimates back to zero.
 - **Course**: opening and closing the interviews, a **case schedule** (a
   patient open, closed, or open between two dates, so the cases can be
   released week by week), periods, and **announcements** shown as a banner

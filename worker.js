@@ -737,6 +737,7 @@ function describeChange(b, a) {
   val("Provider", b.provider || "anthropic", a.provider || "anthropic", (v) => (SEMINAR_PROVIDERS[v] || {}).label || v);
   if (!same(b.providerModels, a.providerModels)) out.push("Model names changed");
   if (!same(b.prices, a.prices)) out.push("Prices changed");
+  val("Estimate counter restarted", b.counterFrom || null, a.counterFrom || null, (v) => (v ? fmtWhen(v, a) : "from the first record"));
   val("Billing workspace", b.billingWorkspaceName || b.billingWorkspace || "whole organization", a.billingWorkspaceName || a.billingWorkspace || "whole organization");
   // schedule
   CASE_IDS.forEach((k) => {
@@ -1042,6 +1043,12 @@ export class SeminarConfig extends DurableObject {
         if (c.adminKeys) delete c.adminKeys.anthropic;
         break;
       }
+      // The estimate counter on Live monitoring ("Since restart") starts
+      // again from zero. Nothing is deleted: every other view is unchanged.
+      case "restartCounter": {
+        c.counterFrom = a.at === null ? null : Date.now();
+        break;
+      }
       case "billingWorkspace": {
         c.billingWorkspace = a.id ? String(a.id).slice(0, 80) : null;
         c.billingWorkspaceName = a.id ? String(a.name || a.id).slice(0, 80) : null;
@@ -1327,6 +1334,15 @@ const RANGES = {
   "30d": { span: 30 * 86400e3, bucket: 86400e3 },
 };
 const KEEP_MS = 90 * 86400e3;
+// "Since restart": from the moment the admin restarted the counter (or the
+// oldest record kept), with a bucket size that keeps the chart readable.
+function resolveRange(rangeKey, since) {
+  if (rangeKey !== "since") { const k = rangeKey in RANGES ? rangeKey : "24h"; return Object.assign({ key: k }, RANGES[k]); }
+  const now = Date.now(), from = Math.max(since || 0, now - KEEP_MS);
+  const span = Math.max(60e3, now - from);
+  const bucket = [60e3, 300e3, 900e3, 3600e3, 3 * 3600e3, 86400e3].find((b) => span / b <= 120) || 86400e3;
+  return { key: "since", span, bucket, from };
+}
 function monthKey(ts) { return new Date(ts || Date.now()).toISOString().slice(0, 7); }
 
 export class UsageMonitor extends DurableObject {
@@ -1356,6 +1372,23 @@ export class UsageMonitor extends DurableObject {
     const from = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1);
     const row = this.sql.exec("SELECT SUM(cost) AS c FROM ev WHERE lane = ? AND ts >= ?", laneKey, from).toArray()[0];
     return (row && row.c) || 0;
+  }
+  // Delete usage records: some lanes, everything or only before a time.
+  // Open pages are told to reload. Returns how many records went.
+  async purge(lanes, before) {
+    const ok = lanes.filter((l) => ["seminar", "demo", "admin", "byok"].includes(l));
+    if (!ok.length) return 0;
+    const marks = ok.map(() => "?").join(",");
+    const n = this.sql.exec("SELECT COUNT(*) AS n FROM ev WHERE lane IN (" + marks + ")" + (before ? " AND ts < ?" : ""), ...ok, ...(before ? [before] : [])).toArray()[0].n;
+    this.sql.exec("DELETE FROM ev WHERE lane IN (" + marks + ")" + (before ? " AND ts < ?" : ""), ...ok, ...(before ? [before] : []));
+    const msg = JSON.stringify({ type: "reset" });
+    for (const ws of this.ctx.getWebSockets()) { try { ws.send(msg); } catch {} }
+    return n;
+  }
+  async counts() {
+    const out = {};
+    for (const r of this.sql.exec("SELECT lane, COUNT(*) AS n, MIN(ts) AS first FROM ev GROUP BY lane")) out[r.lane] = { n: r.n, first: r.first };
+    return out;
   }
   byParticipant(laneKey, from) {
     const out = {};
@@ -1388,11 +1421,15 @@ export class UsageMonitor extends DurableObject {
 
   // Totals, a time series and the participant table for each lane, plus
   // the latest events - everything the page needs to draw itself.
-  async summary(rangeKey) {
-    const r = RANGES[rangeKey] || RANGES["24h"];
-    const now = Date.now(), from = now - r.span;
+  async summary(rangeKey, since) {
+    if (rangeKey === "since" && !since) {
+      const row = this.sql.exec("SELECT MIN(ts) AS t FROM ev").toArray()[0];
+      since = row && row.t ? row.t : Date.now();
+    }
+    const r = resolveRange(rangeKey, since);
+    const now = Date.now(), from = r.from != null ? r.from : now - r.span;
     const start = Math.floor(from / r.bucket) * r.bucket;
-    const n = Math.ceil((now - start) / r.bucket);
+    const n = Math.max(1, Math.ceil((now - start) / r.bucket));
     const lanes = {};
     const lane = (k) => lanes[k] || (lanes[k] = {
       req: 0, fail: 0, tin: 0, tout: 0, cost: 0, priced: true, participants: 0,
@@ -1402,7 +1439,7 @@ export class UsageMonitor extends DurableObject {
     ["demo", "seminar", "admin", "byok"].forEach(lane);
     for (const row of this.sql.exec(
       "SELECT lane, CAST((ts - ?) / ? AS INTEGER) AS b, COUNT(*) AS req, SUM(1 - ok) AS fail, SUM(tin) AS tin, SUM(tout) AS tout, SUM(cost) AS cost, SUM(cost IS NULL AND ok = 1) AS unpriced FROM ev WHERE ts >= ? GROUP BY lane, b",
-      start, r.bucket, start)) {
+      start, r.bucket, r.from != null ? from : start)) {
       const L = lane(row.lane), b = L.series[row.b];
       if (b) { b.req = row.req; b.tok = (row.tin || 0) + (row.tout || 0); b.cost = row.cost || 0; }
       L.req += row.req; L.fail += row.fail || 0; L.tin += row.tin || 0; L.tout += row.tout || 0; L.cost += row.cost || 0;
@@ -1410,13 +1447,13 @@ export class UsageMonitor extends DurableObject {
     }
     for (const row of this.sql.exec(
       "SELECT lane, pid, COUNT(*) AS req, SUM(tin) AS tin, SUM(tout) AS tout, SUM(cost) AS cost, MAX(ts) AS last FROM ev WHERE ts >= ? GROUP BY lane, pid ORDER BY cost DESC, req DESC",
-      start)) {
+      r.from != null ? from : start)) {
       const L = lane(row.lane);
       L.people.push({ pid: row.pid, req: row.req, tin: row.tin || 0, tout: row.tout || 0, cost: row.cost || 0, last: row.last });
     }
     for (const k in lanes) lanes[k].participants = lanes[k].people.length;
     const feed = this.sql.exec("SELECT ts, lane, pid AS participant, cs AS caseId, model, tin, tout, cost, ok, ms, err FROM ev ORDER BY ts DESC LIMIT 40").toArray();
-    return { range: rangeKey in RANGES ? rangeKey : "24h", bucket: r.bucket, from: start, now, lanes, feed };
+    return { range: r.key, bucket: r.bucket, from: start, since: r.from != null ? from : null, now, lanes, feed };
   }
 
   // Estimated cost per UTC day for one lane, models starting with a prefix.
@@ -1426,31 +1463,35 @@ export class UsageMonitor extends DurableObject {
     const row = this.sql.exec("SELECT MIN(ts) AS t FROM ev WHERE lane = ? AND model LIKE ?", laneKey, modelPrefix + "%").toArray()[0];
     return row && row.t ? row.t : null;
   }
-  async dailyCost(days, laneKey, modelPrefix) {
-    const DAY = 86400e3, since = Math.floor(Date.now() / DAY) * DAY - (days - 1) * DAY;
-    const out = {};
+  async costByDay(t0, t1, laneKey, modelPrefix) {
+    const DAY = 86400e3, out = {};
     for (const row of this.sql.exec(
-      "SELECT CAST(ts / ? AS INTEGER) AS d, SUM(cost) AS cost FROM ev WHERE ts >= ? AND lane = ? AND model LIKE ? GROUP BY d",
-      DAY, since, laneKey, modelPrefix + "%")) {
+      "SELECT CAST(ts / ? AS INTEGER) AS d, SUM(cost) AS cost FROM ev WHERE ts >= ? AND ts < ? AND lane = ? AND model LIKE ? GROUP BY d",
+      DAY, t0, t1, laneKey, modelPrefix + "%")) {
       out[new Date(row.d * DAY).toISOString().slice(0, 10)] = row.cost || 0;
     }
     return out;
   }
 
   // One participant's own series, for the detail chart.
-  async participant(laneKey, pid, rangeKey) {
-    const r = RANGES[rangeKey] || RANGES["24h"];
-    const now = Date.now(), start = Math.floor((now - r.span) / r.bucket) * r.bucket;
-    const n = Math.ceil((now - start) / r.bucket);
+  async participant(laneKey, pid, rangeKey, since) {
+    if (rangeKey === "since" && !since) {
+      const row = this.sql.exec("SELECT MIN(ts) AS t FROM ev").toArray()[0];
+      since = row && row.t ? row.t : Date.now();
+    }
+    const r = resolveRange(rangeKey, since);
+    const now = Date.now(), start = Math.floor((r.from != null ? r.from : now - r.span) / r.bucket) * r.bucket;
+    const n = Math.max(1, Math.ceil((now - start) / r.bucket));
     const series = Array.from({ length: n }, (_, i) => ({ t: start + i * r.bucket, req: 0, tok: 0, cost: 0 }));
+    const f = r.from != null ? r.from : start;
     for (const row of this.sql.exec(
       "SELECT CAST((ts - ?) / ? AS INTEGER) AS b, COUNT(*) AS req, SUM(tin) + SUM(tout) AS tok, SUM(cost) AS cost FROM ev WHERE ts >= ? AND lane = ? AND pid = ? GROUP BY b",
-      start, r.bucket, start, laneKey, pid)) {
+      start, r.bucket, f, laneKey, pid)) {
       const b = series[row.b]; if (b) { b.req = row.req; b.tok = row.tok || 0; b.cost = row.cost || 0; }
     }
     const byCase = this.sql.exec(
       "SELECT cs AS caseId, COUNT(*) AS req, SUM(tin) AS tin, SUM(tout) AS tout, SUM(cost) AS cost FROM ev WHERE ts >= ? AND lane = ? AND pid = ? GROUP BY cs",
-      start, laneKey, pid).toArray();
+      f, laneKey, pid).toArray();
     return { lane: laneKey, pid, bucket: r.bucket, series, byCase };
   }
 
@@ -1485,32 +1526,41 @@ async function anthropicAdmin(key, path) {
   return body;
 }
 const billingCache = new Map();
-async function anthropicBilling(env, days) {
+// Anthropic's bill and this console's estimate for the same UTC days,
+// from..to inclusive ("YYYY-MM-DD"). They agree when every use of the key
+// in those days went through ClinCog; days with earlier tests will not.
+async function anthropicBilling(env, fromDay, toDay) {
   const cfg = await seminarConfig(env);
   const key = anthropicAdminKey(cfg, env);
   if (!key) return { configured: false };
+  const DAY = 86400e3;
+  const today = new Date(Math.floor(Date.now() / DAY) * DAY).toISOString().slice(0, 10);
+  const re = /^\d{4}-\d{2}-\d{2}$/;
+  if (!re.test(toDay || "") || toDay > today) toDay = today;
+  if (!re.test(fromDay || "")) fromDay = new Date(Date.parse(toDay) - 29 * DAY).toISOString().slice(0, 10);
+  if (fromDay > toDay) fromDay = toDay;
+  const oldest = new Date(Date.now() - KEEP_MS).toISOString().slice(0, 10);
+  if (fromDay < oldest) fromDay = oldest;
   const ws = cfg.billingWorkspace || null;
-  const cacheKey = days + "|" + (ws || "") + "|" + key.slice(-6);
+  const cacheKey = fromDay + "|" + toDay + "|" + (ws || "") + "|" + key.slice(-6);
   const hit = billingCache.get(cacheKey);
   if (hit && Date.now() - hit.at < 600e3) return hit.value;
 
-  const DAY = 86400e3;
-  const today = Math.floor(Date.now() / DAY) * DAY;
-  const start = new Date(today - (days - 1) * DAY).toISOString();
-  const end = new Date(today + DAY).toISOString();
+  const t0 = Date.parse(fromDay + "T00:00:00Z"), t1 = Date.parse(toDay + "T00:00:00Z") + DAY;
   const byDay = new Map(), byModel = {};
-  for (let i = 0; i < days; i++) byDay.set(new Date(today - (days - 1 - i) * DAY).toISOString().slice(0, 10), 0);
+  for (let t = t0; t < t1; t += DAY) byDay.set(new Date(t).toISOString().slice(0, 10), 0);
   let page = null, guard = 0;
   do {
-    const q = "cost_report?starting_at=" + encodeURIComponent(start) + "&ending_at=" + encodeURIComponent(end) +
+    const q = "cost_report?starting_at=" + encodeURIComponent(new Date(t0).toISOString()) + "&ending_at=" + encodeURIComponent(new Date(t1).toISOString()) +
       "&bucket_width=1d&limit=31&group_by[]=workspace_id&group_by[]=description" + (page ? "&page=" + encodeURIComponent(page) : "");
     const res = await anthropicAdmin(key, q);
     for (const b of res.data || []) {
       const d = String(b.starting_at).slice(0, 10);
+      if (!byDay.has(d)) continue;
       for (const r of b.results || []) {
         if (ws && r.workspace_id !== ws) continue;
         const usd = (Number(r.amount) || 0) / 100; // amounts are in cents
-        byDay.set(d, (byDay.get(d) || 0) + usd);
+        byDay.set(d, byDay.get(d) + usd);
         const m = r.model || r.description || "other";
         byModel[m] = (byModel[m] || 0) + usd;
       }
@@ -1518,25 +1568,15 @@ async function anthropicBilling(env, days) {
     page = res.has_more ? res.next_page : null;
   } while (page && ++guard < 10);
 
-  // Our own estimate for the same days: the seminar lane's Claude replies.
-  const est = await monitorStub(env).dailyCost(days, "seminar", "claude");
-  // Only days this console watched from start to finish are compared: what
-  // was billed before monitoring started (tests, earlier use) has no
-  // estimate to set against it. The first day counts only if monitoring
-  // was on from its first hour (UTC).
+  // The estimate for the same days: the seminar's Claude replies.
+  const est = await monitorStub(env).costByDay(t0, t1, "seminar", "claude");
   const first = await monitorStub(env).firstEvent("seminar", "claude");
-  let compareFrom = null;
-  if (first != null) {
-    const d0 = Math.floor(first / DAY) * DAY;
-    compareFrom = new Date(first - d0 < 3600e3 ? d0 : d0 + DAY).toISOString().slice(0, 10);
-  }
-  const series = [...byDay.entries()].map(([date, billed]) => ({ date, billed, estimate: est[date] || 0, compared: !!compareFrom && date >= compareFrom }));
-  const cmp = series.filter((x) => x.compared), pre = series.filter((x) => !x.compared);
+  const series = [...byDay.entries()].map(([date, billed]) => ({ date, billed, estimate: est[date] || 0 }));
   const value = {
     configured: true, workspace: ws, workspaceName: cfg.billingWorkspaceName || null,
-    days: series, compareFrom, monitoringSince: first,
-    billed: cmp.reduce((a, x) => a + x.billed, 0), estimate: cmp.reduce((a, x) => a + x.estimate, 0),
-    before: { billed: pre.reduce((a, x) => a + x.billed, 0), from: series[0].date, to: pre.length ? pre[pre.length - 1].date : null },
+    from: fromDay, to: toDay, days: series,
+    billed: series.reduce((a, x) => a + x.billed, 0), estimate: series.reduce((a, x) => a + x.estimate, 0),
+    monitoringSince: first, counterFrom: cfg.counterFrom || null,
     byModel, fetchedAt: Date.now(),
   };
   billingCache.set(cacheKey, { at: Date.now(), value });
@@ -1558,15 +1598,19 @@ async function handleMonitorApi(request, url, env) {
     return monitorStub(env).fetch(request);
   }
   if (path === "summary" && request.method === "GET") {
-    const data = await monitorStub(env).summary(url.searchParams.get("range") || "24h");
+    const range = url.searchParams.get("range") || "24h";
+    const scfg = await seminarConfig(env).catch(() => ({}));
+    const data = await monitorStub(env).summary(range, scfg.counterFrom || null);
+    data.counterFrom = scfg.counterFrom || null;
     data.freeTierGemini = String(env.GEMINI_FREE_TIER || "").toLowerCase() === "true";
     try { data.seminarProvider = SEMINAR_PROVIDERS[seminarProvider(await seminarConfig(env))].label; } catch { data.seminarProvider = "Anthropic"; }
     data.prices = priceTable(env);
     return jsonResponse(data);
   }
   if (path === "participant" && request.method === "GET") {
+    const scfg = await seminarConfig(env).catch(() => ({}));
     return jsonResponse(await monitorStub(env).participant(
-      url.searchParams.get("lane") || "", url.searchParams.get("pid") || "", url.searchParams.get("range") || "24h"));
+      url.searchParams.get("lane") || "", url.searchParams.get("pid") || "", url.searchParams.get("range") || "24h", scfg.counterFrom || null));
   }
   // The seminar roster with each student's quota, and a per-student reset.
   if (path === "quotas" && request.method === "GET") {
@@ -1660,6 +1704,25 @@ async function handleMonitorApi(request, url, env) {
       "Content-Disposition": 'attachment; filename="clincog-usage-' + day + '.csv"',
     } });
   }
+  // Usage records: how many there are, and deleting them.
+  if (path === "records" && request.method === "GET") return jsonResponse({ lanes: await monitorStub(env).counts(), now: Date.now() });
+  if (path === "purge" && request.method === "POST") {
+    let body;
+    try { body = await request.json(); } catch { return jsonResponse({ error: "Could not read the request." }, 400); }
+    const lanes = Array.isArray(body.lanes) ? body.lanes.map(String) : [];
+    const before = body.before == null || body.before === "" ? null : Number(body.before);
+    if (!lanes.length) return jsonResponse({ error: "Choose what to delete." }, 400);
+    if (before !== null && !Number.isFinite(before)) return jsonResponse({ error: "That date could not be read." }, 400);
+    const n = await monitorStub(env).purge(lanes, before);
+    const names = { seminar: "Seminar", demo: "Demo", admin: "Admin (you)", byok: "Own keys" };
+    const cfg = await seminarConfig(env, true);
+    // With every record of a lane gone, "Since restart" starts again too.
+    if (!before && lanes.length === 4 && cfg.counterFrom) await configStub(env).update("restartCounter", { at: null }, configSeed(env)).catch(() => {});
+    await configStub(env).addHistory("purge", ["Usage records deleted: " + lanes.map((l) => names[l] || l).join(", ") + (before ? ", before " + fmtWhen(before, cfg) : ", all") + " (" + n + " record" + (n === 1 ? "" : "s") + ")"], null);
+    billingCache.clear(); cfgCache = { at: 0, value: null };
+    return jsonResponse({ ok: true, deleted: n });
+  }
+
   // History of changes, and a backup of the settings.
   if (path === "history" && request.method === "GET") return jsonResponse({ entries: await configStub(env).history(), now: Date.now() });
   if (path === "backup" && request.method === "GET") {
@@ -1691,8 +1754,7 @@ async function handleMonitorApi(request, url, env) {
 
   // What Anthropic billed, next to our estimate.
   if (path === "billing" && request.method === "GET") {
-    const days = Math.min(31, Math.max(7, parseInt(url.searchParams.get("days"), 10) || 30));
-    try { return jsonResponse(await anthropicBilling(env, days)); }
+    try { return jsonResponse(await anthropicBilling(env, url.searchParams.get("from"), url.searchParams.get("to"))); }
     catch (e) { return jsonResponse({ configured: true, error: String(e.message || e) }, 200); }
   }
   if (path === "billing-status" && request.method === "GET") {

@@ -139,6 +139,16 @@
   .chart .line.est { stroke: var(--text-tertiary); stroke-dasharray: 5 4; }
   .bill-note { font-size: 12px; color: var(--text-tertiary); margin: 10px 0 0; }
   .bill-err { color: var(--domain-psychosis-line); font-size: 13px; }
+  .bill-from { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--hairline); font-size: 13px; }
+  .bill-from { margin: 0 0 14px; padding: 0; border: 0; }
+  .bill-from .seg { background: var(--paper); max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+  .bill-from .seg button { white-space: nowrap; flex-shrink: 0; }
+  .bill-from .dash { color: var(--text-tertiary); }
+  .since-box { display: inline-flex; align-items: center; gap: 10px; font-size: var(--text-sm); color: var(--text-secondary); }
+  .since-box .btn-ghost { height: 32px; }
+  .since-box[hidden] { display: none; }
+  .bill-date { height: 32px; padding: 0 10px; border: 1px solid transparent; border-radius: 10px; background: var(--paper); color: var(--text-primary); font: 400 13px var(--font-sans); }
+  .bill-date:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .feed { background: var(--mist); border-radius: 24px; padding: 6px 8px; }
   .feed-row { display: grid; grid-template-columns: 78px 118px minmax(0, 1fr) 110px 120px 84px; gap: 12px; align-items: center;
     padding: 10px 12px; border-radius: 14px; font-size: var(--text-sm); }
@@ -173,6 +183,20 @@
   .now-card .acts a, .now-card .acts button { height: 30px; font-size: 12.5px; padding: 0 12px; text-decoration: none; }
   .btn-export { gap: 6px; text-decoration: none; }
   .btn-export svg { width: 15px; height: 15px; }
+  .records { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+  @media (max-width: 900px) { .records { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 480px) { .records { grid-template-columns: 1fr; } }
+  .rec { background: var(--mist); border-radius: 20px; padding: 16px 18px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .rec .nm { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; }
+  .rec .nm i { width: 8px; height: 8px; border-radius: 2px; background: var(--lane); }
+  .rec b { font-family: var(--font-serif); font-weight: 400; font-size: 1.35rem; font-variant-numeric: tabular-nums; }
+  .rec span { font-size: 12.5px; color: var(--text-tertiary); }
+  .rec .btn-ghost { align-self: flex-start; margin-top: 8px; height: 30px; font-size: 12.5px; }
+  .btn-ghost.danger { border-color: var(--domain-psychosis-line); color: var(--domain-psychosis-line); }
+  .btn-ghost.danger:hover { background: var(--domain-psychosis-line); color: var(--paper); }
+  .rec-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
+  .rec-before { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); }
+  .rec-before .bill-date { background: var(--mist); }
   /* ---- health ---- */
   .health { background: var(--mist); border-radius: 24px; padding: 22px 24px 18px; }
   .health-verdict { display: flex; align-items: center; gap: 10px; font-family: var(--font-serif); font-size: 1.3rem; margin-bottom: 14px; }
@@ -219,7 +243,9 @@
         <button type="button" data-range="24h" aria-pressed="true">24 hours</button>
         <button type="button" data-range="7d">7 days</button>
         <button type="button" data-range="30d">30 days</button>
+        <button type="button" data-range="since">Since restart</button>
       </div>
+      <span class="since-box" id="since-box" hidden><span id="since-text"></span><button type="button" class="btn-ghost" id="since-restart" title="Start the Since restart counter from zero now. Nothing is deleted.">Restart counter</button></span>
       <a class="btn-ghost btn-export" href="/api/monitor/export.csv" download id="export"><span id="export-ico"></span>Export CSV</a>
     </div>
   </div>
@@ -273,6 +299,20 @@
       </div>
     </div>
     <div class="feed" id="feed"></div>
+  </section>
+
+  <section class="mon-section" id="records-sec">
+    <div class="mon-section-head">
+      <div>
+        <h2>Usage records</h2>
+        <p>Every reply recorded here (tokens, cost, who, which case; never the conversation). Deleting records sets the estimates, charts, health and this month's spend for the budget back to zero for what is deleted. Anthropic's bill, the settings and what each student has used are not touched. It cannot be undone.</p>
+      </div>
+    </div>
+    <div class="records" id="records"></div>
+    <div class="rec-actions">
+      <label class="rec-before"><span>Only records before</span><input type="date" class="bill-date" id="rec-before" aria-label="Only records before this day"></label>
+      <button type="button" class="btn-ghost danger" id="rec-all">Delete all records</button>
+    </div>
   </section>
 
 </div>

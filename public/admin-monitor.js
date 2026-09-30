@@ -51,10 +51,12 @@
   function pad(n) { return n < 10 ? "0" + n : "" + n; }
   var DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  function when(t, range) {
+  function when(t, range, bucket) {
     var d = new Date(t);
+    if (range === "since") range = bucket >= 86400e3 ? "30d" : bucket >= 3 * 3600e3 ? "7d" : bucket >= 3600e3 ? "day" : "1h";
     if (range === "30d") return d.getDate() + " " + MONTHS[d.getMonth()];
     if (range === "7d") return DAYS[d.getDay()] + " " + pad(d.getHours()) + ":00";
+    if (range === "day") return d.getDate() + " " + MONTHS[d.getMonth()] + " " + pad(d.getHours()) + ":00";
     return pad(d.getHours()) + ":" + pad(d.getMinutes());
   }
   function clock(t) { var d = new Date(t); return pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":" + pad(d.getSeconds()); }
@@ -114,7 +116,7 @@
     [0, Math.floor((n - 1) / 2), n - 1].forEach(function (i, k) {
       if (!series[i]) return;
       var t = add("text", { x: X(i), y: H - 5, "text-anchor": k === 0 ? "start" : k === 2 ? "end" : "middle" }, "axis");
-      t.textContent = when(series[i].t, range);
+      t.textContent = when(series[i].t, range, bucket);
     });
     var cross = add("line", { y1: padT - 6, y2: Y(0), visibility: "hidden" }, "cross");
     var dot = add("circle", { r: 4.5, visibility: "hidden" }, "dot");
@@ -128,7 +130,7 @@
       cross.setAttribute("x1", x); cross.setAttribute("x2", x); cross.setAttribute("visibility", "visible");
       dot.setAttribute("cx", x); dot.setAttribute("cy", y); dot.setAttribute("visibility", "visible");
       tip.textContent = "";
-      tip.appendChild(el("div", "when", when(b.t, range) + " – " + when(b.t + bucket, range)));
+      tip.appendChild(el("div", "when", when(b.t, range, bucket) + " – " + when(b.t + bucket, range, bucket)));
       tip.appendChild(el("strong", "", fmt(b[key] || 0)));
       tip.appendChild(el("div", "", num(b.req) + " replies · " + compact(b.tok) + " tokens"));
       tip.hidden = false;
@@ -368,8 +370,8 @@
     add("path", { d: "M" + X(0) + "," + Y(0) + " L" + days.map(function (d, i) { return X(i).toFixed(1) + "," + Y(d.billed).toFixed(1); }).join(" L") + " L" + X(n - 1) + "," + Y(0) + " Z" }, "area");
     add("path", { d: path("billed") }, "line");
     add("path", { d: path("estimate") }, "line est");
-    [0, Math.floor((n - 1) / 2), n - 1].forEach(function (i, k) {
-      var t = add("text", { x: X(i), y: H - 5, "text-anchor": k === 0 ? "start" : k === 2 ? "end" : "middle" }, "axis");
+    (n >= 5 ? [0, Math.floor((n - 1) / 2), n - 1] : n > 1 ? [0, n - 1] : [0]).forEach(function (i, k, all) {
+      var t = add("text", { x: X(i), y: H - 5, "text-anchor": k === 0 ? "start" : k === all.length - 1 ? "end" : "middle" }, "axis");
       var dd = new Date(days[i].date + "T00:00:00Z"); t.textContent = dd.getUTCDate() + " " + MONTHS[dd.getUTCMonth()];
     });
     var cross = add("line", { y1: padT - 6, y2: Y(0), visibility: "hidden" }, "cross");
@@ -402,29 +404,60 @@
   }
   var billing = null;
   function dayLabel(iso) { var d = new Date(iso + "T00:00:00Z"); return d.getUTCDate() + " " + MONTHS[d.getUTCMonth()]; }
+  function utcDay(ms) { return new Date(ms).toISOString().slice(0, 10); }
+  // The billed period: a preset or two days chosen here. Remembered in this
+  // browser only; the same days are used for the bill and the estimate.
+  var BILL_KEY = "clincog_admin_billing_period";
+  var billPeriod = { preset: "30d" };
+  try { var saved = JSON.parse(localStorage.getItem(BILL_KEY) || "null"); if (saved && saved.preset) billPeriod = saved; } catch (e) {}
+  function periodDays() {
+    var today = utcDay(Date.now()), DAY = 86400e3;
+    switch (billPeriod.preset) {
+      case "month": return { from: today.slice(0, 8) + "01", to: today };
+      case "7d": return { from: utcDay(Date.now() - 6 * DAY), to: today };
+      case "since": return { from: state.data && state.data.counterFrom ? utcDay(state.data.counterFrom) : (billing && billing.monitoringSince ? utcDay(billing.monitoringSince) : utcDay(Date.now() - 29 * DAY)), to: today };
+      case "custom": return { from: billPeriod.from || utcDay(Date.now() - 29 * DAY), to: billPeriod.to || today };
+      default: return { from: utcDay(Date.now() - 29 * DAY), to: today };
+    }
+  }
+  function setPeriod(p) {
+    billPeriod = p;
+    try { localStorage.setItem(BILL_KEY, JSON.stringify(p)); } catch (e) {}
+    loadBilling();
+  }
+  function periodControls() {
+    var row = el("div", "bill-from");
+    var seg = el("div", "seg"); seg.setAttribute("role", "group"); seg.setAttribute("aria-label", "Billed period");
+    [["month", "This month"], ["7d", "7 days"], ["30d", "30 days"], ["since", "Since restart"], ["custom", "Custom"]].forEach(function (x) {
+      var b = el("button", "", x[1]); b.type = "button"; b.setAttribute("aria-pressed", String(billPeriod.preset === x[0]));
+      b.addEventListener("click", function () {
+        if (x[0] === "custom") { billPeriod = { preset: "custom", from: billing.from, to: billing.to }; renderBilling(); return; }
+        setPeriod({ preset: x[0] });
+      });
+      seg.appendChild(b);
+    });
+    row.appendChild(seg);
+    // On a narrow screen the choice row scrolls; keep the chosen one in view.
+    setTimeout(function () { var on = seg.querySelector('[aria-pressed="true"]'); if (on && seg.scrollWidth > seg.clientWidth) seg.scrollLeft = on.offsetLeft - 8; }, 0);
+    if (billPeriod.preset === "custom") {
+      var f = el("input", "bill-date"), t = el("input", "bill-date");
+      f.type = t.type = "date"; f.value = billPeriod.from || billing.from; t.value = billPeriod.to || billing.to;
+      f.setAttribute("aria-label", "From (UTC day)"); t.setAttribute("aria-label", "To (UTC day)");
+      var go = el("button", "btn-ghost", "Show"); go.type = "button";
+      go.addEventListener("click", function () { if (f.value && t.value) setPeriod({ preset: "custom", from: f.value, to: t.value }); });
+      row.appendChild(f); row.appendChild(el("span", "dash", "to")); row.appendChild(t); row.appendChild(go);
+    }
+    return row;
+  }
   function renderBilling() {
     var sec = document.getElementById("billing"), body = document.getElementById("billing-body");
     if (!billing || !billing.configured) { sec.hidden = true; return; }
     sec.hidden = false; body.textContent = "";
+    body.appendChild(periodControls());
     if (billing.error) { body.appendChild(el("p", "bill-err", billing.error)); return; }
     var scope = billing.workspaceName ? "workspace " + billing.workspaceName : "whole organization";
-    // Only the days monitored from start to finish are compared; what was
-    // billed before (tests, earlier use) is shown on one line, apart.
-    var cmp = billing.days.filter(function (d) { return d.compared; });
-    var pre = billing.before || { billed: 0 };
-    if (!cmp.length) {
-      document.getElementById("billing-sub").textContent = "What Anthropic charged, next to this console's estimate for the seminar (" + scope + ").";
-      var t0 = el("div", "bill-tiles");
-      [[money(pre.billed), "billed by Anthropic, last " + billing.days.length + " days"], ["-", "estimated here"], ["-", "billed vs estimate"]].forEach(function (t) {
-        var d = el("div"); d.appendChild(el("b", "", t[0])); d.appendChild(el("span", "", t[1])); t0.appendChild(d);
-      });
-      body.appendChild(t0);
-      body.appendChild(el("p", "bill-note", billing.compareFrom
-        ? "The comparison starts on " + dayLabel(billing.compareFrom) + " (UTC), the first whole day this console watched. Until then there is nothing to compare: what was billed before includes use from before monitoring started."
-        : "No seminar reply on Anthropic has been recorded here yet, so there is nothing to compare. The comparison starts with the first whole day this console watches."));
-      return;
-    }
-    document.getElementById("billing-sub").textContent = "What Anthropic charged each day since " + dayLabel(cmp[0].date) + ", when this console started watching (" + scope + "), next to its estimate for the seminar.";
+    var span = billing.from === billing.to ? dayLabel(billing.from) : dayLabel(billing.from) + " - " + dayLabel(billing.to);
+    document.getElementById("billing-sub").textContent = "What Anthropic charged (" + scope + ") and what this console estimated for the seminar, over the same UTC days: " + span + ".";
     var diff = billing.billed - billing.estimate;
     // A percentage of a few cents says nothing; below a dollar the gap is in dollars.
     var diffText = billing.estimate >= 1 ? (diff >= 0 ? "+" : "") + (diff / billing.estimate * 100).toFixed(0) + "%" : (diff >= 0 ? "+" : "-") + money(Math.abs(diff));
@@ -434,17 +467,25 @@
       var d = el("div"); d.appendChild(el("b", "", t[0])); d.appendChild(el("span", "", t[1])); tiles.appendChild(d);
     });
     body.appendChild(tiles);
-    var lg = el("div", "legend"), a = el("span"), b = el("span");
-    a.appendChild(el("i")); a.appendChild(document.createTextNode("Billed")); b.appendChild(el("i", "est")); b.appendChild(document.createTextNode("Estimated here"));
-    lg.appendChild(a); lg.appendChild(b);
-    var ch = el("div");
-    if (cmp.length >= 2) { body.appendChild(lg); body.appendChild(ch); billChart(ch, cmp); }
-    else body.appendChild(ch).appendChild(el("p", "bill-note", "One day so far (" + dayLabel(cmp[0].date) + "): " + money(cmp[0].billed) + " billed, " + money(cmp[0].estimate) + " estimated. The chart appears from the second day."));
-    if (pre.billed > 0) body.appendChild(el("p", "bill-note", "Left out: " + money(pre.billed) + " billed " + (pre.to && pre.to !== pre.from ? "from " + dayLabel(pre.from) + " to " + dayLabel(pre.to) : "on " + dayLabel(pre.from)) + ", before this console was watching - tests and earlier use it has no estimate for."));
-    body.appendChild(el("p", "bill-note", "Days are UTC. Anthropic adds costs within minutes; this is refreshed every 10 minutes. A difference means use outside the seminar is counted (choose a workspace under AI provider), or a price here is out of date."));
+    if (billing.days.length >= 2) {
+      var lg = el("div", "legend"), a = el("span"), b = el("span");
+      a.appendChild(el("i")); a.appendChild(document.createTextNode("Billed")); b.appendChild(el("i", "est")); b.appendChild(document.createTextNode("Estimated here"));
+      lg.appendChild(a); lg.appendChild(b); body.appendChild(lg);
+      var ch = el("div"); body.appendChild(ch); billChart(ch, billing.days);
+    }
+    // Why the two can differ in this period.
+    var ms = billing.monitoringSince, msDay = ms ? utcDay(ms) : null;
+    if (!ms) body.appendChild(el("p", "bill-note", "No seminar reply has been recorded here yet, so there is no estimate to set against the bill."));
+    else if (billing.from < msDay || (billing.from === msDay && ms % 86400e3 > 3600e3)) {
+      var pre = billing.days.filter(function (d) { return d.date < msDay; }).reduce(function (x, d) { return x + d.billed; }, 0);
+      body.appendChild(el("p", "bill-note", "This period starts before this console began recording (" + fmtWhen(ms) + "), so the bill includes use it never saw" + (pre > 0 ? " (" + money(pre) + " before " + dayLabel(msDay) + ")" : "") + ". Choose a later start for the two to match."));
+    }
+    body.appendChild(el("p", "bill-note", "Days are UTC, as Anthropic bills them; the estimate uses the same days. Anthropic adds costs within minutes; this is refreshed every 10 minutes. A difference in a period this console watched means use outside the seminar, or a price here out of date."));
   }
+  function fmtWhen(ms) { var d = new Date(ms); return d.getDate() + " " + MONTHS[d.getMonth()] + ", " + pad(d.getHours()) + ":" + pad(d.getMinutes()); }
   function loadBilling() {
-    return fetch("/api/monitor/billing?days=30", { cache: "no-store" })
+    var p = periodDays();
+    return fetch("/api/monitor/billing?from=" + p.from + "&to=" + p.to, { cache: "no-store" })
       .then(function (r) { return r.json(); })
       .then(function (b) { billing = b; renderBilling(); })
       .catch(function () {});
@@ -597,6 +638,44 @@
     state.data.feed.slice(0, 20).forEach(function (e) { f.appendChild(feedRow(e)); });
   }
 
+  // ---------- usage records: counts and deleting ----------
+  function loadRecords() {
+    return fetch("/api/monitor/records", { cache: "no-store" }).then(function (r) { return r.json(); }).then(renderRecords).catch(function () {});
+  }
+  function renderRecords(d) {
+    var host = document.getElementById("records"); host.textContent = "";
+    ORDER.forEach(function (k) {
+      var c = d.lanes[k] || { n: 0 }, card = el("div", "rec lane-" + k), nm = el("div", "nm");
+      nm.appendChild(el("i")); nm.appendChild(el("span", "", LANES[k].name)); card.appendChild(nm);
+      card.appendChild(el("b", "", num(c.n)));
+      card.appendChild(el("span", "", c.n ? "records since " + fmtWhen(c.first) : "no records"));
+      var b = el("button", "btn-ghost danger", "Delete"); b.type = "button"; b.disabled = !c.n;
+      b.addEventListener("click", function () { purge([k], LANES[k].name); });
+      card.appendChild(b);
+      host.appendChild(card);
+    });
+  }
+  function beforeValue() {
+    var v = document.getElementById("rec-before").value;
+    return v ? new Date(v + "T00:00:00").getTime() : null;
+  }
+  function purge(lanes, label) {
+    var before = beforeValue();
+    var what = (label || "all") + " usage records" + (before ? " from before " + document.getElementById("rec-before").value : "");
+    if (lanes.length === ORDER.length && !before) {
+      var typed = prompt("Delete every usage record, in every lane? The estimates, charts, health and this month's spend start again from zero. This cannot be undone.\n\nType DELETE to confirm.");
+      if (typed !== "DELETE") return;
+    } else if (!confirm("Delete " + what + "? This cannot be undone.")) return;
+    fetch("/api/monitor/purge", { method: "POST", headers: { "Content-Type": "application/json", "X-ClinCog-Admin": "1" }, body: JSON.stringify({ lanes: lanes, before: before }) })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (window.ClinCogToast) window.ClinCogToast.show(j.ok ? { title: "Deleted " + num(j.deleted) + " record" + (j.deleted === 1 ? "" : "s") } : { title: "Not deleted", detail: j.error || "" });
+        refreshAll();
+      });
+  }
+  function refreshAll() { return Promise.all([load(), loadRecords(), loadHealth(), loadOverview()]).then(loadBilling); }
+  document.getElementById("rec-all").addEventListener("click", function () { purge(ORDER.slice(), "all"); });
+
   // ---------- live events ----------
   var healthT = null;
   function apply(e) {
@@ -608,13 +687,14 @@
     if (!L) return;
     // roll the buckets forward if the event is past the last one
     var idx = Math.floor((e.ts - d.from) / d.bucket);
+    // "Since restart" keeps growing from its start; the other ranges roll.
     while (idx >= L.series.length) {
       ORDER.forEach(function (k) {
         var s = d.lanes[k].series, last = s[s.length - 1];
         s.push({ t: last.t + d.bucket, req: 0, tok: 0, cost: 0 });
-        s.shift();
+        if (d.range !== "since") s.shift();
       });
-      d.from += d.bucket;
+      if (d.range !== "since") d.from += d.bucket;
       idx = Math.floor((e.ts - d.from) / d.bucket);
     }
     var b = L.series[idx];
@@ -660,7 +740,11 @@
     };
     ws.onmessage = function (m) {
       if (m.data === "pong") return;
-      try { var msg = JSON.parse(m.data); if (msg.type === "event") apply(msg.event); } catch (e) {}
+      try {
+        var msg = JSON.parse(m.data);
+        if (msg.type === "event") apply(msg.event);
+        else if (msg.type === "reset") refreshAll(); // records deleted, here or in another window
+      } catch (e) {}
     };
     ws.onclose = function () {
       clearInterval(pingTimer);
@@ -679,6 +763,7 @@
       fetch("/api/monitor/quotas", { cache: "no-store" }).then(function (r) { return r.json(); }).catch(function () { return null; }),
     ]).then(function (res) {
       state.data = res[0];
+      renderSince();
       LANES.seminar.where = "uvt.clincog.net · " + (res[0].seminarProvider || "Anthropic");
       state.quotas = res[1];
       renderLanes(); renderPeople(); renderFeed();
@@ -701,6 +786,23 @@
     g.querySelectorAll("button").forEach(function (x) { if (!x.hasAttribute("aria-pressed")) x.setAttribute("aria-pressed", "false"); });
   }
   segment("range", "data-range", function (v) { state.range = v; load(); });
+  // The estimate counter: "Since restart" counts from the last restart (or
+  // the oldest record kept). Restarting deletes nothing.
+  function renderSince() {
+    var box = document.getElementById("since-box"), d = state.data;
+    box.hidden = state.range !== "since";
+    if (box.hidden || !d) return;
+    document.getElementById("since-text").textContent = d.counterFrom ? "since " + fmtWhen(d.counterFrom) : "since the first record" + (d.since ? ", " + fmtWhen(d.since) : "");
+  }
+  document.getElementById("since-restart").addEventListener("click", function () {
+    if (!confirm("Start the estimate counter from zero now? Nothing is deleted: the other ranges, the bill comparison and the monthly budget stay as they are.")) return;
+    fetch("/api/monitor/seminar", { method: "POST", headers: { "Content-Type": "application/json", "X-ClinCog-Admin": "1" }, body: JSON.stringify({ op: "restartCounter", args: {} }) })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (window.ClinCogToast) window.ClinCogToast.show(j.ok ? { title: "Counter restarted" } : { title: "Not restarted", detail: j.error || "" });
+        return load().then(function () { if (billPeriod.preset === "since") loadBilling(); });
+      });
+  });
   segment("people-lane", "data-lane", function (v) { state.lane = v; renderPeople(); });
 
   var resizeT = null;
@@ -710,9 +812,12 @@
   });
   // Charts use theme colours through CSS, so a theme switch needs nothing.
 
-  load().then(connect);
+  var firstLoad = load();
+  firstLoad.then(connect);
   setInterval(load, 60000);
-  loadBilling();
+  firstLoad.then(loadBilling);
+  loadRecords();
+  setInterval(loadRecords, 60000);
   setInterval(loadBilling, 600000);
   loadHealth();
   setInterval(loadHealth, 60000);
