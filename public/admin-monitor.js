@@ -172,7 +172,7 @@
     card.appendChild(top);
 
     var hero = el("div", "lane-hero");
-    var free = (key === "demo" || key === "admin") && state.data.freeTierGemini;
+    var free = (key === "demo" || key === "admin") && (state.data.freeTier ? !!state.data.freeTier[key] : state.data.freeTierGemini);
     if (free) {
       // Free tier: nothing is billed. The paid-tier equivalent stays in the
       // note, the chart and the table, as a measure of how much is used.
@@ -528,7 +528,7 @@
     var closedCases = CASES.filter(function (c) { return o.cases[c.id] && o.cases[c.id].open === false; }).map(function (c) { return c.name; });
     host.appendChild(nowCard("Seminar interviews", iv.open, iv.open ? "Open" : "Closed",
       iv.open ? (iv.period || "") + " \u00b7 " + o.provider + (closedCases.length ? " \u00b7 not yet: " + closedCases.join(", ") : "") : iv.text,
-      null, iv.blocked ? [{ label: "Reopen past the budget", confirm: "Reopen the interviews for the rest of this month? Spending continues past the budget.", run: function () { post("reopenBudget", {}, "Interviews reopened"); } }, { label: "Budget", href: "/admin/provider#sec-budget" }]
+      null, iv.blocked ? [{ label: "Reopen past the budget", confirm: "Reopen the interviews for the rest of this month? Spending continues past the budget.", run: function () { post("reopenBudget", {}, "Interviews reopened"); } }, { label: "Budget", href: "/admin/models#sec-budget" }]
         : [{ label: iv.closedByYou ? "Open the interviews" : "Close the interviews", confirm: iv.closedByYou ? null : "Close the interviews for every student now?", run: function () { post("general", { open: iv.closedByYou }, iv.closedByYou ? "Interviews open" : "Interviews closed"); } },
            { label: "Course", href: "/admin/course" }]));
     var d = o.demo;
@@ -542,7 +542,7 @@
     var b = o.budget, spent = b.spent || 0;
     host.appendChild(nowCard("Seminar spend this month", !iv.blocked, money(spent),
       b.monthly ? "of " + money(b.monthly) + " (" + Math.round(spent / b.monthly * 100) + "%)" : "No monthly budget set",
-      b.monthly ? bar(spent, b.monthly, b.monthly * b.alertPct / 100) : null, [{ label: "Budget and alerts", href: "/admin/provider#sec-budget" }]));
+      b.monthly ? bar(spent, b.monthly, b.monthly * b.alertPct / 100) : null, [{ label: "Budget and alerts", href: "/admin/models#sec-budget" }]));
     host.appendChild(nowCard("Announcements", o.announcements > 0, String(o.announcements), o.announcements === 1 ? "showing to students now" : "showing to students now",
       null, [{ label: o.announcements ? "Manage" : "Write one", href: "/admin/course#sec-announce" }]));
   }
@@ -592,7 +592,7 @@
       var bar = el("div", "bar" + (pct >= b.alertPct ? " warn" : "")), i = el("i"); i.style.width = Math.min(100, pct) + "%";
       bar.appendChild(i); hb.appendChild(bar);
     } else {
-      hb.appendChild(el("span", "", "Seminar this month: " + money(month) + ". No monthly budget is set (AI provider > Budget and alerts)."));
+      hb.appendChild(el("span", "", "Seminar this month: " + money(month) + ". No monthly budget is set (AI models > Budget and alerts)."));
     }
     box.appendChild(hb);
 
@@ -765,6 +765,10 @@
       state.data = res[0];
       renderSince();
       LANES.seminar.where = "uvt.clincog.net · " + (res[0].seminarProvider || "Anthropic");
+      // The demo and the admin console run on whatever AI models sets for them.
+      var spv = res[0].siteProviders || {};
+      if (spv.demo) LANES.demo.where = "clincog.net · " + spv.demo.label;
+      if (spv.admin) LANES.admin.where = "admin.clincog.net · " + spv.admin.label;
       state.quotas = res[1];
       renderLanes(); renderPeople(); renderFeed();
       document.querySelectorAll(".lane-card").forEach(function (c) { c.classList.remove("stale"); });

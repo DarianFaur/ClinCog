@@ -94,12 +94,17 @@ of pages in the sidebar, above the student pages:
 - **Demo**: the public chat on `clincog.net` switched on or off, paused
   until a set time (to keep the free Gemini quota for a presentation), and
   a daily cap on its replies. Visitors with their own key are not affected.
-- **AI provider**: the company, models, prices and keys for the seminar,
-  Anthropic billing, and a **monthly budget** with email alerts — at a
-  chosen share of the budget, when it runs out (the interviews can then
-  close by themselves until the next month), and when patient replies keep
-  failing, at most hourly. Alerts go to `CONTACT_TO` through the same
-  `send_email` binding as the contact form.
+- **AI models**: the company, model, key and prices for each address — the
+  seminar (two models, "fast" and "thoughtful"), the public demo and the
+  admin console (Gemini on the demo key unless changed) — chosen with a
+  switch at the top that says which address the changes affect. A key can be
+  saved on the console, borrowed from another address, or taken from a
+  Cloudflare secret, which can be switched off there (only the terminal can
+  delete a secret). Also Anthropic billing, and the seminar's **monthly
+  budget** with email alerts — at a chosen share of the budget, when it runs
+  out (the interviews can then close by themselves until the next month),
+  and when patient replies keep failing, at most hourly. Alerts go to
+  `CONTACT_TO` through the same `send_email` binding as the contact form.
 - **History & backup**: every change made on the console, described in
   words, with undo for the last 50; a settings backup (without keys
   or passwords) to download and restore, with a preview first.

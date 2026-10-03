@@ -470,19 +470,54 @@ function seminarTiers(cfg) {
   const t = (cfg.models || []).map((m) => LEGACY_TIER[m] || m).filter((m) => TIERS.includes(m));
   return t.length ? [...new Set(t)] : ["fast"];
 }
-// The key a provider uses: one saved on the console wins over the secret.
-function seminarKey(cfg, env, provider) {
-  const k = (cfg.keys || {})[provider];
-  if (k) return k;
-  return env[SEMINAR_PROVIDERS[provider].secret] || null;
+// ---- Models and keys per address -----------------------------------------------
+// Three addresses run the patients: the seminar (uvt), the public demo
+// (clincog.net) and the admin console. Each has its own provider and model;
+// a key is saved on the console, borrowed from another address, or taken
+// from a Cloudflare secret (which can be switched off here, though only
+// the terminal can delete it). The seminar keeps its two tiers and its
+// older fields (provider, providerModels, keys); the other two have one model.
+const SITES = ["uvt", "demo", "admin"];
+const SITE_SECRETS = {
+  uvt: { anthropic: "ANTHROPIC_API_KEY", gemini: "GEMINI_API_KEY_SEMINAR", openai: "OPENAI_API_KEY_SEMINAR" },
+  demo: { gemini: "GEMINI_API_KEY_DEMO" },
+  admin: { gemini: "GEMINI_API_KEY_DEMO" },
+};
+const SITE_DEFAULT_MODEL = { gemini: "gemini-3.5-flash", anthropic: "claude-haiku-4-5-20251001", openai: "gpt-5.6-luna" };
+function siteHost(site) { return site === "uvt" ? STUDENT_HOSTNAME : site === "admin" ? ADMIN_HOSTNAME : "clincog.net"; }
+function siteOf(cfg, site) { return Object.assign({ provider: "gemini", models: {} }, (cfg.sites || {})[site] || {}); }
+function siteProvider(cfg, site) {
+  if (site === "uvt") return seminarProvider(cfg);
+  const p = siteOf(cfg, site).provider;
+  return SEMINAR_PROVIDERS[p] ? p : "gemini";
 }
-function keySource(cfg, env, provider) {
-  const k = (cfg.keys || {})[provider];
-  if (k) return { source: "console", hint: "…" + k.slice(-4) };
-  const e = env[SEMINAR_PROVIDERS[provider].secret];
-  if (e) return { source: "secret", hint: "…" + String(e).slice(-4), secret: SEMINAR_PROVIDERS[provider].secret };
-  return { source: "none", secret: SEMINAR_PROVIDERS[provider].secret };
+function siteModel(cfg, site, p) { return siteOf(cfg, site).models[p] || SITE_DEFAULT_MODEL[p]; }
+function savedKey(cfg, site, p) { return site === "uvt" ? (cfg.keys || {})[p] : ((cfg.siteKeys || {})[site] || {})[p]; }
+function ownKey(cfg, env, site, p) {
+  const saved = savedKey(cfg, site, p);
+  if (saved) return { key: saved, source: "console" };
+  const sec = (SITE_SECRETS[site] || {})[p];
+  if (sec && env[sec] && !(cfg.noSecret || {})[site + ":" + p]) return { key: env[sec], source: "secret", secret: sec };
+  return null;
 }
+function siteKeyInfo(cfg, env, site, p) {
+  const from = ((cfg.keyShare || {})[site] || {})[p];
+  if (from && from !== site && SITES.includes(from)) {
+    const o = ownKey(cfg, env, from, p);
+    return Object.assign({ key: null, source: "none" }, o || {}, { shared: from });
+  }
+  return ownKey(cfg, env, site, p) || { key: null, source: "none" };
+}
+function siteKeySource(cfg, env, site, p) {
+  const i = siteKeyInfo(cfg, env, site, p), sec = (SITE_SECRETS[site] || {})[p] || null;
+  return {
+    source: i.source, hint: i.key ? "…" + String(i.key).slice(-4) : null, secret: i.secret || sec, shared: i.shared || null,
+    saved: !!savedKey(cfg, site, p), ownSecret: sec, ownSecretSet: !!(sec && env[sec]), ownSecretOff: !!(cfg.noSecret || {})[site + ":" + p],
+  };
+}
+// The key a provider uses on the seminar.
+function seminarKey(cfg, env, provider) { return siteKeyInfo(cfg, env, "uvt", provider).key; }
+function keySource(cfg, env, provider) { return siteKeySource(cfg, env, "uvt", provider); }
 const UNLIMITED_HISTORY = 200; // exchanges a conversation may reach when a limit is lifted
 
 function configStub(env) {
@@ -654,18 +689,18 @@ async function watchSeminar(env, after, ev) {
     if (a.type === "budget-alert") {
       await sendAdminEmail(env, "seminar budget at " + Math.round(a.pct) + "%", [
         "The seminar has used an estimated $" + a.cost.toFixed(2) + " of its $" + b.monthly.toFixed(2) + " monthly budget (" + Math.round(a.pct) + "%).",
-        b.autoClose ? "At 100% the interviews close by themselves until the next month, a higher budget, or Reopen under AI provider on the console." : "The interviews stay open when the budget is reached (automatic closing is off).",
+        b.autoClose ? "At 100% the interviews close by themselves until the next month, a higher budget, or Reopen under AI models on the console." : "The interviews stay open when the budget is reached (automatic closing is off).",
       ]);
     } else if (a.type === "budget-closed") {
       await sendAdminEmail(env, "interviews closed: monthly budget reached", [
         "The seminar reached its $" + b.monthly.toFixed(2) + " monthly budget (estimated $" + a.cost.toFixed(2) + "), so the interviews are now closed.",
-        "They reopen on the 1st of next month, or now if you raise the budget or press Reopen under AI provider > Budget and alerts on the console.",
+        "They reopen on the 1st of next month, or now if you raise the budget or press Reopen under AI models > Budget and alerts on the console.",
       ]);
     } else if (a.type === "failures") {
       await sendAdminEmail(env, "patient replies are failing", [
         a.fail + " of the last " + a.n + " replies in the seminar failed in the past 10 minutes.",
         "Most recent reason: " + (a.lastError || "unknown") + ".",
-        "Check the key and the model under AI provider on the console, and the Health panel on Live monitoring.",
+        "Check the key and the model under AI models on the console, and the Health panel on Live monitoring.",
       ]);
     }
   }
@@ -693,7 +728,7 @@ const DEMO_QUOTA = ["demo", "all"];
 // settings as they were before it, so it can be undone. Runtime state that
 // the Worker keeps for itself is never part of a change, a backup or an undo.
 const RUNTIME_KEYS = ["budgetState", "alertState", "autoPrices", "priceCheck", "seedIds"];
-const SECRET_KEYS = ["password", "keys", "adminKeys"];
+const SECRET_KEYS = ["password", "keys", "adminKeys", "siteKeys"];
 const HISTORY_MAX = 50;
 function pick(o, keys) { const r = {}; keys.forEach((k) => { if (o && k in o) r[k] = o[k]; }); return r; }
 function limitWords(v) { return v === null || v === undefined ? "default" : v < 0 ? "no limit" : String(v); }
@@ -734,6 +769,22 @@ function describeChange(b, a) {
     if (!same((b.keys || {})[p], (a.keys || {})[p])) out.push(((SEMINAR_PROVIDERS[p] || {}).label || p) + " key " + ((a.keys || {})[p] ? "saved" : "removed"));
   }
   if (!same(b.adminKeys, a.adminKeys)) out.push("Anthropic admin key " + ((a.adminKeys || {}).anthropic ? "saved" : "removed"));
+  const plabel = (p) => (SEMINAR_PROVIDERS[p] || {}).label || p;
+  ["demo", "admin"].forEach((site) => {
+    const h = siteHost(site), x = siteOf(b, site), y = siteOf(a, site);
+    val(h + ": provider", x.provider, y.provider, plabel);
+    for (const p of Object.keys(SEMINAR_PROVIDERS)) {
+      val(h + ": " + plabel(p) + " model", siteModel(b, site, p), siteModel(a, site, p));
+      const kx = ((b.siteKeys || {})[site] || {})[p], ky = ((a.siteKeys || {})[site] || {})[p];
+      if (!same(kx, ky)) out.push(h + ": " + plabel(p) + " key " + (ky ? "saved" : "removed"));
+    }
+  });
+  SITES.forEach((site) => Object.keys(SEMINAR_PROVIDERS).forEach((p) => {
+    const sx = ((b.keyShare || {})[site] || {})[p] || null, sy = ((a.keyShare || {})[site] || {})[p] || null;
+    if (sx !== sy) out.push(siteHost(site) + ": " + plabel(p) + " key " + (sy ? "borrowed from " + siteHost(sy) : "no longer borrowed"));
+    const ox = !!(b.noSecret || {})[site + ":" + p], oy = !!(a.noSecret || {})[site + ":" + p];
+    if (ox !== oy) out.push(siteHost(site) + ": " + plabel(p) + " key from Cloudflare " + (oy ? "switched off" : "used again"));
+  }));
   val("Provider", b.provider || "anthropic", a.provider || "anthropic", (v) => (SEMINAR_PROVIDERS[v] || {}).label || v);
   if (!same(b.providerModels, a.providerModels)) out.push("Model names changed");
   if (!same(b.prices, a.prices)) out.push("Prices changed");
@@ -970,14 +1021,68 @@ export class SeminarConfig extends DurableObject {
       }
       case "setKey": {
         if (!SEMINAR_PROVIDERS[a.provider]) throw new Error("Unknown provider.");
+        const site = a.site || "uvt";
+        if (!SITES.includes(site)) throw new Error("Unknown address.");
         const k = String(a.key || "").trim();
         if (k.length < 20 || /\s/.test(k)) throw new Error("That does not look like an API key.");
-        c.keys = c.keys || {};
-        c.keys[a.provider] = k;
+        if (site === "uvt") { c.keys = c.keys || {}; c.keys[a.provider] = k; }
+        else { c.siteKeys = c.siteKeys || {}; c.siteKeys[site] = Object.assign({}, c.siteKeys[site], { [a.provider]: k }); }
+        // A key of its own replaces one borrowed from another address.
+        if (c.keyShare && c.keyShare[site]) delete c.keyShare[site][a.provider];
         break;
       }
       case "clearKey": {
-        if (c.keys) delete c.keys[a.provider];
+        const site = a.site || "uvt";
+        if (site === "uvt") { if (c.keys) delete c.keys[a.provider]; }
+        else if (c.siteKeys && c.siteKeys[site]) delete c.siteKeys[site][a.provider];
+        break;
+      }
+      // Use the key of another address for this provider (or stop: from null).
+      case "shareKey": {
+        const site = a.site, from = a.from || null;
+        if (!SITES.includes(site) || !SEMINAR_PROVIDERS[a.provider]) throw new Error("Unknown address or provider.");
+        if (from !== null && (!SITES.includes(from) || from === site)) throw new Error("Choose another address to borrow the key from.");
+        c.keyShare = c.keyShare || {};
+        c.keyShare[site] = Object.assign({}, c.keyShare[site]);
+        if (from) c.keyShare[site][a.provider] = from; else delete c.keyShare[site][a.provider];
+        break;
+      }
+      // Stop using (or use again) the key stored as a Cloudflare secret.
+      case "secretUse": {
+        const site = a.site;
+        if (!SITES.includes(site) || !(SITE_SECRETS[site] || {})[a.provider]) throw new Error("There is no Cloudflare key for that.");
+        c.noSecret = Object.assign({}, c.noSecret);
+        if (a.off) c.noSecret[site + ":" + a.provider] = true; else delete c.noSecret[site + ":" + a.provider];
+        break;
+      }
+      // Provider and model for the public demo or the admin console.
+      case "site": {
+        const site = a.site;
+        if (site !== "demo" && site !== "admin") throw new Error("Unknown address.");
+        c.sites = c.sites || {};
+        const cur = Object.assign({ provider: "gemini", models: {} }, c.sites[site]);
+        cur.models = Object.assign({}, cur.models);
+        if ("provider" in a) {
+          if (!SEMINAR_PROVIDERS[a.provider]) throw new Error("Unknown provider.");
+          cur.provider = a.provider;
+        }
+        if (a.models) for (const p in a.models) {
+          if (!SEMINAR_PROVIDERS[p]) continue;
+          const v = String(a.models[p] || "").trim();
+          if (v && !/^[A-Za-z0-9._:\-\/]{2,80}$/.test(v)) throw new Error("\"" + v + "\" does not look like a model name.");
+          if (v) cur.models[p] = v; else delete cur.models[p];
+        }
+        c.sites[site] = cur;
+        if (a.prices) {
+          c.prices = c.prices || {};
+          for (const model in a.prices) {
+            const pr = a.prices[model];
+            if (pr === null) { delete c.prices[model]; continue; }
+            const i = Number(pr[0]), o = Number(pr[1]);
+            if (!(i >= 0 && i < 1000 && o >= 0 && o < 1000)) throw new Error("Prices are dollars per million tokens, from 0 to 999.");
+            c.prices[model] = [i, o];
+          }
+        }
         break;
       }
       case "cases": {
@@ -1216,7 +1321,7 @@ const PRICES = {
   "gemini-3.1-flash-lite": [0.25, 1.5],
   "gemini-3.1-pro": [2, 12],
   // OpenAI, as listed after the July 2026 price cut - check before relying
-  // on them; they can be corrected on the console's AI provider page.
+  // on them; they can be corrected on the console's AI models page.
   "gpt-5.6-luna": [0.2, 1.2],
   "gpt-5.6-terra": [2, 12],
 };
@@ -1267,6 +1372,7 @@ function watchedModels(cfg) {
   const set = new Set(Object.keys(PRICES));
   const mods = seminarModels(cfg);
   for (const p in mods) TIERS.forEach((t) => set.add(mods[p][t]));
+  if (cfg) ["demo", "admin"].forEach((site) => Object.keys(SEMINAR_PROVIDERS).forEach((p) => set.add(siteModel(cfg, site, p))));
   Object.values(DEFAULT_MODEL).forEach((m) => set.add(m));
   Object.keys((cfg && cfg.prices) || {}).forEach((m) => set.add(m));
   return [...set].filter(vendorOf);
@@ -1602,8 +1708,19 @@ async function handleMonitorApi(request, url, env) {
     const scfg = await seminarConfig(env).catch(() => ({}));
     const data = await monitorStub(env).summary(range, scfg.counterFrom || null);
     data.counterFrom = scfg.counterFrom || null;
-    data.freeTierGemini = String(env.GEMINI_FREE_TIER || "").toLowerCase() === "true";
-    try { data.seminarProvider = SEMINAR_PROVIDERS[seminarProvider(await seminarConfig(env))].label; } catch { data.seminarProvider = "Anthropic"; }
+    const freeFlag = String(env.GEMINI_FREE_TIER || "").toLowerCase() === "true";
+    data.freeTierGemini = freeFlag;
+    try {
+      const c0 = await seminarConfig(env);
+      data.seminarProvider = SEMINAR_PROVIDERS[seminarProvider(c0)].label;
+      data.siteProviders = {}; data.freeTier = {};
+      for (const site of ["demo", "admin"]) {
+        const pv = siteProvider(c0, site), ki = siteKeyInfo(c0, env, site, pv);
+        data.siteProviders[site] = { label: SEMINAR_PROVIDERS[pv].label, model: siteModel(c0, site, pv) };
+        // "Free tier" only while that address runs on the Gemini demo key.
+        data.freeTier[site] = freeFlag && pv === "gemini" && ki.secret === "GEMINI_API_KEY_DEMO";
+      }
+    } catch { data.seminarProvider = "Anthropic"; }
     data.prices = priceTable(env);
     return jsonResponse(data);
   }
@@ -1633,7 +1750,7 @@ async function handleMonitorApi(request, url, env) {
     return jsonResponse({ id, used: await quotaStub(env, period.id, id).status() });
   }
 
-  // ---- Settings (the admin console's Course, Students, Demo, AI provider pages)
+  // ---- Settings (the admin console's Course, Students, Demo, AI models pages)
   if (path === "seminar" && request.method === "GET") {
     const cfg = await seminarConfig(env, true);
     const period = activePeriod(cfg);
@@ -1645,9 +1762,14 @@ async function handleMonitorApi(request, url, env) {
     for (const p in SEMINAR_PROVIDERS) {
       providers[p] = { label: SEMINAR_PROVIDERS[p].label, models: seminarModels(cfg)[p], defaults: SEMINAR_PROVIDERS[p].models, key: keySource(cfg, env, p) };
     }
+    const sites = {};
+    for (const site of SITES) {
+      sites[site] = { host: siteHost(site), provider: siteProvider(cfg, site), providers: {} };
+      for (const p in SEMINAR_PROVIDERS) sites[site].providers[p] = { model: site === "uvt" ? null : siteModel(cfg, site, p), default: SITE_DEFAULT_MODEL[p], key: siteKeySource(cfg, env, site, p) };
+    }
     return jsonResponse({
       config: safe,
-      provider: seminarProvider(cfg), providers,
+      provider: seminarProvider(cfg), providers, sites,
       prices: Object.fromEntries(watchedModels(cfg).map((m) => [m, priceInfo(m, env, cfg)]).filter((x) => x[1])),
       priceCheck: cfg.priceCheck || null,
       passwordSource: cfg.password ? "console" : (env.STUDENT_ACCESS_PASSWORD ? "secret" : "none"),
@@ -1775,12 +1897,15 @@ async function handleMonitorApi(request, url, env) {
   if (path === "seminar-test" && request.method === "POST") {
     const cfg = await seminarConfig(env, true);
     const p = url.searchParams.get("provider");
+    const site = SITES.includes(url.searchParams.get("site")) ? url.searchParams.get("site") : "uvt";
     if (!SEMINAR_PROVIDERS[p]) return jsonResponse({ ok: false, error: "Unknown provider." }, 400);
-    const k = seminarKey(cfg, env, p);
-    if (!k) return jsonResponse({ ok: false, error: "No key is set for " + SEMINAR_PROVIDERS[p].label + "." });
+    const k = siteKeyInfo(cfg, env, site, p).key;
+    if (!k) return jsonResponse({ ok: false, error: "No key is set for " + SEMINAR_PROVIDERS[p].label + " on " + siteHost(site) + "." });
     const results = {}, pending = [];
-    for (const t of TIERS) {
-      const model = seminarModels(cfg)[p][t];
+    const lane = { uvt: "seminar", demo: "demo", admin: "admin" }[site];
+    const tiers = site === "uvt" ? TIERS : ["fast"];
+    for (const t of tiers) {
+      const model = site === "uvt" ? seminarModels(cfg)[p][t] : siteModel(cfg, site, p);
       const started = Date.now();
       let reply;
       const history = [{ role: "user", content: "Say hello in five words." }];
@@ -1788,7 +1913,7 @@ async function handleMonitorApi(request, url, env) {
       // Billed on the seminar's key like any reply, so counted like one
       // (participant "key test"), or the billing comparison would miss it.
       const meter = (usage, ok, reason) => {
-        const ev = { ts: Date.now(), lane: "seminar", participant: "key test", caseId: null, model,
+        const ev = { ts: Date.now(), lane, participant: "key test", caseId: null, model,
           tin: usage ? usage.in : 0, tout: usage ? usage.out : 0, ok: ok ? 1 : 0, ms: Date.now() - started, err: ok ? null : (reason || "Failed") };
         ev.cost = priceOf(model, ev.tin, ev.tout, env, cfg);
         pending.push(recordUsage(env, ev));
@@ -1806,7 +1931,7 @@ async function handleMonitorApi(request, url, env) {
       }
     }
     await Promise.all(pending).catch(() => {});
-    return jsonResponse({ ok: TIERS.every((t) => results[t].ok), results });
+    return jsonResponse({ ok: tiers.every((t) => results[t].ok), results });
   }
 
   // The class password, only when asked for (the page shows it on request).
@@ -2070,9 +2195,9 @@ export default {
     // Settings pages: /admin/course, /admin/students, /admin/demo,
     // /admin/provider, /admin/history. The old single page redirects.
     if (isAdmin && /^\/admin-seminar(\.html)?$/.test(url.pathname)) return Response.redirect(new URL("/admin/course", url), 301);
-    const adminPage = isAdmin && url.pathname.match(/^\/admin\/(course|students|demo|provider|history)\/?$/);
+    const adminPage = isAdmin && url.pathname.match(/^\/admin\/(course|students|demo|provider|models|history)\/?$/);
     if (adminPage) {
-      const page = new URL("/admin-" + adminPage[1], url);
+      const page = new URL("/admin-" + (adminPage[1] === "models" ? "provider" : adminPage[1]), url);
       return withAppTitle(withNoIndex(await env.ASSETS.fetch(new Request(page, request))), url.hostname);
     }
     if (isAdmin && (url.pathname === "/" || url.pathname === "/index.html")) {
@@ -2154,6 +2279,15 @@ export default {
         cfg = await seminarConfig(env);
         const ds = demoState(cfg);
         if (!ds.open) return jsonResponse({ gate: true, text: ds.text }, 503);
+      }
+      // The demo and the admin console: provider, model and key chosen on
+      // the console (AI models), Gemini on the demo key by default.
+      if (tier === "demo" || tier === "admin") {
+        cfg = cfg || await seminarConfig(env);
+        provider = siteProvider(cfg, tier);
+        key = siteKeyInfo(cfg, env, tier, provider).key;
+        model = siteModel(cfg, tier, provider);
+        if (!key) return jsonResponse({ gate: true, text: tier === "demo" ? "The public demo is not available right now. You can still try ClinCog with your own key (Adopt with your own keys)." : "No " + SEMINAR_PROVIDERS[provider].label + " key is set for the admin console (AI models)." }, 503);
       }
       if (tier === "student") {
         cfg = await seminarConfig(env);

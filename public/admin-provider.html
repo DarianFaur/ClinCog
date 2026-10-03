@@ -9,7 +9,7 @@
 </script>
 <script src="/theme-init.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>ClinCog - AI provider</title>
+<title>ClinCog - AI models</title>
 <link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#17191c" media="(prefers-color-scheme: dark)">
@@ -29,20 +29,21 @@
 <div id="shell-content" data-admin-page="provider">
 
   <div class="set-head">
-    <h1 class="text-page-title">AI <em>provider</em></h1>
-    <p>Which company plays the patients, with its models, prices and keys, and a monthly budget with email alerts.</p>
+    <h1 class="text-page-title">AI <em>models</em></h1>
+    <p>Which company and model play the patients on each address, with their keys and prices. The seminar also has a monthly budget with email alerts.</p>
   </div>
 
   <section class="set-section" id="sec-provider">
     <header>
       <div>
         <h2>Model provider</h2>
-        <p>Which company plays the patients for your students. Switching takes effect for the next message anyone sends; conversations carry on where they were. Try a key before switching to it.</p>
+        <p>Choose the address first; everything below it then applies to that address only. Switching takes effect for the next message anyone sends; conversations carry on where they were. Try a key before switching to it.</p>
       </div>
     </header>
+    <div class="site-pick" id="site-pick"></div>
     <div class="prov-grid" id="prov-cards" role="radiogroup" aria-label="Provider"></div>
     <div class="prov-detail" id="prov-detail"></div>
-    <p class="note">A key saved here is used instead of the one stored in Cloudflare, and is never shown again after saving - only its last four characters. Use a paid (billing-enabled) key: on free tiers some providers may use conversations to improve their products, which is not what the Help page promises students.</p>
+    <p class="note" id="prov-note">A key saved here is used instead of the one stored in Cloudflare, and is never shown again after saving - only its last four characters. Use a paid (billing-enabled) key: on free tiers some providers may use conversations to improve their products, which is not what the Help page promises students.</p>
   </section>
 
   <section class="set-section" id="sec-budget">
@@ -73,7 +74,7 @@
 
 </div>
 
-<script>window.CLINCOG_SHELL = { activeNav: "admin-provider", breadcrumb: [{ label: "AI provider" }] };</script>
+<script>window.CLINCOG_SHELL = { activeNav: "admin-provider", breadcrumb: [{ label: "AI models" }] };</script>
 <script src="/storage.js"></script>
 <script src="/icons.js"></script>
 <script src="/shell.js?v=2"></script>

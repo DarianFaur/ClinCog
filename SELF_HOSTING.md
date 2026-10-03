@@ -361,15 +361,16 @@ each new term starts every student from zero — and announcements for
 students), **Students** (add or remove
 students, limits per student or per patient, a daily cap, the class
 password, a CSV of use), **Demo** (switch off, pause or cap the public demo
-on your main address), **AI provider** (Anthropic, Google Gemini or OpenAI
-with their keys and model names, and a monthly budget) and **History &
+on your main address), **AI models** (Anthropic, Google Gemini or OpenAI
+with their keys and model names, for the course address, the public demo
+and the console itself, and a monthly budget for the course) and **History &
 backup** (every change, with undo, and a settings file to download and
 restore).
 
 The budget and failure alerts are emailed to the `CONTACT_TO` address from
 Step 9, through the `send_email` binding from Step 8 — nothing else to set
 up. Without them the budget still closes the interviews when it runs out;
-only the emails are missing. "Send a test email" under AI provider > Budget
+only the emails are missing. "Send a test email" under AI models > Budget
 and alerts checks the whole path.
 
 It needs an address of its own, so it needs your own domain (Step 11):

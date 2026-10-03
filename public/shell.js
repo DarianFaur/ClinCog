@@ -84,7 +84,7 @@
         ${navItem("calendar", "Course", "/admin/course", "admin-course")}
         ${navItem("users", "Students", "/admin/students", "admin-students")}
         ${navItem("globe", "Demo", "/admin/demo", "admin-demo")}
-        ${navItem("cpu", "AI provider", "/admin/provider", "admin-provider")}
+        ${navItem("cpu", "AI models", "/admin/models", "admin-provider")}
         ${navItem("history", "History & backup", "/admin/history", "admin-history")}
       </div>` : ""}
       <div class="shell-nav-group">

@@ -1,6 +1,6 @@
 /* ============================================================
    admin-settings.js - the settings pages on the admin console:
-   Course, Students, Demo, AI provider, History & backup. One script for
+   Course, Students, Demo, AI models, History & backup. One script for
    all of them; each part draws itself only on the page that has it.
 
    Reads   GET  /api/monitor/seminar       the whole configuration, the
@@ -224,128 +224,216 @@
     }).catch(function () { status.textContent = "Could not check the admin key."; });
   }
 
-  // ---------- provider ----------
-  var provView = null; // which provider's details are open (defaults to the active one)
+  // ---------- AI models: provider, model and key per address ----------
+  var SITE_INFO = {
+    uvt: { name: "Seminar", who: "the students", use: "for the students" },
+    demo: { name: "Public demo", who: "visitors of the public demo (without their own key)", use: "for the public demo" },
+    admin: { name: "Admin console", who: "you, when you chat with the patients on this console", use: "on the admin console" },
+  };
+  var site = "uvt";
+  try { var sv = localStorage.getItem("clincog_admin_site"); if (SITE_INFO[sv]) site = sv; } catch (e) {}
+  if (/^#site-(uvt|demo|admin)$/.test(location.hash)) site = location.hash.slice(6);
+  var provView = null; // which provider's details are open (defaults to the one in use)
+  window.addEventListener("hashchange", function () {
+    var m = /^#site-(uvt|demo|admin)$/.exec(location.hash);
+    if (m && m[1] !== site && S.data) { site = m[1]; provView = null; renderProvider(); }
+  });
+  function hostOf(st) { return S.data.sites[st].host; }
   function keyText(k) {
-    if (k.source === "console") return "Key saved here " + k.hint;
-    if (k.source === "secret") return "Key from Cloudflare (" + k.secret + ") " + k.hint;
-    return "No key yet";
+    var t;
+    if (k.source === "console") t = "Key saved here " + k.hint;
+    else if (k.source === "secret") t = "Key from Cloudflare (" + k.secret + ") " + k.hint;
+    else t = "No key";
+    if (k.shared) t = "Borrowed from " + hostOf(k.shared) + ": " + (k.source === "none" ? "it has no key" : t.charAt(0).toLowerCase() + t.slice(1));
+    else if (k.source === "none" && k.ownSecretOff) t += " (the Cloudflare key " + k.ownSecret + " is switched off)";
+    return t;
+  }
+  function renderSitePick() {
+    var host = $("site-pick"); host.textContent = "";
+    var seg = el("div", "seg"); seg.setAttribute("role", "group"); seg.setAttribute("aria-label", "Address");
+    ["uvt", "demo", "admin"].forEach(function (st) {
+      var b = el("button"); b.type = "button"; b.setAttribute("aria-pressed", String(st === site));
+      b.appendChild(document.createTextNode(SITE_INFO[st].name));
+      var sp = S.data.sites[st];
+      b.appendChild(el("small", "", sp.host + " · " + S.data.providers[sp.provider].label));
+      b.addEventListener("click", function () {
+        site = st; provView = null;
+        try { localStorage.setItem("clincog_admin_site", st); } catch (e) {}
+        history.replaceState(null, "", "#site-" + st);
+        renderProvider();
+      });
+      seg.appendChild(b);
+    });
+    host.appendChild(seg);
+    var aff = el("div", "affects");
+    aff.appendChild(document.createTextNode("Changes below affect "));
+    aff.appendChild(el("b", "", hostOf(site)));
+    aff.appendChild(document.createTextNode(" only: " + SITE_INFO[site].who + "."));
+    host.appendChild(aff);
+    // The budget belongs to the seminar alone.
+    var bs = $("sec-budget"); if (bs) bs.hidden = site !== "uvt";
   }
   function renderProvider() {
-    var d = S.data, host = $("prov-cards");
-    if (!provView || !d.providers[provView]) provView = d.provider;
+    var d = S.data, host = $("prov-cards"), sp = d.sites[site];
+    if (!provView || !d.providers[provView]) provView = sp.provider;
+    renderSitePick();
     host.textContent = "";
     Object.keys(d.providers).forEach(function (p) {
-      var info = d.providers[p];
+      var info = d.providers[p], si = sp.providers[p];
       var card = el("button", "prov-card"); card.type = "button";
       card.setAttribute("role", "radio");
       card.setAttribute("aria-checked", p === provView ? "true" : "false");
-      var t = el("b", "", info.label); card.appendChild(t);
-      if (p === d.provider) card.appendChild(el("span", "pill run", "In use"));
-      card.appendChild(el("small", "", info.models.fast + " · " + info.models.thoughtful));
-      card.appendChild(el("small", "", keyText(info.key)));
+      card.appendChild(el("b", "", info.label));
+      if (p === sp.provider) card.appendChild(el("span", "pill run", "In use"));
+      card.appendChild(el("small", "", site === "uvt" ? info.models.fast + " · " + info.models.thoughtful : si.model));
+      card.appendChild(el("small", "", keyText(si.key)));
       card.addEventListener("click", function () { provView = p; renderProvider(); });
       host.appendChild(card);
     });
     renderProviderDetail();
   }
+  function priceInputs(model) {
+    var price = S.data.prices[model];
+    var pr = el("div", "limit-pick");
+    var pi = el("input", "inp"); pi.type = "number"; pi.step = "0.01"; pi.min = 0; pi.placeholder = "in"; pi.setAttribute("aria-label", "Input price per million tokens");
+    var po = el("input", "inp"); po.type = "number"; po.step = "0.01"; po.min = 0; po.placeholder = "out"; po.setAttribute("aria-label", "Output price per million tokens");
+    // A price typed here is fixed; left empty, the automatic one is used
+    // (shown greyed as the placeholder) and follows the daily check.
+    if (price && price.source === "manual") { pi.value = price.in; po.value = price.out; }
+    else if (price) { pi.placeholder = String(price.in); po.placeholder = String(price.out); }
+    pi.style.width = po.style.width = "50%"; pi.style.flex = po.style.flex = "1 1 0";
+    pr.appendChild(pi); pr.appendChild(po);
+    return { row: pr, pin: pi, pout: po, note: el("small", "", priceSourceText(price)) };
+  }
+  function priceValue(f) {
+    if (f.pin.value !== "" && f.pout.value !== "") return [Number(f.pin.value), Number(f.pout.value)];
+    if (f.pin.value === "" && f.pout.value === "") return null; // back to automatic
+    return undefined;
+  }
   function renderProviderDetail() {
-    var d = S.data, p = provView, info = d.providers[p], box = $("prov-detail");
+    var d = S.data, p = provView, info = d.providers[p], sp = d.sites[site], si = sp.providers[p], box = $("prov-detail");
+    var inUse = p === sp.provider;
     box.textContent = "";
-    box.appendChild(el("h3", "", info.label + (p === d.provider ? " - in use" : "")));
-    var g = el("div", "grid2");
-    var fields = {};
-    ["fast", "thoughtful"].forEach(function (t) {
+    box.appendChild(el("h3", "", info.label + (inUse ? " - in use on " + sp.host : "")));
+    var err = el("span", "err");
+    var g = el("div", "grid2"), fields = {};
+    var tiers = site === "uvt" ? ["fast", "thoughtful"] : ["one"];
+    tiers.forEach(function (t) {
       var f = el("div", "field");
-      f.appendChild(el("span", "", (t === "fast" ? "Fast" : "Thoughtful") + " model"));
-      var inp = el("input", "inp"); inp.value = info.models[t]; inp.placeholder = info.defaults[t];
-      inp.setAttribute("aria-label", t + " model name");
+      f.appendChild(el("span", "", t === "one" ? "Model" : (t === "fast" ? "Fast" : "Thoughtful") + " model"));
+      var cur = t === "one" ? si.model : info.models[t], def = t === "one" ? si.default : info.defaults[t];
+      var inp = el("input", "inp"); inp.value = cur; inp.placeholder = def;
+      inp.setAttribute("aria-label", (t === "one" ? "" : t + " ") + "model name");
       f.appendChild(inp);
-      var price = d.prices[info.models[t]];
-      var pr = el("div", "limit-pick");
-      var pi = el("input", "inp"); pi.type = "number"; pi.step = "0.01"; pi.min = 0; pi.placeholder = "in"; pi.setAttribute("aria-label", "Input price per million tokens");
-      var po = el("input", "inp"); po.type = "number"; po.step = "0.01"; po.min = 0; po.placeholder = "out"; po.setAttribute("aria-label", "Output price per million tokens");
-      // A price typed here is fixed; left empty, the automatic one is used
-      // (shown greyed as the placeholder) and follows the daily check.
-      if (price && price.source === "manual") { pi.value = price.in; po.value = price.out; }
-      else if (price) { pi.placeholder = String(price.in); po.placeholder = String(price.out); }
-      pi.style.width = po.style.width = "50%"; pi.style.flex = po.style.flex = "1 1 0";
-      pr.appendChild(pi); pr.appendChild(po); f.appendChild(pr);
-      f.appendChild(el("small", "", priceSourceText(price)));
-      fields[t] = { model: inp, pin: pi, pout: po };
+      var pf = priceInputs(cur);
+      f.appendChild(pf.row); f.appendChild(pf.note);
+      fields[t] = { model: inp, pin: pf.pin, pout: pf.pout, def: def };
       g.appendChild(f);
     });
     box.appendChild(g);
-
-    var err = el("span", "err");
+    if (site !== "uvt") box.appendChild(el("p", "note", "Prices belong to the model, not the address: a price set here is used wherever that model runs."));
     var a1 = el("div", "row-actions");
-    var save = el("button", "btn-ghost", "Save models and prices"); save.type = "button";
+    var save = el("button", "btn-ghost", site === "uvt" ? "Save models and prices" : "Save model and price"); save.type = "button";
     save.addEventListener("click", function () {
-      var models = {}; models[p] = {};
       var prices = {};
-      ["fast", "thoughtful"].forEach(function (t) {
-        var m = fields[t].model.value.trim() || info.defaults[t];
-        models[p][t] = fields[t].model.value.trim();
-        if (fields[t].pin.value !== "" && fields[t].pout.value !== "") prices[m] = [Number(fields[t].pin.value), Number(fields[t].pout.value)];
-        else if (fields[t].pin.value === "" && fields[t].pout.value === "") prices[m] = null; // back to automatic
+      tiers.forEach(function (t) {
+        var m = fields[t].model.value.trim() || fields[t].def, v = priceValue(fields[t]);
+        if (v !== undefined) prices[m] = v;
       });
-      change("provider", { models: models, prices: prices }, err, "Saved");
+      if (site === "uvt") {
+        var models = {}; models[p] = {};
+        tiers.forEach(function (t) { models[p][t] = fields[t].model.value.trim(); });
+        change("provider", { models: models, prices: prices }, err, "Saved");
+      } else {
+        var mm = {}; mm[p] = fields.one.model.value.trim();
+        change("site", { site: site, models: mm, prices: prices }, err, "Saved");
+      }
     });
     a1.appendChild(save);
     box.appendChild(a1);
 
+    // ---- the key ----
+    var k = si.key;
     var kf = el("div", "grid2"); kf.style.marginTop = "16px";
     var kfield = el("label", "field");
     kfield.appendChild(el("span", "", "API key"));
-    var kin = el("input", "inp"); kin.type = "password"; kin.autocomplete = "off"; kin.placeholder = info.key.source === "none" ? "Paste the key" : "Paste a new key to replace it";
+    var kin = el("input", "inp"); kin.type = "password"; kin.autocomplete = "off"; kin.placeholder = k.saved ? "Paste a new key to replace it" : "Paste the key";
     kfield.appendChild(kin);
-    kfield.appendChild(el("small", "", keyText(info.key)));
+    kfield.appendChild(el("small", "", keyText(k)));
     kf.appendChild(kfield);
     box.appendChild(kf);
     var a2 = el("div", "row-actions");
     var sk = el("button", "btn-ghost", "Save key"); sk.type = "button";
-    sk.addEventListener("click", function () { change("setKey", { provider: p, key: kin.value }, err, "Key saved").then(function (ok) { if (ok) kin.value = ""; }); });
+    sk.addEventListener("click", function () { change("setKey", { site: site, provider: p, key: kin.value }, err, "Key saved").then(function (ok) { if (ok) kin.value = ""; }); });
     a2.appendChild(sk);
-    if (info.key.source === "console") {
+    function leavesNoKey() { return inUse ? " " + info.label + " is in use on " + sp.host + ": without a key, its patients stop answering." : ""; }
+    if (k.saved) {
       var rk = el("button", "btn-ghost danger", "Remove saved key"); rk.type = "button";
       rk.addEventListener("click", function () {
-        if (!confirm("Remove the key saved here? " + (info.key.secret ? "The one in Cloudflare (" + info.key.secret + ") will be used, if it is set." : ""))) return;
-        change("clearKey", { provider: p }, err, "Key removed");
+        var fallback = k.ownSecretSet && !k.ownSecretOff ? " The one in Cloudflare (" + k.ownSecret + ") will be used instead." : leavesNoKey();
+        if (!confirm("Remove the " + info.label + " key saved for " + sp.host + "?" + fallback)) return;
+        change("clearKey", { site: site, provider: p }, err, "Key removed");
       });
       a2.appendChild(rk);
+    }
+    // A Cloudflare secret cannot be deleted from here, but it can be ignored.
+    if (k.ownSecretSet) {
+      var cs = el("button", "btn-ghost" + (k.ownSecretOff ? "" : " danger"), k.ownSecretOff ? "Use the Cloudflare key again" : "Don't use the Cloudflare key"); cs.type = "button";
+      cs.title = k.ownSecret;
+      cs.addEventListener("click", function () {
+        if (!k.ownSecretOff && !confirm("Stop using the key stored in Cloudflare (" + k.ownSecret + ") for " + info.label + " on " + sp.host + "? It stays in Cloudflare and can be used again from here." + (k.saved || k.shared ? "" : leavesNoKey()))) return;
+        change("secretUse", { site: site, provider: p, off: !k.ownSecretOff }, err, k.ownSecretOff ? "Cloudflare key used again" : "Cloudflare key switched off");
+      });
+      a2.appendChild(cs);
     }
     var tb = el("button", "btn-ghost", "Try the key"); tb.type = "button";
     var out = el("div", "test-out");
     tb.addEventListener("click", function () {
       out.textContent = "Asking " + info.label + "…";
-      fetch("/api/monitor/seminar-test?provider=" + p, { method: "POST", headers: { "X-ClinCog-Admin": "1" } })
+      fetch("/api/monitor/seminar-test?site=" + site + "&provider=" + p, { method: "POST", headers: { "X-ClinCog-Admin": "1" } })
         .then(function (r) { return r.json(); })
         .then(function (res) {
           out.textContent = "";
           if (res.error) { out.appendChild(el("span", "bad", res.error)); return; }
-          ["fast", "thoughtful"].forEach(function (t) {
+          Object.keys(res.results).forEach(function (t) {
             var r = res.results[t];
-            out.appendChild(el("span", r.ok ? "ok" : "bad", (r.ok ? "✓ " : "✗ ") + r.model + ": " + (r.ok ? "answered in " + (r.ms / 1000).toFixed(1) + " s - \u201c" + r.sample + "\u201d" : r.error)));
+            out.appendChild(el("span", r.ok ? "ok" : "bad", (r.ok ? "✓ " : "✗ ") + r.model + ": " + (r.ok ? "answered in " + (r.ms / 1000).toFixed(1) + " s - “" + r.sample + "”" : r.error)));
           });
         })
         .catch(function () { out.textContent = "No answer from the server."; });
     });
     a2.appendChild(tb);
-    if (p !== d.provider) {
-      var use = el("button", "btn-ink", "Use " + info.label + " for the students"); use.type = "button";
-      use.disabled = info.key.source === "none";
-      use.title = use.disabled ? "Save a key first" : "";
+    if (!inUse) {
+      var use = el("button", "btn-ink", "Use " + info.label + " " + SITE_INFO[site].use); use.type = "button";
+      use.disabled = k.source === "none";
+      use.title = use.disabled ? "Give it a key first" : "";
       use.addEventListener("click", function () {
-        if (!confirm("Switch the patients to " + info.label + "? The next message any student sends goes to " + info.label + ".")) return;
-        change("provider", { provider: p }, err, "Now using " + info.label);
+        if (!confirm("Switch " + sp.host + " to " + info.label + "? The next message sent there goes to " + info.label + "." + (site === "demo" && p !== "gemini" ? " Unlike the Gemini free tier, every reply is billed." : ""))) return;
+        if (site === "uvt") change("provider", { provider: p }, err, "Now using " + info.label);
+        else change("site", { site: site, provider: p }, err, sp.host + " now uses " + info.label);
       });
       a2.appendChild(use);
     }
     a2.appendChild(err);
     box.appendChild(a2);
+    // Borrow the key of another address instead of saving it twice.
+    var kr = el("div", "key-row");
+    kr.appendChild(el("span", "", "Key to use:"));
+    var sel = el("select", "sel"); sel.setAttribute("aria-label", "Which key " + sp.host + " uses for " + info.label);
+    sel.appendChild(new Option("Its own (saved here or in Cloudflare)", ""));
+    ["uvt", "demo", "admin"].forEach(function (st) {
+      if (st === site) return;
+      var o = d.sites[st].providers[p].key;
+      var lbl = "The one " + d.sites[st].host + " uses" + (o.source === "none" || o.shared ? " (it has none of its own)" : "");
+      var opt = new Option(lbl, st); opt.disabled = !!o.shared || (o.source === "none" && k.shared !== st); sel.appendChild(opt);
+    });
+    sel.value = k.shared || "";
+    sel.addEventListener("change", function () { change("shareKey", { site: site, provider: p, from: sel.value || null }, err, sel.value ? "Using the key of " + d.sites[sel.value].host : "Using its own key"); });
+    kr.appendChild(sel);
+    box.appendChild(kr);
     box.appendChild(out);
-    renderPriceCheck(box);
-    if (p === "anthropic") renderBilling(box);
+    if (site === "uvt") renderPriceCheck(box);
+    if (site === "uvt" && p === "anthropic") renderBilling(box);
   }
 
   function renderPeriods() {
@@ -635,7 +723,7 @@
     var row = el("div", "status-row demo-now"); row.style.marginBottom = "0";
     [["Demo", !d.enabled ? "Off" : st.open ? "On" : "Paused", !d.enabled ? "Switched off by you" : st.open ? "Visitors can chat" : "Until " + fmtDate(d.pausedUntil), d.enabled && st.open],
      ["Replies today", String(d.today || 0) + (d.dailyCap ? " of " + d.dailyCap : ""), d.dailyCap ? (d.today >= d.dailyCap ? "Cap reached: closed until midnight" : (d.dailyCap - d.today) + " left today") : "No daily cap"],
-     ["Model", "Gemini", "Your demo key, " + (S.data.freeTierGemini === false ? "paid tier" : "free tier")]].forEach(function (x) {
+     ["Model", S.data.providers[S.data.sites.demo.provider].label, S.data.sites.demo.providers[S.data.sites.demo.provider].model + " · change it under AI models"]].forEach(function (x) {
       var s = el("div", "stat"); s.style.background = "var(--paper)";
       s.appendChild(el("small", "", x[0]));
       var b = el("b"); if (x[3] !== undefined) b.appendChild(el("span", "dot" + (x[3] ? " on" : "")));
