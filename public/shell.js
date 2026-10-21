@@ -85,6 +85,7 @@
         ${navItem("users", "Students", "/admin/students", "admin-students")}
         ${navItem("globe", "Demo", "/admin/demo", "admin-demo")}
         ${navItem("cpu", "AI models", "/admin/models", "admin-provider")}
+        ${navItem("bar-chart", "Participant data", "/admin/participants", "admin-participants")}
         ${navItem("history", "History & backup", "/admin/history", "admin-history")}
       </div>` : ""}
       <div class="shell-nav-group">
@@ -206,6 +207,15 @@
   frame.querySelector("#shell-body").appendChild(footer);
 
   promoteTopbarTitle();
+
+  // ---- the feasibility study (seminar instance and public site) -----------
+  // Consent, active time and questionnaires: see study.js. Not on the
+  // admin console, whose own use is not part of the study.
+  if (!isAdminHost) {
+    const st = document.createElement("script");
+    st.src = "/study.js"; st.defer = true;
+    document.body.appendChild(st);
+  }
 
   // ---- announcements (seminar instance) -----------------------------------
   // Notes the seminar leader posts from the admin console (Course >

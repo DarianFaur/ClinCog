@@ -170,8 +170,8 @@ to protect the original demo tier's Gemini budget, which doesn't apply to
 your instance at all.
 
 **Keep** the `[[durable_objects.bindings]]` and `[[migrations]]` blocks and
-the `run_worker_first = true` line: they hold the class list and the
-counters, and make the password cover every page. Durable Objects are
+the `run_worker_first = true` line: they hold the class list, the
+counters and the study data, and make the password cover every page. Durable Objects are
 included in Cloudflare's free plan.
 
 **One line you must change rather than delete.** Near the bottom there is
@@ -363,8 +363,9 @@ students, limits per student or per patient, a daily cap, the class
 password, a CSV of use), **Demo** (switch off, pause or cap the public demo
 on your main address), **AI models** (Anthropic, Google Gemini or OpenAI
 with their keys and model names, for the course address, the public demo
-and the console itself, and a monthly budget for the course) and **History &
-backup** (every change, with undo, and a settings file to download and
+and the console itself, and a monthly budget for the course), **Participant data** (usage
+and questionnaires for a study of your course, with exports) and **History
+& backup** (every change, with undo, and a settings file to download and
 restore).
 
 The budget and failure alerts are emailed to the `CONTACT_TO` address from

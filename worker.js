@@ -789,6 +789,12 @@ function describeChange(b, a) {
   if (!same(b.providerModels, a.providerModels)) out.push("Model names changed");
   if (!same(b.prices, a.prices)) out.push("Prices changed");
   val("Estimate counter restarted", b.counterFrom || null, a.counterFrom || null, (v) => (v ? fmtWhen(v, a) : "from the first record"));
+  STUDY_KINDS.forEach((k) => {
+    const x = studyOf(b, k), y = studyOf(a, k), h = siteHost(k);
+    val("Study data on " + h, x.enabled, y.enabled, (v) => (v ? "collected" : "not collected"));
+    if (x.text !== y.text) out.push("Consent text changed on " + h);
+    if (x.version !== y.version) out.push("Consent asked again on " + h + " (version " + y.version + ")");
+  });
   val("Billing workspace", b.billingWorkspaceName || b.billingWorkspace || "whole organization", a.billingWorkspaceName || a.billingWorkspace || "whole organization");
   // schedule
   CASE_IDS.forEach((k) => {
@@ -1152,6 +1158,22 @@ export class SeminarConfig extends DurableObject {
       // again from zero. Nothing is deleted: every other view is unchanged.
       case "restartCounter": {
         c.counterFrom = a.at === null ? null : Date.now();
+        break;
+      }
+      // Study data: collection on or off, and the consent text, per address.
+      // "reask" asks everyone again (a new consent version).
+      case "study": {
+        if (!STUDY_KINDS.includes(a.kind)) throw new Error("Unknown address.");
+        c.study = Object.assign({}, c.study);
+        const cur = Object.assign({ enabled: true, version: 1 }, c.study[a.kind]);
+        if ("enabled" in a) cur.enabled = !!a.enabled;
+        if ("text" in a) {
+          const t = String(a.text || "").trim().slice(0, 5000);
+          if (t && t.length < 80) throw new Error("The consent text is too short to say what is recorded.");
+          cur.text = t && t !== DEFAULT_CONSENT[a.kind] ? t : null;
+        }
+        if (a.reask) cur.version = (cur.version || 1) + 1;
+        c.study[a.kind] = cur;
         break;
       }
       case "billingWorkspace": {
@@ -1826,6 +1848,9 @@ async function handleMonitorApi(request, url, env) {
       "Content-Disposition": 'attachment; filename="clincog-usage-' + day + '.csv"',
     } });
   }
+  // ---- Participant Data (study) ------------------------------------------
+  if (path.startsWith("study/")) return handleStudyAdmin(request, url, env, path.slice(6));
+
   // Usage records: how many there are, and deleting them.
   if (path === "records" && request.method === "GET") return jsonResponse({ lanes: await monitorStub(env).counts(), now: Date.now() });
   if (path === "purge" && request.method === "POST") {
@@ -2195,7 +2220,7 @@ export default {
     // Settings pages: /admin/course, /admin/students, /admin/demo,
     // /admin/provider, /admin/history. The old single page redirects.
     if (isAdmin && /^\/admin-seminar(\.html)?$/.test(url.pathname)) return Response.redirect(new URL("/admin/course", url), 301);
-    const adminPage = isAdmin && url.pathname.match(/^\/admin\/(course|students|demo|provider|models|history)\/?$/);
+    const adminPage = isAdmin && url.pathname.match(/^\/admin\/(course|students|demo|provider|models|history|participants)\/?$/);
     if (adminPage) {
       const page = new URL("/admin-" + (adminPage[1] === "models" ? "provider" : adminPage[1]), url);
       return withAppTitle(withNoIndex(await env.ASSETS.fetch(new Request(page, request))), url.hostname);
@@ -2375,6 +2400,11 @@ export default {
           ev.cost = lane === "byok" ? null : priceOf(usedModel, ev.tin, ev.tout, env, c);
           const after = await recordUsage(env, ev);
           if (lane === "seminar" && after) await watchSeminar(env, after, ev);
+          // The study counts the message (its length, never its text).
+          if (ok && (lane === "seminar" || lane === "demo") && c) {
+            const last = Array.isArray(body.history) ? body.history[body.history.length - 1] : null;
+            await studyMessage(env, c, lane === "seminar" ? "uvt" : "demo", participant, moduleId, last && typeof last.content === "string" ? last.content.length : 0);
+          }
         })();
         if (ctx && ctx.waitUntil) ctx.waitUntil(p);
       };
@@ -2414,6 +2444,42 @@ export default {
         provider: SEMINAR_PROVIDERS[prov].label, cases,
         models: seminarTiers(cfg).map((t) => ({ tier: t, label: TIER_LABEL[t], model: prettyModel(mods[t]) })),
       });
+    }
+
+    // ---- Study data from the participants' pages (uvt and the demo) --------
+    if (url.pathname.startsWith("/api/study/")) {
+      const kind = studyKindFor(url.hostname);
+      if (!kind) return jsonResponse({ enabled: false });
+      const cfg = await seminarConfig(env);
+      const st = studyOf(cfg, kind);
+      let body = {};
+      if (request.method === "POST") { try { body = JSON.parse(await request.text()); } catch { return jsonResponse({ error: "Could not read the request." }, 400); } }
+      const pid = await studyPid(kind, request, env, request.method === "GET" ? url.searchParams.get("v") : body.v);
+      if (!st.enabled || !pid) return jsonResponse({ enabled: false });
+      const stub = studyStub(env), now = Date.now(), what = url.pathname.slice("/api/study/".length);
+      try {
+        if (what === "state" && request.method === "GET") {
+          const page = url.searchParams.get("page"), cs = url.searchParams.get("case");
+          const s0 = await stub.state(pid, kind, st.version, page, CASE_IDS.includes(cs) ? cs : null, now);
+          return jsonResponse(Object.assign({ enabled: true, kind, text: st.text, version: st.version }, s0));
+        }
+        if (what === "consent" && request.method === "POST") {
+          await stub.consent(pid, kind, !!body.agree, st.version, !!body.erase, now);
+          return jsonResponse({ ok: true });
+        }
+        if (what === "beat" && request.method === "POST") {
+          const page = STUDY_PAGES.includes(body.page) ? body.page : "resources";
+          const cs = CASE_IDS.includes(body.case) ? body.case : "";
+          const device = body.device === "phone" ? "phone" : body.device === "tablet" ? "tablet" : "computer";
+          const ok = await stub.beat(pid, kind, st.version, dayKey(cfg), page, cs, Number(body.sec) || 0, device, body.stages || {}, now);
+          return jsonResponse({ ok });
+        }
+        if (what === "respond" && request.method === "POST") {
+          await stub.respond(pid, kind, st.version, String(body.qid || ""), String(body.round || ""), body.answers || {}, !!body.skip, now);
+          return jsonResponse({ ok: true });
+        }
+      } catch (e) { return jsonResponse({ error: String((e && e.message) || e).replace(/^Error: /, "") }, 400); }
+      return new Response("Not found", { status: 404 });
     }
 
     // ---- Demo status, for the chat pages on the public site ---------------
@@ -2794,4 +2860,483 @@ async function respondAsPatientOpenAI(history, openaiKey, vignette, model = "gpt
       headers: { "Content-Type": "application/json" },
     });
   }
+}
+
+// ============================================================================
+// ---- Study data (admin console > Participant Data) -------------------------
+// ============================================================================
+// For a feasibility study: how much the platform is used, by whom, and what
+// the participants answer in short questionnaires. Only people who agreed
+// (a one-time notice, accepted with one button, per address) are recorded, and only usage: active
+// time per page, the number and length of messages, the steps of each case
+// reached, the device type and questionnaire answers - never what anyone
+// wrote or what a patient said. Students are recorded under their student
+// number (uvt), demo visitors under the anonymous id kept in their browser.
+// Kept until deleted from the console; never part of a settings backup.
+const STUDY_KINDS = ["uvt", "demo"];
+const STUDY_STAGES = ["interview", "icd", "dimensional", "cognitive", "report", "complete"];
+const STUDY_PAGES = ["chat", "eval", "dashboard", "progress", "resources"];
+const STUDY_SESSION_GAP = 30 * 60e3;
+const DEFAULT_CONSENT = {
+  uvt: "To improve ClinCog and the seminar, ClinCog records how it is used, linked to your student number: the time you spend active on its pages, how many messages you exchange with each patient and how long they are, which steps of each case you reach, whether you use a phone or a computer, and your answers to any short questionnaire.\n\nIt never records what you write or what the patients say.\n\nOnly the seminar leader sees these records. To have yours deleted, ask your seminar leader. You can read this again from \u201cYour data\u201d at the bottom of every page.",
+  demo: "To improve ClinCog, it records how it is used, under an anonymous code kept in this browser: the time you spend active on its pages, how many messages you exchange with each patient and how long they are, which steps of each case you reach, whether you use a phone or a computer, and your answers to any short questionnaire.\n\nIt never records what you write or what the patients say, and nothing that identifies you.\n\nYou can read this again from \u201cYour data\u201d at the bottom of every page.",
+};
+function studyStub(env) { return env.STUDY_DATA.get(env.STUDY_DATA.idFromName("study")); }
+function studyOf(cfg, kind) {
+  const s = (cfg.study || {})[kind] || {};
+  return { enabled: s.enabled !== false, text: s.text || DEFAULT_CONSENT[kind], version: s.version || 1, custom: !!s.text };
+}
+function studyKindFor(hostname) { return hostname === STUDENT_HOSTNAME ? "uvt" : hostname === ADMIN_HOSTNAME ? null : "demo"; }
+async function studyPid(kind, request, env, visitor) {
+  if (kind === "uvt") return await studentIdentity(request, env);
+  const v = visitorLabel(visitor);
+  return v === "anon" ? null : "v:" + v;
+}
+// A message, counted when the patient answered (chat route, meter).
+async function studyMessage(env, cfg, kind, pid, caseId, chars) {
+  try {
+    const st = studyOf(cfg, kind);
+    if (!st.enabled || !pid) return;
+    await studyStub(env).message(pid, kind, dayKey(cfg), caseId, chars, st.version);
+  } catch (e) { console.error("study:", e); }
+}
+function studyCaseName(id) { return CASE_NAMES[id] || id || ""; }
+// Questionnaires as the admin wrote them, checked before they are stored.
+function cleanQuestionnaire(d) {
+  const str = (v, n) => String(v == null ? "" : v).trim().slice(0, n);
+  const q = {
+    id: /^[a-z0-9]{6,16}$/.test(d.id || "") ? d.id : crypto.randomUUID().replace(/-/g, "").slice(0, 10),
+    title: str(d.title, 120), intro: str(d.intro, 1500),
+    kind: STUDY_KINDS.includes(d.kind) ? d.kind : "uvt",
+    active: !!d.active, required: !!d.required,
+    trigger: ["window", "beforeCase", "afterCase"].includes(d.trigger) ? d.trigger : "window",
+    cases: (Array.isArray(d.cases) ? d.cases : []).filter((c) => CASE_IDS.includes(c)),
+    rounds: [], items: [], scoring: d.scoring === "sus" ? "sus" : null,
+  };
+  if (!q.title) throw new Error("Give the questionnaire a title.");
+  if (q.trigger === "window") {
+    const seen = new Set();
+    for (const r of Array.isArray(d.rounds) ? d.rounds : []) {
+      const label = str(r.label, 40) || "Round " + (q.rounds.length + 1);
+      if (seen.has(label)) throw new Error("Two rounds are called “" + label + "”.");
+      seen.add(label);
+      const from = timeValue(r.from), until = timeValue(r.until);
+      if (from != null && until != null && until <= from) throw new Error("Round “" + label + "” has to end after it starts.");
+      const prev = q.rounds[q.rounds.length - 1];
+      if (prev && from == null) throw new Error("Give round \u201c" + label + "\u201d an opening date, so that it does not open together with \u201c" + prev.label + "\u201d.");
+      if (prev && prev.from != null && from <= prev.from) throw new Error("Round \u201c" + label + "\u201d has to open after \u201c" + prev.label + "\u201d.");
+      q.rounds.push({ label, from, until });
+    }
+    if (!q.rounds.length) q.rounds.push({ label: "Once", from: null, until: null });
+    if (q.rounds.length > 10) throw new Error("Ten rounds at most.");
+  }
+  const ids = new Set();
+  for (const it of Array.isArray(d.items) ? d.items : []) {
+    const type = ["scale", "choice", "text"].includes(it.type) ? it.type : "scale";
+    const text = str(it.text, 600);
+    if (!text) continue;
+    let id = /^[a-z0-9_]{1,24}$/.test(it.id || "") && !ids.has(it.id) ? it.id : "i" + (ids.size + 1);
+    while (ids.has(id)) id += "x";
+    ids.add(id);
+    const item = { id, type, text, required: it.required !== false };
+    if (type === "scale") {
+      item.min = Math.max(0, Math.min(10, parseInt(it.min, 10) || 0));
+      item.max = Math.max(item.min + 1, Math.min(100, parseInt(it.max, 10) || 5));
+      if (item.max - item.min > 10) throw new Error("A scale has at most 11 points (“" + text.slice(0, 40) + "”).");
+      item.minLabel = str(it.minLabel, 60); item.maxLabel = str(it.maxLabel, 60);
+      item.reverse = !!it.reverse;
+    } else if (type === "choice") {
+      item.options = (Array.isArray(it.options) ? it.options : String(it.options || "").split("\n")).map((o) => str(o, 120)).filter(Boolean).slice(0, 12);
+      if (item.options.length < 2) throw new Error("A choice needs at least two options (“" + text.slice(0, 40) + "”).");
+    } else item.required = !!it.required;
+    q.items.push(item);
+  }
+  if (!q.items.length) throw new Error("Add at least one question.");
+  if (q.items.length > 60) throw new Error("Sixty questions at most.");
+  return q;
+}
+function studyCsv(rows) {
+  const q = (v) => { const t = v == null ? "" : String(v); return /[",\n;\r]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
+  return "﻿" + rows.map((r) => r.map(q).join(",")).join("\r\n") + "\r\n";
+}
+async function pseudonymiser(env) {
+  const salt = await studyStub(env).salt();
+  const cache = new Map();
+  return async (pid) => {
+    if (cache.has(pid)) return cache.get(pid);
+    const h = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(salt + ":" + pid));
+    const code = "P" + [...new Uint8Array(h)].slice(0, 5).map((b) => b.toString(16).padStart(2, "0")).join("");
+    cache.set(pid, code);
+    return code;
+  };
+}
+
+export class StudyData extends DurableObject {
+  constructor(ctx, env) {
+    super(ctx, env);
+    this.sql = ctx.storage.sql;
+    const x = (q) => this.sql.exec(q);
+    x("CREATE TABLE IF NOT EXISTS consent (pid TEXT, kind TEXT, agreed INTEGER, version INTEGER, ts INTEGER, first INTEGER, PRIMARY KEY (pid, kind))");
+    x("CREATE TABLE IF NOT EXISTS act (pid TEXT, kind TEXT, day TEXT, page TEXT, cs TEXT, sec INTEGER, PRIMARY KEY (pid, kind, day, page, cs))");
+    x("CREATE TABLE IF NOT EXISTS sess (pid TEXT, kind TEXT, start INTEGER, last INTEGER, device TEXT)");
+    x("CREATE INDEX IF NOT EXISTS sess_pid ON sess (pid, kind, last)");
+    x("CREATE TABLE IF NOT EXISTS msg (pid TEXT, kind TEXT, day TEXT, cs TEXT, n INTEGER, chars INTEGER, PRIMARY KEY (pid, kind, day, cs))");
+    x("CREATE TABLE IF NOT EXISTS prog (pid TEXT, kind TEXT, cs TEXT, stage TEXT, ts INTEGER, PRIMARY KEY (pid, kind, cs, stage))");
+    x("CREATE TABLE IF NOT EXISTS quest (id TEXT PRIMARY KEY, def TEXT, created INTEGER, updated INTEGER)");
+    x("CREATE TABLE IF NOT EXISTS resp (qid TEXT, pid TEXT, kind TEXT, round TEXT, ts INTEGER, answers TEXT, skipped INTEGER, PRIMARY KEY (qid, pid, kind, round))");
+    x("CREATE TABLE IF NOT EXISTS meta (k TEXT PRIMARY KEY, v TEXT)");
+  }
+  rows(q, ...b) { return this.sql.exec(q, ...b).toArray(); }
+  one(q, ...b) { return this.rows(q, ...b)[0] || null; }
+  async salt() {
+    let r = this.one("SELECT v FROM meta WHERE k = 'salt'");
+    if (!r) { const v = crypto.randomUUID(); this.sql.exec("INSERT INTO meta (k, v) VALUES ('salt', ?)", v); return v; }
+    return r.v;
+  }
+  agreed(pid, kind, version) {
+    const r = this.one("SELECT agreed, version FROM consent WHERE pid = ? AND kind = ?", pid, kind);
+    return !!(r && r.agreed && r.version >= version);
+  }
+
+  // ---- from the participants' pages ----
+  async state(pid, kind, version, page, cs, now) {
+    const c = this.one("SELECT agreed, version, ts FROM consent WHERE pid = ? AND kind = ?", pid, kind);
+    const asked = !!(c && c.version >= version);
+    const out = { consent: { asked, agreed: asked && !!c.agreed, at: c ? c.ts : null }, pending: [] };
+    if (!out.consent.agreed) return out;
+    for (const r of this.rows("SELECT def FROM quest ORDER BY created")) {
+      const q = JSON.parse(r.def);
+      if (!q.active || q.kind !== kind) continue;
+      const done = (round) => !!this.one("SELECT 1 FROM resp WHERE qid = ? AND pid = ? AND kind = ? AND round = ?", q.id, pid, kind, round);
+      const reached = (c2, st) => !!this.one("SELECT 1 FROM prog WHERE pid = ? AND kind = ? AND cs = ? AND stage = ?", pid, kind, c2, st);
+      const cases = q.cases.length ? q.cases : CASE_IDS;
+      if (q.trigger === "window") {
+        // The latest round that is open: once "After" opens, a late
+        // participant answers that one, not the "Before" they missed.
+        for (let i = q.rounds.length - 1; i >= 0; i--) {
+          const rd = q.rounds[i];
+          if ((rd.from == null || rd.from <= now) && (rd.until == null || now < rd.until)) { if (!done(rd.label)) out.pending.push({ q, round: rd.label }); break; }
+        }
+      } else if (q.trigger === "beforeCase") {
+        if (page === "chat" && cases.includes(cs) && !reached(cs, "interview") && !done(cs)) out.pending.push({ q, round: cs, caseName: studyCaseName(cs) });
+      } else {
+        for (const c2 of cases) if (reached(c2, "complete") && !done(c2)) { out.pending.push({ q, round: c2, caseName: studyCaseName(c2) }); break; }
+      }
+    }
+    return out;
+  }
+  async consent(pid, kind, agree, version, erase, now) {
+    if (!agree && erase) this.erase(pid, kind);
+    const prev = this.one("SELECT first FROM consent WHERE pid = ? AND kind = ?", pid, kind);
+    this.sql.exec("INSERT OR REPLACE INTO consent (pid, kind, agreed, version, ts, first) VALUES (?, ?, ?, ?, ?, ?)",
+      pid, kind, agree ? 1 : 0, version, now, prev && prev.first ? prev.first : now);
+    return true;
+  }
+  async beat(pid, kind, version, day, page, cs, sec, device, stages, now) {
+    if (!this.agreed(pid, kind, version)) return false;
+    sec = Math.max(0, Math.min(60, Math.round(sec || 0)));
+    if (sec > 0) {
+      this.sql.exec("INSERT INTO act (pid, kind, day, page, cs, sec) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (pid, kind, day, page, cs) DO UPDATE SET sec = sec + excluded.sec",
+        pid, kind, day, page, cs || "", sec);
+      const s = this.one("SELECT rowid AS id, last FROM sess WHERE pid = ? AND kind = ? ORDER BY last DESC LIMIT 1", pid, kind);
+      if (s && now - s.last <= STUDY_SESSION_GAP) this.sql.exec("UPDATE sess SET last = ? WHERE rowid = ?", now, s.id);
+      else this.sql.exec("INSERT INTO sess (pid, kind, start, last, device) VALUES (?, ?, ?, ?, ?)", pid, kind, now - sec * 1000, now, device);
+    }
+    for (const c2 in stages || {}) {
+      if (!CASE_IDS.includes(c2)) continue;
+      for (const st of stages[c2]) if (STUDY_STAGES.includes(st)) this.sql.exec("INSERT OR IGNORE INTO prog (pid, kind, cs, stage, ts) VALUES (?, ?, ?, ?, ?)", pid, kind, c2, st, now);
+    }
+    return true;
+  }
+  async message(pid, kind, day, cs, chars, version) {
+    if (!this.agreed(pid, kind, version)) return false;
+    this.sql.exec("INSERT INTO msg (pid, kind, day, cs, n, chars) VALUES (?, ?, ?, ?, 1, ?) ON CONFLICT (pid, kind, day, cs) DO UPDATE SET n = n + 1, chars = chars + excluded.chars",
+      pid, kind, day, cs || "", Math.max(0, Math.min(20000, chars | 0)));
+    return true;
+  }
+  async respond(pid, kind, version, qid, round, answers, skipped, now) {
+    if (!this.agreed(pid, kind, version)) throw new Error("Not taking part in the study.");
+    const r = this.one("SELECT def FROM quest WHERE id = ?", qid);
+    if (!r) throw new Error("That questionnaire no longer exists.");
+    const q = JSON.parse(r.def);
+    if (q.kind !== kind) throw new Error("That questionnaire is not for this address.");
+    const out = {};
+    if (!skipped) {
+      for (const it of q.items) {
+        let v = answers ? answers[it.id] : undefined;
+        if (v === "" || v === undefined) v = null;
+        if (v !== null) {
+          if (it.type === "scale") { v = Number(v); if (!Number.isInteger(v) || v < it.min || v > it.max) throw new Error("An answer is out of range."); }
+          else if (it.type === "choice") { if (!it.options.includes(String(v))) throw new Error("An answer is not one of the options."); v = String(v); }
+          else v = String(v).slice(0, 4000);
+        }
+        if (v === null && it.required) throw new Error("Answer every question marked as required.");
+        out[it.id] = v;
+      }
+    }
+    this.sql.exec("INSERT OR REPLACE INTO resp (qid, pid, kind, round, ts, answers, skipped) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      qid, pid, kind, String(round).slice(0, 40), now, JSON.stringify(out), skipped ? 1 : 0);
+    return true;
+  }
+
+  // ---- for the admin console ----
+  erase(pid, kind) {
+    for (const t of ["act", "sess", "msg", "prog", "resp"]) this.sql.exec("DELETE FROM " + t + " WHERE pid = ? AND kind = ?", pid, kind);
+  }
+  async purge(kind, pid, withConsent) {
+    if (pid) { this.erase(pid, kind); if (withConsent) this.sql.exec("DELETE FROM consent WHERE pid = ? AND kind = ?", pid, kind); return true; }
+    for (const t of ["act", "sess", "msg", "prog", "resp"]) this.sql.exec("DELETE FROM " + t + " WHERE kind = ?", kind);
+    if (withConsent) this.sql.exec("DELETE FROM consent WHERE kind = ?", kind);
+    return true;
+  }
+  async listQuest() {
+    return this.rows("SELECT q.def, q.created, q.updated, (SELECT COUNT(*) FROM resp r WHERE r.qid = q.id AND r.skipped = 0) AS n, (SELECT COUNT(*) FROM resp r WHERE r.qid = q.id AND r.skipped = 1) AS skipped FROM quest q ORDER BY q.created")
+      .map((r) => Object.assign(JSON.parse(r.def), { created: r.created, updated: r.updated, responses: r.n, skipped: r.skipped }));
+  }
+  async saveQuest(q, now) {
+    const old = this.one("SELECT created FROM quest WHERE id = ?", q.id);
+    this.sql.exec("INSERT OR REPLACE INTO quest (id, def, created, updated) VALUES (?, ?, ?, ?)", q.id, JSON.stringify(q), old ? old.created : now, now);
+    return { id: q.id, isNew: !old };
+  }
+  async deleteQuest(id, responsesToo) {
+    const r = this.one("SELECT def FROM quest WHERE id = ?", id);
+    if (responsesToo) this.sql.exec("DELETE FROM resp WHERE qid = ?", id);
+    else if (this.one("SELECT 1 FROM resp WHERE qid = ?", id)) throw new Error("It has answers: delete them too, or switch it off instead.");
+    this.sql.exec("DELETE FROM quest WHERE id = ?", id);
+    return r ? JSON.parse(r.def).title : null;
+  }
+  async deleteResponses(id) { this.sql.exec("DELETE FROM resp WHERE qid = ?", id); return true; }
+  async questResults(id) {
+    const r = this.one("SELECT def FROM quest WHERE id = ?", id);
+    if (!r) return null;
+    return { q: JSON.parse(r.def), responses: this.rows("SELECT pid, kind, round, ts, answers, skipped FROM resp WHERE qid = ? ORDER BY ts", id).map((x) => Object.assign(x, { answers: JSON.parse(x.answers || "{}") })) };
+  }
+  async overview(kind) {
+    const per = {};
+    const P = (pid) => per[pid] || (per[pid] = { pid, consent: null, sec: 0, pages: {}, days: 0, firstDay: null, lastDay: null, sessions: 0, sessionMs: 0, last: null, devices: {}, msgs: {}, chars: 0, stages: {}, responses: 0 });
+    for (const r of this.rows("SELECT pid, agreed, version, ts, first FROM consent WHERE kind = ?", kind)) P(r.pid).consent = { agreed: !!r.agreed, version: r.version, at: r.ts, first: r.first };
+    for (const r of this.rows("SELECT pid, page, SUM(sec) AS s FROM act WHERE kind = ? GROUP BY pid, page", kind)) { const p = P(r.pid); p.pages[r.page] = r.s; p.sec += r.s; }
+    for (const r of this.rows("SELECT pid, COUNT(DISTINCT day) AS d, MIN(day) AS a, MAX(day) AS b FROM act WHERE kind = ? GROUP BY pid", kind)) Object.assign(P(r.pid), { days: r.d, firstDay: r.a, lastDay: r.b });
+    for (const r of this.rows("SELECT pid, device, COUNT(*) AS n, SUM(last - start) AS ms, MAX(last) AS last FROM sess WHERE kind = ? GROUP BY pid, device", kind)) {
+      const p = P(r.pid); p.sessions += r.n; p.sessionMs += r.ms || 0; p.devices[r.device || "?"] = r.n; p.last = Math.max(p.last || 0, r.last);
+    }
+    for (const r of this.rows("SELECT pid, cs, SUM(n) AS n, SUM(chars) AS c FROM msg WHERE kind = ? GROUP BY pid, cs", kind)) { const p = P(r.pid); p.msgs[r.cs] = r.n; p.chars += r.c; }
+    for (const r of this.rows("SELECT pid, cs, stage FROM prog WHERE kind = ?", kind)) {
+      const p = P(r.pid), i = STUDY_STAGES.indexOf(r.stage);
+      if (i > (p.stages[r.cs] ?? -1)) p.stages[r.cs] = i;
+    }
+    for (const r of this.rows("SELECT pid, COUNT(*) AS n FROM resp WHERE kind = ? AND skipped = 0 GROUP BY pid", kind)) P(r.pid).responses = r.n;
+    const weekly = {};
+    for (const r of this.rows("SELECT day, pid, SUM(sec) AS s FROM act WHERE kind = ? GROUP BY day, pid", kind)) {
+      const d = new Date(r.day + "T00:00:00Z"), wk = new Date(d - ((d.getUTCDay() + 6) % 7) * 86400e3).toISOString().slice(0, 10);
+      const w = weekly[wk] || (weekly[wk] = { week: wk, people: new Set(), sec: 0 });
+      w.people.add(r.pid); w.sec += r.s;
+    }
+    const msgsByWeek = {};
+    for (const r of this.rows("SELECT day, SUM(n) AS n FROM msg WHERE kind = ? GROUP BY day", kind)) {
+      const d = new Date(r.day + "T00:00:00Z"), wk = new Date(d - ((d.getUTCDay() + 6) % 7) * 86400e3).toISOString().slice(0, 10);
+      msgsByWeek[wk] = (msgsByWeek[wk] || 0) + r.n;
+    }
+    return {
+      participants: Object.values(per),
+      weeks: Object.values(weekly).sort((a, b) => (a.week < b.week ? -1 : 1)).map((w) => ({ week: w.week, active: w.people.size, sec: w.sec, msgs: msgsByWeek[w.week] || 0 })),
+    };
+  }
+  async participant(pid, kind) {
+    return {
+      consent: this.one("SELECT agreed, version, ts, first FROM consent WHERE pid = ? AND kind = ?", pid, kind),
+      days: this.rows("SELECT day, page, cs, sec FROM act WHERE pid = ? AND kind = ? ORDER BY day", pid, kind),
+      msgs: this.rows("SELECT day, cs, n, chars FROM msg WHERE pid = ? AND kind = ? ORDER BY day", pid, kind),
+      sessions: this.rows("SELECT start, last, device FROM sess WHERE pid = ? AND kind = ? ORDER BY start DESC LIMIT 60", pid, kind),
+      progress: this.rows("SELECT cs, stage, ts FROM prog WHERE pid = ? AND kind = ? ORDER BY ts", pid, kind),
+      responses: this.rows("SELECT r.qid, r.round, r.ts, r.answers, r.skipped, q.def FROM resp r LEFT JOIN quest q ON q.id = r.qid WHERE r.pid = ? AND r.kind = ? ORDER BY r.ts", pid, kind)
+        .map((x) => { const q = x.def ? JSON.parse(x.def) : null; return { qid: x.qid, title: q ? q.title : "(deleted questionnaire)", round: x.round, ts: x.ts, skipped: !!x.skipped, answers: JSON.parse(x.answers || "{}"), items: q ? q.items : [] }; }),
+    };
+  }
+  async exportRows(what, kind) {
+    const k = kind === "all" ? null : kind;
+    const w = k ? " WHERE kind = ?" : "", b = k ? [k] : [];
+    switch (what) {
+      case "consent": return this.rows("SELECT kind, pid, agreed, version, first, ts FROM consent" + w + " ORDER BY kind, pid", ...b);
+      case "activity": return this.rows("SELECT kind, pid, day, page, cs, sec FROM act" + w + " ORDER BY kind, pid, day", ...b);
+      case "sessions": return this.rows("SELECT kind, pid, start, last, device FROM sess" + w + " ORDER BY kind, pid, start", ...b);
+      case "messages": return this.rows("SELECT kind, pid, day, cs, n, chars FROM msg" + w + " ORDER BY kind, pid, day", ...b);
+      case "progress": return this.rows("SELECT kind, pid, cs, stage, ts FROM prog" + w + " ORDER BY kind, pid, ts", ...b);
+      case "responses": return this.rows("SELECT r.kind, r.pid, r.qid, r.round, r.ts, r.skipped, r.answers, q.def FROM resp r LEFT JOIN quest q ON q.id = r.qid" + (k ? " WHERE r.kind = ?" : "") + " ORDER BY r.qid, r.pid", ...b);
+      default: return [];
+    }
+  }
+  async counts() {
+    const out = {};
+    for (const k of STUDY_KINDS) {
+      out[k] = {
+        agreed: this.one("SELECT COUNT(*) AS n FROM consent WHERE kind = ? AND agreed = 1", k).n,
+        declined: this.one("SELECT COUNT(*) AS n FROM consent WHERE kind = ? AND agreed = 0", k).n,
+        activity: this.one("SELECT COUNT(*) AS n FROM act WHERE kind = ?", k).n,
+        responses: this.one("SELECT COUNT(*) AS n FROM resp WHERE kind = ?", k).n,
+      };
+    }
+    return out;
+  }
+}
+
+// ---- Participant Data: the admin side --------------------------------------
+function sd(xs) { if (xs.length < 2) return null; const m = xs.reduce((a, b) => a + b, 0) / xs.length; return Math.sqrt(xs.reduce((a, b) => a + (b - m) * (b - m), 0) / (xs.length - 1)); }
+function susScore(q, ans) {
+  // System Usability Scale (Brooke, 1996): odd items positive, even negative.
+  let t = 0;
+  for (let i = 0; i < q.items.length && i < 10; i++) {
+    const v = ans[q.items[i].id];
+    if (v == null) return null;
+    t += i % 2 === 0 ? v - q.items[i].min : q.items[i].max - v;
+  }
+  return t * 2.5;
+}
+function scoredValue(it, v) { return v == null ? null : it.reverse ? it.max + it.min - v : v; }
+function questStats(q, responses) {
+  const rounds = q.trigger === "window" ? q.rounds.map((r) => r.label) : (q.cases.length ? q.cases : CASE_IDS);
+  const byRound = {};
+  for (const rd of rounds) byRound[rd] = responses.filter((r) => r.round === rd && !r.skipped);
+  const out = { rounds: [], paired: null };
+  for (const rd of rounds) {
+    const rs = byRound[rd];
+    const items = q.items.map((it) => {
+      // Answers kept from before a question was edited may not fit it now.
+      const vals = rs.map((r) => r.answers[it.id]).filter((v) => v != null && (it.type === "scale" ? Number.isInteger(v) && v >= it.min && v <= it.max : it.type === "choice" ? it.options.includes(v) : true));
+      if (it.type === "scale") {
+        const nums = vals.map((v) => scoredValue(it, v));
+        const dist = {}; for (let v = it.min; v <= it.max; v++) dist[v] = 0;
+        vals.forEach((v) => { dist[v] = (dist[v] || 0) + 1; });
+        return { id: it.id, n: nums.length, mean: nums.length ? nums.reduce((a, b) => a + b, 0) / nums.length : null, sd: sd(nums), dist };
+      }
+      if (it.type === "choice") { const c = {}; it.options.forEach((o) => { c[o] = 0; }); vals.forEach((v) => { c[v] = (c[v] || 0) + 1; }); return { id: it.id, n: vals.length, counts: c }; }
+      return { id: it.id, n: vals.length, texts: vals.slice(-200) };
+    });
+    let sus = null;
+    if (q.scoring === "sus") {
+      const sc = rs.map((r) => susScore(q, r.answers)).filter((v) => v != null);
+      sus = { n: sc.length, mean: sc.length ? sc.reduce((a, b) => a + b, 0) / sc.length : null, sd: sd(sc) };
+    }
+    // The mean of the scale items, per person, then over people.
+    const scaleItems = q.items.filter((it) => it.type === "scale");
+    const fit = (it, v) => (Number.isInteger(v) && v >= it.min && v <= it.max ? v : null);
+    const totals = rs.map((r) => { const v = scaleItems.map((it) => scoredValue(it, fit(it, r.answers[it.id]))).filter((x) => x != null); return v.length === scaleItems.length && v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; }).filter((x) => x != null);
+    out.rounds.push({ round: rd, label: q.trigger === "window" ? rd : studyCaseName(rd), n: rs.length, skipped: responses.filter((r) => r.round === rd && r.skipped).length, items, sus,
+      scaleMean: totals.length ? { n: totals.length, mean: totals.reduce((a, b) => a + b, 0) / totals.length, sd: sd(totals) } : null });
+  }
+  // Pre/post: the same people in the first two rounds (window trigger).
+  if (q.trigger === "window" && rounds.length >= 2) {
+    const a = byRound[rounds[0]], b = byRound[rounds[1]];
+    const items = q.items.filter((it) => it.type === "scale").map((it) => {
+      const diffs = [];
+      for (const ra of a) { const rb = b.find((x) => x.pid === ra.pid && x.kind === ra.kind); if (rb && Number.isInteger(ra.answers[it.id]) && Number.isInteger(rb.answers[it.id])) diffs.push(scoredValue(it, rb.answers[it.id]) - scoredValue(it, ra.answers[it.id])); }
+      return { id: it.id, n: diffs.length, mean: diffs.length ? diffs.reduce((x, y) => x + y, 0) / diffs.length : null, sd: sd(diffs) };
+    });
+    out.paired = { from: rounds[0], to: rounds[1], items };
+  }
+  return out;
+}
+async function handleStudyAdmin(request, url, env, what) {
+  const stub = studyStub(env), cfg = await seminarConfig(env, true);
+  let body = {};
+  if (request.method === "POST") { try { body = await request.json(); } catch { return jsonResponse({ error: "Could not read the request." }, 400); } }
+  const kindQ = url.searchParams.get("kind");
+  const kind = STUDY_KINDS.includes(kindQ) ? kindQ : STUDY_KINDS.includes(body.kind) ? body.kind : "uvt";
+  const history = (lines) => configStub(env).addHistory("study", lines, null).catch(() => {});
+  try {
+    if (what === "overview" && request.method === "GET") {
+      const o = await stub.overview(kind);
+      if (kind === "uvt") {
+        const have = new Set(o.participants.map((p) => p.pid));
+        for (const id of Object.keys(cfg.students)) if (!have.has(id)) o.participants.push({ pid: id, consent: null, sec: 0, pages: {}, days: 0, sessions: 0, sessionMs: 0, last: null, devices: {}, msgs: {}, chars: 0, stages: {}, responses: 0 });
+        o.participants.forEach((p) => { const s0 = cfg.students[p.pid]; p.onList = !!s0; p.note = s0 ? s0.note || "" : ""; });
+      }
+      const cost = await monitorStub(env).byParticipant(kind === "uvt" ? "seminar" : "demo", 0).catch(() => ({}));
+      o.participants.forEach((p) => { p.cost = cost[p.pid] ? cost[p.pid].cost : 0; });
+      return jsonResponse(Object.assign(o, { kind, settings: { uvt: studyOf(cfg, "uvt"), demo: studyOf(cfg, "demo") }, defaults: DEFAULT_CONSENT,
+        counts: await stub.counts(), stages: STUDY_STAGES, cases: CASE_IDS.map((id) => ({ id, name: CASE_NAMES[id] })), now: Date.now() }));
+    }
+    if (what === "participant" && request.method === "GET") {
+      return jsonResponse(await stub.participant(String(url.searchParams.get("pid") || ""), kind));
+    }
+    if (what === "questionnaires" && request.method === "GET") return jsonResponse({ list: await stub.listQuest(), cases: CASE_IDS.map((id) => ({ id, name: CASE_NAMES[id] })) });
+    if (what === "questionnaire" && request.method === "POST") {
+      const q = cleanQuestionnaire(body.q || {});
+      const r = await stub.saveQuest(q, Date.now());
+      await history([(r.isNew ? "Questionnaire created: " : "Questionnaire saved: ") + q.title + (q.active ? " (on, " + siteHost(q.kind) + ")" : " (off)")]);
+      return jsonResponse({ ok: true, id: r.id });
+    }
+    if (what === "questionnaire-delete" && request.method === "POST") {
+      const title = await stub.deleteQuest(String(body.id || ""), !!body.responses);
+      await history(["Questionnaire deleted: " + (title || body.id) + (body.responses ? ", with its answers" : "")]);
+      return jsonResponse({ ok: true });
+    }
+    if (what === "responses-delete" && request.method === "POST") {
+      await stub.deleteResponses(String(body.id || ""));
+      await history(["Questionnaire answers deleted: " + String(body.title || body.id)]);
+      return jsonResponse({ ok: true });
+    }
+    if (what === "results" && request.method === "GET") {
+      const r = await stub.questResults(String(url.searchParams.get("id") || ""));
+      if (!r) return jsonResponse({ error: "That questionnaire no longer exists." }, 404);
+      return jsonResponse({ q: r.q, stats: questStats(r.q, r.responses), total: r.responses.length });
+    }
+    if (what === "purge" && request.method === "POST") {
+      const pid = body.pid ? String(body.pid) : null;
+      await stub.purge(kind, pid, !!body.consent);
+      await history(["Study data deleted on " + siteHost(kind) + ": " + (pid ? pid : "everyone") + (body.consent ? ", consent too (asked again)" : "")]);
+      return jsonResponse({ ok: true });
+    }
+    if (what === "export" && request.method === "GET") {
+      const set = url.searchParams.get("what") || "participants";
+      const k = url.searchParams.get("kind") === "all" ? "all" : kind;
+      const ps = url.searchParams.get("pseudo") === "1" ? await pseudonymiser(env) : async (x) => x;
+      const iso = (t) => (t ? new Date(t).toISOString() : "");
+      let rows = [];
+      if (set === "participants") {
+        const kinds = k === "all" ? STUDY_KINDS : [k];
+        rows.push(["kind", "participant", "consent", "consent_version", "consent_at", "first_day", "last_day", "days_active", "sessions", "active_minutes"]
+          .concat(STUDY_PAGES.map((pg) => "minutes_" + pg)).concat(["messages"]).concat(CASE_IDS.map((c) => "messages_" + CASE_NAMES[c].toLowerCase()))
+          .concat(["avg_message_chars"]).concat(CASE_IDS.map((c) => "stage_" + CASE_NAMES[c].toLowerCase())).concat(["questionnaires_answered", "devices", "estimated_cost_usd"]));
+        for (const kk of kinds) {
+          const o = await stub.overview(kk);
+          const cost = await monitorStub(env).byParticipant(kk === "uvt" ? "seminar" : "demo", 0).catch(() => ({}));
+          for (const p of o.participants) {
+            const total = Object.values(p.msgs).reduce((a, b) => a + b, 0);
+            rows.push([kk, await ps(p.pid), p.consent ? (p.consent.agreed ? "agreed" : "declined") : "", p.consent ? p.consent.version : "", p.consent ? iso(p.consent.at) : "",
+              p.firstDay || "", p.lastDay || "", p.days, p.sessions, (p.sec / 60).toFixed(1)]
+              .concat(STUDY_PAGES.map((pg) => ((p.pages[pg] || 0) / 60).toFixed(1))).concat([total]).concat(CASE_IDS.map((c) => p.msgs[c] || 0))
+              .concat([total ? Math.round(p.chars / total) : ""]).concat(CASE_IDS.map((c) => (p.stages[c] != null ? STUDY_STAGES[p.stages[c]] : "")))
+              .concat([p.responses, Object.keys(p.devices).join(" "), cost[p.pid] ? cost[p.pid].cost.toFixed(4) : "0"]));
+          }
+        }
+      } else if (set === "responses") {
+        rows.push(["kind", "participant", "questionnaire_id", "questionnaire", "round", "answered_at", "skipped", "item_id", "item", "type", "value", "scored_value"]);
+        for (const r of await stub.exportRows("responses", k)) {
+          const q = r.def ? JSON.parse(r.def) : { title: "", items: [] }, ans = JSON.parse(r.answers || "{}"), pid = await ps(r.pid);
+          const round = q.trigger === "window" ? r.round : studyCaseName(r.round) || r.round;
+          if (r.skipped) { rows.push([r.kind, pid, r.qid, q.title, round, iso(r.ts), 1, "", "", "", "", ""]); continue; }
+          for (const it of q.items) rows.push([r.kind, pid, r.qid, q.title, round, iso(r.ts), 0, it.id, it.text, it.type, ans[it.id] ?? "", it.type === "scale" ? scoredValue(it, ans[it.id]) ?? "" : ""]);
+          if (q.scoring === "sus") rows.push([r.kind, pid, r.qid, q.title, round, iso(r.ts), 0, "sus_score", "SUS score (0-100)", "score", susScore(q, ans) ?? "", susScore(q, ans) ?? ""]);
+        }
+      } else {
+        const data = await stub.exportRows(set, k);
+        const head = { consent: ["kind", "participant", "agreed", "version", "first_answer", "last_answer"], activity: ["kind", "participant", "day", "page", "case", "seconds"],
+          sessions: ["kind", "participant", "start", "end", "minutes", "device"], messages: ["kind", "participant", "day", "case", "messages", "characters"], progress: ["kind", "participant", "case", "stage", "reached_at"] }[set];
+        if (!head) return jsonResponse({ error: "Unknown export." }, 400);
+        rows.push(head);
+        for (const r of data) {
+          const pid = await ps(r.pid);
+          if (set === "consent") rows.push([r.kind, pid, r.agreed ? "yes" : "no", r.version, iso(r.first), iso(r.ts)]);
+          else if (set === "activity") rows.push([r.kind, pid, r.day, r.page, studyCaseName(r.cs), r.sec]);
+          else if (set === "sessions") rows.push([r.kind, pid, iso(r.start), iso(r.last), ((r.last - r.start) / 60000).toFixed(1), r.device]);
+          else if (set === "messages") rows.push([r.kind, pid, r.day, studyCaseName(r.cs), r.n, r.chars]);
+          else rows.push([r.kind, pid, studyCaseName(r.cs), r.stage, iso(r.ts)]);
+        }
+      }
+      return new Response(studyCsv(rows), { headers: { "Content-Type": "text/csv; charset=utf-8", "Cache-Control": "no-store",
+        "Content-Disposition": 'attachment; filename="clincog-study-' + set + "-" + k + "-" + new Date().toISOString().slice(0, 10) + '.csv"' } });
+    }
+  } catch (e) { return jsonResponse({ error: String((e && e.message) || e).replace(/^Error: /, "") }, 400); }
+  return new Response("Not found", { status: 404 });
 }

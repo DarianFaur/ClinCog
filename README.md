@@ -105,6 +105,17 @@ of pages in the sidebar, above the student pages:
   out (the interviews can then close by themselves until the next month),
   and when patient replies keep failing, at most hourly. Alerts go to
   `CONTACT_TO` through the same `send_email` binding as the contact form.
+- **Participant data**: for a feasibility study. After a one-time notice
+  (shown on the course instance and on the public site, with one Accept
+  button; editable, and it does not mention a study), it records active time per
+  page and case, sessions, the number and length of messages, the steps of
+  each case reached, the device type, and the answers to questionnaires the
+  admin writes and schedules (in rounds such as before/after, before the
+  first interview with a patient, or after a case), with templates, results
+  per item, pre/post change per person and the SUS score. Never the content
+  of a conversation. Kept until deleted there; CSV exports, pseudonymised
+  if wanted; deletion per person or per address. Each questionnaire can be
+  skipped; the notice can be read again from "Your data" on every page.
 - **History & backup**: every change made on the console, described in
   words, with undo for the last 50; a settings backup (without keys
   or passwords) to download and restore, with a preview first.
@@ -142,6 +153,8 @@ public/
   admin-course.html, admin-students.html, admin-demo.html,
   admin-provider.html, admin-history.html
                       admin console: the settings pages, served at /admin/…
+  admin-participants.* admin console: Participant data (study), at /admin/participants
+  study.js            the notice, active time and questionnaires on the participants' pages
   admin-settings.js, admin.css
                       shared by the settings pages
   tokens.css, components.css, shell.css, alpha-eval.css, report.css

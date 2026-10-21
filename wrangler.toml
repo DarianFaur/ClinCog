@@ -124,6 +124,16 @@ class_name = "SeminarConfig"
 tag = "v3-seminar-config"
 new_sqlite_classes = ["SeminarConfig"]
 
+# Participant Data (admin console): usage and questionnaire answers of the
+# people who agreed to take part in the study. Kept until deleted there.
+[[durable_objects.bindings]]
+name = "STUDY_DATA"
+class_name = "StudyData"
+
+[[migrations]]
+tag = "v4-study-data"
+new_sqlite_classes = ["StudyData"]
+
 [vars]
 # Starting values only: read once, the first time the seminar settings are
 # opened, together with the STUDENT_IDS secret if it is set. After that the

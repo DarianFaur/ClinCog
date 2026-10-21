@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow">
+<script>
+  try { if (!localStorage.getItem("clincog_name")) localStorage.setItem("clincog_name", "Admin"); } catch (e) {}
+</script>
+<script src="/theme-init.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClinCog - Participant data</title>
+<link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17191c" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ClinCog">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="/favicon-180.png">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preload" as="script" href="/shell.js?v=2">
+<link rel="stylesheet" href="/tokens.css">
+<link rel="stylesheet" href="/components.css">
+<link rel="stylesheet" href="/shell.css">
+<link rel="stylesheet" href="/admin.css">
+<style>
+  .pd-tabs { margin-bottom: var(--sp-6); }
+  .pd-tabs .seg { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 3px; border-radius: 999px; background: var(--mist); max-width: 100%; }
+  .pd-tabs .seg button { border: 0; background: transparent; border-radius: 999px; padding: 9px 16px; font: 500 13.5px var(--font-sans); color: var(--text-secondary); cursor: pointer; }
+  .pd-tabs .seg button[aria-pressed="true"] { background: var(--ink); color: var(--ink-text); }
+  .pd-tabs .seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media (max-width: 640px) { .pd-tabs .seg { display: grid; grid-template-columns: 1fr 1fr; width: 100%; border-radius: 18px; } .pd-tabs .seg button { border-radius: 14px; } }
+  .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: var(--sp-6); }
+  @media (max-width: 900px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 480px) { .tiles { grid-template-columns: 1fr; } }
+  .tile { background: var(--mist); border-radius: 20px; padding: 16px 18px; min-width: 0; }
+  .tile small { display: block; font-size: 12px; color: var(--text-tertiary); margin-bottom: 6px; }
+  .tile b { display: block; font-family: var(--font-serif); font-weight: 400; font-size: 1.6rem; line-height: 1.15; font-variant-numeric: tabular-nums; }
+  .tile span { display: block; font-size: 12.5px; color: var(--text-secondary); margin-top: 4px; }
+  .wk { position: relative; }
+  .wk svg { display: block; width: 100%; overflow: visible; }
+  .wk .bar { fill: var(--domain-psychosis-line); }
+  .wk .bar.alt { fill: var(--text-tertiary); opacity: .35; }
+  .wk .axis { font: 400 10.5px var(--font-mono); fill: var(--text-tertiary); }
+  .wk .val { font: 500 11px var(--font-sans); fill: var(--text-secondary); }
+  .wk .grid { stroke: var(--hairline); }
+  .funnel td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .fbar { height: 6px; border-radius: 999px; background: var(--mist); margin-top: 4px; overflow: hidden; min-width: 50px; }
+  .fbar i { display: block; height: 100%; background: var(--ink); border-radius: 999px; }
+  .tbl tbody tr.click { cursor: pointer; }
+  .tbl tbody tr.click:hover td { background: var(--mist); }
+  .tbl td.num, .tbl th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .chips span.st { font-family: var(--font-sans); }
+  .chips span.done { background: var(--ink); color: var(--ink-text); }
+  .pill.agree { background: var(--domain-psychosis-soft); color: var(--domain-psychosis-ink); }
+  .detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 14px; }
+  @media (max-width: 760px) { .detail-grid { grid-template-columns: 1fr; } }
+  .dbox { background: var(--mist); border-radius: 16px; padding: 14px 16px; min-width: 0; font-size: 13.5px; }
+  .dbox h4 { margin: 0 0 8px; font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+  .dbox ul { margin: 0; padding: 0; list-style: none; }
+  .dbox li { padding: 4px 0; border-top: 1px solid var(--hairline); }
+  .dbox li:first-child { border-top: 0; }
+  .dbox .muted { color: var(--text-tertiary); }
+  .qcards { display: flex; flex-direction: column; gap: 10px; }
+  .qcard { background: var(--paper); border-radius: 18px; padding: 16px 18px; display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
+  .qcard .qmain { flex: 1 1 320px; min-width: 0; }
+  .qcard b { font-family: var(--font-serif); font-weight: 400; font-size: 1.2rem; }
+  .qcard .meta { font-size: 12.5px; color: var(--text-tertiary); margin-top: 4px; }
+  .qcard .acts { display: flex; gap: 6px; flex-wrap: wrap; }
+  .qitem { background: var(--paper); border-radius: 16px; padding: 14px 16px; margin-top: 10px; display: flex; flex-direction: column; gap: 10px; }
+  .qitem .qrow { display: grid; grid-template-columns: 160px minmax(0, 1fr) auto; gap: 10px; align-items: start; }
+  @media (max-width: 640px) { .qitem .qrow { grid-template-columns: 1fr; } }
+  .qitem .inp, .qitem .sel, .qitem textarea.inp { background: var(--mist); }
+  .qitem .scale4 { display: grid; grid-template-columns: 80px 80px minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+  @media (max-width: 640px) { .qitem .scale4 { grid-template-columns: 1fr 1fr; } }
+  .qitem .tools { display: flex; gap: 4px; }
+  .rounds { display: flex; flex-direction: column; gap: 8px; }
+  .round { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 1.3fr) auto; gap: 8px; align-items: center; }
+  @media (max-width: 640px) { .round { grid-template-columns: 1fr; } }
+  .res-item { background: var(--paper); border-radius: 14px; padding: 12px 14px; margin-top: 8px; font-size: 13.5px; }
+  .res-item .q { font-weight: 500; margin-bottom: 6px; }
+  .dist { display: flex; gap: 3px; align-items: flex-end; height: 44px; margin-top: 6px; }
+  .dist div { flex: 1 1 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 2px; height: 100%; }
+  .dist i { display: block; width: 100%; background: var(--ink); border-radius: 4px 4px 0 0; min-height: 1px; }
+  .dist span { font: 400 10px var(--font-mono); color: var(--text-tertiary); }
+  .texts { max-height: 180px; overflow-y: auto; margin: 6px 0 0; padding-left: 18px; color: var(--text-secondary); }
+  .exports { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .consent-text { min-height: 220px !important; }
+</style>
+</head>
+<body>
+<div id="shell-content" data-admin-page="participants">
+
+  <div class="set-head">
+    <h1 class="text-page-title">Participant <em>data</em></h1>
+    <p>How the platform is used, for the feasibility study: active time, messages, the steps of each case, and the answers to your questionnaires. Recorded once the notice is accepted, never what anyone wrote. Kept until you delete it here.</p>
+  </div>
+
+  <div class="pd-tabs"><div class="seg" id="pd-tabs" role="group" aria-label="View">
+    <button type="button" data-tab="uvt">Seminar participants</button>
+    <button type="button" data-tab="demo">Demo visitors</button>
+    <button type="button" data-tab="quest">Questionnaires</button>
+    <button type="button" data-tab="data">Notice &amp; data</button>
+  </div></div>
+
+  <div id="pd-people" hidden>
+    <div class="tiles" id="pd-tiles"></div>
+    <section class="set-section">
+      <header><div><h2>Week by week</h2><p id="pd-weeks-sub">Participants active each week (Monday to Sunday), with their active hours and messages.</p></div></header>
+      <div class="wk" id="pd-weeks"></div>
+    </section>
+    <section class="set-section">
+      <header><div><h2>Through the cases</h2><p>How many participants reached each step of each case.</p></div></header>
+      <div class="twrap" id="pd-funnel"></div>
+    </section>
+    <section class="set-section" id="pd-list-sec">
+      <header><div><h2 id="pd-list-title">Participants</h2><p id="pd-list-sub">Select a row for that participant's own record.</p></div></header>
+      <div class="toolbar">
+        <span class="count" id="pd-count"></span>
+        <select class="sel" id="pd-filter" aria-label="Show" style="max-width:220px">
+          <option value="agreed">Recorded</option><option value="all">Everyone</option><option value="none">Not yet (class list)</option>
+        </select>
+        <select class="sel" id="pd-sort" aria-label="Sort by" style="max-width:220px">
+          <option value="last">Last active</option><option value="sec">Active time</option><option value="msgs">Messages</option><option value="sessions">Sessions</option><option value="pid">ID</option>
+        </select>
+        <input class="inp" id="pd-search" placeholder="Search" aria-label="Search participants">
+      </div>
+      <div class="twrap" id="pd-table"></div>
+      <div class="editor" id="pd-detail" hidden></div>
+    </section>
+  </div>
+
+  <div id="pd-quest" hidden>
+    <section class="set-section">
+      <header>
+        <div><h2>Questionnaires</h2><p>Short questionnaires, each with a Skip button, shown to people who accepted the notice on the address you choose: in a period (once per round, for example before and after), before the first interview with a patient, or after a case is finished. Write {patient} to insert the patient's name.</p></div>
+      </header>
+      <div class="row-actions" style="margin-top:0">
+        <select class="sel" id="q-template" aria-label="Start from" style="max-width:340px">
+          <option value="blank">Blank questionnaire</option>
+          <option value="confidence">Confidence in clinical interviewing (before / after)</option>
+          <option value="patient">Experience with each patient (after each case)</option>
+          <option value="sus">System Usability Scale (SUS)</option>
+        </select>
+        <button type="button" class="btn-ink" id="q-new">New questionnaire</button>
+      </div>
+      <div class="qcards" id="q-list" style="margin-top:16px"></div>
+    </section>
+    <section class="set-section" id="q-editor-sec" hidden>
+      <header><div><h2 id="q-editor-title">Questionnaire</h2><p>Changes reach participants within about 20 seconds. Editing the questions of one that already has answers is allowed, but answers to a question you remove stay in the data under its old ID.</p></div></header>
+      <div id="q-editor"></div>
+    </section>
+    <section class="set-section" id="q-results-sec" hidden>
+      <header><div><h2 id="q-results-title">Results</h2><p id="q-results-sub"></p></div></header>
+      <div id="q-results"></div>
+    </section>
+  </div>
+
+  <div id="pd-data" hidden>
+    <section class="set-section">
+      <header><div><h2>Notice</h2><p>Shown once, the first time someone opens a page of the app (not the landing page), with a single Accept button; from then on their use is recorded. It can be read again from “Your data” at the bottom of every page. It does not mention a study: the study shows only in the questionnaires, each of which can be skipped.</p></div></header>
+      <div id="c-forms"></div>
+    </section>
+    <section class="set-section">
+      <header><div><h2>Export</h2><p>CSV files, one row per record, ready for SPSS, R or Excel. Pseudonymised exports replace student numbers and visitor codes with a stable code (the same person always gets the same code).</p></div></header>
+      <div class="row-actions" style="margin-top:0">
+        <select class="sel" id="x-kind" aria-label="Which participants" style="max-width:240px">
+          <option value="uvt">Seminar (uvt.clincog.net)</option><option value="demo">Demo (clincog.net)</option><option value="all">Both</option>
+        </select>
+        <label class="check"><input type="checkbox" id="x-pseudo" checked> Pseudonymise</label>
+      </div>
+      <div class="exports" id="x-buttons"></div>
+    </section>
+    <section class="set-section">
+      <header><div><h2>Delete</h2><p>Deletes the study data of an address: activity, sessions, messages, case steps and questionnaire answers. Questionnaires themselves stay. For one person only, open their row under Seminar participants or Demo visitors. This cannot be undone; export first if you need the data.</p></div></header>
+      <div class="row-actions" style="margin-top:0">
+        <select class="sel" id="d-kind" aria-label="Which address" style="max-width:240px">
+          <option value="uvt">Seminar (uvt.clincog.net)</option><option value="demo">Demo (clincog.net)</option>
+        </select>
+        <label class="check"><input type="checkbox" id="d-consent"> Also show the notice to everyone again</label>
+        <button type="button" class="btn-ghost danger" id="d-purge">Delete recorded data…</button>
+        <span class="err" id="d-err"></span>
+      </div>
+    </section>
+  </div>
+
+</div>
+
+<script>window.CLINCOG_SHELL = { activeNav: "admin-participants", breadcrumb: [{ label: "Participant data" }] };</script>
+<script src="/storage.js"></script>
+<script src="/icons.js"></script>
+<script src="/shell.js?v=2"></script>
+<script src="/toast.js"></script>
+<script src="/a11y.js"></script>
+<script src="/admin-participants.js"></script>
+</body>
+</html>
