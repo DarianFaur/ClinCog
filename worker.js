@@ -150,7 +150,7 @@ const SUPPORTED_BYOK_PROVIDERS = new Set(["anthropic", "gemini", "openai"]);
 // arbitrary string passed through untouched.
 const ALLOWED_MODELS = {
   anthropic: ["claude-haiku-4-5-20251001", "claude-sonnet-5", "claude-opus-5"],
-  gemini: ["gemini-3.1-flash-lite", "gemini-3.5-flash", "gemini-3.1-pro"],
+  gemini: ["gemini-3.1-flash-lite", "gemini-3.6-flash", "gemini-3.1-pro"],
   openai: ["gpt-5-nano", "gpt-5.6-terra", "gpt-5.6-sol"],
 };
 
@@ -171,7 +171,7 @@ function resolveModelCredentials(hostname, byok, studentModel, env) {
   // choice for the free public-facing tier, kept entirely separate from
   // the Anthropic keys used for the author's own students and for any
   // instructor who adopts with their own key. No model choice here by
-  // design - fixed to gemini-3.5-flash (the function's own default).
+  // design - fixed to gemini-3.6-flash (the function's own default).
   return { provider: "gemini", key: env.GEMINI_API_KEY_DEMO, tier: "demo" };
 }
 
@@ -434,7 +434,7 @@ const SEMINAR_PROVIDERS = {
   anthropic: { label: "Anthropic", secret: "ANTHROPIC_API_KEY",
     models: { fast: "claude-haiku-4-5-20251001", thoughtful: "claude-sonnet-5" } },
   gemini: { label: "Google Gemini", secret: "GEMINI_API_KEY_SEMINAR",
-    models: { fast: "gemini-3.1-flash-lite", thoughtful: "gemini-3.5-flash" } },
+    models: { fast: "gemini-3.1-flash-lite", thoughtful: "gemini-3.6-flash" } },
   openai: { label: "OpenAI", secret: "OPENAI_API_KEY_SEMINAR",
     models: { fast: "gpt-5.6-luna", thoughtful: "gpt-5.6-terra" } },
 };
@@ -483,7 +483,7 @@ const SITE_SECRETS = {
   demo: { gemini: "GEMINI_API_KEY_DEMO" },
   admin: { gemini: "GEMINI_API_KEY_DEMO" },
 };
-const SITE_DEFAULT_MODEL = { gemini: "gemini-3.5-flash", anthropic: "claude-haiku-4-5-20251001", openai: "gpt-5.6-luna" };
+const SITE_DEFAULT_MODEL = { gemini: "gemini-3.6-flash", anthropic: "claude-haiku-4-5-20251001", openai: "gpt-5.6-luna" };
 function siteHost(site) { return site === "uvt" ? STUDENT_HOSTNAME : site === "admin" ? ADMIN_HOSTNAME : "clincog.net"; }
 function siteOf(cfg, site) { return Object.assign({ provider: "gemini", models: {} }, (cfg.sites || {})[site] || {}); }
 function siteProvider(cfg, site) {
@@ -1330,16 +1330,16 @@ export class StudentQuota extends DurableObject {
 // byok), participant, case, model, tokens in and out, cost, latency - in a
 // single Durable Object that keeps them in SQLite and pushes each new one
 // to every open admin page over a WebSocket. No conversation text is kept.
-const DEFAULT_MODEL = { anthropic: "claude-haiku-4-5-20251001", gemini: "gemini-3.5-flash", openai: "gpt-5-nano" };
+const DEFAULT_MODEL = { anthropic: "claude-haiku-4-5-20251001", gemini: "gemini-3.6-flash", openai: "gpt-5-nano" };
 
 // US dollars per million tokens, standard (paid) tier, as published by the
 // providers in September 2026. PRICING (a JSON var) overrides any entry,
-// e.g. {"gemini-3.5-flash":[1.5,9]}. BYOK traffic is never priced: it is
+// e.g. {"gemini-3.6-flash":[1.5,9]}. BYOK traffic is never priced: it is
 // the adopting instructor's own bill.
 const PRICES = {
   "claude-haiku-4-5-20251001": [1, 5],
   "claude-sonnet-5": [2, 10],
-  "gemini-3.5-flash": [1.5, 9],
+  "gemini-3.6-flash": [1.5, 9],
   "gemini-3.1-flash-lite": [0.25, 1.5],
   "gemini-3.1-pro": [2, 12],
   // OpenAI, as listed after the July 2026 price cut - check before relying
@@ -2717,7 +2717,7 @@ function streamPlainTextFromSSE(providerResponse, extractDelta, meter, extractUs
   });
 }
 
-async function respondAsPatientGemini(history, geminiKey, vignette, model = "gemini-3.5-flash", meter = null) {
+async function respondAsPatientGemini(history, geminiKey, vignette, model = "gemini-3.6-flash", meter = null) {
   try {
     const contents = history.map((m) => ({
       role: m.role === "assistant" ? "model" : "user",
